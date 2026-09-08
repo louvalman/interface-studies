@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>UI Reference Base</title>
+  <meta name="description" content="Interface components built in code and kept as self-contained references.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap">
+
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+
+  <header class="head">
+    <p class="head__eyebrow"><span class="head__dot"></span> UI Reference Base</p>
+    <h1 class="head__title">Interface details, built as reusable parts.</h1>
+    <p class="head__lede">
+      Components built in plain HTML and CSS — some recreated from interfaces
+      found elsewhere, some from original designs — kept so the type, the
+      spacing and the motion stay reusable. Open any piece to see it running.
+    </p>
+
+    <dl class="head__meta">
+      <div class="head__meta-item">
+        <dt class="head__meta-key">References</dt>
+        <dd class="head__meta-val" id="meta-count">—</dd>
+      </div>
+      <div class="head__meta-item">
+        <dt class="head__meta-key">Built with</dt>
+        <dd class="head__meta-val">HTML &amp; CSS</dd>
+      </div>
+      <div class="head__meta-item">
+        <dt class="head__meta-key">Shared code</dt>
+        <dd class="head__meta-val">None</dd>
+      </div>
+    </dl>
+  </header>
+
+  <section class="rail">
+    <div class="rail__bar">
+      <div class="rail__meta">
+        <p class="rail__count">Reference <span id="rail-index">01</span> / <span id="rail-total">01</span></p>
+        <p class="rail__hint">Scroll, drag, or use &larr; &rarr;</p>
+      </div>
+      <nav class="rail__nav" aria-label="Carousel">
+        <button class="rail__btn" type="button" data-rail-prev aria-label="Previous">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+            <path d="M10 2 4 8l6 6" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
+        <button class="rail__btn" type="button" data-rail-next aria-label="Next">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+            <path d="M6 2l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
+      </nav>
+    </div>
+
+    <!-- Add a reference: copy one <a class="piece"> block and point it at the
+         new folder's demo.html and preview.html. Keep the newest first. -->
+    <div class="rail__track" data-rail-track tabindex="0" role="region" aria-label="Reference carousel">
+
+      <a class="piece" href="2026-09-detail-reveal-card/demo.html">
+        <span class="piece__frame">
+          <iframe class="piece__preview" src="2026-09-detail-reveal-card/preview.html"
+                  loading="lazy" scrolling="no" tabindex="-1" aria-hidden="true"></iframe>
+          <span class="piece__type">Card</span>
+          <span class="piece__no">01</span>
+        </span>
+        <span class="piece__body">
+          <span class="piece__slug">2026 &middot; 09</span>
+          <h2 class="piece__title">Detail reveal card</h2>
+          <p class="piece__note">
+            A detail panel that rises from the bottom edge on hover, pushing the
+            resting label up ahead of it. Takes any content; a map variant adds
+            contour rings and a pulsing pin.
+          </p>
+          <span class="piece__cta">
+            <span class="piece__cta-text">Open demo</span>
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+              <path d="M4 12 12 4M6 4h6v6" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </span>
+        </span>
+      </a>
+
+      <span class="piece piece--ghost" aria-hidden="true">
+        <span class="piece__frame">
+          <span class="piece__ghost-text">Next one goes here &mdash; copy _template/</span>
+        </span>
+      </span>
+
+    </div>
+
+    <div class="rail__progress" data-rail-progress></div>
+  </section>
+
+  <footer class="foot">
+    <p class="foot__line">Built by hand &middot; Vanilla HTML and CSS &middot; Each folder stands alone</p>
+  </footer>
+
+  <script src="index.js"></script>
+</body>
+</html>

@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>2026-09-detail-reveal-card</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap">
+
+  <link rel="stylesheet" href="component.css">
+
+  <style>
+    /* Page scaffolding only — nothing here names a component class. */
+    body {
+      margin: 0;
+      box-sizing: border-box;
+      padding: clamp(2.5rem, 6vw, 5rem) clamp(1.25rem, 5vw, 4rem) 6rem;
+      background: #f7f6f8;
+      color: #14171c;
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .demo {
+      max-width: 78rem;
+      margin: 0 auto;
+    }
+
+    /* --- back to the index --- */
+
+    .demo__back {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: clamp(1.75rem, 3vw, 2.5rem);
+      padding: 0.5rem 0.9rem 0.5rem 0.75rem;
+      border: 1px solid rgba(20, 23, 28, 0.12);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.7);
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.6875rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #45484f;
+      text-decoration: none;
+      transition:
+        background 240ms cubic-bezier(0.16, 1, 0.3, 1),
+        border-color 240ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .demo__back:hover {
+      background: #fff;
+      border-color: rgba(20, 23, 28, 0.24);
+    }
+
+    .demo__back:focus-visible {
+      outline: 2px solid #14171c;
+      outline-offset: 3px;
+    }
+
+    .demo__back svg {
+      width: 0.85rem;
+      height: 0.85rem;
+      transition: transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .demo__back:hover svg { transform: translateX(-2px); }
+
+    /* --- intro --- */
+
+    .demo__intro {
+      max-width: 46ch;
+      margin: 0 0 clamp(2.5rem, 5vw, 4rem);
+    }
+
+    .demo__kicker {
+      margin: 0 0 1rem;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.6875rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #9c9aa6;
+    }
+
+    .demo__heading {
+      margin: 0;
+      font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+      font-weight: 600;
+      line-height: 1.1;
+      letter-spacing: -0.025em;
+    }
+
+    .demo__lede {
+      margin: 1rem 0 0;
+      font-size: 1rem;
+      line-height: 1.55;
+      color: #5b5f68;
+    }
+
+    /* --- groups --- */
+
+    .demo__group {
+      padding-top: clamp(2rem, 4vw, 3rem);
+      margin-top: clamp(2rem, 4vw, 3rem);
+      border-top: 1px solid rgba(20, 23, 28, 0.1);
+    }
+
+    .demo__group:first-of-type {
+      padding-top: 0;
+      margin-top: 0;
+      border-top: 0;
+    }
+
+    .demo__group-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0.5rem 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .demo__group-title {
+      margin: 0;
+      font-size: 1.0625rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .demo__group-note {
+      margin: 0;
+      max-width: 52ch;
+      font-size: 0.875rem;
+      line-height: 1.5;
+      color: #7b7f88;
+    }
+
+    /* --- card cells --- */
+
+    .demo__grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(21rem, 1fr));
+      gap: clamp(2rem, 4vw, 3rem) 2.5rem;
+      justify-items: start;
+    }
+
+    .demo__state {
+      display: grid;
+      gap: 0.85rem;
+      justify-items: start;
+      align-content: start;
+    }
+
+    .demo__caption {
+      margin: 0;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      letter-spacing: -0.005em;
+    }
+
+    .demo__hint {
+      display: inline-block;
+      margin: -0.35rem 0 0;
+      padding: 0.3em 0.6em;
+      border-radius: 0.35rem;
+      background: rgba(20, 23, 28, 0.05);
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.6875rem;
+      line-height: 1.5;
+      color: #62666f;
+    }
+  </style>
+</head>
+<body>
+  <div class="demo">
+
+    <!-- Page chrome: links back to the index. The component does not depend
+         on it — delete index.html and only this link goes stale. -->
+    <a class="demo__back" href="../index.html">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <path d="M10 2 4 8l6 6" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+      All references
+    </a>
+
+    <header class="demo__intro">
+      <p class="demo__kicker">2026-09 &middot; Card</p>
+      <h1 class="demo__heading">Detail reveal card</h1>
+      <p class="demo__lede">
+        A bottom panel that grows upward on hover, pushing the resting label up
+        ahead of it. The base card is content-agnostic; everything below is the
+        same component, differing only by custom properties and modifiers.
+      </p>
+    </header>
+
+    <!-- ------------------------------------------------------------------ -->
+    <section class="demo__group">
+      <div class="demo__group-head">
+        <h2 class="demo__group-title">Behaviour</h2>
+        <p class="demo__group-note">The base card at rest, and the same card pinned open.</p>
+      </div>
+
+      <div class="demo__grid">
+
+        <section class="demo__state">
+          <p class="demo__caption">Default</p>
+          <p class="demo__hint">hover or focus it</p>
+          <a class="detail-reveal-card" href="#">
+            <span class="detail-reveal-card__art" aria-hidden="true"></span>
+            <span class="detail-reveal-card__header">
+              <span class="detail-reveal-card__title">Field Notes</span>
+              <span class="detail-reveal-card__pill">Issue 04</span>
+            </span>
+            <span class="detail-reveal-card__panel">
+              <span class="detail-reveal-card__row">
+                <span class="detail-reveal-card__label">
+                  <span class="detail-reveal-card__mark" aria-hidden="true">&#8594;</span>Read the essay
+                </span>
+                <svg class="detail-reveal-card__arrow" viewBox="0 0 16 16" fill="none"
+                     stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                  <path d="M4 12 12 4M6 4h6v6" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </span>
+              <span class="detail-reveal-card__reveal">
+                <span class="detail-reveal-card__reveal-inner">
+                  <span class="detail-reveal-card__detail">
+                    <span class="detail-reveal-card__line">On details that survive a redesign</span>
+                    <span class="detail-reveal-card__line detail-reveal-card__line--muted">18 pages, illustrated</span>
+                  </span>
+                  <span class="detail-reveal-card__detail">
+                    <span class="detail-reveal-card__line">Published March 2026</span>
+                    <span class="detail-reveal-card__line detail-reveal-card__line--muted">Written in the studio</span>
+                  </span>
+                  <span class="detail-reveal-card__meta">Free &middot; 12 min read</span>
+                </span>
+              </span>
+            </span>
+          </a>
+        </section>
+
+        <section class="demo__state">
+          <p class="demo__caption">Revealed</p>
+          <p class="demo__hint">.detail-reveal-card--open</p>
+          <a class="detail-reveal-card detail-reveal-card--open" href="#">
+            <span class="detail-reveal-card__art" aria-hidden="true"></span>
+            <span class="detail-reveal-card__header">
+              <span class="detail-reveal-card__title">Studio</span>
+              <span class="detail-reveal-card__pill">Popular</span>
+            </span>
+            <span class="detail-reveal-card__panel">
+              <span class="detail-reveal-card__row">
+                <span class="detail-reveal-card__label">
+                  <span class="detail-reveal-card__mark" aria-hidden="true">&#8594;</span>What&rsquo;s included
+                </span>
+                <svg class="detail-reveal-card__arrow" viewBox="0 0 16 16" fill="none"
+                     stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                  <path d="M4 12 12 4M6 4h6v6" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </span>
+              <span class="detail-reveal-card__reveal">
+                <span class="detail-reveal-card__reveal-inner">
+                  <span class="detail-reveal-card__detail">
+                    <span class="detail-reveal-card__line">Unlimited projects</span>
+                    <span class="detail-reveal-card__line detail-reveal-card__line--muted">Up to 10 collaborators</span>
+                  </span>
+                  <span class="detail-reveal-card__detail">
+                    <span class="detail-reveal-card__line">Priority support</span>
+                    <span class="detail-reveal-card__line detail-reveal-card__line--muted">Response within one day</span>
+                  </span>
+                  <span class="detail-reveal-card__meta">$48 / month &middot; billed yearly</span>
+                </span>
+              </span>
+            </span>
+          </a>
+        </section>
+
+      </div>
+    </section>
+
+    <!-- ------------------------------------------------------------------ -->
+    <section class="demo__group">
+      <div class="demo__group-head">
+        <h2 class="demo__group-title">Themes</h2>
+        <p class="demo__group-note">
+          One baked modifier, and one re-theme done from outside by overriding
+          custom properties — component.css is untouched.
+        </p>
+      </div>
+
+      <div class="demo__grid">
+
+        <section class="demo__state">
+          <p class="demo__caption">Dark</p>
+          <p class="demo__hint">.detail-reveal-card--dark</p>
+          <a class="detail-reveal-card detail-reveal-card--dark" href="#">
+            <span class="detail-reveal-card__art" aria-hidden="true"></span>
+            <span class="detail-reveal-card__header">
+              <span class="detail-reveal-card__title">Changelog</span>
+              <span class="detail-reveal-card__pill">v2.4</span>
+            </span>
+            <span class="detail-reveal-card__panel">
+              <span class="detail-reveal-card__row">
+                <span class="detail-reveal-card__label">
+                  <span class="detail-reveal-card__mark" aria-hidden="true">&#8594;</span>See what shipped
+                </span>
+                <svg class="detail-reveal-card__arrow" viewBox="0 0 16 16" fill="none"
+                     stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                  <path d="M4 12 12 4M6 4h6v6" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </span>
+              <span class="detail-reveal-card__reveal">
+                <span class="detail-reveal-card__reveal-inner">
+                  <span class="detail-reveal-card__detail">
+                    <span class="detail-reveal-card__line">Keyboard navigation everywhere</span>
+                    <span class="detail-reveal-card__line detail-reveal-card__line--muted">Eleven fixes, two new panels</span>
+                  </span>
+                  <span class="detail-reveal-card__detail">
+                    <span class="detail-reveal-card__line">Released this week</span>
+                    <span class="detail-reveal-card__line detail-reveal-card__line--muted">No migration needed</span>
+                  </span>
+                  <span class="detail-reveal-card__meta">18 commits &middot; 4 contributors</span>
+                </span>
+              </span>
+            </span>
+          </a>
+        </section>
+
+        <section class="demo__state">
+          <p class="demo__caption">Amber &mdash; longer content</p>
+          <p class="demo__hint">--…-bg, --…-accent, --…-art</p>
+          <a class="detail-reveal-card" href="#" style="
+               --detail-reveal-card-bg: #f6f0e6;
+               --detail-reveal-card-accent: #c2761b;
+               --detail-reveal-card-art:
+                 linear-gradient(152deg, rgba(194, 118, 27, 0.22), transparent 58%),
+                 radial-gradient(72% 58% at 82% 12%, rgba(224, 156, 60, 0.20), transparent 70%),
+                 radial-gradient(60% 50% at 10% 88%, rgba(20, 23, 28, 0.05), transparent 72%),
+                 linear-gradient(180deg, rgba(255, 255, 255, 0.7), transparent 52%);">
+            <span class="detail-reveal-card__art" aria-hidden="true"></span>
+            <span class="detail-reveal-card__header">
+              <span class="detail-reveal-card__title">Workshop</span>
+              <span class="detail-reveal-card__pill">Nov 12</span>
+            </span>
+            <span class="detail-reveal-card__panel">
+              <span class="detail-reveal-card__row">
+                <span class="detail-reveal-card__label">
+                  <span class="detail-reveal-card__mark" aria-hidden="true">&#8594;</span>View the schedule
+                </span>
+                <svg class="detail-reveal-card__arrow" viewBox="0 0 16 16" fill="none"
+                     stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                  <path d="M4 12 12 4M6 4h6v6" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </span>
+              <span class="detail-reveal-card__reveal">
+                <span class="detail-reveal-card__reveal-inner">
+                  <span class="detail-reveal-card__detail">
+                    <span class="detail-reveal-card__line">Two full days of building small interfaces from scratch</span>
+                    <span class="detail-reveal-card__line detail-reveal-card__line--muted">Bring a laptop and something half-finished</span>
+                  </span>
+                  <span class="detail-reveal-card__detail">
+                    <span class="detail-reveal-card__line">Lunch and materials included</span>
+                    <span class="detail-reveal-card__line detail-reveal-card__line--muted">Sixteen seats, first come</span>
+                  </span>
+                  <span class="detail-reveal-card__meta">Waitlist open &middot; 2 days</span>
+                </span>
+              </span>
+            </span>
+          </a>
+        </section>
+
+      </div>
+    </section>
+
+    <!-- ------------------------------------------------------------------ -->
+    <section class="demo__group">
+      <div class="demo__group-head">
+        <h2 class="demo__group-title">Map variant</h2>
+        <p class="demo__group-note">
+          The same card with an abstract map behind it — a duotone mesh, contour
+          rings, and a pin that pulses at rest. Add the __pin element, and a
+          __kicker line for coordinates. The pin origin moves with
+          --…-pin-x / --…-pin-y, and the rings follow it.
+        </p>
+      </div>
+
+      <div class="demo__grid">
+
+        <section class="demo__state">
+          <p class="demo__caption">Map</p>
+          <p class="demo__hint">.detail-reveal-card--map</p>
+          <a class="detail-reveal-card detail-reveal-card--map" href="#">
+            <span class="detail-reveal-card__art" aria-hidden="true">
+              <span class="detail-reveal-card__pin"></span>
+            </span>
+            <span class="detail-reveal-card__header">
+              <span class="detail-reveal-card__title">Denmark</span>
+              <span class="detail-reveal-card__pill">GMT+2</span>
+            </span>
+            <span class="detail-reveal-card__panel">
+              <span class="detail-reveal-card__row">
+                <span class="detail-reveal-card__label">
+                  <span class="detail-reveal-card__mark" aria-hidden="true">&#8594;</span>Copenhagen
+                </span>
+                <svg class="detail-reveal-card__arrow" viewBox="0 0 16 16" fill="none"
+                     stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                  <path d="M4 12 12 4M6 4h6v6" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </span>
+              <span class="detail-reveal-card__reveal">
+                <span class="detail-reveal-card__reveal-inner">
+                  <span class="detail-reveal-card__kicker">55.6761&deg; N &middot; 12.5683&deg; E</span>
+                  <span class="detail-reveal-card__detail">
+                    <span class="detail-reveal-card__line">14 Placeholder Street</span>
+                    <span class="detail-reveal-card__line detail-reveal-card__line--muted">1050 Copenhagen K</span>
+                  </span>
+                  <span class="detail-reveal-card__detail">
+                    <span class="detail-reveal-card__line">+45 00 00 00 00</span>
+                    <span class="detail-reveal-card__line detail-reveal-card__line--muted">hello@example.com</span>
+                  </span>
+                  <span class="detail-reveal-card__meta">86 people &middot; Est. 2019</span>
+                </span>
+              </span>
+            </span>
+          </a>
+        </section>
+
+        <section class="demo__state">
+          <p class="demo__caption">Map, re-themed</p>
+          <p class="demo__hint">--map + --…-accent, --…-art, --…-pin-x/y</p>
+          <a class="detail-reveal-card detail-reveal-card--map" href="#" style="
+               --detail-reveal-card-bg: #e9edea;
+               --detail-reveal-card-accent: #2f9e6a;
+               --detail-reveal-card-pin-x: 52%;
+               --detail-reveal-card-pin-y: 30%;
+               --detail-reveal-card-art:
+                 radial-gradient(50% 40% at 52% 30%, rgba(47, 158, 106, 0.5), transparent 72%),
+                 radial-gradient(46% 38% at 26% 66%, rgba(120, 190, 150, 0.5), transparent 72%),
+                 radial-gradient(48% 44% at 78% 70%, rgba(90, 150, 200, 0.34), transparent 74%),
+                 radial-gradient(80% 62% at 50% 46%, rgba(255, 255, 255, 0.55), transparent 74%),
+                 linear-gradient(180deg, rgba(255, 255, 255, 0.5), transparent 46%);">
+            <span class="detail-reveal-card__art" aria-hidden="true">
+              <span class="detail-reveal-card__pin"></span>
+            </span>
+            <span class="detail-reveal-card__header">
+              <span class="detail-reveal-card__title">Canada</span>
+              <span class="detail-reveal-card__pill">GMT-8</span>
+            </span>
+            <span class="detail-reveal-card__panel">
+              <span class="detail-reveal-card__row">
+                <span class="detail-reveal-card__label">
+                  <span class="detail-reveal-card__mark" aria-hidden="true">&#8594;</span>Vancouver
+                </span>
+                <svg class="detail-reveal-card__arrow" viewBox="0 0 16 16" fill="none"
+                     stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                  <path d="M4 12 12 4M6 4h6v6" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </span>
+              <span class="detail-reveal-card__reveal">
+                <span class="detail-reveal-card__reveal-inner">
+                  <span class="detail-reveal-card__kicker">49.2827&deg; N &middot; 123.1207&deg; W</span>
+                  <span class="detail-reveal-card__detail">
+                    <span class="detail-reveal-card__line">70 Placeholder Way</span>
+                    <span class="detail-reveal-card__line detail-reveal-card__line--muted">Vancouver, BC V6B</span>
+                  </span>
+                  <span class="detail-reveal-card__detail">
+                    <span class="detail-reveal-card__line">+1 000 000 0000</span>
+                    <span class="detail-reveal-card__line detail-reveal-card__line--muted">vancouver@example.com</span>
+                  </span>
+                  <span class="detail-reveal-card__meta">34 people &middot; Est. 2021</span>
+                </span>
+              </span>
+            </span>
+          </a>
+        </section>
+
+        <section class="demo__state">
+          <p class="demo__caption">Map + dark</p>
+          <p class="demo__hint">.detail-reveal-card--map.detail-reveal-card--dark</p>
+          <a class="detail-reveal-card detail-reveal-card--map detail-reveal-card--dark" href="#">
+            <span class="detail-reveal-card__art" aria-hidden="true">
+              <span class="detail-reveal-card__pin"></span>
+            </span>
+            <span class="detail-reveal-card__header">
+              <span class="detail-reveal-card__title">Japan</span>
+              <span class="detail-reveal-card__pill">GMT+9</span>
+            </span>
+            <span class="detail-reveal-card__panel">
+              <span class="detail-reveal-card__row">
+                <span class="detail-reveal-card__label">
+                  <span class="detail-reveal-card__mark" aria-hidden="true">&#8594;</span>Tokyo
+                </span>
+                <svg class="detail-reveal-card__arrow" viewBox="0 0 16 16" fill="none"
+                     stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+                  <path d="M4 12 12 4M6 4h6v6" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </span>
+              <span class="detail-reveal-card__reveal">
+                <span class="detail-reveal-card__reveal-inner">
+                  <span class="detail-reveal-card__kicker">35.6762&deg; N &middot; 139.6503&deg; E</span>
+                  <span class="detail-reveal-card__detail">
+                    <span class="detail-reveal-card__line">3 Placeholder Building, 8F</span>
+                    <span class="detail-reveal-card__line detail-reveal-card__line--muted">Shibuya, Tokyo 150</span>
+                  </span>
+                  <span class="detail-reveal-card__detail">
+                    <span class="detail-reveal-card__line">+81 00 0000 0000</span>
+                    <span class="detail-reveal-card__line detail-reveal-card__line--muted">tokyo@example.com</span>
+                  </span>
+                  <span class="detail-reveal-card__meta">58 people &middot; Est. 2018</span>
+                </span>
+              </span>
+            </span>
+          </a>
+        </section>
+
+      </div>
+    </section>
+
+  </div>
+</body>
+</html>

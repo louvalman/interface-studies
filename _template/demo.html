@@ -1,0 +1,115 @@
+<!doctype html>
+<!--
+  The demo page. Everything page-level lives here and only here: background,
+  centering, font loading, and 2-3 states of the component.
+
+  This page links component.css. It never redefines it — no rule below may
+  target a component class. Demo styles are scoped to .demo* only.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>YYYY-MM-slug</title>
+
+  <!-- Font loading is the demo's job, never the component's. -->
+  <!-- <link rel="preconnect" href="https://fonts.googleapis.com"> -->
+  <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=..."> -->
+
+  <link rel="stylesheet" href="component.css">
+
+  <style>
+    /* Page scaffolding only. Nothing here may name a component class. */
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 4rem 1.5rem;
+      box-sizing: border-box;
+      background: #ddd9d0;
+      font-family: system-ui, sans-serif;
+    }
+
+    .demo {
+      display: grid;
+      gap: 3rem;
+      width: min(100%, 30rem);
+    }
+
+    /* Back to the index. Page chrome — the component never depends on it. */
+    .demo__back {
+      justify-self: start;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.9rem 0.5rem 0.75rem;
+      border: 1px solid rgba(20, 18, 15, 0.14);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.6);
+      font-size: 0.6875rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #4a453d;
+      text-decoration: none;
+    }
+
+    .demo__back:hover { background: #fff; }
+
+    .demo__back svg { width: 0.85rem; height: 0.85rem; }
+
+    .demo__state {
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .demo__caption {
+      margin: 0;
+      font-size: 0.6875rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #6b655a;
+    }
+  </style>
+</head>
+<body>
+  <div class="demo">
+
+    <a class="demo__back" href="../index.html">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <path d="M10 2 4 8l6 6" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+      All references
+    </a>
+
+    <section class="demo__state">
+      <p class="demo__caption">Default</p>
+      <!-- paste component.html markup here -->
+      <article class="slug">
+        <p class="slug__label">Label</p>
+        <h2 class="slug__title">Title</h2>
+        <p class="slug__body">Body copy that carries no branding from the reference.</p>
+      </article>
+    </section>
+
+    <section class="demo__state">
+      <p class="demo__caption">Hover (hover it)</p>
+      <article class="slug">
+        <p class="slug__label">Label</p>
+        <h2 class="slug__title">Title</h2>
+        <p class="slug__body">Body copy that carries no branding from the reference.</p>
+      </article>
+    </section>
+
+    <section class="demo__state">
+      <p class="demo__caption">Content variant</p>
+      <article class="slug slug--featured">
+        <p class="slug__label">Longer label than the first</p>
+        <h2 class="slug__title">A title long enough to wrap onto a second line</h2>
+        <p class="slug__body">A shorter body, to check the spacing holds either way.</p>
+      </article>
+    </section>
+
+  </div>
+</body>
+</html>

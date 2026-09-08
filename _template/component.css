@@ -1,0 +1,83 @@
+/*
+  Self-contained styles for this reference.
+
+  Rules (see CLAUDE.md):
+  - BEM-namespaced to this folder's slug. Rename `.slug` throughout.
+  - No global selectors: no body, no *, no bare element selectors, no reset.
+  - No @import, no CDN links, no font loading — demo.html loads the font.
+  - Every tunable value lives in the custom property block below, so this
+    component can be re-themed from outside without editing its internals.
+    If a colour, size, radius or duration is hardcoded further down, it is
+    in the wrong place.
+
+  Test: copy this file alone into an unrelated project. Does it still work,
+  and does it leave everything around it untouched?
+*/
+
+.slug {
+  /* --- tunables ------------------------------------------------------- */
+  --slug-bg: #f4f1ea;
+  --slug-fg: #14120f;
+  --slug-muted: #6b655a;
+
+  --slug-font: system-ui, sans-serif;
+  --slug-title-size: 2rem;
+  --slug-body-size: 0.9375rem;
+  --slug-label-size: 0.6875rem;
+  --slug-label-tracking: 0.08em;
+
+  --slug-pad: 1.5rem;
+  --slug-gap: 0.5rem;
+
+  --slug-border: 2px solid var(--slug-fg);
+  --slug-radius: 0;
+
+  --slug-transition: 120ms ease-out;
+  /* -------------------------------------------------------------------- */
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--slug-gap);
+  padding: var(--slug-pad);
+
+  background: var(--slug-bg);
+  color: var(--slug-fg);
+  border: var(--slug-border);
+  border-radius: var(--slug-radius);
+
+  font-family: var(--slug-font);
+  transition: transform var(--slug-transition);
+}
+
+.slug__label {
+  margin: 0;
+  font-size: var(--slug-label-size);
+  letter-spacing: var(--slug-label-tracking);
+  text-transform: uppercase;
+  color: var(--slug-muted);
+}
+
+.slug__title {
+  margin: 0;
+  font-size: var(--slug-title-size);
+  line-height: 1.1;
+}
+
+.slug__body {
+  margin: 0;
+  font-size: var(--slug-body-size);
+  line-height: 1.5;
+  color: var(--slug-muted);
+}
+
+/* States belong here — hover, focus-visible, transitions. Not in demo.html. */
+.slug:hover {
+  transform: translate(-2px, -2px);
+}
+
+/* Modifier: the content variant shown in the demo. */
+.slug--featured {
+  --slug-bg: #14120f;
+  --slug-fg: #f4f1ea;
+  --slug-muted: #a49d90;
+}
