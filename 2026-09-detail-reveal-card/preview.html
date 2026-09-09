@@ -20,14 +20,14 @@
        background-color transition stalls part-way and leaves the surround a
        muddy grey between the two tones. The card's own motion is what this
        page is showing; the backdrop can just cut. */
-    html { background-color: #f7f6f8; }
+    html { background-color: #f3f2ef; }
 
     body {
       margin: 0;
       min-height: 100vh;
       display: grid;
       place-items: center;
-      background-color: #f7f6f8;
+      background-color: #f3f2ef;
       font-family: "Plus Jakarta Sans", system-ui, sans-serif;
     }
   </style>
@@ -153,7 +153,7 @@
 
         document.body.setAttribute('data-tone', variant.tone);
         document.body.style.backgroundColor =
-          variant.tone === 'dark' ? '#101216' : '#f7f6f8';
+          variant.tone === 'dark' ? '#101216' : '#f3f2ef';
 
         title.textContent = variant.title;
         pill.textContent = variant.pill;

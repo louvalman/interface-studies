@@ -332,13 +332,12 @@ body.is-locked { overflow: hidden; }
   transition: transform 520ms var(--ease);
 }
 
-/* The card in the read position leads, so the rail has a subject even
-   before the pointer arrives. Hover overrides it. */
-.piece.is-active { transform: translateY(-3px); }
-
 .piece:hover,
 .piece:focus-within { transform: translateY(-6px); }
 
+/* .is-active marks the card in the read position. It drives the counter and,
+   on touch, which preview plays — but it is deliberately not painted: lifting
+   or outlining one card made the rail look misaligned rather than focused. */
 .piece__frame {
   position: relative;
   overflow: hidden;
@@ -352,8 +351,6 @@ body.is-locked { overflow: hidden; }
     box-shadow 520ms var(--ease),
     border-color 520ms var(--ease);
 }
-
-.piece.is-active .piece__frame { border-color: var(--hairline-strong); }
 
 .piece:hover .piece__frame,
 .piece:focus-within .piece__frame {

@@ -1,0 +1,292 @@
+/* 2026-09-drawn-gradients — self-contained, no globals, no imports. */
+
+.drawn-gradients {
+  /* --- tunables ------------------------------------------------------- */
+  --drawn-gradients-size: 6.5rem;
+  --drawn-gradients-gap: 1.25rem;
+  --drawn-gradients-width: 26rem;
+
+  --drawn-gradients-radius: 12%;
+  --drawn-gradients-radius-pill: 999px;
+
+  /* Where the colour gathers, and how far it reaches before it is gone.
+     Both origins are percentages, so every shape gets the same light from
+     the same relative direction whatever its proportions. */
+  --drawn-gradients-pool-x: 80%;
+  --drawn-gradients-pool-y: 2%;
+  --drawn-gradients-pool-reach: 72%;
+  --drawn-gradients-wash-x: 8%;
+  --drawn-gradients-wash-y: 0%;
+  --drawn-gradients-wash-reach: 82%;
+  --drawn-gradients-settle: 84%;
+
+  --drawn-gradients-base: #ffffff;
+  --drawn-gradients-hot: #ee7b39;
+  --drawn-gradients-warm: #f6b06a;
+  --drawn-gradients-cool: #ef5e8c;
+
+  /* The drawn recipe: how far the artwork is pushed past the frame, and how
+     hard it is blurred. The blur is a ratio of the surface, not a fixed
+     length, so a thumbnail and a page block dissolve by the same amount. */
+  --drawn-gradients-bleed: 22%;
+  /* How hard the drawing dissolves, as a ratio of the surface. A few large
+     shapes want a high ratio; a dense drawing — a grid, a scatter, stacked
+     bands — averages to one flat colour at the same setting and needs far
+     less. Tune this per drawing, not the pixel length. */
+  --drawn-gradients-blur-ratio: 0.26;
+  --drawn-gradients-blur:
+    calc(var(--drawn-gradients-size) * var(--drawn-gradients-blur-ratio));
+  --drawn-gradients-raw-fill: 0.5;
+  --drawn-gradients-raw-dash: 4 3;
+
+  --drawn-gradients-ink: #1b1c1f;
+  --drawn-gradients-ink-soft: #55565a;
+  --drawn-gradients-shadow: 0 18px 40px -24px rgba(24, 20, 16, 0.45);
+  --drawn-gradients-border: 1px solid rgba(24, 20, 16, 0.06);
+
+  --drawn-gradients-font: "Plus Jakarta Sans", system-ui, sans-serif;
+  --drawn-gradients-mono: "JetBrains Mono", ui-monospace, monospace;
+  /* Content type is a ratio of the surface, not a fixed length — the same
+     reasoning as the proportional corner radius. Set in rem it stayed put
+     while the card scaled, and at thumbnail size the label ran outside its
+     own box. The ratios resolve to the previous values at the default size. */
+  --drawn-gradients-value-size: calc(var(--drawn-gradients-size) * 0.42);
+  --drawn-gradients-label-size: calc(var(--drawn-gradients-size) * 0.145);
+  --drawn-gradients-micro-size: calc(var(--drawn-gradients-size) * 0.105);
+  --drawn-gradients-micro-tracking: 0.16em;
+  --drawn-gradients-pad: calc(var(--drawn-gradients-size) * 0.17);
+
+  /* -------------------------------------------------------------------- */
+
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--drawn-gradients-gap);
+  max-width: var(--drawn-gradients-width);
+  font-family: var(--drawn-gradients-font);
+}
+
+/* --- the surface ------------------------------------------------------- */
+/* Every gradient-bearing element is one of these. Shape modifiers set
+   geometry, theme modifiers set the two colour stops; the two compose. */
+
+.drawn-gradients__surface {
+  /* One recipe. Two pools that dissolve outward, over a vertical settle that
+     carries the last of the colour down — no single axis for the eye to find,
+     which is what keeps large fills from banding.
+
+     It is declared here, on the element that uses it, and not on the block:
+     var() inside a custom property is resolved where that property is
+     *declared*, so a recipe declared on the parent would bake in the parent's
+     colour stops and every theme modifier below would do nothing. */
+  --drawn-gradients-art:
+    radial-gradient(140% 108% at var(--drawn-gradients-pool-x) var(--drawn-gradients-pool-y),
+      var(--drawn-gradients-hot), transparent var(--drawn-gradients-pool-reach)),
+    radial-gradient(132% 100% at var(--drawn-gradients-wash-x) var(--drawn-gradients-wash-y),
+      var(--drawn-gradients-warm), transparent var(--drawn-gradients-wash-reach)),
+    linear-gradient(180deg,
+      var(--drawn-gradients-warm) 0%,
+      transparent var(--drawn-gradients-settle));
+
+  box-sizing: border-box;
+  border-radius: var(--drawn-gradients-radius);
+  border: var(--drawn-gradients-border);
+  background-color: var(--drawn-gradients-base);
+  background-image: var(--drawn-gradients-art);
+  /* The image is clipped to the border box, so it has to be laid out on the
+     border box too. Left on the padding-box default it tiles, and the 1px
+     border ring shows the gradient wrapping — a saturated hairline along the
+     bottom edge and a white one across the top. */
+  background-origin: border-box;
+  background-repeat: no-repeat;
+  box-shadow: var(--drawn-gradients-shadow);
+}
+
+/* --- shapes ------------------------------------------------------------ */
+
+.drawn-gradients__surface--tile {
+  width: var(--drawn-gradients-size);
+  aspect-ratio: 1;
+}
+
+.drawn-gradients__surface--circle {
+  width: var(--drawn-gradients-size);
+  aspect-ratio: 1;
+  border-radius: 50%;
+}
+
+/* Round at the top, square at the foot — the pools sit in the round half. */
+.drawn-gradients__surface--arch {
+  width: var(--drawn-gradients-size);
+  aspect-ratio: 0.78;
+  border-radius:
+    50% 50% var(--drawn-gradients-radius) var(--drawn-gradients-radius) /
+    46% 46% var(--drawn-gradients-radius) var(--drawn-gradients-radius);
+}
+
+.drawn-gradients__surface--pill {
+  width: calc(var(--drawn-gradients-size) * 1.85);
+  aspect-ratio: 5 / 2;
+  border-radius: var(--drawn-gradients-radius-pill);
+}
+
+/* --- as a card ground -------------------------------------------------- */
+
+.drawn-gradients__surface--card {
+  width: calc(var(--drawn-gradients-size) * 2.15);
+  aspect-ratio: 1;
+  padding: var(--drawn-gradients-pad);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* --- as a section band ------------------------------------------------- */
+
+.drawn-gradients__surface--band {
+  width: 100%;
+  min-height: calc(var(--drawn-gradients-size) * 1.15);
+  padding: var(--drawn-gradients-pad);
+  display: flex;
+  align-items: flex-end;
+}
+
+/* --- drawn: shapes, blurred until they are a gradient ------------------ */
+/* The other way to make the same surface. Instead of stacking gradient
+   stops, draw a few overlapping shapes in flat colour and blur them past
+   recognition — the overlaps become the mid-tones a stop list has to be
+   hand-tuned to produce. */
+
+.drawn-gradients__surface--drawn {
+  position: relative;
+  overflow: hidden;
+  /* The drawing is the gradient here; the stop recipe would sit under it. */
+  background-image: none;
+}
+
+.drawn-gradients__draw {
+  position: absolute;
+  /* Blur samples transparency beyond the artwork, so the artwork has to run
+     past the frame — clipped to it, the edges would fade to nothing and the
+     shape would read as a vignette instead of a fill. */
+  inset: calc(var(--drawn-gradients-bleed) * -1);
+  filter: blur(var(--drawn-gradients-blur));
+}
+
+.drawn-gradients__blob {
+  /* Overlaps are where the colour mixes, so nothing is fully opaque. */
+  fill-opacity: 0.85;
+}
+
+/* Fill comes from a class, not a fill="" attribute: var() is not honoured in
+   SVG presentation attributes, so the theme could not reach the artwork. */
+.drawn-gradients__blob--hot { fill: var(--drawn-gradients-hot); }
+.drawn-gradients__blob--warm { fill: var(--drawn-gradients-warm); }
+.drawn-gradients__blob--cool { fill: var(--drawn-gradients-cool); }
+
+/* The same drawing before the blur: no bleed, so the whole shape is in frame,
+   and a construction outline on it. */
+.drawn-gradients__surface--raw {
+  --drawn-gradients-bleed: 0%;
+  --drawn-gradients-blur: 0px;
+}
+
+.drawn-gradients__surface--raw .drawn-gradients__blob {
+  fill-opacity: var(--drawn-gradients-raw-fill);
+  stroke: var(--drawn-gradients-ink);
+  stroke-width: 1;
+  stroke-dasharray: var(--drawn-gradients-raw-dash);
+  vector-effect: non-scaling-stroke;
+}
+
+/* --- content that sits on a surface ------------------------------------ */
+/* Placed in the lower half, where the recipe has settled to the base and
+   nothing needs a scrim to stay legible. */
+
+.drawn-gradients__value {
+  margin: 0;
+  font-size: var(--drawn-gradients-value-size);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--drawn-gradients-ink);
+}
+
+.drawn-gradients__label {
+  margin: 0;
+  font-size: var(--drawn-gradients-label-size);
+  line-height: 1.4;
+  color: var(--drawn-gradients-ink-soft);
+}
+
+.drawn-gradients__micro {
+  margin: 0;
+  font-family: var(--drawn-gradients-mono);
+  font-size: var(--drawn-gradients-micro-size);
+  letter-spacing: var(--drawn-gradients-micro-tracking);
+  text-transform: uppercase;
+  color: var(--drawn-gradients-ink-soft);
+}
+
+/* Content on a surface can overflow its box if a caller sets a long string
+   at a small size; clipping is the safe failure, not a broken layout. */
+.drawn-gradients__value,
+.drawn-gradients__label,
+.drawn-gradients__micro {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.drawn-gradients__row {
+  display: flex;
+  flex-wrap: wrap;
+  /* Without this the default stretch wins over aspect-ratio and every shape
+     grows to the tallest one in the row. */
+  align-items: flex-start;
+  gap: var(--drawn-gradients-gap);
+  width: 100%;
+}
+
+.drawn-gradients__stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+/* --- themes ------------------------------------------------------------ */
+/* Two values each. The recipe above resolves them on whichever element
+   carries the modifier, so nothing else has to be restated. */
+
+.drawn-gradients__surface--dawn {
+  --drawn-gradients-hot: #ee7b39;
+  --drawn-gradients-warm: #f6b06a;
+  --drawn-gradients-cool: #ef5e8c;
+}
+
+.drawn-gradients__surface--dusk {
+  --drawn-gradients-hot: #6d5bef;
+  --drawn-gradients-warm: #c072e0;
+  --drawn-gradients-cool: #4ec3f7;
+}
+
+.drawn-gradients__surface--mint {
+  --drawn-gradients-hot: #12a894;
+  --drawn-gradients-warm: #86d6ac;
+  --drawn-gradients-cool: #4f9bf0;
+}
+
+.drawn-gradients__surface--ice {
+  --drawn-gradients-hot: #3f7ff0;
+  --drawn-gradients-warm: #93b8f8;
+  --drawn-gradients-cool: #8f6bf0;
+}
+
+/* Inverted: the colour settles to ink instead of paper. The stops stay put —
+   only the base and the text colours move. */
+.drawn-gradients__surface--night {
+  --drawn-gradients-base: #16171b;
+  --drawn-gradients-ink: #f4f4f6;
+  --drawn-gradients-ink-soft: #a7a9b0;
+  --drawn-gradients-border: 1px solid rgba(255, 255, 255, 0.08);
+  --drawn-gradients-shadow: 0 18px 40px -24px rgba(0, 0, 0, 0.7);
+}

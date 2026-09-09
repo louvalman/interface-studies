@@ -45,12 +45,12 @@
       'rail.hintTouch': 'Stryg for at rulle · tryk på hurtigt kig',
       'type.card': 'Kort',
       'type.aesthetic': 'Æstetik',
-      'piece.gradientShapes.title': 'Gradientformer',
-      'piece.gradientShapes.note': 'Én gradientopskrift — to radiale puljer over '
-        + 'en lodret udtoning — projiceret på fliser, cirkler, buer og piller. '
-        + 'Form og tema er adskilte akser, så enhver farve kan kombineres med '
-        + 'enhver form.',
-      'cta.quickLookGradients': 'Hurtigt kig: Gradientformer',
+      'piece.drawnGradients.title': 'Tegnede gradienter',
+      'piece.drawnGradients.note': 'Gradientflader lavet ved at tegne nogle få '
+        + 'overlappende SVG-former i flad farve og sløre dem til ukendelighed — '
+        + 'overlappene bliver de mellemtoner, som en håndskrevet stopliste '
+        + 'ellers skal justeres for at ramme.',
+      'cta.quickLookGradients': 'Hurtigt kig: Tegnede gradienter',
       'piece.detailReveal.title': 'Kort med detaljeafsløring',
       'piece.detailReveal.note': 'Et detaljepanel der stiger op fra bundkanten '
         + 'ved hover og skubber den hvilende etiket op foran sig. Rummer ethvert '
@@ -484,13 +484,24 @@
       const previewH = parseFloat(rootStyle.getPropertyValue('--preview-h'));
       if (!previewW || !previewH) return;
 
-      const scale = Math.min(
-        stage.clientWidth / previewW,
-        stage.clientHeight / previewH,
-        1
-      );
+      // Measure against the panel's natural width first.
+      panel.style.width = '';
 
-      box.style.setProperty('--lightbox-scale', Math.max(0, scale).toFixed(4));
+      // Two passes. The panel is narrowed to whatever the scaled preview
+      // actually occupies — left at its full width, a preview limited by
+      // height sits in a band of panel either side of it, which reads as a
+      // gap in the page rather than a frame around it. Narrowing can rewrap
+      // the footer and cost a little height, so the fit is taken again.
+      for (let pass = 0; pass < 2; pass++) {
+        const scale = Math.min(
+          stage.clientWidth / previewW,
+          stage.clientHeight / previewH,
+          1
+        );
+
+        box.style.setProperty('--lightbox-scale', Math.max(0, scale).toFixed(4));
+        panel.style.width = Math.round(previewW * scale) + 'px';
+      }
     }
 
     // Parks the marker on a dot. `ms` is how long the trip takes: the full
@@ -650,6 +661,7 @@
 
       const finish = () => {
         box.hidden = true;
+        panel.style.width = '';
         frame.src = 'about:blank';   // stop the preview rather than hide it
         document.body.classList.remove('is-locked');
         if (restoreFocus && document.contains(restoreFocus)) restoreFocus.focus();

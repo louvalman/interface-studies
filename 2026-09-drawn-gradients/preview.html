@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>2026-09-drawn-gradients — preview</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap">
+
+  <link rel="stylesheet" href="component.css">
+
+  <style>
+    /* Thumbnail scaffolding only — one instance, centred, no captions.
+       Nothing here names a component class. */
+    html { background-color: #f3f2ef; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      /* Enough top clearance that the grid never runs under the index card's
+         type and number badges, which sit over the top of this frame. */
+      padding: 1.5rem 0.75rem 0.75rem;
+      box-sizing: border-box;
+      background-color: #f3f2ef;
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Same markup as component.html; only the scale is turned down,
+       through the component's own custom properties, so the whole set
+       fits the thumbnail viewport rather than being cropped. -->
+  <section class="drawn-gradients"
+           style="--drawn-gradients-size: 6.5rem;
+                  --drawn-gradients-gap: 1rem;
+                  --drawn-gradients-width: 21.5rem;">
+
+    <!-- Six drawings, read down a column: the shapes as drawn, then the same
+            SVG blurred past recognition. Stacked bands, a scatter, a mosaic,
+            radiating wedges, a horizon and stripes — each names its own blur
+            ratio, because a dense drawing averages to one flat colour at the
+            setting a few large shapes want. Three more, and what to do with the
+            result, are on the demo page. -->
+      <div class="drawn-gradients__row">
+        <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--raw drawn-gradients__surface--mint">
+          <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+               preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <path class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  d="M-10 -10 L130 -10 L130 34 C98 22 76 46 46 34 C22 24 4 40 -10 32 Z" />
+            <path class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  d="M-10 32 C4 40 22 24 46 34 C76 46 98 22 130 34 L130 76 C96 66 74 90 44 76 C20 65 4 82 -10 74 Z" />
+            <path class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  d="M-10 74 C4 82 20 65 44 76 C74 90 96 66 130 76 L130 130 L-10 130 Z" />
+          </svg>
+        </div>
+        <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--raw drawn-gradients__surface--dusk">
+          <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+               preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <circle class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  cx="18" cy="22" r="26" />
+            <circle class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  cx="72" cy="14" r="20" />
+            <circle class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  cx="108" cy="44" r="26" />
+            <circle class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  cx="44" cy="58" r="24" />
+            <circle class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  cx="96" cy="96" r="28" />
+            <circle class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  cx="16" cy="92" r="22" />
+            <circle class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  cx="60" cy="118" r="20" />
+          </svg>
+        </div>
+        <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--raw drawn-gradients__surface--ice">
+          <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+               preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <rect class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  x="0" y="0" width="30" height="30" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  x="30" y="0" width="30" height="30" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  x="90" y="0" width="30" height="30" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  x="0" y="30" width="30" height="30" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  x="60" y="30" width="30" height="30" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  x="90" y="30" width="30" height="30" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  x="30" y="60" width="30" height="30" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  x="60" y="60" width="30" height="30" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  x="0" y="90" width="30" height="30" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  x="30" y="90" width="30" height="30" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  x="60" y="90" width="30" height="30" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  x="90" y="90" width="30" height="30" />
+          </svg>
+        </div>
+      </div>
+      <div class="drawn-gradients__row">
+        <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--mint"
+             style="--drawn-gradients-blur-ratio: 0.2;">
+          <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+               preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <path class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  d="M-10 -10 L130 -10 L130 34 C98 22 76 46 46 34 C22 24 4 40 -10 32 Z" />
+            <path class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  d="M-10 32 C4 40 22 24 46 34 C76 46 98 22 130 34 L130 76 C96 66 74 90 44 76 C20 65 4 82 -10 74 Z" />
+            <path class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  d="M-10 74 C4 82 20 65 44 76 C74 90 96 66 130 76 L130 130 L-10 130 Z" />
+          </svg>
+        </div>
+        <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--dusk"
+             style="--drawn-gradients-blur-ratio: 0.16;">
+          <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+               preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <circle class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  cx="18" cy="22" r="26" />
+            <circle class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  cx="72" cy="14" r="20" />
+            <circle class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  cx="108" cy="44" r="26" />
+            <circle class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  cx="44" cy="58" r="24" />
+            <circle class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  cx="96" cy="96" r="28" />
+            <circle class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  cx="16" cy="92" r="22" />
+            <circle class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  cx="60" cy="118" r="20" />
+          </svg>
+        </div>
+        <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--ice"
+             style="--drawn-gradients-blur-ratio: 0.1;">
+          <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+               preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <rect class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  x="0" y="0" width="30" height="30" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  x="30" y="0" width="30" height="30" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  x="90" y="0" width="30" height="30" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  x="0" y="30" width="30" height="30" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  x="60" y="30" width="30" height="30" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  x="90" y="30" width="30" height="30" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  x="30" y="60" width="30" height="30" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  x="60" y="60" width="30" height="30" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  x="0" y="90" width="30" height="30" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  x="30" y="90" width="30" height="30" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  x="60" y="90" width="30" height="30" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  x="90" y="90" width="30" height="30" />
+          </svg>
+        </div>
+      </div>
+      <div class="drawn-gradients__row">
+        <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--raw drawn-gradients__surface--dawn">
+          <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+               preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <path class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  d="M60 62 L60.0 -43.0 L128.2 -17.8 Z" />
+            <path class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  d="M60 62 L150.9 9.5 L163.2 81.1 Z" />
+            <path class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  d="M60 62 L150.9 114.5 L95.0 161.0 Z" />
+            <path class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  d="M60 62 L60.0 167.0 L-8.2 141.8 Z" />
+            <path class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  d="M60 62 L-30.9 114.5 L-43.2 42.9 Z" />
+            <path class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  d="M60 62 L-30.9 9.5 L25.0 -37.0 Z" />
+          </svg>
+        </div>
+        <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--raw drawn-gradients__surface--dawn">
+          <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+               preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <circle class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  cx="84" cy="30" r="24" />
+            <path class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  d="M-10 130 L-10 74 C26 54 48 70 74 50 C100 30 118 46 130 38 L130 130 Z" />
+            <path class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  d="M-10 130 L-10 100 C28 82 56 96 84 80 C108 66 122 78 130 72 L130 130 Z" />
+          </svg>
+        </div>
+        <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--raw drawn-gradients__surface--dusk drawn-gradients__surface--night">
+          <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+               preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <rect class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  x="-10" y="-6" width="140" height="20" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  x="-10" y="20" width="140" height="10" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  x="-10" y="34" width="140" height="24" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  x="-10" y="62" width="140" height="8" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  x="-10" y="74" width="140" height="18" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  x="-10" y="96" width="140" height="12" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  x="-10" y="112" width="140" height="22" />
+          </svg>
+        </div>
+      </div>
+      <div class="drawn-gradients__row">
+        <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--dawn"
+             style="--drawn-gradients-blur-ratio: 0.16;">
+          <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+               preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <path class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  d="M60 62 L60.0 -43.0 L128.2 -17.8 Z" />
+            <path class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  d="M60 62 L150.9 9.5 L163.2 81.1 Z" />
+            <path class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  d="M60 62 L150.9 114.5 L95.0 161.0 Z" />
+            <path class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  d="M60 62 L60.0 167.0 L-8.2 141.8 Z" />
+            <path class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  d="M60 62 L-30.9 114.5 L-43.2 42.9 Z" />
+            <path class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  d="M60 62 L-30.9 9.5 L25.0 -37.0 Z" />
+          </svg>
+        </div>
+        <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--dawn"
+             style="--drawn-gradients-blur-ratio: 0.18;">
+          <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+               preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <circle class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  cx="84" cy="30" r="24" />
+            <path class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  d="M-10 130 L-10 74 C26 54 48 70 74 50 C100 30 118 46 130 38 L130 130 Z" />
+            <path class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  d="M-10 130 L-10 100 C28 82 56 96 84 80 C108 66 122 78 130 72 L130 130 Z" />
+          </svg>
+        </div>
+        <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--dusk drawn-gradients__surface--night"
+             style="--drawn-gradients-blur-ratio: 0.09;">
+          <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+               preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <rect class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  x="-10" y="-6" width="140" height="20" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  x="-10" y="20" width="140" height="10" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  x="-10" y="34" width="140" height="24" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  x="-10" y="62" width="140" height="8" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  x="-10" y="74" width="140" height="18" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  x="-10" y="96" width="140" height="12" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  x="-10" y="112" width="140" height="22" />
+          </svg>
+        </div>
+      </div>
+
+  </section>
+
+  <!--
+    Thumbnail scaffolding only, and inert when this file is opened on its own.
+    Quick look steps through the themes; the list lives here because the index
+    must never name a component class. There is no hover state to drive, so the
+    'preview' message is ignored.
+
+    Theme classes are swapped rather than added, and each surface's authored
+    theme is remembered, so the first entry can put the mix back.
+  -->
+  <script>
+    (function () {
+      var CHANNEL = 'ui-reference-base';
+      var BASE = 'drawn-gradients__surface--';
+      var surfaces = Array.prototype.slice.call(
+        document.querySelectorAll('.drawn-gradients__surface')
+      );
+      if (!surfaces.length) return;
+
+      var THEMES = ['dawn', 'dusk', 'mint', 'ice'];
+
+      var VARIANTS = [
+        { id: 'mixed', label: 'As authored', theme: null, tone: 'light' },
+        { id: 'dawn', label: 'Dawn', theme: ['dawn'], tone: 'light' },
+        { id: 'dusk', label: 'Dusk', theme: ['dusk'], tone: 'light' },
+        { id: 'mint', label: 'Mint', theme: ['mint'], tone: 'light' },
+        { id: 'ice', label: 'Ice', theme: ['ice'], tone: 'light' },
+        { id: 'night', label: 'Settling to ink', theme: ['dusk', 'night'], tone: 'dark' }
+      ];
+
+      // What each surface was authored with, so 'mixed' can restore it.
+      var authored = surfaces.map(function (el) {
+        return THEMES.filter(function (t) { return el.classList.contains(BASE + t); });
+      });
+
+      function apply(variant) {
+        surfaces.forEach(function (el, i) {
+          THEMES.forEach(function (t) { el.classList.remove(BASE + t); });
+          el.classList.remove(BASE + 'night');
+
+          var wanted = variant.theme || authored[i];
+          wanted.forEach(function (t) { el.classList.add(BASE + t); });
+        });
+
+        // Not transitioned on purpose: inside a framed document a
+        // background-color transition stalls part-way and leaves the surround
+        // a muddy mid-tone.
+        document.body.style.backgroundColor =
+          variant.tone === 'dark' ? '#101216' : '#f3f2ef';
+        document.documentElement.style.backgroundColor =
+          variant.tone === 'dark' ? '#101216' : '#f3f2ef';
+      }
+
+      window.addEventListener('message', function (event) {
+        var data = event.data;
+        if (!data || data.source !== CHANNEL) return;
+
+        if (data.type === 'preview:variant') {
+          var variant = VARIANTS[data.index];
+          if (variant) apply(variant);
+        }
+      });
+
+      if (window.parent !== window) {
+        window.parent.postMessage({
+          source: CHANNEL,
+          type: 'preview:ready',
+          variants: VARIANTS.map(function (v) { return { id: v.id, label: v.label }; })
+        }, '*');
+      }
+    })();
+  </script>
+
+</body>
+</html>
