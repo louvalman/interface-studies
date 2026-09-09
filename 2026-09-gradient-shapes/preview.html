@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>2026-09-gradient-shapes — preview</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap">
+
+  <link rel="stylesheet" href="component.css">
+
+  <style>
+    /* Thumbnail scaffolding only — one instance, centred, no captions.
+       Nothing here names a component class. */
+    html { background-color: #f3f2ef; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 1rem;
+      box-sizing: border-box;
+      background-color: #f3f2ef;
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Same markup as component.html; only the scale is turned down,
+       through the component's own custom properties, so the whole set
+       fits the thumbnail viewport rather than being cropped. -->
+  <section class="gradient-shapes"
+           style="--gradient-shapes-size: 4.75rem; --gradient-shapes-width: 28rem;">
+
+    <!-- 1. how the gradient is made: shapes drawn, then blurred until they
+            are one. Each pair is --raw, then the same drawing blurred. -->
+    <div class="gradient-shapes__group">
+      <p class="gradient-shapes__legend">Drawn, then blurred</p>
+      <div class="gradient-shapes__row">
+        <div class="gradient-shapes__surface gradient-shapes__surface--tile gradient-shapes__surface--drawn gradient-shapes__surface--raw gradient-shapes__surface--dusk">
+          <svg class="gradient-shapes__draw" viewBox="0 0 120 120"
+               preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <path class="gradient-shapes__blob gradient-shapes__blob--hot"
+                  d="M62 2 C82 2 82 42 102 42 C122 42 122 76 102 76 C82 76 82 116 62 116
+                     C42 116 42 76 22 76 C2 76 2 42 22 42 C42 42 42 2 62 2 Z" />
+            <path class="gradient-shapes__blob gradient-shapes__blob--warm"
+                  d="M-10 76 C16 48 40 100 64 74 C88 48 112 74 130 60 L130 104
+                     C112 118 88 92 64 116 C40 140 16 90 -10 116 Z" />
+            <path class="gradient-shapes__blob gradient-shapes__blob--cool"
+                  d="M32 14 L44 42 L74 45 L51 64 L58 94 L32 78 L6 94 L13 64
+                     L-10 45 L20 42 Z" />
+          </svg>
+        </div>
+        <div class="gradient-shapes__surface gradient-shapes__surface--tile gradient-shapes__surface--drawn gradient-shapes__surface--dusk">
+          <svg class="gradient-shapes__draw" viewBox="0 0 120 120"
+               preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <path class="gradient-shapes__blob gradient-shapes__blob--hot"
+                  d="M62 2 C82 2 82 42 102 42 C122 42 122 76 102 76 C82 76 82 116 62 116
+                     C42 116 42 76 22 76 C2 76 2 42 22 42 C42 42 42 2 62 2 Z" />
+            <path class="gradient-shapes__blob gradient-shapes__blob--warm"
+                  d="M-10 76 C16 48 40 100 64 74 C88 48 112 74 130 60 L130 104
+                     C112 118 88 92 64 116 C40 140 16 90 -10 116 Z" />
+            <path class="gradient-shapes__blob gradient-shapes__blob--cool"
+                  d="M32 14 L44 42 L74 45 L51 64 L58 94 L32 78 L6 94 L13 64
+                     L-10 45 L20 42 Z" />
+          </svg>
+        </div>
+        <div class="gradient-shapes__surface gradient-shapes__surface--tile gradient-shapes__surface--drawn gradient-shapes__surface--raw gradient-shapes__surface--dawn">
+          <svg class="gradient-shapes__draw" viewBox="0 0 120 120"
+               preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <!-- One leaf, drawn once and turned three times. -->
+            <path class="gradient-shapes__blob gradient-shapes__blob--hot" d="M60 -4 C94 26 94 82 60 124 C26 82 26 26 60 -4 Z" />
+            <path class="gradient-shapes__blob gradient-shapes__blob--warm"
+                  transform="rotate(60 60 60)" d="M60 -4 C94 26 94 82 60 124 C26 82 26 26 60 -4 Z" />
+            <path class="gradient-shapes__blob gradient-shapes__blob--cool"
+                  transform="rotate(-60 60 60)" d="M60 -4 C94 26 94 82 60 124 C26 82 26 26 60 -4 Z" />
+          </svg>
+        </div>
+        <div class="gradient-shapes__surface gradient-shapes__surface--tile gradient-shapes__surface--drawn gradient-shapes__surface--dawn">
+          <svg class="gradient-shapes__draw" viewBox="0 0 120 120"
+               preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <!-- One leaf, drawn once and turned three times. -->
+            <path class="gradient-shapes__blob gradient-shapes__blob--hot" d="M60 -4 C94 26 94 82 60 124 C26 82 26 26 60 -4 Z" />
+            <path class="gradient-shapes__blob gradient-shapes__blob--warm"
+                  transform="rotate(60 60 60)" d="M60 -4 C94 26 94 82 60 124 C26 82 26 26 60 -4 Z" />
+            <path class="gradient-shapes__blob gradient-shapes__blob--cool"
+                  transform="rotate(-60 60 60)" d="M60 -4 C94 26 94 82 60 124 C26 82 26 26 60 -4 Z" />
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. and how it is used: one recipe across four geometries and four
+            colour sets, shape and theme being separate axes -->
+    <div class="gradient-shapes__group">
+      <p class="gradient-shapes__legend">Shapes and themes</p>
+      <div class="gradient-shapes__row">
+        <div class="gradient-shapes__surface gradient-shapes__surface--tile gradient-shapes__surface--dawn"></div>
+        <div class="gradient-shapes__surface gradient-shapes__surface--circle gradient-shapes__surface--dusk"></div>
+        <div class="gradient-shapes__surface gradient-shapes__surface--arch gradient-shapes__surface--mint"></div>
+        <div class="gradient-shapes__surface gradient-shapes__surface--pill gradient-shapes__surface--ice"></div>
+      </div>
+    </div>
+
+    <!-- 3. and as a card ground. --band, a full-width section ground, is the
+            same surface again; it is shown on the demo page. -->
+    <div class="gradient-shapes__group">
+      <p class="gradient-shapes__legend">Card ground</p>
+      <article class="gradient-shapes__surface gradient-shapes__surface--card gradient-shapes__surface--dawn">
+        <p class="gradient-shapes__micro">Label</p>
+        <div class="gradient-shapes__stack">
+          <p class="gradient-shapes__value">48</p>
+          <p class="gradient-shapes__label">Placeholder line</p>
+        </div>
+      </article>
+    </div>
+
+  </section>
+
+  <!--
+    Thumbnail scaffolding only, and inert when this file is opened on its own.
+    Quick look steps through the themes; the list lives here because the index
+    must never name a component class. There is no hover state to drive, so the
+    'preview' message is ignored.
+
+    Theme classes are swapped rather than added, and each surface's authored
+    theme is remembered, so the first entry can put the mix back.
+  -->
+  <script>
+    (function () {
+      var CHANNEL = 'ui-reference-base';
+      var BASE = 'gradient-shapes__surface--';
+      var surfaces = Array.prototype.slice.call(
+        document.querySelectorAll('.gradient-shapes__surface')
+      );
+      if (!surfaces.length) return;
+
+      var THEMES = ['dawn', 'dusk', 'mint', 'ice'];
+
+      var VARIANTS = [
+        { id: 'mixed', label: 'As authored', theme: null, tone: 'light' },
+        { id: 'dawn', label: 'Dawn', theme: ['dawn'], tone: 'light' },
+        { id: 'dusk', label: 'Dusk', theme: ['dusk'], tone: 'light' },
+        { id: 'mint', label: 'Mint', theme: ['mint'], tone: 'light' },
+        { id: 'ice', label: 'Ice', theme: ['ice'], tone: 'light' },
+        { id: 'night', label: 'Settling to ink', theme: ['dusk', 'night'], tone: 'dark' }
+      ];
+
+      // What each surface was authored with, so 'mixed' can restore it.
+      var authored = surfaces.map(function (el) {
+        return THEMES.filter(function (t) { return el.classList.contains(BASE + t); });
+      });
+
+      function apply(variant) {
+        surfaces.forEach(function (el, i) {
+          THEMES.forEach(function (t) { el.classList.remove(BASE + t); });
+          el.classList.remove(BASE + 'night');
+
+          var wanted = variant.theme || authored[i];
+          wanted.forEach(function (t) { el.classList.add(BASE + t); });
+        });
+
+        // Not transitioned on purpose: inside a framed document a
+        // background-color transition stalls part-way and leaves the surround
+        // a muddy mid-tone.
+        document.body.style.backgroundColor =
+          variant.tone === 'dark' ? '#101216' : '#f3f2ef';
+        document.documentElement.style.backgroundColor =
+          variant.tone === 'dark' ? '#101216' : '#f3f2ef';
+      }
+
+      window.addEventListener('message', function (event) {
+        var data = event.data;
+        if (!data || data.source !== CHANNEL) return;
+
+        if (data.type === 'preview:variant') {
+          var variant = VARIANTS[data.index];
+          if (variant) apply(variant);
+        }
+      });
+
+      if (window.parent !== window) {
+        window.parent.postMessage({
+          source: CHANNEL,
+          type: 'preview:ready',
+          variants: VARIANTS.map(function (v) { return { id: v.id, label: v.label }; })
+        }, '*');
+      }
+    })();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,292 @@
+/* 2026-09-gradient-shapes — self-contained, no globals, no imports. */
+
+.gradient-shapes {
+  /* --- tunables ------------------------------------------------------- */
+  --gradient-shapes-size: 6.5rem;
+  --gradient-shapes-gap: 1.25rem;
+  --gradient-shapes-width: 26rem;
+
+  --gradient-shapes-radius: 12%;
+  --gradient-shapes-radius-pill: 999px;
+
+  /* Where the colour gathers, and how far it reaches before it is gone.
+     Both origins are percentages, so every shape gets the same light from
+     the same relative direction whatever its proportions. */
+  --gradient-shapes-pool-x: 80%;
+  --gradient-shapes-pool-y: 2%;
+  --gradient-shapes-pool-reach: 72%;
+  --gradient-shapes-wash-x: 8%;
+  --gradient-shapes-wash-y: 0%;
+  --gradient-shapes-wash-reach: 82%;
+  --gradient-shapes-settle: 84%;
+
+  --gradient-shapes-base: #ffffff;
+  --gradient-shapes-hot: #ee7b39;
+  --gradient-shapes-warm: #f6b06a;
+  --gradient-shapes-cool: #ef5e8c;
+
+  /* The drawn recipe: how far the artwork is pushed past the frame, and how
+     hard it is blurred. The blur is a ratio of the surface, not a fixed
+     length, so a thumbnail and a page block dissolve by the same amount. */
+  --gradient-shapes-bleed: 22%;
+  --gradient-shapes-blur: calc(var(--gradient-shapes-size) * 0.26);
+  --gradient-shapes-raw-fill: 0.5;
+  --gradient-shapes-raw-dash: 4 3;
+
+  --gradient-shapes-ink: #1b1c1f;
+  --gradient-shapes-ink-soft: #55565a;
+  --gradient-shapes-legend-ink: #8a8a84;
+  --gradient-shapes-shadow: 0 18px 40px -24px rgba(24, 20, 16, 0.45);
+  --gradient-shapes-border: 1px solid rgba(24, 20, 16, 0.06);
+
+  --gradient-shapes-font: "Plus Jakarta Sans", system-ui, sans-serif;
+  --gradient-shapes-mono: "JetBrains Mono", ui-monospace, monospace;
+  --gradient-shapes-value-size: 2.75rem;
+  --gradient-shapes-label-size: 0.9375rem;
+  --gradient-shapes-micro-size: 0.6875rem;
+  --gradient-shapes-micro-tracking: 0.16em;
+  --gradient-shapes-pad: 1.125rem;
+
+  /* -------------------------------------------------------------------- */
+
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--gradient-shapes-gap);
+  max-width: var(--gradient-shapes-width);
+  font-family: var(--gradient-shapes-font);
+}
+
+/* --- the surface ------------------------------------------------------- */
+/* Every gradient-bearing element is one of these. Shape modifiers set
+   geometry, theme modifiers set the two colour stops; the two compose. */
+
+.gradient-shapes__surface {
+  /* One recipe. Two pools that dissolve outward, over a vertical settle that
+     carries the last of the colour down — no single axis for the eye to find,
+     which is what keeps large fills from banding.
+
+     It is declared here, on the element that uses it, and not on the block:
+     var() inside a custom property is resolved where that property is
+     *declared*, so a recipe declared on the parent would bake in the parent's
+     colour stops and every theme modifier below would do nothing. */
+  --gradient-shapes-art:
+    radial-gradient(140% 108% at var(--gradient-shapes-pool-x) var(--gradient-shapes-pool-y),
+      var(--gradient-shapes-hot), transparent var(--gradient-shapes-pool-reach)),
+    radial-gradient(132% 100% at var(--gradient-shapes-wash-x) var(--gradient-shapes-wash-y),
+      var(--gradient-shapes-warm), transparent var(--gradient-shapes-wash-reach)),
+    linear-gradient(180deg,
+      var(--gradient-shapes-warm) 0%,
+      transparent var(--gradient-shapes-settle));
+
+  box-sizing: border-box;
+  border-radius: var(--gradient-shapes-radius);
+  border: var(--gradient-shapes-border);
+  background-color: var(--gradient-shapes-base);
+  background-image: var(--gradient-shapes-art);
+  /* The image is clipped to the border box, so it has to be laid out on the
+     border box too. Left on the padding-box default it tiles, and the 1px
+     border ring shows the gradient wrapping — a saturated hairline along the
+     bottom edge and a white one across the top. */
+  background-origin: border-box;
+  background-repeat: no-repeat;
+  box-shadow: var(--gradient-shapes-shadow);
+}
+
+/* --- shapes ------------------------------------------------------------ */
+
+.gradient-shapes__surface--tile {
+  width: var(--gradient-shapes-size);
+  aspect-ratio: 1;
+}
+
+.gradient-shapes__surface--circle {
+  width: var(--gradient-shapes-size);
+  aspect-ratio: 1;
+  border-radius: 50%;
+}
+
+/* Round at the top, square at the foot — the pools sit in the round half. */
+.gradient-shapes__surface--arch {
+  width: var(--gradient-shapes-size);
+  aspect-ratio: 0.78;
+  border-radius:
+    50% 50% var(--gradient-shapes-radius) var(--gradient-shapes-radius) /
+    46% 46% var(--gradient-shapes-radius) var(--gradient-shapes-radius);
+}
+
+.gradient-shapes__surface--pill {
+  width: calc(var(--gradient-shapes-size) * 1.85);
+  aspect-ratio: 5 / 2;
+  border-radius: var(--gradient-shapes-radius-pill);
+}
+
+/* --- as a card ground -------------------------------------------------- */
+
+.gradient-shapes__surface--card {
+  width: calc(var(--gradient-shapes-size) * 2.15);
+  aspect-ratio: 1;
+  padding: var(--gradient-shapes-pad);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* --- as a section band ------------------------------------------------- */
+
+.gradient-shapes__surface--band {
+  width: 100%;
+  min-height: calc(var(--gradient-shapes-size) * 1.15);
+  padding: var(--gradient-shapes-pad);
+  display: flex;
+  align-items: flex-end;
+}
+
+/* --- drawn: shapes, blurred until they are a gradient ------------------ */
+/* The other way to make the same surface. Instead of stacking gradient
+   stops, draw a few overlapping shapes in flat colour and blur them past
+   recognition — the overlaps become the mid-tones a stop list has to be
+   hand-tuned to produce. */
+
+.gradient-shapes__surface--drawn {
+  position: relative;
+  overflow: hidden;
+  /* The drawing is the gradient here; the stop recipe would sit under it. */
+  background-image: none;
+}
+
+.gradient-shapes__draw {
+  position: absolute;
+  /* Blur samples transparency beyond the artwork, so the artwork has to run
+     past the frame — clipped to it, the edges would fade to nothing and the
+     shape would read as a vignette instead of a fill. */
+  inset: calc(var(--gradient-shapes-bleed) * -1);
+  filter: blur(var(--gradient-shapes-blur));
+}
+
+.gradient-shapes__blob {
+  /* Overlaps are where the colour mixes, so nothing is fully opaque. */
+  fill-opacity: 0.85;
+}
+
+/* Fill comes from a class, not a fill="" attribute: var() is not honoured in
+   SVG presentation attributes, so the theme could not reach the artwork. */
+.gradient-shapes__blob--hot { fill: var(--gradient-shapes-hot); }
+.gradient-shapes__blob--warm { fill: var(--gradient-shapes-warm); }
+.gradient-shapes__blob--cool { fill: var(--gradient-shapes-cool); }
+
+/* The same drawing before the blur: no bleed, so the whole shape is in frame,
+   and a construction outline on it. */
+.gradient-shapes__surface--raw {
+  --gradient-shapes-bleed: 0%;
+  --gradient-shapes-blur: 0px;
+}
+
+.gradient-shapes__surface--raw .gradient-shapes__blob {
+  fill-opacity: var(--gradient-shapes-raw-fill);
+  stroke: var(--gradient-shapes-ink);
+  stroke-width: 1;
+  stroke-dasharray: var(--gradient-shapes-raw-dash);
+  vector-effect: non-scaling-stroke;
+}
+
+/* --- content that sits on a surface ------------------------------------ */
+/* Placed in the lower half, where the recipe has settled to the base and
+   nothing needs a scrim to stay legible. */
+
+.gradient-shapes__value {
+  margin: 0;
+  font-size: var(--gradient-shapes-value-size);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--gradient-shapes-ink);
+}
+
+.gradient-shapes__label {
+  margin: 0;
+  font-size: var(--gradient-shapes-label-size);
+  line-height: 1.4;
+  color: var(--gradient-shapes-ink-soft);
+}
+
+.gradient-shapes__micro {
+  margin: 0;
+  font-family: var(--gradient-shapes-mono);
+  font-size: var(--gradient-shapes-micro-size);
+  letter-spacing: var(--gradient-shapes-micro-tracking);
+  text-transform: uppercase;
+  color: var(--gradient-shapes-ink-soft);
+}
+
+/* A named set: a legend, then the surfaces it labels. The section's own gap
+   separates the groups; this smaller one ties a legend to its row. */
+.gradient-shapes__group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.gradient-shapes__legend {
+  margin: 0;
+  font-family: var(--gradient-shapes-mono);
+  font-size: var(--gradient-shapes-micro-size);
+  letter-spacing: var(--gradient-shapes-micro-tracking);
+  text-transform: uppercase;
+  color: var(--gradient-shapes-legend-ink);
+}
+
+.gradient-shapes__row {
+  display: flex;
+  flex-wrap: wrap;
+  /* Without this the default stretch wins over aspect-ratio and every shape
+     grows to the tallest one in the row. */
+  align-items: flex-start;
+  gap: var(--gradient-shapes-gap);
+  width: 100%;
+}
+
+.gradient-shapes__stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+/* --- themes ------------------------------------------------------------ */
+/* Two values each. The recipe above resolves them on whichever element
+   carries the modifier, so nothing else has to be restated. */
+
+.gradient-shapes__surface--dawn {
+  --gradient-shapes-hot: #ee7b39;
+  --gradient-shapes-warm: #f6b06a;
+  --gradient-shapes-cool: #ef5e8c;
+}
+
+.gradient-shapes__surface--dusk {
+  --gradient-shapes-hot: #6d5bef;
+  --gradient-shapes-warm: #c072e0;
+  --gradient-shapes-cool: #4ec3f7;
+}
+
+.gradient-shapes__surface--mint {
+  --gradient-shapes-hot: #12a894;
+  --gradient-shapes-warm: #86d6ac;
+  --gradient-shapes-cool: #4f9bf0;
+}
+
+.gradient-shapes__surface--ice {
+  --gradient-shapes-hot: #3f7ff0;
+  --gradient-shapes-warm: #93b8f8;
+  --gradient-shapes-cool: #8f6bf0;
+}
+
+/* Inverted: the colour settles to ink instead of paper. The stops stay put —
+   only the base and the text colours move. */
+.gradient-shapes__surface--night {
+  --gradient-shapes-base: #16171b;
+  --gradient-shapes-ink: #f4f4f6;
+  --gradient-shapes-ink-soft: #a7a9b0;
+  --gradient-shapes-border: 1px solid rgba(255, 255, 255, 0.08);
+  --gradient-shapes-shadow: 0 18px 40px -24px rgba(0, 0, 0, 0.7);
+}

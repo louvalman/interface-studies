@@ -16,16 +16,26 @@
   <!-- <link rel="preconnect" href="https://fonts.googleapis.com"> -->
   <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=..."> -->
 
+  <!-- Page chrome, like the back link: goes stale if this folder is copied
+       out on its own, and nothing else breaks when it does. -->
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+
   <link rel="stylesheet" href="component.css">
 
   <style>
     /* Page scaffolding only. Nothing here may name a component class. */
+    /* Matches the index's --gutter exactly. The pages are separate documents
+       with no shared stylesheet, so the value is repeated rather than shared —
+       but it has to be the same number, or the language control and the
+       content edge shift on every trip between them. */
+    :root { --demo-gutter: clamp(1.5rem, 6vw, 6rem); }
+
     body {
       margin: 0;
       min-height: 100vh;
       display: grid;
       place-items: center;
-      padding: 4rem 1.5rem;
+      padding: 4rem var(--demo-gutter);
       box-sizing: border-box;
       background: #ddd9d0;
       font-family: system-ui, sans-serif;
@@ -38,6 +48,57 @@
     }
 
     /* Back to the index. Page chrome — the component never depends on it. */
+    /* Aligned to the page's own padding, so it sits on the same edge as the
+       content rather than floating inside the margin. */
+    .demo__lang {
+      position: fixed;
+      top: clamp(1.25rem, 3vw, 2.25rem);
+      right: var(--demo-gutter);
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: 0.1rem;
+      padding: 0.2rem 0.35rem;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.72);
+      backdrop-filter: blur(8px);
+    }
+
+    .demo__lang-btn {
+      padding: 0.35em 0.5em;
+      border: 0;
+      background: transparent;
+      color: #8a919c;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.625rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: color 240ms ease;
+    }
+
+    .demo__lang-btn:hover { color: #14171c; }
+
+    .demo__lang-btn[aria-pressed="true"] {
+      color: #14171c;
+      text-decoration: underline;
+      text-decoration-color: #b4552f;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 0.4em;
+    }
+
+    .demo__lang-btn:focus-visible {
+      outline: 2px solid #14171c;
+      outline-offset: 2px;
+      border-radius: 0.25rem;
+    }
+
+    .demo__lang-sep {
+      width: 1px;
+      height: 0.7rem;
+      background: rgba(20, 23, 28, 0.12);
+    }
+
     .demo__back {
       justify-self: start;
       display: inline-flex;
@@ -75,11 +136,19 @@
 <body>
   <div class="demo">
 
+    <!-- Delete alongside the language script below if this reference is
+         single-language. -->
+    <div class="demo__lang" role="group" aria-label="Language">
+      <button class="demo__lang-btn" type="button" data-lang="en" aria-pressed="true">EN</button>
+      <span class="demo__lang-sep" aria-hidden="true"></span>
+      <button class="demo__lang-btn" type="button" data-lang="da" aria-pressed="false">DA</button>
+    </div>
+
     <a class="demo__back" href="../index.html">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
         <path d="M10 2 4 8l6 6" stroke-linecap="round" stroke-linejoin="round" />
       </svg>
-      All references
+      <span data-i18n="back">All references</span>
     </a>
 
     <section class="demo__state">
@@ -111,5 +180,61 @@
     </section>
 
   </div>
+  <!--
+    Language, if this reference needs it. Self-contained on purpose: the folder
+    has to survive being copied out, so it carries its own strings rather than
+    sharing a table with the index. The index appends ?lang= to the link that
+    opens this page, and the back link hands the choice back — over file:// each
+    document gets its own opaque origin, so localStorage alone will not carry it.
+
+    Give every translatable node a data-i18n key. Leave component sample copy
+    and class-name hints alone: those are content and code, not page language.
+    Delete the whole block for a single-language reference.
+  -->
+  <script>
+    (function () {
+      var STORE_KEY = 'ui-reference-base:lang';
+
+      var DA = {
+        'back': 'Alle referencer'
+        // one entry per data-i18n key on this page
+      };
+
+      var nodes = Array.prototype.slice.call(document.querySelectorAll('[data-i18n]'));
+      var buttons = Array.prototype.slice.call(document.querySelectorAll('[data-lang]'));
+      var back = document.querySelector('.demo__back');
+      var english = nodes.map(function (el) { return el.textContent; });
+
+      function apply(lang) {
+        var table = lang === 'da' ? DA : null;
+
+        nodes.forEach(function (el, i) {
+          var key = el.getAttribute('data-i18n');
+          el.textContent = table && table[key] ? table[key] : english[i];
+        });
+
+        document.documentElement.lang = lang;
+        buttons.forEach(function (b) {
+          b.setAttribute('aria-pressed', b.dataset.lang === lang ? 'true' : 'false');
+        });
+        if (back) {
+          back.setAttribute('href', lang === 'en' ? '../index.html' : '../index.html?lang=' + lang);
+        }
+
+        try { localStorage.setItem(STORE_KEY, lang); } catch (err) { /* private mode */ }
+      }
+
+      buttons.forEach(function (b) {
+        b.addEventListener('click', function () { apply(b.dataset.lang); });
+      });
+
+      var fromQuery = new URLSearchParams(location.search).get('lang');
+      var stored = null;
+      try { stored = localStorage.getItem(STORE_KEY); } catch (err) { /* private mode */ }
+
+      apply(fromQuery || stored || 'en');
+    })();
+  </script>
+
 </body>
 </html>

@@ -9,26 +9,89 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap">
 
+  <!-- Page chrome, like the back link: goes stale if this folder is copied
+       out on its own, and nothing else breaks when it does. -->
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+
   <link rel="stylesheet" href="component.css">
 
   <style>
     /* Page scaffolding only — nothing here names a component class. */
+    /* Matches the index's --gutter exactly. The pages are separate documents
+       with no shared stylesheet, so the value is repeated rather than shared —
+       but it has to be the same number, or the language control and the
+       content edge shift on every trip between them. */
+    :root { --demo-gutter: clamp(1.5rem, 6vw, 6rem); }
+
     body {
       margin: 0;
       box-sizing: border-box;
-      padding: clamp(2.5rem, 6vw, 5rem) clamp(1.25rem, 5vw, 4rem) 6rem;
+      padding: clamp(2.5rem, 6vw, 5rem) var(--demo-gutter) 6rem;
       background: #f7f6f8;
       color: #14171c;
       font-family: "Plus Jakarta Sans", system-ui, sans-serif;
       -webkit-font-smoothing: antialiased;
     }
 
+    /* Left-aligned at the gutter, not centred — the index hangs its masthead
+       and rail off the same edge, and a centred column here would step the
+       content inwards on every navigation. */
     .demo {
       max-width: 78rem;
-      margin: 0 auto;
     }
 
     /* --- back to the index --- */
+
+    /* Aligned to the page's own padding, so it sits on the same edge as the
+       content rather than floating inside the margin. */
+    .demo__lang {
+      position: fixed;
+      top: clamp(1.25rem, 3vw, 2.25rem);
+      right: var(--demo-gutter);
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: 0.1rem;
+      padding: 0.2rem 0.35rem;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.72);
+      backdrop-filter: blur(8px);
+    }
+
+    .demo__lang-btn {
+      padding: 0.35em 0.5em;
+      border: 0;
+      background: transparent;
+      color: #8a919c;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.625rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: color 240ms ease;
+    }
+
+    .demo__lang-btn:hover { color: #14171c; }
+
+    .demo__lang-btn[aria-pressed="true"] {
+      color: #14171c;
+      text-decoration: underline;
+      text-decoration-color: #b4552f;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 0.4em;
+    }
+
+    .demo__lang-btn:focus-visible {
+      outline: 2px solid #14171c;
+      outline-offset: 2px;
+      border-radius: 0.25rem;
+    }
+
+    .demo__lang-sep {
+      width: 1px;
+      height: 0.7rem;
+      background: rgba(20, 23, 28, 0.12);
+    }
 
     .demo__back {
       display: inline-flex;
@@ -175,19 +238,31 @@
 <body>
   <div class="demo">
 
+    <!-- Language. Self-contained on purpose: this page has to keep working
+         with index.html deleted, so it carries its own copy of the strings
+         rather than sharing a table with the index. The choice travels in the
+         ?lang= query and in localStorage, so it survives the trip either way.
+         Component sample copy is left alone — that is the component's content,
+         not this page's language. -->
+    <div class="demo__lang" role="group" aria-label="Language">
+      <button class="demo__lang-btn" type="button" data-lang="en" aria-pressed="true">EN</button>
+      <span class="demo__lang-sep" aria-hidden="true"></span>
+      <button class="demo__lang-btn" type="button" data-lang="da" aria-pressed="false">DA</button>
+    </div>
+
     <!-- Page chrome: links back to the index. The component does not depend
          on it — delete index.html and only this link goes stale. -->
     <a class="demo__back" href="../index.html">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
         <path d="M10 2 4 8l6 6" stroke-linecap="round" stroke-linejoin="round" />
       </svg>
-      All references
+      <span data-i18n="back">All references</span>
     </a>
 
     <header class="demo__intro">
-      <p class="demo__kicker">2026-09 &middot; Card</p>
-      <h1 class="demo__heading">Detail reveal card</h1>
-      <p class="demo__lede">
+      <p class="demo__kicker">2026-09 &middot; <span data-i18n="type">Card</span></p>
+      <h1 class="demo__heading" data-i18n="heading">Detail reveal card</h1>
+      <p class="demo__lede" data-i18n="lede">
         A bottom panel that grows upward on hover, pushing the resting label up
         ahead of it. The base card is content-agnostic; everything below is the
         same component, differing only by custom properties and modifiers.
@@ -197,15 +272,15 @@
     <!-- ------------------------------------------------------------------ -->
     <section class="demo__group">
       <div class="demo__group-head">
-        <h2 class="demo__group-title">Behaviour</h2>
-        <p class="demo__group-note">The base card at rest, and the same card pinned open.</p>
+        <h2 class="demo__group-title" data-i18n="group.behaviour">Behaviour</h2>
+        <p class="demo__group-note" data-i18n="group.behaviourNote">The base card at rest, and the same card pinned open.</p>
       </div>
 
       <div class="demo__grid">
 
         <section class="demo__state">
-          <p class="demo__caption">Default</p>
-          <p class="demo__hint">hover or focus it</p>
+          <p class="demo__caption" data-i18n="state.default">Default</p>
+          <p class="demo__hint" data-i18n="state.defaultHint">hover or focus it</p>
           <a class="detail-reveal-card" href="#">
             <span class="detail-reveal-card__art" aria-hidden="true"></span>
             <span class="detail-reveal-card__header">
@@ -240,7 +315,7 @@
         </section>
 
         <section class="demo__state">
-          <p class="demo__caption">Revealed</p>
+          <p class="demo__caption" data-i18n="state.revealed">Revealed</p>
           <p class="demo__hint">.detail-reveal-card--open</p>
           <a class="detail-reveal-card detail-reveal-card--open" href="#">
             <span class="detail-reveal-card__art" aria-hidden="true"></span>
@@ -281,8 +356,8 @@
     <!-- ------------------------------------------------------------------ -->
     <section class="demo__group">
       <div class="demo__group-head">
-        <h2 class="demo__group-title">Themes</h2>
-        <p class="demo__group-note">
+        <h2 class="demo__group-title" data-i18n="group.themes">Themes</h2>
+        <p class="demo__group-note" data-i18n="group.themesNote">
           One baked modifier, and one re-theme done from outside by overriding
           custom properties — component.css is untouched.
         </p>
@@ -291,7 +366,7 @@
       <div class="demo__grid">
 
         <section class="demo__state">
-          <p class="demo__caption">Dark</p>
+          <p class="demo__caption" data-i18n="state.dark">Dark</p>
           <p class="demo__hint">.detail-reveal-card--dark</p>
           <a class="detail-reveal-card detail-reveal-card--dark" href="#">
             <span class="detail-reveal-card__art" aria-hidden="true"></span>
@@ -327,7 +402,7 @@
         </section>
 
         <section class="demo__state">
-          <p class="demo__caption">Amber &mdash; longer content</p>
+          <p class="demo__caption" data-i18n="state.amber">Amber &mdash; longer content</p>
           <p class="demo__hint">--…-bg, --…-accent, --…-art</p>
           <a class="detail-reveal-card" href="#" style="
                --detail-reveal-card-bg: #f6f0e6;
@@ -375,8 +450,8 @@
     <!-- ------------------------------------------------------------------ -->
     <section class="demo__group">
       <div class="demo__group-head">
-        <h2 class="demo__group-title">Map variant</h2>
-        <p class="demo__group-note">
+        <h2 class="demo__group-title" data-i18n="group.map">Map variant</h2>
+        <p class="demo__group-note" data-i18n="group.mapNote">
           The same card with an abstract map behind it — a duotone mesh, contour
           rings, and a pin that pulses at rest. Add the __pin element, and a
           __kicker line for coordinates. The pin origin moves with
@@ -387,7 +462,7 @@
       <div class="demo__grid">
 
         <section class="demo__state">
-          <p class="demo__caption">Map</p>
+          <p class="demo__caption" data-i18n="state.map">Map</p>
           <p class="demo__hint">.detail-reveal-card--map</p>
           <a class="detail-reveal-card detail-reveal-card--map" href="#">
             <span class="detail-reveal-card__art" aria-hidden="true">
@@ -426,7 +501,7 @@
         </section>
 
         <section class="demo__state">
-          <p class="demo__caption">Map, re-themed</p>
+          <p class="demo__caption" data-i18n="state.mapRethemed">Map, re-themed</p>
           <p class="demo__hint">--map + --…-accent, --…-art, --…-pin-x/y</p>
           <a class="detail-reveal-card detail-reveal-card--map" href="#" style="
                --detail-reveal-card-bg: #e9edea;
@@ -475,7 +550,7 @@
         </section>
 
         <section class="demo__state">
-          <p class="demo__caption">Map + dark</p>
+          <p class="demo__caption" data-i18n="state.mapDark">Map + dark</p>
           <p class="demo__hint">.detail-reveal-card--map.detail-reveal-card--dark</p>
           <a class="detail-reveal-card detail-reveal-card--map detail-reveal-card--dark" href="#">
             <span class="detail-reveal-card__art" aria-hidden="true">
@@ -517,5 +592,84 @@
     </section>
 
   </div>
+  <script>
+    // Language for this page only. No shared module: the folder has to survive
+    // being copied out on its own.
+    (function () {
+      var STORE_KEY = 'ui-reference-base:lang';
+
+      var DA = {
+        'back': 'Alle referencer',
+        'type': 'Kort',
+        'heading': 'Kort med detaljeafsløring',
+        'lede': 'Et bundpanel der vokser opad ved hover og skubber den hvilende '
+          + 'etiket op foran sig. Basiskortet er indholdsneutralt; alt herunder '
+          + 'er den samme komponent, der kun adskiller sig ved custom properties '
+          + 'og modifiers.',
+        'group.behaviour': 'Adfærd',
+        'group.behaviourNote': 'Basiskortet i hvile, og det samme kort holdt åbent.',
+        'group.themes': 'Temaer',
+        'group.themesNote': 'Én indbygget modifier, og ét gentema lavet udefra ved '
+          + 'at overskrive custom properties — component.css er urørt.',
+        'group.map': 'Kortvariant',
+        'group.mapNote': 'Det samme kort med et abstrakt landkort bag sig — et '
+          + 'duotone-net, højdekurver og en nål der pulserer i hvile. Tilføj '
+          + '__pin-elementet og en __kicker-linje til koordinater. Nålens '
+          + 'udgangspunkt flyttes med --…-pin-x / --…-pin-y, og ringene følger med.',
+        'state.default': 'Standard',
+        'state.defaultHint': 'hold musen over eller fokusér',
+        'state.revealed': 'Afsløret',
+        'state.dark': 'Mørk',
+        'state.amber': 'Rav — længere indhold',
+        'state.map': 'Kort',
+        'state.mapRethemed': 'Kort, gentematiseret',
+        'state.mapDark': 'Kort + mørk'
+      };
+
+      var nodes = Array.prototype.slice.call(document.querySelectorAll('[data-i18n]'));
+      var buttons = Array.prototype.slice.call(document.querySelectorAll('[data-lang]'));
+      var back = document.querySelector('.demo__back');
+
+      var english = nodes.map(function (el) { return el.textContent; });
+      var titleEn = document.title;
+
+      function apply(lang) {
+        var table = lang === 'da' ? DA : null;
+
+        nodes.forEach(function (el, i) {
+          var key = el.getAttribute('data-i18n');
+          el.textContent = table && table[key] ? table[key] : english[i];
+        });
+
+        document.documentElement.lang = lang;
+        document.title = titleEn;   // the folder slug, not prose
+
+        buttons.forEach(function (b) {
+          b.setAttribute('aria-pressed', b.dataset.lang === lang ? 'true' : 'false');
+        });
+
+        // Hand the choice back to the index, so returning keeps the language
+        // even where localStorage is partitioned (file:// gives each document
+        // its own opaque origin).
+        if (back) {
+          back.setAttribute('href', lang === 'en' ? '../index.html' : '../index.html?lang=' + lang);
+        }
+
+        try { localStorage.setItem(STORE_KEY, lang); } catch (err) { /* private mode */ }
+      }
+
+      buttons.forEach(function (b) {
+        b.addEventListener('click', function () { apply(b.dataset.lang); });
+      });
+
+      // The query wins: it is what the link that opened this page carried.
+      var fromQuery = new URLSearchParams(location.search).get('lang');
+      var stored = null;
+      try { stored = localStorage.getItem(STORE_KEY); } catch (err) { /* private mode */ }
+
+      apply(fromQuery || stored || 'en');
+    })();
+  </script>
+
 </body>
 </html>

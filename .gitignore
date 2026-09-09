@@ -1,0 +1,37 @@
+# Claude Code
+# CLAUDE.md and .claude/settings.json are shared and stay in the repo — they
+# are the rules for this project. Only per-machine state is ignored.
+.claude/settings.local.json
+.claude/*.local.json
+
+# macOS
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*~
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Tooling, if any is ever added. This repo has no build step by design; these
+# are here so a stray install or script run cannot land in a commit.
+node_modules/
+npm-debug.log*
+yarn-error.log*
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# Scratch: throwaway pages at the root, used while building (size checks,
+# side-by-side comparisons). Scoped to root-level .html so it cannot swallow
+# _template/, which is part of the repo.
+/_*.html

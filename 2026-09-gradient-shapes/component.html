@@ -1,0 +1,101 @@
+<section class="gradient-shapes">
+
+  <!-- 1. how the gradient is made: shapes drawn, then blurred until they
+          are one. Each pair is --raw, then the same drawing blurred. -->
+  <div class="gradient-shapes__group">
+    <p class="gradient-shapes__legend">Drawn, then blurred</p>
+    <div class="gradient-shapes__row">
+      <div class="gradient-shapes__surface gradient-shapes__surface--tile gradient-shapes__surface--drawn gradient-shapes__surface--raw gradient-shapes__surface--dusk">
+        <svg class="gradient-shapes__draw" viewBox="0 0 120 120"
+             preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          <path class="gradient-shapes__blob gradient-shapes__blob--hot"
+                d="M62 2 C82 2 82 42 102 42 C122 42 122 76 102 76 C82 76 82 116 62 116
+                   C42 116 42 76 22 76 C2 76 2 42 22 42 C42 42 42 2 62 2 Z" />
+          <path class="gradient-shapes__blob gradient-shapes__blob--warm"
+                d="M-10 76 C16 48 40 100 64 74 C88 48 112 74 130 60 L130 104
+                   C112 118 88 92 64 116 C40 140 16 90 -10 116 Z" />
+          <path class="gradient-shapes__blob gradient-shapes__blob--cool"
+                d="M32 14 L44 42 L74 45 L51 64 L58 94 L32 78 L6 94 L13 64
+                   L-10 45 L20 42 Z" />
+        </svg>
+      </div>
+      <div class="gradient-shapes__surface gradient-shapes__surface--tile gradient-shapes__surface--drawn gradient-shapes__surface--dusk">
+        <svg class="gradient-shapes__draw" viewBox="0 0 120 120"
+             preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          <path class="gradient-shapes__blob gradient-shapes__blob--hot"
+                d="M62 2 C82 2 82 42 102 42 C122 42 122 76 102 76 C82 76 82 116 62 116
+                   C42 116 42 76 22 76 C2 76 2 42 22 42 C42 42 42 2 62 2 Z" />
+          <path class="gradient-shapes__blob gradient-shapes__blob--warm"
+                d="M-10 76 C16 48 40 100 64 74 C88 48 112 74 130 60 L130 104
+                   C112 118 88 92 64 116 C40 140 16 90 -10 116 Z" />
+          <path class="gradient-shapes__blob gradient-shapes__blob--cool"
+                d="M32 14 L44 42 L74 45 L51 64 L58 94 L32 78 L6 94 L13 64
+                   L-10 45 L20 42 Z" />
+        </svg>
+      </div>
+      <div class="gradient-shapes__surface gradient-shapes__surface--tile gradient-shapes__surface--drawn gradient-shapes__surface--raw gradient-shapes__surface--dawn">
+        <svg class="gradient-shapes__draw" viewBox="0 0 120 120"
+             preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          <!-- One leaf, drawn once and turned three times. -->
+          <path class="gradient-shapes__blob gradient-shapes__blob--hot" d="M60 -4 C94 26 94 82 60 124 C26 82 26 26 60 -4 Z" />
+          <path class="gradient-shapes__blob gradient-shapes__blob--warm"
+                transform="rotate(60 60 60)" d="M60 -4 C94 26 94 82 60 124 C26 82 26 26 60 -4 Z" />
+          <path class="gradient-shapes__blob gradient-shapes__blob--cool"
+                transform="rotate(-60 60 60)" d="M60 -4 C94 26 94 82 60 124 C26 82 26 26 60 -4 Z" />
+        </svg>
+      </div>
+      <div class="gradient-shapes__surface gradient-shapes__surface--tile gradient-shapes__surface--drawn gradient-shapes__surface--dawn">
+        <svg class="gradient-shapes__draw" viewBox="0 0 120 120"
+             preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          <!-- One leaf, drawn once and turned three times. -->
+          <path class="gradient-shapes__blob gradient-shapes__blob--hot" d="M60 -4 C94 26 94 82 60 124 C26 82 26 26 60 -4 Z" />
+          <path class="gradient-shapes__blob gradient-shapes__blob--warm"
+                transform="rotate(60 60 60)" d="M60 -4 C94 26 94 82 60 124 C26 82 26 26 60 -4 Z" />
+          <path class="gradient-shapes__blob gradient-shapes__blob--cool"
+                transform="rotate(-60 60 60)" d="M60 -4 C94 26 94 82 60 124 C26 82 26 26 60 -4 Z" />
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. and how it is used: one recipe across four geometries and four
+          colour sets, shape and theme being separate axes -->
+  <div class="gradient-shapes__group">
+    <p class="gradient-shapes__legend">Shapes and themes</p>
+    <div class="gradient-shapes__row">
+      <div class="gradient-shapes__surface gradient-shapes__surface--tile gradient-shapes__surface--dawn"></div>
+      <div class="gradient-shapes__surface gradient-shapes__surface--circle gradient-shapes__surface--dusk"></div>
+      <div class="gradient-shapes__surface gradient-shapes__surface--arch gradient-shapes__surface--mint"></div>
+      <div class="gradient-shapes__surface gradient-shapes__surface--pill gradient-shapes__surface--ice"></div>
+    </div>
+  </div>
+
+  <!-- 3. and as a card ground. --band, a full-width section ground, is the
+          same surface again; it is shown on the demo page. -->
+  <div class="gradient-shapes__group">
+    <p class="gradient-shapes__legend">Card ground</p>
+    <article class="gradient-shapes__surface gradient-shapes__surface--card gradient-shapes__surface--dawn">
+      <p class="gradient-shapes__micro">Label</p>
+      <div class="gradient-shapes__stack">
+        <p class="gradient-shapes__value">48</p>
+        <p class="gradient-shapes__label">Placeholder line</p>
+      </div>
+    </article>
+  </div>
+
+</section>
+
+<!--
+  Shapes:  --tile  --circle  --arch  --pill  --card  --band
+  Themes:  --dawn  --dusk  --mint  --ice   (+ --night, which moves the base
+           the colour settles to, and composes with any of them)
+
+  Recipes: the stop list is the default; --drawn swaps it for an SVG that is
+           blurred into the same kind of field, and --raw shows that drawing
+           before the blur. --…-bleed and --…-blur tune it.
+
+  The two axes are independent — any theme on any shape. Everything else is a
+  custom property: pool origins (--…-pool-x/y, --…-wash-x/y), how far each
+  reaches (--…-pool-reach, --…-wash-reach), where the colour has fully settled
+  (--…-settle), and the base it settles to (--…-base).
+-->

@@ -10,31 +10,43 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap">
 
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+
   <link rel="stylesheet" href="index.css">
 </head>
 <body>
 
-  <header class="head">
+  <!-- Language selector. Every translatable string in this file carries a
+       data-i18n key; index.js swaps them. Reference folders are not touched —
+       a demo page is its own document and keeps its own copy. -->
+  <div class="lang" role="group" aria-label="Language">
+    <button class="lang__btn" type="button" data-lang="en" aria-pressed="true">EN</button>
+    <span class="lang__sep" aria-hidden="true"></span>
+    <button class="lang__btn" type="button" data-lang="da" aria-pressed="false">DA</button>
+  </div>
+
+  <header class="head" id="top">
     <p class="head__eyebrow"><span class="head__dot"></span> UI Reference Base</p>
-    <h1 class="head__title">Interface details, built as reusable parts.</h1>
-    <p class="head__lede">
-      Components built in plain HTML and CSS — some recreated from interfaces
-      found elsewhere, some from original designs — kept so the type, the
-      spacing and the motion stay reusable. Open any piece to see it running.
+    <h1 class="head__title" data-i18n="head.title">Interface details, built as reusable parts.</h1>
+    <p class="head__lede" data-i18n="head.lede">
+      Components built in plain HTML and CSS — some iterated upon from
+      interfaces found elsewhere, some from original designs — kept so the
+      type, the spacing and the motion stay reusable. Hover a card to run it
+      in place, or open one at full size.
     </p>
 
     <dl class="head__meta">
       <div class="head__meta-item">
-        <dt class="head__meta-key">References</dt>
+        <dt class="head__meta-key" data-i18n="meta.references">References</dt>
         <dd class="head__meta-val" id="meta-count">—</dd>
       </div>
       <div class="head__meta-item">
-        <dt class="head__meta-key">Built with</dt>
-        <dd class="head__meta-val">HTML &amp; CSS</dd>
+        <dt class="head__meta-key" data-i18n="meta.builtWith">Built with</dt>
+        <dd class="head__meta-val" data-i18n="meta.htmlCss">HTML &amp; CSS</dd>
       </div>
       <div class="head__meta-item">
-        <dt class="head__meta-key">Shared code</dt>
-        <dd class="head__meta-val">None</dd>
+        <dt class="head__meta-key" data-i18n="meta.sharedCode">Shared code</dt>
+        <dd class="head__meta-val" data-i18n="meta.none">None</dd>
       </div>
     </dl>
   </header>
@@ -42,16 +54,16 @@
   <section class="rail">
     <div class="rail__bar">
       <div class="rail__meta">
-        <p class="rail__count">Reference <span id="rail-index">01</span> / <span id="rail-total">01</span></p>
-        <p class="rail__hint">Scroll, drag, or use &larr; &rarr;</p>
+        <p class="rail__count"><span data-i18n="rail.reference">Reference</span> <span id="rail-index">01</span> / <span id="rail-total">01</span></p>
+        <p class="rail__hint" data-rail-hint>Hover to play &middot; drag to scroll &middot; &larr; &rarr;</p>
       </div>
-      <nav class="rail__nav" aria-label="Carousel">
-        <button class="rail__btn" type="button" data-rail-prev aria-label="Previous">
+      <nav class="rail__nav" data-i18n-aria="a11y.carousel" aria-label="Carousel">
+        <button class="rail__btn" type="button" data-rail-prev data-i18n-aria="a11y.previous" aria-label="Previous">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
             <path d="M10 2 4 8l6 6" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
         </button>
-        <button class="rail__btn" type="button" data-rail-next aria-label="Next">
+        <button class="rail__btn" type="button" data-rail-next data-i18n-aria="a11y.next" aria-label="Next">
           <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
             <path d="M6 2l6 6-6 6" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
@@ -59,39 +71,91 @@
       </nav>
     </div>
 
-    <!-- Add a reference: copy one <a class="piece"> block and point it at the
-         new folder's demo.html and preview.html. Keep the newest first. -->
-    <div class="rail__track" data-rail-track tabindex="0" role="region" aria-label="Reference carousel">
+    <!-- Add a reference: copy one <article class="piece"> block and point the
+         iframe at the new folder's preview.html and the title link at its
+         demo.html. Keep the newest first. Everything the quick-look overlay
+         shows is read back out of this block, so nothing is declared twice. -->
+    <div class="rail__track" data-rail-track tabindex="0" role="region" data-i18n-aria="a11y.railRegion" aria-label="Reference carousel">
 
-      <a class="piece" href="2026-09-detail-reveal-card/demo.html">
-        <span class="piece__frame">
-          <iframe class="piece__preview" src="2026-09-detail-reveal-card/preview.html"
-                  loading="lazy" scrolling="no" tabindex="-1" aria-hidden="true"></iframe>
-          <span class="piece__type">Card</span>
+      <article class="piece" data-piece>
+        <div class="piece__frame">
+          <iframe class="piece__preview" src="2026-09-gradient-shapes/preview.html"
+                  loading="lazy" scrolling="no" tabindex="-1" aria-hidden="true"
+                  data-preview></iframe>
+          <span class="piece__type" data-i18n="type.aesthetic">Aesthetic</span>
           <span class="piece__no">01</span>
-        </span>
-        <span class="piece__body">
+          <button class="piece__expand" type="button" data-expand
+                  data-i18n-aria="cta.quickLookGradients" aria-label="Quick look: Gradient shapes">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+              <path d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4"
+                    stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <span class="piece__expand-text" data-i18n="cta.quickLook">Quick look</span>
+          </button>
+        </div>
+        <div class="piece__body">
           <span class="piece__slug">2026 &middot; 09</span>
-          <h2 class="piece__title">Detail reveal card</h2>
-          <p class="piece__note">
+          <h2 class="piece__title">
+            <a class="piece__link" href="2026-09-gradient-shapes/demo.html"
+               data-lang-link="2026-09-gradient-shapes/demo.html"
+               data-i18n="piece.gradientShapes.title">Gradient shapes</a>
+          </h2>
+          <p class="piece__note" data-note data-i18n="piece.gradientShapes.note">
+            One gradient recipe — two radial pools over a vertical settle —
+            projected onto tiles, circles, arches and pills. Shape and theme
+            are separate axes, so any colour composes with any shape.
+          </p>
+          <span class="piece__cta">
+            <span class="piece__cta-text" data-i18n="cta.openDemo">Open demo</span>
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+              <path d="M4 12 12 4M6 4h6v6" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </span>
+        </div>
+      </article>
+
+      <article class="piece" data-piece>
+        <div class="piece__frame">
+          <iframe class="piece__preview" src="2026-09-detail-reveal-card/preview.html"
+                  loading="lazy" scrolling="no" tabindex="-1" aria-hidden="true"
+                  data-preview></iframe>
+          <span class="piece__type" data-i18n="type.card">Card</span>
+          <span class="piece__no">02</span>
+          <button class="piece__expand" type="button" data-expand
+                  data-i18n-aria="cta.quickLookOf" aria-label="Quick look: Detail reveal card">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+              <path d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4"
+                    stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <span class="piece__expand-text" data-i18n="cta.quickLook">Quick look</span>
+          </button>
+        </div>
+        <div class="piece__body">
+          <span class="piece__slug">2026 &middot; 09</span>
+          <h2 class="piece__title">
+            <a class="piece__link" href="2026-09-detail-reveal-card/demo.html"
+             data-lang-link="2026-09-detail-reveal-card/demo.html"
+             data-i18n="piece.detailReveal.title">Detail reveal card</a>
+          </h2>
+          <p class="piece__note" data-note data-i18n="piece.detailReveal.note">
             A detail panel that rises from the bottom edge on hover, pushing the
             resting label up ahead of it. Takes any content; a map variant adds
             contour rings and a pulsing pin.
           </p>
           <span class="piece__cta">
-            <span class="piece__cta-text">Open demo</span>
+            <span class="piece__cta-text" data-i18n="cta.openDemo">Open demo</span>
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
               <path d="M4 12 12 4M6 4h6v6" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
           </span>
-        </span>
-      </a>
+        </div>
+      </article>
 
-      <span class="piece piece--ghost" aria-hidden="true">
-        <span class="piece__frame">
-          <span class="piece__ghost-text">Next one goes here &mdash; copy _template/</span>
-        </span>
-      </span>
+      <div class="piece piece--ghost" aria-hidden="true">
+        <div class="piece__frame">
+          <span class="piece__ghost-text" data-i18n="ghost.next">Next one goes here &mdash; copy _template/</span>
+        </div>
+      </div>
 
     </div>
 
@@ -99,8 +163,103 @@
   </section>
 
   <footer class="foot">
-    <p class="foot__line">Built by hand &middot; Vanilla HTML and CSS &middot; Each folder stands alone</p>
+    <div class="foot__main">
+      <div class="foot__brand">
+        <p class="foot__mark"><span class="foot__dot"></span> UI Reference Base</p>
+        <p class="foot__blurb" data-i18n="foot.blurb">
+          Every reference is self-contained. Copy a folder out and it works
+          with nothing else from here — no shared stylesheet, no build step,
+          no dependency on this page.
+        </p>
+
+        <!-- Handles live here and nowhere else. -->
+        <nav class="foot__social" data-i18n-aria="a11y.elsewhere" aria-label="Elsewhere">
+          <a class="foot__icon" href="https://github.com/louvalman"
+             target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+            <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+              <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8Z" />
+            </svg>
+          </a>
+          <a class="foot__icon" href="https://x.com/louvalman"
+             target="_blank" rel="noopener noreferrer" aria-label="X">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+            </svg>
+          </a>
+        </nav>
+      </div>
+
+      <dl class="foot__meta">
+        <div class="foot__row">
+          <dt class="foot__key" data-i18n="foot.typefaces">Typefaces</dt>
+          <dd class="foot__val">Plus Jakarta Sans &middot; JetBrains Mono</dd>
+        </div>
+        <div class="foot__row">
+          <dt class="foot__key" data-i18n="foot.stack">Stack</dt>
+          <dd class="foot__val" data-i18n="foot.stackVal">HTML and CSS, no build step</dd>
+        </div>
+        <div class="foot__row">
+          <dt class="foot__key" data-i18n="foot.shared">Shared code</dt>
+          <dd class="foot__val" data-i18n="foot.sharedVal">None &mdash; each folder stands alone</dd>
+        </div>
+        <div class="foot__row">
+          <dt class="foot__key" data-i18n="foot.references">References</dt>
+          <dd class="foot__val" id="foot-count">&mdash;</dd>
+        </div>
+      </dl>
+    </div>
+
+    <div class="foot__bar">
+      <p class="foot__line" data-i18n="foot.line">Built by hand &middot; 2026</p>
+      <a class="foot__top" href="#top">
+        <span data-i18n="foot.backToTop">Back to top</span>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+          <path d="M8 13V3M3.5 7.5 8 3l4.5 4.5" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </a>
+    </div>
   </footer>
+
+  <!-- Quick look. The iframe runs the same preview.html the card does, at its
+       full logical size and with pointer events live, so the component's own
+       hover and focus states work exactly as they do on the demo page. -->
+  <div class="lightbox" data-lightbox hidden>
+    <div class="lightbox__scrim" data-lightbox-close></div>
+    <div class="lightbox__panel" role="dialog" aria-modal="true" aria-labelledby="lightbox-title">
+      <header class="lightbox__bar">
+        <div class="lightbox__heading">
+          <p class="lightbox__eyebrow" data-lightbox-slug></p>
+          <h2 class="lightbox__title" id="lightbox-title"></h2>
+        </div>
+        <button class="lightbox__close" type="button" data-lightbox-close data-i18n-aria="a11y.closeQuickLook" aria-label="Close quick look">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path d="M4 4l8 8M12 4l-8 8" stroke-linecap="round" />
+          </svg>
+        </button>
+      </header>
+
+      <div class="lightbox__stage">
+        <iframe class="lightbox__frame" data-i18n-title="a11y.livePreview" title="Live component preview" data-lightbox-frame></iframe>
+      </div>
+
+      <!-- Dots are built from whatever variants the preview reports; the
+           index never knows what any of them mean. -->
+      <nav class="lightbox__variants" data-lightbox-variants data-i18n-aria="a11y.variants" aria-label="Variants" hidden>
+        <div class="lightbox__dots" data-lightbox-dots></div>
+        <p class="lightbox__variant-label" data-lightbox-variant-label aria-live="polite"></p>
+      </nav>
+
+      <footer class="lightbox__foot">
+        <p class="lightbox__note" data-lightbox-note></p>
+        <a class="lightbox__link" href="#" data-lightbox-demo>
+          <span data-i18n="cta.openDemo">Open demo</span>
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+            <path d="M4 12 12 4M6 4h6v6" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </a>
+      </footer>
+    </div>
+  </div>
 
   <script src="index.js"></script>
 </body>

@@ -136,6 +136,45 @@ are illegible at thumbnail size.
 Keep its markup in step with `component.html`. If the two drift, the index is
 advertising something the component no longer is.
 
+### The preview message contract
+
+A thumbnail iframe has pointer events off — the card behind it is the link — so
+the component's own `:hover` can never fire there. Instead the index sends the
+preview a message when its card is hovered, focused, or scrolled into the read
+position:
+
+```js
+// index -> preview
+{ source: 'ui-reference-base', type: 'preview', active: true | false }
+{ source: 'ui-reference-base', type: 'preview:variant', index: n }
+
+// preview -> index, once its listener is live
+{ source: 'ui-reference-base', type: 'preview:ready',
+  variants: [{ id, label }] }        // variants optional
+```
+
+`preview.html` owns the mapping, in a small script at the end of the file: it
+decides what `active` means for its component, usually by toggling the modifier
+the component already has for its open state. The index stays generic and never
+names a component class — which is what keeps the rule below intact.
+
+`variants` is the second half of it. A preview may report a list of the states
+worth seeing — themes, modifiers, compositions — and quick look draws a dot per
+entry and asks for one by index. Only the preview knows what a variant is; the
+index receives labels and nothing else. The first entry is the resting state,
+and it is what the card thumbnail shows.
+
+Two variants is the minimum worth drawing dots for; below that the row hides
+itself. Beware toggling a variant's element with the `hidden` attribute — if
+`component.css` gives that element a `display`, the author rule beats the UA
+`[hidden]` rule and it will not hide. Add and remove the node instead.
+
+The block is optional. A preview that ignores the message still renders; it just
+sits still, and quick look shows it without dots. A preview opened on its own does nothing, because the script only
+posts back when it is framed. This is the one place a reference folder may carry
+script without meeting the JavaScript bar below — it is thumbnail scaffolding,
+not component behaviour, and it never goes in `component.js`.
+
 ## JavaScript
 
 Vanilla HTML and CSS by default. Add JavaScript only when the reference
@@ -165,12 +204,38 @@ Each card iframes that folder's `preview.html` — so the index shows the live
 component, not `ref.png`. The reference image stays in the folder as the record
 of what the build was based on; it is not what gets displayed.
 
+Cards run their preview in place, via the message contract above. The quick-look
+overlay iframes the same `preview.html` again at full logical size with pointer
+events *on*, so there the component's real `:hover` does the work and no message
+is involved. Both routes load the same file — there is no second thumbnail to
+keep in step.
+
 The preview iframe renders at a fixed logical viewport (`--preview-w` /
 `--preview-h`) and is scaled down to the card by `--preview-scale`. That factor
 must equal `--card-w / --preview-w` exactly, at every breakpoint, or the
 thumbnail will not fill its frame.
 
+The index is bilingual (EN/DA). Every translatable string in `index.html`
+carries a `data-i18n` key — or `data-i18n-aria` / `data-i18n-title` for the
+attribute — and `index.js` holds the Danish table; English is the markup itself,
+so it needs no entry. A new reference's card copy needs its keys adding there
+too, or it stays English when the page is switched. Quick look shows variant labels
+in whatever language the preview reports them, since those strings belong to the
+folder.
+
+A `demo.html` carries its own copy of the strings and its own selector — no
+shared module, because the folder has to survive being copied out. The index
+appends `?lang=` to the link that opens a demo, and the demo's back link hands
+the choice back; `localStorage` is the secondary channel, because over `file://`
+each document gets its own opaque origin and does not share it. `_template/`
+holds the block to copy. Translate the page's own prose only — component sample
+copy and class-name hints stay as they are.
+
 The card list is hand-maintained in `index.html`. Adding a reference means
-adding one `<a class="piece">` block to it, newest first, pointing at the new
-folder's `demo.html` and `preview.html`. That is the only file outside the
+adding one `<article class="piece">` block to it, newest first, pointing at the
+new folder's `demo.html` and `preview.html`. The card is an `<article>` with a
+stretched link on the title rather than an `<a>` wrapping everything, because
+the quick-look button lives inside the card and an anchor may not contain a
+button. Everything the overlay shows is read back out of that block, so no
+title, note or path is written twice. That is the only file outside the
 reference folder that a new reference may touch.
