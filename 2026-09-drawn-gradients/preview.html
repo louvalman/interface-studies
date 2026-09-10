@@ -1,0 +1,211 @@
+<!doctype html>
+<!--
+  The thumbnail the landing page iframes: one instance, centred on the same
+  ground demo.html uses, with no captions and no other states.
+
+  It shows --step in use rather than the whole twelve-tile set the demo shows.
+  Two reasons. At thumbnail size twelve surfaces read as a colour picker
+  instead of as a piece, and every other card in the rail shows one object.
+  And the set is laid out along the colour axis, which meant the card led with
+  the warmest, lightest themes in the folder.
+
+  The one composition is two --step blocks whose rags walk out from the middle,
+  so the widest bands meet there and the narrowest sit at the outer ends. The
+  upper block carries --rise, which turns its settle around: the colour gathers
+  where the two blocks meet and dissolves outward into the page at both narrow
+  ends, rather than both blocks starting hot at their own top edge and reading
+  as two objects. The card is a field with the type cut out of it, fading away
+  from itself in both directions.
+
+  It links component.css and never redefines it. The one thing set from here is
+  scale, through the component's own tunables and inline on the root, because
+  the tunable block lives on .drawn-gradients itself and an inherited value
+  from `body` would lose to it.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>2026-09-drawn-gradients &mdash; preview</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap">
+
+  <link rel="stylesheet" href="component.css">
+
+  <style>
+    /* Thumbnail scaffolding only. Nothing here names a component class. */
+    /* The same #f3f2ef every reference in this repo sits on. <html> carries it
+       too, so <body>'s background does not propagate to the viewport canvas
+       and leave a seam at the frame edge. It is a constant now rather than
+       something the variant switches: the rail only reads as one set of cards
+       if the ground behind them never moves, so the darkness belongs to the
+       surface and not to the page. */
+    html { background-color: #f3f2ef; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 1.5rem;
+      box-sizing: border-box;
+      background-color: #f3f2ef;
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <!-- A definite width, not just a max-width. --step's usage block declares
+       itself a container so it can size its type off its own width, and size
+       containment means it no longer reports its content's width upward — in
+       a shrink-to-fit parent, which this centred body is, the shape collapses
+       to nothing. The demo's wide states set `width` for the same reason. -->
+  <section class="drawn-gradients"
+           style="width: 26rem;
+                  max-width: 100%;
+                  --drawn-gradients-size: 8.4rem;
+                  --drawn-gradients-row-gap: 1.75rem;
+                  --drawn-gradients-width: 26rem;">
+      <div class="drawn-gradients__usage drawn-gradients__usage--down">
+        <div class="drawn-gradients__usage-row">
+          <span class="drawn-gradients__usage-line drawn-gradients__usage-line--label">Overlapping art</span>
+          <span class="drawn-gradients__surface drawn-gradients__surface--step drawn-gradients__surface--ice drawn-gradients__surface--rise"
+                style="--drawn-gradients-step-row: 0;"></span>
+        </div>
+        <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">03</span>
+
+        <div class="drawn-gradients__usage-row">
+          <span class="drawn-gradients__usage-line drawn-gradients__usage-line--label">Flat colour</span>
+          <span class="drawn-gradients__surface drawn-gradients__surface--step drawn-gradients__surface--ice drawn-gradients__surface--rise"
+                style="--drawn-gradients-step-row: 1;"></span>
+        </div>
+        <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">0.85</span>
+
+        <div class="drawn-gradients__usage-row">
+          <span class="drawn-gradients__usage-line drawn-gradients__usage-line--label">Wash</span>
+          <span class="drawn-gradients__surface drawn-gradients__surface--step drawn-gradients__surface--ice drawn-gradients__surface--rise"
+                style="--drawn-gradients-step-row: 2;"></span>
+        </div>
+        <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">82%</span>
+      </div>
+
+      <div class="drawn-gradients__usage drawn-gradients__usage--up">
+        <div class="drawn-gradients__usage-row">
+          <span class="drawn-gradients__usage-line drawn-gradients__usage-line--label">Wash</span>
+          <span class="drawn-gradients__surface drawn-gradients__surface--step drawn-gradients__surface--arc"
+                style="--drawn-gradients-step-row: 0;"></span>
+        </div>
+        <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">82%</span>
+
+        <div class="drawn-gradients__usage-row">
+          <span class="drawn-gradients__usage-line drawn-gradients__usage-line--label">Flat colour</span>
+          <span class="drawn-gradients__surface drawn-gradients__surface--step drawn-gradients__surface--arc"
+                style="--drawn-gradients-step-row: 1;"></span>
+        </div>
+        <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">0.85</span>
+
+        <div class="drawn-gradients__usage-row">
+          <span class="drawn-gradients__usage-line drawn-gradients__usage-line--label">Overlapping art</span>
+          <span class="drawn-gradients__surface drawn-gradients__surface--step drawn-gradients__surface--arc"
+                style="--drawn-gradients-step-row: 2;"></span>
+        </div>
+        <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">03</span>
+      </div>
+  </section>
+
+  <!--
+    Thumbnail scaffolding only, driven by the index and inert when this file is
+    opened on its own. Quick look steps the theme axis while the shape and the
+    type block stay put — the list lives here because the index must never name
+    a component class; it is handed labels and draws dots.
+
+    The surface base is set from here rather than from component.css: the
+    recipe settles to the surface colour it sits on, and only this page knows
+    what colour that is. The --night variant is the exception — there the
+    surface brings its own base — and it is a variant rather than a class in
+    the markup above, because the resting pair settles into the page at both
+    ends and nothing in it carries ink.
+  -->
+  <script>
+    (function () {
+      var CHANNEL = 'ui-reference-base';
+      var BASE = 'drawn-gradients__surface--';
+      var GROUND = '#f3f2ef';
+      var surfaces = Array.prototype.slice.call(
+        document.querySelectorAll('.drawn-gradients__surface')
+      );
+      if (!surfaces.length) return;
+
+      var COLOURS = ['dawn', 'dusk', 'mint', 'ice', 'arc'];
+      var NIGHT = BASE + 'night';
+
+      // Colour is authored per block too: ice above, arc below. Captured here,
+      // before anything is applied, so the resting variant can put it back —
+      // a variant that set one colour on every surface would flatten the pair
+      // into one hue and the card would lose half of what it is showing.
+      var authored = surfaces.map(function (el) {
+        return COLOURS.filter(function (c) {
+          return el.classList.contains(BASE + c);
+        });
+      });
+
+      // First entry is the resting state, and it is what the card shows.
+      // --night is a variant here rather than authored on a surface: the
+      // resting pair settles into the page at both ends, so nothing in the
+      // markup carries ink, and this is what keeps that axis reachable from
+      // the card at all.
+      var VARIANTS = [
+        { id: 'authored', label: 'Ice over arc', theme: null },
+        { id: 'night', label: 'Arc on ink', theme: 'arc', night: true },
+        { id: 'arc', label: 'Arc', theme: 'arc' },
+        { id: 'ice', label: 'Ice', theme: 'ice' },
+        { id: 'dusk', label: 'Dusk', theme: 'dusk' },
+        { id: 'mint', label: 'Mint', theme: 'mint' },
+        { id: 'dawn', label: 'Dawn', theme: 'dawn' }
+      ];
+
+      function apply(variant) {
+        surfaces.forEach(function (el, i) {
+          COLOURS.forEach(function (c) { el.classList.remove(BASE + c); });
+
+          (variant.theme ? [variant.theme] : authored[i])
+            .forEach(function (c) { el.classList.add(BASE + c); });
+
+          el.classList.toggle(NIGHT, !!variant.night);
+
+          // On paper the fill has to settle into this page rather than to
+          // white — that is the recipe's third decision, and only this page
+          // knows its own colour. A --night surface brings its own base.
+          el.style.setProperty(
+            '--drawn-gradients-base',
+            variant.night ? '' : GROUND
+          );
+        });
+      }
+
+      window.addEventListener('message', function (event) {
+        var data = event.data;
+        if (!data || data.source !== CHANNEL) return;
+
+        if (data.type === 'preview:variant') {
+          var variant = VARIANTS[data.index];
+          if (variant) apply(variant);
+        }
+      });
+
+      apply(VARIANTS[0]);
+
+      if (window.parent !== window) {
+        window.parent.postMessage({
+          source: CHANNEL,
+          type: 'preview:ready',
+          variants: VARIANTS.map(function (v) { return { id: v.id, label: v.label }; })
+        }, '*');
+      }
+    })();
+  </script>
+
+</body>
+</html>

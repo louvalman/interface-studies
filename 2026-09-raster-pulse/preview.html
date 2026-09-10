@@ -1,0 +1,159 @@
+<!doctype html>
+<!--
+  The thumbnail the landing page iframes: one instance of the component,
+  centred on the demo's background, with no captions and no other states.
+
+  It links component.css and never redefines it. The one value it does set is
+  --raster-pulse-width, and it is set inline on the root rather than from a
+  rule in the scaffolding below: the tunable block lives on .raster-pulse
+  itself, so an inherited value from `body` would lose to it — the tunable
+  contract is entered from the element or from a rule that outranks that one,
+  and the scaffolding may not name a component class. At its own 22rem the
+  poster stood 564px tall in the 480x600 frame and read as cropped; every
+  footer metric is a cqw ratio, so one width scales the whole poster.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>2026-09-raster-pulse &mdash; preview</title>
+
+  <!-- Same font loading as demo.html. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap">
+
+  <link rel="stylesheet" href="component.css">
+
+  <style>
+    /* Thumbnail scaffolding only. Nothing here names a component class. */
+    /* The same ground every reference in this repo sits on, and the same one
+       demo.html uses. Repeated as a literal rather than shared, because the
+       folder has to survive being copied out — but it has to be the same
+       number in all of them, or the rail stops reading as one set of cards.
+       <html> carries it too, so <body>'s background does not propagate to the
+       viewport canvas and leave a seam at the frame edge. */
+    html { background-color: #f3f2ef; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background-color: #f3f2ef;
+      font-family: "Space Grotesk", system-ui, sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <article class="raster-pulse" style="--raster-pulse-width: 19.5rem">
+    <div class="raster-pulse__art" aria-hidden="true">
+      <div class="raster-pulse__field">
+        <i class="raster-pulse__dot" style="--x:-8;--y:-8"></i><i class="raster-pulse__dot" style="--x:-7;--y:-8"></i><i class="raster-pulse__dot" style="--x:-6;--y:-8"></i><i class="raster-pulse__dot" style="--x:-5;--y:-8"></i><i class="raster-pulse__dot" style="--x:-4;--y:-8"></i><i class="raster-pulse__dot" style="--x:-3;--y:-8"></i><i class="raster-pulse__dot" style="--x:-2;--y:-8"></i><i class="raster-pulse__dot" style="--x:-1;--y:-8"></i><i class="raster-pulse__dot" style="--x:0;--y:-8"></i><i class="raster-pulse__dot" style="--x:1;--y:-8"></i><i class="raster-pulse__dot" style="--x:2;--y:-8"></i><i class="raster-pulse__dot" style="--x:3;--y:-8"></i><i class="raster-pulse__dot" style="--x:4;--y:-8"></i><i class="raster-pulse__dot" style="--x:5;--y:-8"></i><i class="raster-pulse__dot" style="--x:6;--y:-8"></i><i class="raster-pulse__dot" style="--x:7;--y:-8"></i><i class="raster-pulse__dot" style="--x:8;--y:-8"></i>
+        <i class="raster-pulse__dot" style="--x:-8;--y:-7"></i><i class="raster-pulse__dot" style="--x:-7;--y:-7"></i><i class="raster-pulse__dot" style="--x:-6;--y:-7"></i><i class="raster-pulse__dot" style="--x:-5;--y:-7"></i><i class="raster-pulse__dot" style="--x:-4;--y:-7"></i><i class="raster-pulse__dot" style="--x:-3;--y:-7"></i><i class="raster-pulse__dot" style="--x:-2;--y:-7"></i><i class="raster-pulse__dot" style="--x:-1;--y:-7"></i><i class="raster-pulse__dot" style="--x:0;--y:-7"></i><i class="raster-pulse__dot" style="--x:1;--y:-7"></i><i class="raster-pulse__dot" style="--x:2;--y:-7"></i><i class="raster-pulse__dot" style="--x:3;--y:-7"></i><i class="raster-pulse__dot" style="--x:4;--y:-7"></i><i class="raster-pulse__dot" style="--x:5;--y:-7"></i><i class="raster-pulse__dot" style="--x:6;--y:-7"></i><i class="raster-pulse__dot" style="--x:7;--y:-7"></i><i class="raster-pulse__dot" style="--x:8;--y:-7"></i>
+        <i class="raster-pulse__dot" style="--x:-8;--y:-6"></i><i class="raster-pulse__dot" style="--x:-7;--y:-6"></i><i class="raster-pulse__dot" style="--x:-6;--y:-6"></i><i class="raster-pulse__dot" style="--x:-5;--y:-6"></i><i class="raster-pulse__dot" style="--x:-4;--y:-6"></i><i class="raster-pulse__dot" style="--x:-3;--y:-6"></i><i class="raster-pulse__dot" style="--x:-2;--y:-6"></i><i class="raster-pulse__dot" style="--x:-1;--y:-6"></i><i class="raster-pulse__dot" style="--x:0;--y:-6"></i><i class="raster-pulse__dot" style="--x:1;--y:-6"></i><i class="raster-pulse__dot" style="--x:2;--y:-6"></i><i class="raster-pulse__dot" style="--x:3;--y:-6"></i><i class="raster-pulse__dot" style="--x:4;--y:-6"></i><i class="raster-pulse__dot" style="--x:5;--y:-6"></i><i class="raster-pulse__dot" style="--x:6;--y:-6"></i><i class="raster-pulse__dot" style="--x:7;--y:-6"></i><i class="raster-pulse__dot" style="--x:8;--y:-6"></i>
+        <i class="raster-pulse__dot" style="--x:-8;--y:-5"></i><i class="raster-pulse__dot" style="--x:-7;--y:-5"></i><i class="raster-pulse__dot" style="--x:-6;--y:-5"></i><i class="raster-pulse__dot" style="--x:-5;--y:-5"></i><i class="raster-pulse__dot" style="--x:-4;--y:-5"></i><i class="raster-pulse__dot" style="--x:-3;--y:-5"></i><i class="raster-pulse__dot" style="--x:-2;--y:-5"></i><i class="raster-pulse__dot" style="--x:-1;--y:-5"></i><i class="raster-pulse__dot" style="--x:0;--y:-5"></i><i class="raster-pulse__dot" style="--x:1;--y:-5"></i><i class="raster-pulse__dot" style="--x:2;--y:-5"></i><i class="raster-pulse__dot" style="--x:3;--y:-5"></i><i class="raster-pulse__dot" style="--x:4;--y:-5"></i><i class="raster-pulse__dot" style="--x:5;--y:-5"></i><i class="raster-pulse__dot" style="--x:6;--y:-5"></i><i class="raster-pulse__dot" style="--x:7;--y:-5"></i><i class="raster-pulse__dot" style="--x:8;--y:-5"></i>
+        <i class="raster-pulse__dot" style="--x:-8;--y:-4"></i><i class="raster-pulse__dot" style="--x:-7;--y:-4"></i><i class="raster-pulse__dot" style="--x:-6;--y:-4"></i><i class="raster-pulse__dot" style="--x:-5;--y:-4"></i><i class="raster-pulse__dot" style="--x:-4;--y:-4"></i><i class="raster-pulse__dot" style="--x:-3;--y:-4"></i><i class="raster-pulse__dot" style="--x:-2;--y:-4"></i><i class="raster-pulse__dot" style="--x:-1;--y:-4"></i><i class="raster-pulse__dot" style="--x:0;--y:-4"></i><i class="raster-pulse__dot" style="--x:1;--y:-4"></i><i class="raster-pulse__dot" style="--x:2;--y:-4"></i><i class="raster-pulse__dot" style="--x:3;--y:-4"></i><i class="raster-pulse__dot" style="--x:4;--y:-4"></i><i class="raster-pulse__dot" style="--x:5;--y:-4"></i><i class="raster-pulse__dot" style="--x:6;--y:-4"></i><i class="raster-pulse__dot" style="--x:7;--y:-4"></i><i class="raster-pulse__dot" style="--x:8;--y:-4"></i>
+        <i class="raster-pulse__dot" style="--x:-8;--y:-3"></i><i class="raster-pulse__dot" style="--x:-7;--y:-3"></i><i class="raster-pulse__dot" style="--x:-6;--y:-3"></i><i class="raster-pulse__dot" style="--x:-5;--y:-3"></i><i class="raster-pulse__dot" style="--x:-4;--y:-3"></i><i class="raster-pulse__dot" style="--x:-3;--y:-3"></i><i class="raster-pulse__dot" style="--x:-2;--y:-3"></i><i class="raster-pulse__dot" style="--x:-1;--y:-3"></i><i class="raster-pulse__dot" style="--x:0;--y:-3"></i><i class="raster-pulse__dot" style="--x:1;--y:-3"></i><i class="raster-pulse__dot" style="--x:2;--y:-3"></i><i class="raster-pulse__dot" style="--x:3;--y:-3"></i><i class="raster-pulse__dot" style="--x:4;--y:-3"></i><i class="raster-pulse__dot" style="--x:5;--y:-3"></i><i class="raster-pulse__dot" style="--x:6;--y:-3"></i><i class="raster-pulse__dot" style="--x:7;--y:-3"></i><i class="raster-pulse__dot" style="--x:8;--y:-3"></i>
+        <i class="raster-pulse__dot" style="--x:-8;--y:-2"></i><i class="raster-pulse__dot" style="--x:-7;--y:-2"></i><i class="raster-pulse__dot" style="--x:-6;--y:-2"></i><i class="raster-pulse__dot" style="--x:-5;--y:-2"></i><i class="raster-pulse__dot" style="--x:-4;--y:-2"></i><i class="raster-pulse__dot" style="--x:-3;--y:-2"></i><i class="raster-pulse__dot" style="--x:-2;--y:-2"></i><i class="raster-pulse__dot" style="--x:-1;--y:-2"></i><i class="raster-pulse__dot" style="--x:0;--y:-2"></i><i class="raster-pulse__dot" style="--x:1;--y:-2"></i><i class="raster-pulse__dot" style="--x:2;--y:-2"></i><i class="raster-pulse__dot" style="--x:3;--y:-2"></i><i class="raster-pulse__dot" style="--x:4;--y:-2"></i><i class="raster-pulse__dot" style="--x:5;--y:-2"></i><i class="raster-pulse__dot" style="--x:6;--y:-2"></i><i class="raster-pulse__dot" style="--x:7;--y:-2"></i><i class="raster-pulse__dot" style="--x:8;--y:-2"></i>
+        <i class="raster-pulse__dot" style="--x:-8;--y:-1"></i><i class="raster-pulse__dot" style="--x:-7;--y:-1"></i><i class="raster-pulse__dot" style="--x:-6;--y:-1"></i><i class="raster-pulse__dot" style="--x:-5;--y:-1"></i><i class="raster-pulse__dot" style="--x:-4;--y:-1"></i><i class="raster-pulse__dot" style="--x:-3;--y:-1"></i><i class="raster-pulse__dot" style="--x:-2;--y:-1"></i><i class="raster-pulse__dot" style="--x:-1;--y:-1"></i><i class="raster-pulse__dot" style="--x:0;--y:-1"></i><i class="raster-pulse__dot" style="--x:1;--y:-1"></i><i class="raster-pulse__dot" style="--x:2;--y:-1"></i><i class="raster-pulse__dot" style="--x:3;--y:-1"></i><i class="raster-pulse__dot" style="--x:4;--y:-1"></i><i class="raster-pulse__dot" style="--x:5;--y:-1"></i><i class="raster-pulse__dot" style="--x:6;--y:-1"></i><i class="raster-pulse__dot" style="--x:7;--y:-1"></i><i class="raster-pulse__dot" style="--x:8;--y:-1"></i>
+        <i class="raster-pulse__dot" style="--x:-8;--y:0"></i><i class="raster-pulse__dot" style="--x:-7;--y:0"></i><i class="raster-pulse__dot" style="--x:-6;--y:0"></i><i class="raster-pulse__dot" style="--x:-5;--y:0"></i><i class="raster-pulse__dot" style="--x:-4;--y:0"></i><i class="raster-pulse__dot" style="--x:-3;--y:0"></i><i class="raster-pulse__dot" style="--x:-2;--y:0"></i><i class="raster-pulse__dot" style="--x:-1;--y:0"></i><i class="raster-pulse__dot" style="--x:0;--y:0"></i><i class="raster-pulse__dot" style="--x:1;--y:0"></i><i class="raster-pulse__dot" style="--x:2;--y:0"></i><i class="raster-pulse__dot" style="--x:3;--y:0"></i><i class="raster-pulse__dot" style="--x:4;--y:0"></i><i class="raster-pulse__dot" style="--x:5;--y:0"></i><i class="raster-pulse__dot" style="--x:6;--y:0"></i><i class="raster-pulse__dot" style="--x:7;--y:0"></i><i class="raster-pulse__dot" style="--x:8;--y:0"></i>
+        <i class="raster-pulse__dot" style="--x:-8;--y:1"></i><i class="raster-pulse__dot" style="--x:-7;--y:1"></i><i class="raster-pulse__dot" style="--x:-6;--y:1"></i><i class="raster-pulse__dot" style="--x:-5;--y:1"></i><i class="raster-pulse__dot" style="--x:-4;--y:1"></i><i class="raster-pulse__dot" style="--x:-3;--y:1"></i><i class="raster-pulse__dot" style="--x:-2;--y:1"></i><i class="raster-pulse__dot" style="--x:-1;--y:1"></i><i class="raster-pulse__dot" style="--x:0;--y:1"></i><i class="raster-pulse__dot" style="--x:1;--y:1"></i><i class="raster-pulse__dot" style="--x:2;--y:1"></i><i class="raster-pulse__dot" style="--x:3;--y:1"></i><i class="raster-pulse__dot" style="--x:4;--y:1"></i><i class="raster-pulse__dot" style="--x:5;--y:1"></i><i class="raster-pulse__dot" style="--x:6;--y:1"></i><i class="raster-pulse__dot" style="--x:7;--y:1"></i><i class="raster-pulse__dot" style="--x:8;--y:1"></i>
+        <i class="raster-pulse__dot" style="--x:-8;--y:2"></i><i class="raster-pulse__dot" style="--x:-7;--y:2"></i><i class="raster-pulse__dot" style="--x:-6;--y:2"></i><i class="raster-pulse__dot" style="--x:-5;--y:2"></i><i class="raster-pulse__dot" style="--x:-4;--y:2"></i><i class="raster-pulse__dot" style="--x:-3;--y:2"></i><i class="raster-pulse__dot" style="--x:-2;--y:2"></i><i class="raster-pulse__dot" style="--x:-1;--y:2"></i><i class="raster-pulse__dot" style="--x:0;--y:2"></i><i class="raster-pulse__dot" style="--x:1;--y:2"></i><i class="raster-pulse__dot" style="--x:2;--y:2"></i><i class="raster-pulse__dot" style="--x:3;--y:2"></i><i class="raster-pulse__dot" style="--x:4;--y:2"></i><i class="raster-pulse__dot" style="--x:5;--y:2"></i><i class="raster-pulse__dot" style="--x:6;--y:2"></i><i class="raster-pulse__dot" style="--x:7;--y:2"></i><i class="raster-pulse__dot" style="--x:8;--y:2"></i>
+        <i class="raster-pulse__dot" style="--x:-8;--y:3"></i><i class="raster-pulse__dot" style="--x:-7;--y:3"></i><i class="raster-pulse__dot" style="--x:-6;--y:3"></i><i class="raster-pulse__dot" style="--x:-5;--y:3"></i><i class="raster-pulse__dot" style="--x:-4;--y:3"></i><i class="raster-pulse__dot" style="--x:-3;--y:3"></i><i class="raster-pulse__dot" style="--x:-2;--y:3"></i><i class="raster-pulse__dot" style="--x:-1;--y:3"></i><i class="raster-pulse__dot" style="--x:0;--y:3"></i><i class="raster-pulse__dot" style="--x:1;--y:3"></i><i class="raster-pulse__dot" style="--x:2;--y:3"></i><i class="raster-pulse__dot" style="--x:3;--y:3"></i><i class="raster-pulse__dot" style="--x:4;--y:3"></i><i class="raster-pulse__dot" style="--x:5;--y:3"></i><i class="raster-pulse__dot" style="--x:6;--y:3"></i><i class="raster-pulse__dot" style="--x:7;--y:3"></i><i class="raster-pulse__dot" style="--x:8;--y:3"></i>
+        <i class="raster-pulse__dot" style="--x:-8;--y:4"></i><i class="raster-pulse__dot" style="--x:-7;--y:4"></i><i class="raster-pulse__dot" style="--x:-6;--y:4"></i><i class="raster-pulse__dot" style="--x:-5;--y:4"></i><i class="raster-pulse__dot" style="--x:-4;--y:4"></i><i class="raster-pulse__dot" style="--x:-3;--y:4"></i><i class="raster-pulse__dot" style="--x:-2;--y:4"></i><i class="raster-pulse__dot" style="--x:-1;--y:4"></i><i class="raster-pulse__dot" style="--x:0;--y:4"></i><i class="raster-pulse__dot" style="--x:1;--y:4"></i><i class="raster-pulse__dot" style="--x:2;--y:4"></i><i class="raster-pulse__dot" style="--x:3;--y:4"></i><i class="raster-pulse__dot" style="--x:4;--y:4"></i><i class="raster-pulse__dot" style="--x:5;--y:4"></i><i class="raster-pulse__dot" style="--x:6;--y:4"></i><i class="raster-pulse__dot" style="--x:7;--y:4"></i><i class="raster-pulse__dot" style="--x:8;--y:4"></i>
+        <i class="raster-pulse__dot" style="--x:-8;--y:5"></i><i class="raster-pulse__dot" style="--x:-7;--y:5"></i><i class="raster-pulse__dot" style="--x:-6;--y:5"></i><i class="raster-pulse__dot" style="--x:-5;--y:5"></i><i class="raster-pulse__dot" style="--x:-4;--y:5"></i><i class="raster-pulse__dot" style="--x:-3;--y:5"></i><i class="raster-pulse__dot" style="--x:-2;--y:5"></i><i class="raster-pulse__dot" style="--x:-1;--y:5"></i><i class="raster-pulse__dot" style="--x:0;--y:5"></i><i class="raster-pulse__dot" style="--x:1;--y:5"></i><i class="raster-pulse__dot" style="--x:2;--y:5"></i><i class="raster-pulse__dot" style="--x:3;--y:5"></i><i class="raster-pulse__dot" style="--x:4;--y:5"></i><i class="raster-pulse__dot" style="--x:5;--y:5"></i><i class="raster-pulse__dot" style="--x:6;--y:5"></i><i class="raster-pulse__dot" style="--x:7;--y:5"></i><i class="raster-pulse__dot" style="--x:8;--y:5"></i>
+        <i class="raster-pulse__dot" style="--x:-8;--y:6"></i><i class="raster-pulse__dot" style="--x:-7;--y:6"></i><i class="raster-pulse__dot" style="--x:-6;--y:6"></i><i class="raster-pulse__dot" style="--x:-5;--y:6"></i><i class="raster-pulse__dot" style="--x:-4;--y:6"></i><i class="raster-pulse__dot" style="--x:-3;--y:6"></i><i class="raster-pulse__dot" style="--x:-2;--y:6"></i><i class="raster-pulse__dot" style="--x:-1;--y:6"></i><i class="raster-pulse__dot" style="--x:0;--y:6"></i><i class="raster-pulse__dot" style="--x:1;--y:6"></i><i class="raster-pulse__dot" style="--x:2;--y:6"></i><i class="raster-pulse__dot" style="--x:3;--y:6"></i><i class="raster-pulse__dot" style="--x:4;--y:6"></i><i class="raster-pulse__dot" style="--x:5;--y:6"></i><i class="raster-pulse__dot" style="--x:6;--y:6"></i><i class="raster-pulse__dot" style="--x:7;--y:6"></i><i class="raster-pulse__dot" style="--x:8;--y:6"></i>
+        <i class="raster-pulse__dot" style="--x:-8;--y:7"></i><i class="raster-pulse__dot" style="--x:-7;--y:7"></i><i class="raster-pulse__dot" style="--x:-6;--y:7"></i><i class="raster-pulse__dot" style="--x:-5;--y:7"></i><i class="raster-pulse__dot" style="--x:-4;--y:7"></i><i class="raster-pulse__dot" style="--x:-3;--y:7"></i><i class="raster-pulse__dot" style="--x:-2;--y:7"></i><i class="raster-pulse__dot" style="--x:-1;--y:7"></i><i class="raster-pulse__dot" style="--x:0;--y:7"></i><i class="raster-pulse__dot" style="--x:1;--y:7"></i><i class="raster-pulse__dot" style="--x:2;--y:7"></i><i class="raster-pulse__dot" style="--x:3;--y:7"></i><i class="raster-pulse__dot" style="--x:4;--y:7"></i><i class="raster-pulse__dot" style="--x:5;--y:7"></i><i class="raster-pulse__dot" style="--x:6;--y:7"></i><i class="raster-pulse__dot" style="--x:7;--y:7"></i><i class="raster-pulse__dot" style="--x:8;--y:7"></i>
+        <i class="raster-pulse__dot" style="--x:-8;--y:8"></i><i class="raster-pulse__dot" style="--x:-7;--y:8"></i><i class="raster-pulse__dot" style="--x:-6;--y:8"></i><i class="raster-pulse__dot" style="--x:-5;--y:8"></i><i class="raster-pulse__dot" style="--x:-4;--y:8"></i><i class="raster-pulse__dot" style="--x:-3;--y:8"></i><i class="raster-pulse__dot" style="--x:-2;--y:8"></i><i class="raster-pulse__dot" style="--x:-1;--y:8"></i><i class="raster-pulse__dot" style="--x:0;--y:8"></i><i class="raster-pulse__dot" style="--x:1;--y:8"></i><i class="raster-pulse__dot" style="--x:2;--y:8"></i><i class="raster-pulse__dot" style="--x:3;--y:8"></i><i class="raster-pulse__dot" style="--x:4;--y:8"></i><i class="raster-pulse__dot" style="--x:5;--y:8"></i><i class="raster-pulse__dot" style="--x:6;--y:8"></i><i class="raster-pulse__dot" style="--x:7;--y:8"></i><i class="raster-pulse__dot" style="--x:8;--y:8"></i>
+      </div>
+    </div>
+    <div class="raster-pulse__foot">
+      <p class="raster-pulse__brand">
+        <svg class="raster-pulse__glyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <circle cx="6.5" cy="6.5" r="4.3" />
+          <circle cx="17.5" cy="6.5" r="4.3" />
+          <circle cx="6.5" cy="17.5" r="4.3" />
+          <circle cx="17.5" cy="17.5" r="4.3" />
+        </svg>
+        <span class="raster-pulse__wordmark">raster</span>
+      </p>
+      <h2 class="raster-pulse__headline">Raster &mdash; The Grid That Draws Its Own Shapes.</h2>
+      <span class="raster-pulse__bracket raster-pulse__bracket--tr" aria-hidden="true"></span>
+      <span class="raster-pulse__bracket raster-pulse__bracket--br" aria-hidden="true"></span>
+    </div>
+  </article>
+
+  <!--
+    Thumbnail scaffolding only. Two jobs, both driven by the index and both
+    inert when this file is opened on its own:
+
+      1. A card's iframe has pointer events off, so the component's :hover can
+         never fire there. The index says when a card is being looked at and
+         this file decides what that means — here, --open, which is the same
+         state hover reaches: the pulse speeds up and carries the second tone.
+      2. Quick look steps through the patterns. The list lives here because the
+         index must never name a component class; it is handed labels and draws
+         dots.
+
+    Each pattern is one class on the root and nothing else — no markup is
+    added, removed or rewritten, because the 289 dots carry only coordinates
+    and component.css derives the shape from them.
+  -->
+  <script>
+    (function () {
+      var CHANNEL = 'ui-reference-base';
+      var root = document.querySelector('.raster-pulse');
+      if (!root) return;
+
+      // First entry is the resting state, and it is what the card shows.
+      // The light halftone leads rather than the component's own default,
+      // because it is the one pattern that reads at thumbnail size against
+      // the off-white the rail puts behind every card.
+      var VARIANTS = [
+        { id: 'halftone', label: 'Halftone disc', classes: ['raster-pulse--halftone'] },
+        { id: 'rings', label: 'Ring field', classes: [] },
+        { id: 'pinwheel', label: 'Pinwheel', classes: ['raster-pulse--pinwheel'] },
+        { id: 'scan', label: 'Scan', classes: ['raster-pulse--scan'] }
+      ];
+
+      function apply(variant) {
+        VARIANTS.forEach(function (v) {
+          v.classes.forEach(function (c) { root.classList.remove(c); });
+        });
+        variant.classes.forEach(function (c) { root.classList.add(c); });
+      }
+
+      window.addEventListener('message', function (event) {
+        var data = event.data;
+        if (!data || data.source !== CHANNEL) return;
+
+        if (data.type === 'preview') {
+          root.classList.toggle('raster-pulse--open', data.active === true);
+        }
+
+        if (data.type === 'preview:variant') {
+          var variant = VARIANTS[data.index];
+          if (variant) apply(variant);
+        }
+      });
+
+      // The resting variant is applied from here rather than written into the
+      // markup above, so this file's <article> stays byte-identical to
+      // component.html — the contract is the component's default, and which
+      // of its patterns the thumbnail happens to lead with is this file's
+      // business.
+      apply(VARIANTS[0]);
+
+      if (window.parent !== window) {
+        window.parent.postMessage({
+          source: CHANNEL,
+          type: 'preview:ready',
+          variants: VARIANTS.map(function (v) { return { id: v.id, label: v.label }; })
+        }, '*');
+      }
+    })();
+  </script>
+
+</body>
+</html>
