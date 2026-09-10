@@ -33,8 +33,11 @@
       'head.title': 'Interfacedetaljer, bygget som genbrugelige dele.',
       'head.lede': 'Komponenter bygget i ren HTML og CSS — nogle videreudviklet '
         + 'ud fra grænseflader fundet andre steder, nogle fra originale designs — gemt '
-        + 'så typografien, spatieringen og bevægelsen forbliver genbrugelig. '
-        + 'Hold musen over et kort for at afspille det, eller åbn det i fuld størrelse.',
+        + 'så typografien, spatieringen og bevægelsen forbliver genbrugelig.',
+      'head.ledeHint': 'Hold musen over et kort for at afspille det, eller åbn '
+        + 'det i fuld størrelse.',
+      'head.ledeHintTouch': 'Tryk på hurtigt kig for at afspille et kort, eller '
+        + 'åbn det i fuld størrelse.',
       'meta.references': 'Referencer',
       'meta.builtWith': 'Bygget med',
       'meta.htmlCss': 'HTML & CSS',
@@ -197,6 +200,7 @@
   const metaCount = document.getElementById('meta-count');
   const footCount = document.getElementById('foot-count');
   const hint = document.querySelector('[data-rail-hint]');
+  const ledeHint = document.querySelector('[data-lede-hint]');
 
   const pieces = () => Array.from(track.children);
   const real = () => pieces().filter((el) => el.matches('[data-piece]'));
@@ -384,6 +388,11 @@
 
   // --- drag to scroll ---------------------------------------------------
 
+  // Mouse only. A touch pointer already scrolls the track natively, and
+  // driving scrollLeft underneath that gesture fought the browser's own
+  // momentum. Worse, a swipe ends in `pointercancel` with no click behind it,
+  // so the one-shot click swallower below stayed armed and ate the user's
+  // next tap on a card.
   const DRAG_SLOP = 4;   // below this it is a click, not a drag
   let dragging = false;
   let moved = false;
@@ -392,6 +401,7 @@
 
   track.addEventListener('pointerdown', (event) => {
     if (event.button !== 0) return;
+    if (event.pointerType !== 'mouse') return;
     dragging = true;
     moved = false;
     originX = event.clientX;
@@ -459,9 +469,15 @@
 
     const AUTOPLAY_MS = 4000;   // one variant every four seconds
     const NUDGE_MS = 260;       // a manual pick moves the marker at once
+    // The narrowest the panel is worth being. Sizing it to the preview is
+    // right until a short viewport scales the preview down far enough to drag
+    // the footer's copy into a two-word column — below this the panel keeps
+    // its width and the preview sits centred in it.
+    const PANEL_FLOOR = 288;
 
     let restoreFocus = null;
     let closeTimer = null;
+    let lockedAt = 0;
     let currentPiece = null;
     let variants = [];
     let variantIndex = 0;
@@ -471,6 +487,37 @@
     let paused = false;
 
     const text = (el) => (el ? el.textContent.trim() : '');
+
+    // Taking the body out of flow is what actually stops iOS scrolling the
+    // page behind the overlay, and that loses the scroll position — so it is
+    // held here and put back on close.
+    function lockScroll() {
+      lockedAt = window.scrollY || window.pageYOffset || 0;
+      document.body.style.top = -lockedAt + 'px';
+      document.body.classList.add('is-locked');
+    }
+
+    function unlockScroll() {
+      document.body.classList.remove('is-locked');
+      document.body.style.top = '';
+      window.scrollTo(0, lockedAt);
+    }
+
+    // Quick look runs the preview with pointer events on so the component's
+    // own :hover does the work — which is nothing at all on a device that
+    // cannot hover, leaving the overlay showing a frozen card. There the
+    // index falls back to the same message the cards use, so the component
+    // demonstrates itself. Still generic: it names no component class, and
+    // the preview decides what being active means. Re-sent after a variant
+    // swap, because a preview is free to rebuild its markup on one.
+    function playForTouch() {
+      if (!coarse.matches || box.hidden) return;
+      if (!frame.contentWindow) return;
+      frame.contentWindow.postMessage(
+        { source: CHANNEL, type: 'preview', active: true },
+        '*'
+      );
+    }
 
     // The stage has already been laid out by the flex column above, so the
     // scale is one measurement of it — no arithmetic over the bar and footer,
@@ -487,6 +534,10 @@
       // Measure against the panel's natural width first.
       panel.style.width = '';
 
+      // Whatever width the overlay actually has to give — the floor can never
+      // exceed it, or the panel would push past the viewport it is centred in.
+      const floor = Math.min(PANEL_FLOOR, panel.getBoundingClientRect().width);
+
       // Two passes. The panel is narrowed to whatever the scaled preview
       // actually occupies — left at its full width, a preview limited by
       // height sits in a band of panel either side of it, which reads as a
@@ -500,7 +551,8 @@
         );
 
         box.style.setProperty('--lightbox-scale', Math.max(0, scale).toFixed(4));
-        panel.style.width = Math.round(previewW * scale) + 'px';
+        panel.style.width =
+          Math.max(Math.round(previewW * scale), floor) + 'px';
       }
     }
 
@@ -512,6 +564,9 @@
       if (!marker || !dot) return;
       marker.style.transitionDuration = (reduced.matches ? 0 : ms) + 'ms';
       marker.style.setProperty('--marker-x', (dot.offsetLeft + dot.offsetWidth / 2) + 'px');
+      // The row wraps on a phone, where the dots are finger-sized, so the
+      // second axis is not always zero.
+      marker.style.setProperty('--marker-y', (dot.offsetTop + dot.offsetHeight / 2) + 'px');
     }
 
     function stopAutoplay() {
@@ -540,6 +595,7 @@
         { source: CHANNEL, type: 'preview:variant', index: variantIndex },
         '*'
       );
+      playForTouch();
 
       dotEls.forEach((dot, n) => {
         dot.setAttribute('aria-current', n === variantIndex ? 'true' : 'false');
@@ -598,6 +654,7 @@
       if (!data || data.source !== CHANNEL || data.type !== 'preview:ready') return;
       if (box.hidden || event.source !== frame.contentWindow) return;
       buildDots(data.variants);
+      playForTouch();
     });
 
     // Everything the overlay shows is read out of the card, so this is also
@@ -639,7 +696,7 @@
       clearTimeout(closeTimer);
       restoreFocus = document.activeElement;
       box.hidden = false;
-      document.body.classList.add('is-locked');
+      lockScroll();
       fitStage();   // sized before it is painted, so it never opens too tall
 
       // Flush layout so the transition has a start value to move from, then
@@ -663,8 +720,12 @@
         box.hidden = true;
         panel.style.width = '';
         frame.src = 'about:blank';   // stop the preview rather than hide it
-        document.body.classList.remove('is-locked');
-        if (restoreFocus && document.contains(restoreFocus)) restoreFocus.focus();
+        unlockScroll();
+        // Scroll is already back where it was; letting focus move it again
+        // would jump the rail to wherever the card happens to sit.
+        if (restoreFocus && document.contains(restoreFocus)) {
+          restoreFocus.focus({ preventScroll: true });
+        }
         restoreFocus = null;
       };
 
@@ -685,6 +746,14 @@
     closers.forEach((el) => el.addEventListener('click', close));
 
     window.addEventListener('resize', fitStage);
+    window.addEventListener('orientationchange', fitStage);
+
+    // A phone's toolbars collapsing changes what is visible without always
+    // firing a window resize, and the panel is sized in dvh — so the stage it
+    // is fitted to has moved under it.
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', fitStage);
+    }
 
     // Hovering the preview means someone is looking at this variant: hold it,
     // and send the marker back to the dot it belongs to.
@@ -737,14 +806,47 @@
     touch: 'Swipe to scroll · tap quick look'
   };
 
+  const LEDE_EN = {
+    pointer: 'Hover a card to run it in place, or open one at full size.',
+    touch: 'Tap quick look to run a card in place, or open one at full size.'
+  };
+
+  // Held so a pointer-type change can re-render without waiting for the next
+  // language switch.
+  let hintCopy = null;
+
   function renderHint(copy) {
-    if (!hint) return;
+    hintCopy = copy;
     const touch = coarse.matches;
-    const key = touch ? 'rail.hintTouch' : 'rail.hint';
-    hint.textContent = (copy && copy[key]) || (touch ? HINT_EN.touch : HINT_EN.pointer);
+
+    if (hint) {
+      const key = touch ? 'rail.hintTouch' : 'rail.hint';
+      hint.textContent = (copy && copy[key]) || (touch ? HINT_EN.touch : HINT_EN.pointer);
+    }
+
+    // The lede's closing sentence, for the same reason: there is nothing to
+    // hover on a phone, and the card's own affordance is the quick-look
+    // button rather than the pointer.
+    if (ledeHint) {
+      const key = touch ? 'head.ledeHintTouch' : 'head.ledeHint';
+      ledeHint.textContent =
+        (copy && copy[key]) || (touch ? LEDE_EN.touch : LEDE_EN.pointer);
+    }
   }
 
   document.addEventListener('lang:change', (event) => renderHint(event.detail.copy));
+
+  // A tablet gains a trackpad, or a laptop's touchscreen takes over: the hint
+  // and which preview plays both hang off this, so neither can be decided
+  // once at load.
+  if (coarse.addEventListener) {
+    coarse.addEventListener('change', () => {
+      renderHint(hintCopy);
+      const list = real();
+      list.forEach((piece) => tell(piece, false));
+      if (coarse.matches && list[currentActive]) tell(list[currentActive], true);
+    });
+  }
 
   renderHint(null);
   sync();

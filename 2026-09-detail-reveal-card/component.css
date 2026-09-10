@@ -65,7 +65,12 @@
   flex-direction: column;
 
   box-sizing: border-box;
+  /* The width is what the card wants, not what it insists on. A phone column
+     is narrower than 21rem, and a fixed width there pushes a scrollbar across
+     the whole page rather than the card shrinking into its container. The
+     ratio holds either way, so the card stays the same card. */
   width: var(--detail-reveal-card-width);
+  max-width: 100%;
   aspect-ratio: var(--detail-reveal-card-ratio);
   padding: var(--detail-reveal-card-pad);
 
@@ -398,6 +403,55 @@
     radial-gradient(48% 44% at 82% 74%, rgba(40, 180, 168, 0.44), transparent 72%),
     radial-gradient(60% 52% at 42% 84%, rgba(120, 92, 232, 0.42), transparent 74%),
     radial-gradient(100% 80% at 50% 30%, rgba(255, 255, 255, 0.06), transparent 70%);
+}
+
+/* --- no hover to give -------------------------------------------------- */
+
+/* The reveal is a hover behaviour, and a touch device has no hover to spend
+   on it — left at that, the panel is unreachable on a phone and the card is
+   just a title. `:active` gives it back to the press: the panel opens under
+   the finger and closes when it lifts, which is the nearest honest equivalent
+   of moving a pointer on and off. Kept behind `(hover: none)` so a mouse,
+   which fires `:active` on the way to following the link, is untouched. */
+
+@media (hover: none) {
+  .detail-reveal-card:active {
+    transform: translateY(var(--detail-reveal-card-lift));
+    box-shadow: var(--detail-reveal-card-shadow-open);
+  }
+
+  .detail-reveal-card:active .detail-reveal-card__art {
+    opacity: var(--detail-reveal-card-art-opacity-open);
+    transform: scale(1.04);
+  }
+
+  .detail-reveal-card:active .detail-reveal-card__reveal {
+    grid-template-rows: 1fr;
+  }
+
+  .detail-reveal-card:active .detail-reveal-card__label {
+    color: var(--detail-reveal-card-ink);
+  }
+
+  .detail-reveal-card:active .detail-reveal-card__mark {
+    width: 1.35em;
+    opacity: 1;
+  }
+
+  .detail-reveal-card:active .detail-reveal-card__arrow {
+    opacity: 0;
+    transform: translate(0.5rem, -0.5rem);
+  }
+
+  .detail-reveal-card:active .detail-reveal-card__kicker,
+  .detail-reveal-card:active .detail-reveal-card__detail,
+  .detail-reveal-card:active .detail-reveal-card__meta {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* No stagger on the way in here. A press is short, and content that arrives
+     over 200ms of delays is still arriving when the finger lifts. */
 }
 
 /* --- reduced motion --------------------------------------------------- */

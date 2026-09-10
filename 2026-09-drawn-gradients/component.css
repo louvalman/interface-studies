@@ -89,6 +89,13 @@
       transparent var(--drawn-gradients-settle));
 
   box-sizing: border-box;
+  /* Every shape below sets a width off --…-size, which is a length and knows
+     nothing about the column it lands in. On a phone the wider ones — the
+     card at 2.15x, the pill at 1.85x — are wider than the screen, and a fixed
+     width there scrolls the whole page sideways instead of the surface
+     fitting. The aspect ratios do the rest, so a fitted surface is still the
+     same shape. */
+  max-width: 100%;
   border-radius: var(--drawn-gradients-radius);
   border: var(--drawn-gradients-border);
   background-color: var(--drawn-gradients-base);

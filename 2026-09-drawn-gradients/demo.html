@@ -164,7 +164,16 @@
       gap: clamp(1.5rem, 4vw, 3rem);
     }
 
-    .demo__state { display: flex; flex-direction: column; gap: 0.6rem; }
+    /* A wrapped flex line still overflows if an item refuses to shrink, and
+       a column of surfaces sized in rem is exactly that. Capped at the line,
+       so the squeeze reaches the surfaces rather than the page. */
+    .demo__state {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      min-width: 0;
+      max-width: 100%;
+    }
 
     .demo__caption { margin: 0; font-size: 0.9375rem; font-weight: 500; }
 
@@ -211,6 +220,23 @@
       font-family: "JetBrains Mono", ui-monospace, monospace;
       font-size: 0.6875rem;
       color: #55565a;
+    }
+
+    /* --- touch targets --- */
+
+    /* No hover means a finger, and a finger cannot aim at a 10px label. The
+       page's own controls grow; the component is not touched. Duplicated in
+       every demo page on purpose — no shared stylesheet, so a folder copied
+       out on its own takes this with it. */
+    @media (hover: none) {
+      .demo__lang-btn {
+        display: grid;
+        place-items: center;
+        min-width: 2.25rem;
+        min-height: 2.25rem;
+      }
+
+      .demo__back { min-height: 2.75rem; }
     }
   </style>
 </head>
@@ -827,7 +853,7 @@
       <section class="demo__state">
         <p class="demo__caption" data-i18n="state.band">Section band</p>
         <p class="demo__hint">--band</p>
-        <div class="drawn-gradients" style="width: 26rem; --drawn-gradients-size: 8rem;">
+        <div class="drawn-gradients" style="width: 26rem; max-width: 100%; --drawn-gradients-size: 8rem;">
           <div class="drawn-gradients__surface drawn-gradients__surface--band drawn-gradients__surface--dusk">
             <div class="drawn-gradients__stack">
               <p class="drawn-gradients__label" data-i18n="sample.bandTitle">A section header</p>

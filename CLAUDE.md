@@ -103,6 +103,40 @@ beautifully styled card sitting inside it; it gets a grey box.
   without opening the file and editing its internals? If a colour, size,
   radius, or duration is hardcoded further down, the answer is no.
 
+## A component has to survive a phone
+
+Two rules, and they hold for every reference regardless of `type:`.
+
+**Narrow containers.** A component may say what width it wants, but never
+insist on it. Any element that sets a width carries `max-width: 100%` beside
+it, so a 320px column squeezes the component instead of pushing a horizontal
+scrollbar across the whole page. Aspect ratios and proportional radii do the
+rest — a fitted component is the same component, only smaller.
+
+The demo page has to pass the squeeze down. A grid cell sized to its content is
+as wide as its content whatever the track did, and an implicit `auto` column
+takes its max-content width and overflows quite happily, so a cell holding a
+component needs both `max-width: 100%` and a column that may shrink
+(`grid-template-columns: minmax(0, 1fr)`, or `min-width: 0` on a flex item).
+`_template/demo.html` carries the pair.
+
+**No hover to spend.** Hover, focus and transitions are still CSS, and hover is
+still where a pointer behaviour belongs — but a behaviour that exists *only*
+on `:hover` does not exist on a touch device. Give `(hover: none)` a way to
+reach the same state: `:active` for the length of a press, or `:focus-within`
+where the state should hold. This is a media query in `component.css`, not a
+reason to reach for `component.js`.
+
+The index carries the touch half of this itself. Card thumbnails were already
+driven by the message contract; quick look runs the preview with pointer events
+on so the component's own `:hover` does the work, and on a coarse pointer —
+where that hover will never fire — it sends the same `preview` message the
+cards use instead. The preview needs no extra code for it: whatever it already
+does with `active` is what quick look gets.
+
+The check: narrow the window to 320px. Nothing scrolls sideways, and everything
+the component does is still reachable without a pointer.
+
 ## component.html
 
 Only the markup for the component. No `<html>`, no `<head>`, no wrapper divs

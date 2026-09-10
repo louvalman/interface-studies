@@ -33,6 +33,16 @@ drawn rather than photographed.
   border. A full-width border would draw a hard box edge; the fade keeps the
   detail rows feeling like they float on the artwork.
 
+Where there is no hover, the press stands in for it. The whole component is a
+hover behaviour, so on a touch device it would otherwise be a title and nothing
+else, the panel unreachable. Under `(hover: none)` the open state is repeated on
+`:active` — it opens under the finger and closes when it lifts, the nearest
+honest equivalent of moving a pointer on and off. The stagger is dropped there,
+because a press is short and rows still arriving 200ms in are arriving after the
+finger has gone. The card also stops insisting on its 21rem: the width is what
+it wants, `max-width: 100%` is what it will accept, and the ratio keeps it the
+same card either way.
+
 Modifiers, all composable: `--map` (mesh, rings, pin — add the `__pin` element
 and a `__kicker` line for coordinates), `--dark`, and `--open` to pin the reveal
 open. `--map.--dark` is a two-class selector so it wins over either one alone,

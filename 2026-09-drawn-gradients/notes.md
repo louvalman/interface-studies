@@ -64,3 +64,10 @@ geometry; `--drawn` / `--raw` pick the recipe; `--night` moves the base the
 colour settles to. The axes compose freely. Everything else — pool origins and
 reach, blur and bleed, where the colour has fully settled — is a custom
 property, so a new theme is three values and a new shape is one.
+
+Each shape sets a width off `--…-size`, which is a length and knows nothing
+about the column it lands in — so every surface also carries `max-width: 100%`.
+A phone is narrower than the card at 2.15x or the pill at 1.85x, and a surface
+that insisted on its width there would scroll the page sideways rather than
+fit. Because the radius and the type are ratios of the surface, a fitted one is
+still the same shape, only smaller.

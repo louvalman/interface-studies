@@ -48,11 +48,19 @@
       <h1 class="head__title" data-i18n="head.title">
         Interface details, built as reusable parts.
       </h1>
-      <p class="head__lede" data-i18n="head.lede">
-        Components built in plain HTML and CSS — some iterated upon from
-        interfaces found elsewhere, some from original designs — kept so the
-        type, the spacing and the motion stay reusable. Hover a card to run it
-        in place, or open one at full size.
+      <!-- The closing sentence tells you how to work the rail, and that is
+         not the same instruction on a phone as on a laptop — so it is written
+         by index.js from the pointer type, the way the rail's hint is, and
+         only the part that holds true either way is markup. -->
+      <p class="head__lede">
+        <span data-i18n="head.lede">
+          Components built in plain HTML and CSS — some iterated upon from
+          interfaces found elsewhere, some from original designs — kept so the
+          type, the spacing and the motion stay reusable.
+        </span>
+        <span data-lede-hint>
+          Hover a card to run it in place, or open one at full size.
+        </span>
       </p>
 
       <dl class="head__meta">

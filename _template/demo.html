@@ -119,9 +119,19 @@
 
     .demo__back svg { width: 0.85rem; height: 0.85rem; }
 
+    /* Capped at whatever column it lands in, so a component sized in rem
+       shrinks with the page instead of pushing a scrollbar across it. Worth
+       keeping when you copy this: it is the one line that decides whether the
+       demo survives a phone. */
     .demo__state {
       display: grid;
+      /* The pair that keeps a demo off a phone's horizontal scrollbar: the
+         cell is capped at its column, and the column is told it may shrink
+         below its content. Without the second line an implicit `auto` track
+         takes its max-content width and overflows anyway. */
+      grid-template-columns: minmax(0, 1fr);
       gap: 0.75rem;
+      max-width: 100%;
     }
 
     .demo__caption {
@@ -130,6 +140,23 @@
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: #6b655a;
+    }
+
+    /* --- touch targets --- */
+
+    /* No hover means a finger, and a finger cannot aim at a 10px label. The
+       page's own controls grow; the component is not touched. Duplicated in
+       every demo page on purpose — no shared stylesheet, so a folder copied
+       out on its own takes this with it. */
+    @media (hover: none) {
+      .demo__lang-btn {
+        display: grid;
+        place-items: center;
+        min-width: 2.25rem;
+        min-height: 2.25rem;
+      }
+
+      .demo__back { min-height: 2.75rem; }
     }
   </style>
 </head>

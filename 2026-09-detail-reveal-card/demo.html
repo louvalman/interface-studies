@@ -201,18 +201,32 @@
 
     /* --- card cells --- */
 
+    /* `min()` around the track minimum is what keeps this off a phone's
+       scrollbar: a bare minmax(21rem, 1fr) lays a 21rem track into a column
+       narrower than that and lets it hang over the edge. Below 21rem the
+       track follows the column instead, and the card shrinks with it. */
     .demo__grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(21rem, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(min(21rem, 100%), 1fr));
       gap: clamp(2rem, 4vw, 3rem) 2.5rem;
       justify-items: start;
     }
 
+    /* `justify-items: start` on the grid means a cell is sized to its content
+       rather than stretched — which, for a cell holding a 21rem card, is
+       21rem however narrow the track got. Capping it at the track is what
+       passes the squeeze down to the card. */
     .demo__state {
       display: grid;
+      /* An implicit `auto` column takes its max-content size and is happy to
+         overflow the cell it sits in, so capping the cell alone does nothing
+         — the column has to be told it may shrink. This pair is what carries
+         the narrow screen all the way down to the card's own max-width. */
+      grid-template-columns: minmax(0, 1fr);
       gap: 0.85rem;
       justify-items: start;
       align-content: start;
+      max-width: 100%;
     }
 
     .demo__caption {
@@ -232,6 +246,23 @@
       font-size: 0.6875rem;
       line-height: 1.5;
       color: #62666f;
+    }
+
+    /* --- touch targets --- */
+
+    /* No hover means a finger, and a finger cannot aim at a 10px label. The
+       page's own controls grow; the component is not touched. Duplicated in
+       every demo page on purpose — no shared stylesheet, so a folder copied
+       out on its own takes this with it. */
+    @media (hover: none) {
+      .demo__lang-btn {
+        display: grid;
+        place-items: center;
+        min-width: 2.25rem;
+        min-height: 2.25rem;
+      }
+
+      .demo__back { min-height: 2.75rem; }
     }
   </style>
 </head>
@@ -280,7 +311,7 @@
 
         <section class="demo__state">
           <p class="demo__caption" data-i18n="state.default">Default</p>
-          <p class="demo__hint" data-i18n="state.defaultHint">hover or focus it</p>
+          <p class="demo__hint" data-i18n="state.defaultHint">hover, focus or press it</p>
           <a class="detail-reveal-card" href="#">
             <span class="detail-reveal-card__art" aria-hidden="true"></span>
             <span class="detail-reveal-card__header">
@@ -617,7 +648,7 @@
           + '__pin-elementet og en __kicker-linje til koordinater. Nålens '
           + 'udgangspunkt flyttes med --…-pin-x / --…-pin-y, og ringene følger med.',
         'state.default': 'Standard',
-        'state.defaultHint': 'hold musen over eller fokusér',
+        'state.defaultHint': 'hold musen over, fokusér eller tryk',
         'state.revealed': 'Afsløret',
         'state.dark': 'Mørk',
         'state.amber': 'Rav — længere indhold',

@@ -53,7 +53,17 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-body.is-locked { overflow: hidden; }
+/* Scroll lock behind the quick-look overlay. `overflow: hidden` alone is
+   ignored by iOS Safari, which keeps scrolling the document under a fixed
+   overlay, so the body is taken out of flow as well and index.js holds the
+   offset it was at in `top`. Nothing else here may set `top` on the body. */
+body.is-locked {
+  position: fixed;
+  left: 0;
+  right: 0;
+  width: 100%;
+  overflow: hidden;
+}
 
 /* --- language selector -------------------------------------------------- */
 
@@ -281,6 +291,12 @@ body.is-locked { overflow: hidden; }
   scroll-padding-left: var(--gutter);
   scrollbar-width: none;
   cursor: grab;
+  /* A horizontal swipe that reaches either end stays in the rail. Without
+     this the leftover movement chains to the browser and reads as a
+     back-navigation gesture. `touch-action` is deliberately left alone: the
+     browser scrolls this natively now that the drag handler is mouse-only,
+     and naming the axes here would cost pinch-to-zoom over the rail. */
+  overscroll-behavior-x: contain;
 }
 
 .rail__track::-webkit-scrollbar { display: none; }
@@ -473,11 +489,14 @@ body.is-locked { overflow: hidden; }
   height: 0.7rem;
 }
 
-/* Coarse pointers get no hover, so the affordance stays put. */
+/* Coarse pointers get no hover, so the affordance stays put — and it has to
+   be big enough to hit with a thumb. */
 @media (hover: none) {
   .piece__expand {
     opacity: 1;
     transform: none;
+    min-height: 2.25rem;
+    padding-inline: 1rem;
   }
 }
 
@@ -604,6 +623,16 @@ body.is-locked { overflow: hidden; }
   display: grid;
   place-items: center;
   padding: clamp(1rem, 4vw, 2.5rem);
+  /* A phone's viewport is two sizes: the tall one behind the collapsed
+     toolbars, and the short one with them showing. `inset` resolves against
+     the tall one, which puts the panel's footer under the address bar. The
+     dynamic unit is the one that tracks what is actually visible; browsers
+     without it drop the line and keep the inset. Over-constrained on purpose
+     — height wins and `bottom` is ignored. */
+  height: 100dvh;
+  /* A drag that runs past the end of the overlay must not hand the rest of
+     the gesture to the page underneath. */
+  overscroll-behavior: contain;
 }
 
 /* `display: grid` above is an author rule and `[hidden] { display: none }` is
@@ -633,7 +662,12 @@ body.is-locked { overflow: hidden; }
      laid-out stage in one pass instead of converging on itself. */
   width: min(var(--preview-w), 100%);
   max-height: 100%;
-  overflow: hidden;
+  /* Vertical scroll, for the viewport that cannot hold the panel at all — a
+     phone on its side, where the bar and the footer are most of the height.
+     Horizontal stays clipped: that axis carries the scaled frame, which is
+     out of flow and overhangs by design. */
+  overflow: hidden auto;
+  overscroll-behavior: contain;
   border-radius: 1.25rem;
   background: var(--surface);
   border: 1px solid var(--hairline);
@@ -722,7 +756,12 @@ body.is-locked { overflow: hidden; }
   position: relative;
   flex: 1 1 auto;
   height: var(--preview-h);
-  min-height: 0;
+  /* The stage is the only child of the panel that may shrink, so on a short
+     viewport it is the one that reaches zero — and a stage of no height
+     measures to a scale of zero, which collapsed the whole panel to a
+     sliver. It keeps a floor instead and the panel scrolls past whatever
+     chrome no longer fits. */
+  min-height: min(var(--preview-h), 16rem);
   overflow: hidden;
 }
 
@@ -758,6 +797,7 @@ body.is-locked { overflow: hidden; }
   position: relative;
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 0.4rem;
 }
 
@@ -767,7 +807,10 @@ body.is-locked { overflow: hidden; }
    swaps — the movement is the countdown. */
 .lightbox__dots-marker {
   position: absolute;
-  top: 50%;
+  /* Parked at the container's origin and moved to the dot's centre on both
+     axes — the row wraps once the dots are finger-sized, and a marker pinned
+     to a single line would sit off the row it is meant to be on. */
+  top: 0;
   left: 0;
   width: 0.5rem;
   height: 0.5rem;
@@ -775,7 +818,7 @@ body.is-locked { overflow: hidden; }
   border-radius: 50%;
   background: var(--accent);
   pointer-events: none;
-  transform: translateX(var(--marker-x, 0));
+  transform: translate(var(--marker-x, 0), var(--marker-y, 0));
   /* Linear on purpose: the travel reads as a countdown, and easing would
      make it look like it stalls before each swap. Duration is set in JS. */
   transition-property: transform;
@@ -1032,6 +1075,59 @@ body.is-locked { overflow: hidden; }
 }
 
 .foot__top:hover svg { transform: translateY(-3px); }
+
+/* --- short viewports ---------------------------------------------------- */
+
+/* A phone held sideways is about 375px tall, and the quick-look chrome was
+   written for a viewport with height to spare. It hands some back rather than
+   squeezing the preview out of existence; what still does not fit scrolls,
+   because the panel now may. */
+@media (max-height: 34rem) {
+  .lightbox { padding-block: 0.5rem; }
+
+  .lightbox__bar { padding: 0.85rem 1rem 0.7rem; }
+
+  .lightbox__variants { padding: 0.55rem 1rem; }
+
+  .lightbox__foot { padding: 0.7rem 1rem 0.9rem; }
+}
+
+/* --- touch targets ------------------------------------------------------ */
+
+/* A pointer that cannot hover is a finger, and a finger has no pixel to aim
+   with. Every control it can hit is grown here — well past the 24px WCAG
+   2.5.8 floor — without moving anything on a mouse, where these sizes are set
+   by the type they sit next to rather than by the hand. The dots stop short
+   of the rest: a preview may report seven variants, and a row of 44px targets
+   would not fit across a phone even after wrapping. */
+@media (hover: none) {
+  .lang__btn {
+    display: grid;
+    place-items: center;
+    min-width: 2.25rem;
+    min-height: 2.25rem;
+  }
+
+  .lightbox__close {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+
+  .foot__icon {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+
+  .lightbox__dot {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  /* The dots grew, so a preview reporting six or seven variants no longer
+     fits beside its label on a phone. The label drops to its own line rather
+     than the row scrolling sideways. */
+  .lightbox__variants { flex-wrap: wrap; }
+}
 
 @media (max-width: 52rem) {
   .foot__main {

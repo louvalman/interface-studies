@@ -9,9 +9,16 @@
     component can be re-themed from outside without editing its internals.
     If a colour, size, radius or duration is hardcoded further down, it is
     in the wrong place.
+  - It has to survive a narrow container. If the component sets a width, pair
+    it with `max-width: 100%` so a phone column squeezes it instead of the
+    page. If it depends on hover, give `(hover: none)` a way to reach the same
+    state — `:active` for the length of a press, or `:focus-within` — or it is
+    a dead component on a touch device.
 
   Test: copy this file alone into an unrelated project. Does it still work,
-  and does it leave everything around it untouched?
+  and does it leave everything around it untouched? Then narrow the window to
+  320px: does it fit, and is everything it does still reachable without a
+  pointer?
 */
 
 .slug {
@@ -39,6 +46,11 @@
   flex-direction: column;
   gap: var(--slug-gap);
   padding: var(--slug-pad);
+
+  /* If you give this component a width, this is the line that keeps it off a
+     phone's horizontal scrollbar: the width is what it wants, this is what it
+     will accept. */
+  max-width: 100%;
 
   background: var(--slug-bg);
   color: var(--slug-fg);
@@ -73,6 +85,16 @@
 /* States belong here — hover, focus-visible, transitions. Not in demo.html. */
 .slug:hover {
   transform: translate(-2px, -2px);
+}
+
+/* A finger cannot hover. Anything the component only does on hover has to be
+   reachable some other way here, or it does not exist on a phone — `:active`
+   holds for the length of a press, `:focus-within` holds until something else
+   is touched. Delete this block if the component has no hover behaviour. */
+@media (hover: none) {
+  .slug:active {
+    transform: translate(-2px, -2px);
+  }
 }
 
 /* Modifier: the content variant shown in the demo. */
