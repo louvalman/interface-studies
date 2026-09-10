@@ -1,0 +1,368 @@
+/*
+  2026-09-raster-pulse — self-contained styles.
+
+  A poster card: a square dot field over a typographic footer band. Every dot
+  is one element carrying nothing but its grid coordinate:
+
+      <i class="raster-pulse__dot" style="--x:-3;--y:5"></i>
+
+  Everything else — whether that dot belongs to the shape, which of the two
+  tones it takes, and where it sits in the travelling pulse — is derived from
+  those two numbers in CSS. That is what lets a pattern be a modifier on the
+  root instead of a second copy of the markup: `--pinwheel` changes the
+  formulas, not the 289 elements.
+
+  Browser floor: the derivations use `hypot()`, `atan2()`, `sin()`, `mod()` and
+  `round()` — Chrome 125, Safari 15.4, Firefox 118. `abs()` is deliberately
+  avoided and written as `max(v, -1 * v)`, because it landed a good deal later
+  than the rest and is the only one that would have moved that floor.
+*/
+
+.raster-pulse {
+  /* --- geometry ------------------------------------------------------- */
+  --raster-pulse-width: 22rem;
+  --raster-pulse-radius: 0;
+
+  /* The field is square and odd-numbered, so one cell is the true centre:
+     every formula here measures from a dot rather than from the gap between
+     four, which is what lets a ring close cleanly and a pinwheel's arms meet
+     at a point. `reach` is the centre-to-edge count and `diag` is
+     hypot(reach, reach) — the longest radius in the grid, which is what
+     normalises the radial pulse to 0..1. Change `cols` and all three have to
+     move together. */
+  --raster-pulse-cols: 17;
+  --raster-pulse-reach: 8;
+  --raster-pulse-diag: 11.314;
+
+  --raster-pulse-art-pad: 5.5%;
+
+  /* --- type ----------------------------------------------------------- */
+  /* Sized in cqw against the card's own width, not in rem: the same poster
+     has to read at 352px on a page and at 190px in a thumbnail, and type set
+     in rem stays put while the frame shrinks. */
+  --raster-pulse-font: "Space Grotesk", "Plus Jakarta Sans", system-ui, sans-serif;
+  --raster-pulse-headline-size: 8cqw;
+  --raster-pulse-headline-leading: 1.06;
+  --raster-pulse-headline-tracking: -0.03em;
+  --raster-pulse-wordmark-size: 4.5cqw;
+  --raster-pulse-wordmark-tracking: -0.02em;
+  --raster-pulse-mark-size: 4.6cqw;
+
+  --raster-pulse-foot-pad: 6.4cqw;
+  --raster-pulse-foot-gap: 7.2cqw;
+  --raster-pulse-brand-gap: 1.9cqw;
+
+  --raster-pulse-bracket-size: 2.6cqw;
+  --raster-pulse-bracket-weight: 1.5px;
+  --raster-pulse-bracket-inset: 4.4cqw;
+
+  /* --- colour --------------------------------------------------------- */
+  --raster-pulse-art-bg: #0b0713;
+  --raster-pulse-tone-a: #ff2e7e;
+  --raster-pulse-tone-b: #8b5cff;
+  --raster-pulse-panel: #f3f0f7;
+  --raster-pulse-ink: #120b1c;
+
+  /* How far a dot's trough colour is pulled toward the field background. This
+     is the whole of the resting look: at 0% the field is flat and saturated,
+     at 100% only the ring being lit is visible at all. */
+  --raster-pulse-dim: 58%;
+
+  /* --- motion --------------------------------------------------------- */
+  --raster-pulse-dur: 6.4s;
+  --raster-pulse-dur-active: 1.9s;
+  /* Rings visible at once. 1 puts exactly one wave across the field; above 1
+     the pattern repeats within it. */
+  --raster-pulse-spread: 1;
+  --raster-pulse-ease: cubic-bezier(0.33, 0, 0.5, 1);
+  --raster-pulse-trough-scale: 0.46;
+  --raster-pulse-peak-scale: 0.88;
+  /* The single frame the field freezes on under prefers-reduced-motion. */
+  --raster-pulse-still-scale: 0.76;
+
+  /* --- pattern -------------------------------------------------------- */
+  /* Ring width in cells, for the two-tone banding of the default pattern. */
+  --raster-pulse-band: 2;
+  /* --pinwheel: arm count, how far an arm twists per cell of radius, and how
+     much of each arm's sine actually lights up (higher = thinner arms). */
+  --raster-pulse-arms: 5;
+  --raster-pulse-twist: 44deg;
+  --raster-pulse-arm-cut: 0.3;
+  /* --halftone: disc radius in cells, and the corner clusters — dots whose
+     distance from the centre axis exceeds this on *both* axes. */
+  --raster-pulse-disc: 7.7;
+  --raster-pulse-cluster: 6.5;
+  /* -------------------------------------------------------------------- */
+
+  container-type: inline-size;
+
+  display: grid;
+  grid-template-rows: auto auto;
+
+  /* The width is what the poster wants; max-width is what it will accept. */
+  width: var(--raster-pulse-width);
+  max-width: 100%;
+
+  background: var(--raster-pulse-panel);
+  border-radius: var(--raster-pulse-radius);
+  overflow: hidden;
+
+  color: var(--raster-pulse-ink);
+  font-family: var(--raster-pulse-font);
+}
+
+/* --- the field ------------------------------------------------------- */
+
+.raster-pulse__art {
+  position: relative;
+  aspect-ratio: 1;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: var(--raster-pulse-art-pad);
+  background: var(--raster-pulse-art-bg);
+  overflow: hidden;
+}
+
+.raster-pulse__field {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--raster-pulse-cols), minmax(0, 1fr));
+  grid-template-rows: repeat(var(--raster-pulse-cols), minmax(0, 1fr));
+  height: 100%;
+  place-items: center;
+}
+
+.raster-pulse__dot {
+  /* Everything below is derived from --x / --y alone. */
+
+  /* abs(), written the long way — see the note at the top of this file. */
+  --adx: max(var(--x), -1 * var(--x));
+  --ady: max(var(--y), -1 * var(--y));
+  /* Chebyshev distance: the ring index of a square ring. */
+  --cheb: max(var(--adx), var(--ady));
+  /* Euclidean distance and bearing from the centre. */
+  --r: hypot(var(--x), var(--y));
+  --ang: atan2(var(--y), var(--x));
+
+  /* Per-pattern, overridden by the modifiers further down.
+       --on     1 if this dot belongs to the shape, 0 if it does not
+       --tone   0 for tone A, 1 for tone B
+       --phase  0..1, where this dot sits along the travelling pulse */
+  --on: 1;
+  --tone: mod(round(down, calc(var(--cheb) / var(--raster-pulse-band)), 1), 2);
+  --phase: calc(var(--cheb) / var(--raster-pulse-reach));
+
+  /* --tone picks a colour without a second selector: at 0 the mix is pure
+     tone A, at 1 pure tone B. --alt is the same mix inverted, which is what
+     the pulse swaps to when the card is active. */
+  --own: color-mix(in oklab, var(--raster-pulse-tone-a), var(--raster-pulse-tone-b) calc(var(--tone) * 100%));
+  --alt: color-mix(in oklab, var(--raster-pulse-tone-b), var(--raster-pulse-tone-a) calc(var(--tone) * 100%));
+
+  /* At rest the pulse is a brightness wave inside a dot's own tone. */
+  --trough: color-mix(in oklab, var(--own), var(--raster-pulse-art-bg) var(--raster-pulse-dim));
+  --peak: var(--own);
+
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+
+  /* A dot outside the shape is scaled to nothing rather than hidden, so it
+     keeps its grid cell and the field stays square whatever the pattern. */
+  transform: scale(calc(var(--raster-pulse-trough-scale) * var(--on)));
+  background-color: var(--trough);
+
+  animation: raster-pulse-beat var(--raster-pulse-dur) var(--raster-pulse-ease) infinite;
+  /* The whole wave, in one line: a dot further along --phase peaks later. The
+     -1 offset makes the delay negative, so the field is already mid-pulse on
+     the first frame instead of sitting dark for a cycle. */
+  animation-delay: calc((var(--phase) - 1) * var(--raster-pulse-spread) * var(--raster-pulse-dur));
+}
+
+/* Narrow bright window, long recovery — that is what makes the wave read as a
+   ring travelling outward rather than as the whole field breathing. */
+@keyframes raster-pulse-beat {
+  0%,
+  100% {
+    transform: scale(calc(var(--raster-pulse-trough-scale) * var(--on)));
+    background-color: var(--trough);
+  }
+
+  16% {
+    transform: scale(calc(var(--raster-pulse-peak-scale) * var(--on)));
+    background-color: var(--peak);
+  }
+
+  44% {
+    transform: scale(calc(var(--raster-pulse-trough-scale) * var(--on)));
+    background-color: var(--trough);
+  }
+}
+
+/* --- the mark --------------------------------------------------------- */
+
+/* The footer is the only place it appears. Nothing sits on the field: every
+   shape there is derived from a coordinate, and an emblem knocked into the
+   middle was the one thing on it the grid did not draw. */
+.raster-pulse__glyph {
+  display: block;
+  max-width: 100%;
+  fill: currentColor;
+}
+
+/* --- the footer band -------------------------------------------------- */
+
+.raster-pulse__foot {
+  position: relative;
+  display: grid;
+  gap: var(--raster-pulse-foot-gap);
+  padding: var(--raster-pulse-foot-pad);
+  background: var(--raster-pulse-panel);
+  color: var(--raster-pulse-ink);
+}
+
+.raster-pulse__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--raster-pulse-brand-gap);
+  min-width: 0;
+}
+
+.raster-pulse__brand .raster-pulse__glyph {
+  flex: none;
+  width: var(--raster-pulse-mark-size);
+  height: auto;
+}
+
+.raster-pulse__wordmark {
+  font-size: var(--raster-pulse-wordmark-size);
+  font-weight: 500;
+  letter-spacing: var(--raster-pulse-wordmark-tracking);
+  line-height: 1;
+}
+
+.raster-pulse__headline {
+  margin: 0;
+  font-size: var(--raster-pulse-headline-size);
+  font-weight: 600;
+  line-height: var(--raster-pulse-headline-leading);
+  letter-spacing: var(--raster-pulse-headline-tracking);
+  text-wrap: balance;
+}
+
+/* Registration marks. Two corners, not four — the pair on one side reads as a
+   crop mark, all four read as a frame. */
+.raster-pulse__bracket {
+  position: absolute;
+  width: var(--raster-pulse-bracket-size);
+  height: var(--raster-pulse-bracket-size);
+  border: var(--raster-pulse-bracket-weight) solid currentColor;
+}
+
+.raster-pulse__bracket--tr {
+  top: var(--raster-pulse-bracket-inset);
+  right: var(--raster-pulse-bracket-inset);
+  border-left: 0;
+  border-bottom: 0;
+}
+
+.raster-pulse__bracket--br {
+  right: var(--raster-pulse-bracket-inset);
+  bottom: var(--raster-pulse-bracket-inset);
+  border-left: 0;
+  border-top: 0;
+}
+
+/* --- active: the pulse gains a colour -------------------------------- */
+
+/* At rest the wave moves brightness within one tone. Active, it moves hue:
+   every dot cycles to the *other* tone and back, so a band of the second
+   colour crosses the field. Nothing about the pattern changes. */
+.raster-pulse--open,
+.raster-pulse:hover {
+  --raster-pulse-dur: var(--raster-pulse-dur-active);
+  --raster-pulse-trough-scale: 0.36;
+  --raster-pulse-peak-scale: 1.02;
+}
+
+.raster-pulse--open .raster-pulse__dot,
+.raster-pulse:hover .raster-pulse__dot {
+  --trough: var(--own);
+  --peak: var(--alt);
+}
+
+/* A finger cannot hover, and the whole second half of this component lives in
+   that state, so a press stands in for it for as long as it is held. */
+@media (hover: none) {
+  .raster-pulse:active {
+    --raster-pulse-dur: var(--raster-pulse-dur-active);
+    --raster-pulse-trough-scale: 0.36;
+    --raster-pulse-peak-scale: 1.02;
+  }
+
+  .raster-pulse:active .raster-pulse__dot {
+    --trough: var(--own);
+    --peak: var(--alt);
+  }
+}
+
+/* --- patterns --------------------------------------------------------- */
+
+/* The default is the two-tone ring field declared on .raster-pulse__dot
+   above: every dot on, tone banded by Chebyshev ring, pulse travelling out
+   along the same rings. */
+
+/* Spiral arms. sin() of the bearing gives `arms` lobes around the centre; the
+   radius term rotates each successive ring on a bit, which is what bends the
+   lobes into arms. Raising --arm-cut narrows them. */
+.raster-pulse--pinwheel .raster-pulse__dot {
+  --on: clamp(0, calc((sin(var(--ang) * var(--raster-pulse-arms) + var(--r) * var(--raster-pulse-twist)) - var(--raster-pulse-arm-cut)) * 1000), 1);
+  --tone: 0;
+  --phase: calc(var(--r) / var(--raster-pulse-diag));
+}
+
+/* Halftone disc, on the light theme, with a 2x2 dot cluster in each corner —
+   dots that fall outside the disc but past --cluster on both axes.
+   `clamp(0, v * 1000, 1)` is a step function: any positive v resolves to 1,
+   anything else to 0. max() is OR, min() is AND. */
+.raster-pulse--halftone {
+  --raster-pulse-art-bg: #f3f0f7;
+  --raster-pulse-tone-a: #ff2e7e;
+  --raster-pulse-tone-b: #120b1c;
+  --raster-pulse-dim: 46%;
+}
+
+.raster-pulse--halftone .raster-pulse__dot {
+  --on: max(
+    clamp(0, calc((var(--raster-pulse-disc) - var(--r)) * 1000), 1),
+    min(
+      clamp(0, calc((var(--adx) - var(--raster-pulse-cluster)) * 1000), 1),
+      clamp(0, calc((var(--ady) - var(--raster-pulse-cluster)) * 1000), 1)
+    )
+  );
+  --tone: 0;
+  --phase: calc(var(--r) / var(--raster-pulse-diag));
+}
+
+/* Not in the reference: the same machinery with the pulse axis turned
+   diagonal and every dot on, so the field reads as a sweep rather than as a
+   shape. It is the cheapest proof that the pattern is the phase formula and
+   nothing else. */
+.raster-pulse--scan .raster-pulse__dot {
+  --on: 1;
+  --tone: 0;
+  --phase: calc((var(--x) + var(--y)) / (4 * var(--raster-pulse-reach)) + 0.5);
+}
+
+/* --- reduced motion -------------------------------------------------- */
+
+/* The shape is the point and the pulse is how it is drawn, so the still frame
+   is the whole field at full tone rather than a frozen wave — a frozen wave
+   would read as a half-drawn pattern. */
+@media (prefers-reduced-motion: reduce) {
+  .raster-pulse__dot {
+    animation: none;
+    transform: scale(calc(var(--raster-pulse-still-scale) * var(--on)));
+    background-color: var(--own);
+  }
+}

@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>2026-09-detail-reveal-card — preview</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap">
+
+  <link rel="stylesheet" href="component.css">
+
+  <style>
+    /* Thumbnail scaffolding only — one instance, centred, no captions.
+       Nothing here names a component class. */
+    /* <html> carries a background purely so <body>'s stops propagating to the
+       viewport canvas. The tone colour is set inline by the script below and
+       is deliberately not transitioned: inside the framed document a
+       background-color transition stalls part-way and leaves the surround a
+       muddy grey between the two tones. The card's own motion is what this
+       page is showing; the backdrop can just cut. */
+    html { background-color: #f3f2ef; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background-color: #f3f2ef;
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <a class="detail-reveal-card" href="#" tabindex="-1">
+    <span class="detail-reveal-card__art" aria-hidden="true"></span>
+    <span class="detail-reveal-card__header">
+      <span class="detail-reveal-card__title">Field Notes</span>
+      <span class="detail-reveal-card__pill">Issue 04</span>
+    </span>
+    <span class="detail-reveal-card__panel">
+      <span class="detail-reveal-card__row">
+        <span class="detail-reveal-card__label">
+          <span class="detail-reveal-card__mark" aria-hidden="true">&#8594;</span>Read the essay
+        </span>
+        <svg class="detail-reveal-card__arrow" viewBox="0 0 16 16" fill="none"
+             stroke="currentColor" stroke-width="1.3" aria-hidden="true">
+          <path d="M4 12 12 4M6 4h6v6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </span>
+      <span class="detail-reveal-card__reveal">
+        <span class="detail-reveal-card__reveal-inner">
+          <span class="detail-reveal-card__detail">
+            <span class="detail-reveal-card__line">On details that survive a redesign</span>
+            <span class="detail-reveal-card__line detail-reveal-card__line--muted">18 pages, illustrated</span>
+          </span>
+          <span class="detail-reveal-card__detail">
+            <span class="detail-reveal-card__line">Published March 2026</span>
+            <span class="detail-reveal-card__line detail-reveal-card__line--muted">Written in the studio</span>
+          </span>
+          <span class="detail-reveal-card__meta">Free &middot; 12 min read</span>
+        </span>
+      </span>
+    </span>
+  </a>
+
+  <!--
+    Thumbnail scaffolding only. Two jobs, both driven by the index and both
+    inert when this file is opened on its own:
+
+      1. A card's iframe has pointer events off, so the component's :hover can
+         never fire there. The index says when a card is being looked at and
+         this file decides what that means — here, the --open modifier.
+      2. Quick look asks for the component's variants and steps through them.
+         The list lives here, because the index must never name a component
+         class. It reports labels; the index just draws dots.
+
+    The base markup above matches component.html. The pin and the kicker are
+    built here rather than sitting in the markup, because --map is the only
+    variant that wants them, and __kicker sets `display: block` — an author
+    rule the `hidden` attribute would lose to.
+  -->
+  <script>
+    (function () {
+      var CHANNEL = 'ui-reference-base';
+      var root = document.querySelector('.detail-reveal-card');
+      if (!root) return;
+
+      var BASE = 'detail-reveal-card';
+
+      var VARIANTS = [
+        {
+          id: 'light', label: 'Light', tone: 'light', classes: [], pin: false,
+          title: 'Field Notes', pill: 'Issue 04', action: 'Read the essay',
+          details: [
+            ['On details that survive a redesign', '18 pages, illustrated'],
+            ['Published March 2026', 'Written in the studio']
+          ],
+          meta: 'Free \u00b7 12 min read'
+        },
+        {
+          id: 'dark', label: 'Dark', tone: 'dark', classes: ['--dark'], pin: false,
+          title: 'Changelog', pill: 'v2.4', action: 'See what shipped',
+          details: [
+            ['Keyboard navigation everywhere', 'Eleven fixes, two new panels'],
+            ['Released this week', 'No migration needed']
+          ],
+          meta: '18 commits \u00b7 4 contributors'
+        },
+        {
+          id: 'map', label: 'Location', tone: 'light', classes: ['--map'], pin: true,
+          title: 'Denmark', pill: 'GMT+2', action: 'Copenhagen',
+          kicker: '55.6761\u00b0 N \u00b7 12.5683\u00b0 E',
+          details: [
+            ['14 Placeholder Street', '1050 Copenhagen K'],
+            ['+45 00 00 00 00', 'hello@example.com']
+          ],
+          meta: '86 people \u00b7 Est. 2019'
+        },
+        {
+          id: 'map-dark', label: 'Location, dark', tone: 'dark',
+          classes: ['--map', '--dark'], pin: true,
+          title: 'Denmark', pill: 'GMT+2', action: 'Copenhagen',
+          kicker: '55.6761\u00b0 N \u00b7 12.5683\u00b0 E',
+          details: [
+            ['14 Placeholder Street', '1050 Copenhagen K'],
+            ['+45 00 00 00 00', 'hello@example.com']
+          ],
+          meta: '86 people \u00b7 Est. 2019'
+        }
+      ];
+
+      var art = root.querySelector('.' + BASE + '__art');
+      var title = root.querySelector('.' + BASE + '__title');
+      var pill = root.querySelector('.' + BASE + '__pill');
+      var label = root.querySelector('.' + BASE + '__label');
+      var inner = root.querySelector('.' + BASE + '__reveal-inner');
+
+      function span(cls, text) {
+        var el = document.createElement('span');
+        el.className = cls;
+        if (text) el.textContent = text;
+        return el;
+      }
+
+      function apply(variant) {
+        // Only the variant classes are touched, so --open survives a switch.
+        VARIANTS.forEach(function (v) {
+          v.classes.forEach(function (c) { root.classList.remove(BASE + c); });
+        });
+        variant.classes.forEach(function (c) { root.classList.add(BASE + c); });
+
+        document.body.setAttribute('data-tone', variant.tone);
+        document.body.style.backgroundColor =
+          variant.tone === 'dark' ? '#101216' : '#f3f2ef';
+
+        title.textContent = variant.title;
+        pill.textContent = variant.pill;
+
+        // The label keeps its leading mark and swaps only the text after it.
+        label.lastChild.textContent = variant.action;
+
+        var pin = art.querySelector('.' + BASE + '__pin');
+        if (variant.pin && !pin) art.appendChild(span(BASE + '__pin'));
+        if (!variant.pin && pin) pin.remove();
+
+        inner.textContent = '';
+        if (variant.kicker) inner.appendChild(span(BASE + '__kicker', variant.kicker));
+        variant.details.forEach(function (pair) {
+          var group = span(BASE + '__detail');
+          group.appendChild(span(BASE + '__line', pair[0]));
+          group.appendChild(span(BASE + '__line ' + BASE + '__line--muted', pair[1]));
+          inner.appendChild(group);
+        });
+        inner.appendChild(span(BASE + '__meta', variant.meta));
+      }
+
+      apply(VARIANTS[0]);
+
+      window.addEventListener('message', function (event) {
+        var data = event.data;
+        if (!data || data.source !== CHANNEL) return;
+
+        if (data.type === 'preview') {
+          root.classList.toggle(BASE + '--open', data.active === true);
+        }
+
+        if (data.type === 'preview:variant') {
+          var variant = VARIANTS[data.index];
+          if (variant) apply(variant);
+        }
+      });
+
+      // Announces the listener is live, so a hover that landed before this
+      // file parsed is re-sent rather than lost — and hands the index the
+      // labels it needs for the quick-look dots.
+      if (window.parent !== window) {
+        window.parent.postMessage({
+          source: CHANNEL,
+          type: 'preview:ready',
+          variants: VARIANTS.map(function (v) { return { id: v.id, label: v.label }; })
+        }, '*');
+      }
+    })();
+  </script>
+
+</body>
+</html>
