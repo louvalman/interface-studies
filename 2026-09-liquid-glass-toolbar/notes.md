@@ -146,19 +146,16 @@ on each side, which is what the eye reads and what `getBBox()` leaves out.
   while the incoming one grows, and because they are adjacent in a flex row the
   highlight reads as one mass travelling.
 
-- **The label is set as chrome, not as body copy.** 13px/600, tracked +0.005em,
-  beside a 24px icon in a 48px pill. The first pass ran it at 16px/600, and that
-  is a body size: the word became the heaviest mass on a bar whose whole subject
-  is a row of 1.6px strokes, and the pill had to grow to hold it. A caption on a
+- **The label is set as chrome, not as body copy.** 13px/500, tracked +0.01em,
+  beside a 24px icon in a 48px pill. The first pass ran it at 16px/600 with the
+  small negative tracking a 16px word wants, and that is a body size and a body
+  weight: the word became the heaviest mass on a bar whose whole subject is a
+  row of 1.6px strokes, and the pill had to grow to hold it. A caption on a
   glyph is set a step under the text around it, not level with it — the icon
   leads and the label follows, which is also the reading order the component is
-  arguing for. The weight stayed at 600 and it is buying legibility, not
-  emphasis: on the dark materials the label sits at about 4:1 against the lit
-  pill, and 500 at 13px gives that up, because the stroke thins faster than the
-  contrast can carry. The size was what read as clunky; the weight is what keeps
-  the word on the surface. Tracking flips sign with the size — the small
-  negative that keeps a 16px word from looking loose closes the counters at 13px
-  — but only by a hair, since the face is already spaced for this size.
+  arguing for. Tracking flips sign with the size rather than carrying over: the
+  small negative that keeps a 16px word from looking loose closes the counters
+  at 13px and turns the word into a smudge on a translucent surface.
 
   Size, weight and tracking are three tunables now, not one hardcoded pair, and
   the feed came off the same token while they moved. One `--label-size` served
@@ -171,30 +168,10 @@ on each side, which is what the eye reads and what `getBBox()` leaves out.
   container scales `--row-size` now rather than `--label-size` — at that width
   the label track is shut and the feed is the only text left to scale.
 
-  The thumbnail bumps geometry and leaves all three alone, which is the opposite
-  of what it did. It lays the component out about 4% larger than base — a
-  thumbnail wants a slightly chunkier bar to survive being shown at 0.7 — and
-  the label used to be bumped 6–7% on top of that, type running hotter than the
-  geometry it sits in, in exactly the frame where the component is judged first.
-  The hairline still gets restated there, because that one is about device
-  pixels rather than about size; the type tokens are simply not in the block.
-
-- **The component's face is not the page's face, and that split is the point.**
-  The label is 13px on a surface that is deliberately blurring what sits behind
-  it. Plus Jakarta Sans was carrying both, and it is a display geometric — wide,
-  tall x-height, very round terminals — so it had nothing to hold that edge
-  with: soft at 16px and mush at 13px, and worst on the dark materials where the
-  blur has the most to do. Shrinking it made that visible rather than causing
-  it. The component declares Inter instead, which is drawn for this size — open
-  apertures, flat-cut terminals, and narrower, so the word costs the pill less
-  width at the same size.
-
-  `demo.html` keeps Plus Jakarta Sans for its own prose, because the page runs
-  at display sizes and that is the size the face is good at. Two faces on one
-  screen doing two jobs is the argument stated rather than a loose end. It costs
-  the demo one more family to load; `preview.html` has no prose at all, so it
-  loads Inter and nothing else, and dropped the two families it was fetching to
-  render zero words.
+  The thumbnail restates both, the way it restates the hairline. It lays the
+  component out about 4% larger than base, and the type used to be bumped 6–7%
+  on top of that — type running hotter than the geometry it sits in, in exactly
+  the frame where the component is judged first.
 
 - **The open state is five variables, declared once.** `--open` and the `:has()`
   that detects a real `aria-expanded` both set the same five custom properties,

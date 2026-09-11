@@ -20,7 +20,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap">
 
   <link rel="stylesheet" href="component.css">
 
@@ -37,7 +37,7 @@
       align-items: center;
       padding: 1rem;
       box-sizing: border-box;
-      font-family: Inter, system-ui, sans-serif;
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
 
       background-color: #e5e2da;
       background-image:
@@ -62,18 +62,13 @@
       to re-theme it; the selector names this file's wrapper, never a component
       class. It wins on source order rather than specificity, since this
       stylesheet comes after component.css.
-
-      Geometry only, and every type token is conspicuously absent. The bump is
-      about 4% — a thumbnail wants a slightly chunkier bar to survive being shown
-      at 0.7 — and type does not get to ride it. It used to: the label ran 6–7%
-      over base, which is the type running hotter than the geometry it sits in,
-      in the one frame where the component is judged first. A label is set at the
-      size it is set at; the sheet around it can be 4% larger without the word
-      following.
     */
     .preview__stack > * {
       --liquid-glass-toolbar-hit: 3.125rem;
       --liquid-glass-toolbar-icon: 1.5625rem;
+      --liquid-glass-toolbar-label-size: 0.875rem;
+      --liquid-glass-toolbar-row-size: 1rem;
+      --liquid-glass-toolbar-time-size: 0.875rem;
       --liquid-glass-toolbar-label-gap: 0.5625rem;
       --liquid-glass-toolbar-gap: 0.1875rem;
       --liquid-glass-toolbar-pad: 0.375rem;
