@@ -347,11 +347,10 @@ still the same shape, only smaller.
   layers meeting union to slightly more coverage, which is a hair of extra
   roundness at the tangent rather than a gap.
 
-  A window edge that lands on the block's own outer boundary is the exception
-  and stays hard: half the ramp would fall outside the box and be clipped, and
-  the block's first or last edge would render at half coverage. So only the
-  edges that are genuinely treads get it — descending that is a band's top,
-  ascending its bottom.
+  A window edge on the block's own outer boundary used to be the exception and
+  stay hard, because half a centred ramp there falls outside the box. It is not
+  an exception any more; see the outline note further down for what it cost and
+  how the tile is clamped instead.
 
   Feathering a tread does cost something, and it is worth knowing before
   copying this out. In the part of a tread that is interior — right of the
@@ -428,6 +427,53 @@ still the same shape, only smaller.
   eating half a pixel of that radius. The mask corners are now the *rounder*
   ones on the block, and the boundary walks down the left edge with a worst
   excess jump of 0.02/0.16/0.29 device px at 1x/2x/3x.
+
+  **The whole outline has to be the mask's, or half of it is aliased.** Getting
+  the ramp right only fixed the edges the mask actually drew. The rest of the
+  silhouette was the box's: the right edge, the block's outer top and bottom,
+  and the four outer corners came from the element's own background and
+  `border-radius`. A background edge is snapped to whole device pixels, so the
+  longest straight run in the shape rendered with NO antialiasing at all —
+  measured 0 partial device pixels there, and at every ascending tread, against
+  1 on the left edge and 1 on the arcs. Crisp is not the same as correct: a
+  snapped edge also sits up to half a pixel from where it belongs, and beside a
+  ramped edge it reads as a different kind of line. Three moves take it back:
+
+  - a **rim** layer on top of the union, the only one that does not `add`. It
+    is opaque across the band and ramps over the last feather, `intersect`ed
+    with everything beneath, so the same ramp lands on whatever reaches the
+    edge — the shallow strip and the deep one alike — without a second copy of
+    either. The silhouette ends half a feather inside the box.
+  - **every** tread ramps, the two on the block's own boundary included. Those
+    were left hard on the grounds that half a centred ramp would fall outside
+    the box and be clipped to half coverage — true, and the wrong fix. The tile
+    is clamped to the box instead and the ramp runs inward from it.
+  - the bottom ramp is authored **two feathers wide, three quarters of a
+    feather past the window edge**, and the top one is not. No principle in it,
+    only measurement: a ramp at the far end of a gradient renders about a
+    device pixel shorter and earlier than the same ramp at the near end, and at
+    one feather every bottom-facing edge came back aliased while every
+    top-facing one did not. Swept, that pair is what lands the tread's
+    half-coverage point on the arc's tangent — 0.25 device px off, against 0.50
+    at half a feather and 0.83 at one feather wide.
+
+  Every edge of the shape now measures one partial device pixel at 1x, 2x, 3x
+  and 4x — left run, right edge, outer top, outer bottom, both kinds of tread,
+  both arcs — which is what "one line" has to mean before it can be seen.
+
+  **`clip-path: shape()` was built and measured first, and it is the wrong
+  tool here** — worth writing down, because it is the obvious answer. One path
+  per band, analytically antialiased by the browser, no ramps, no bleeds, no
+  per-ratio feather: the whole apparatus above collapses. It draws correctly
+  on the first try. But a band is an element, the bands overlap, and a clipped
+  element's antialiased edge composited over its neighbour leaves a
+  one-device-row colour fringe along every join — measured 21% of the way to
+  the page on a drawn block and 6% on a stop one, with the two bands' fields
+  proven identical either side of it. The overlap is not optional (see the
+  hairline note above), and one element per block is not available either,
+  because a band's width is flex layout's answer, not a number this file
+  knows. It would also move the floor to Chrome 130 / Safari 18.4 / Firefox
+  139. A mask multiplies coverage inside one element and has no such join.
 
   The fillet's own tile is sized past its corner for the same reason the bands
   overlap: a full radius wider than the strip and a full `--…-step-overlap`

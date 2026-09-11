@@ -362,8 +362,7 @@
      their labels. */
   align-self: flex-start;
   margin-top: calc(-1 * var(--drawn-gradients-step-top));
-  height: calc(var(--drawn-gradients-step-rows) *
-               var(--drawn-gradients-step-row-h));
+  height: var(--drawn-gradients-step-box-h);
   pointer-events: none;
 
   /* The field spans the block and is anchored to the edge the bands share. */
@@ -373,6 +372,11 @@
 
   /* Where this band's own row sits inside its box — which is the whole block,
      see the note below. */
+  /* The band box spans the whole block, and several things need to say so in
+     a length rather than a percentage — a mask tile that has to stop at the
+     block's own edge cannot be clamped against `100%`. */
+  --drawn-gradients-step-box-h:
+    calc(var(--drawn-gradients-step-rows) * var(--drawn-gradients-step-row-h));
   --drawn-gradients-step-top:
     calc(var(--drawn-gradients-step-row) * var(--drawn-gradients-step-row-h));
   --drawn-gradients-step-bottom:
@@ -480,20 +484,29 @@
      interior everywhere, covered by the shallow strip between the corners and
      by a corner disc's bleed at them.
 
-     Only the edges that are actually visible treads get the ramp. A window
-     edge that lands on the block's own outer boundary must not be feathered —
-     half the ramp would fall outside the box and be clipped, and the block's
-     first or last edge would render at half coverage. --step-fade-top and
-     --step-fade-bottom are zero by default and the direction rules turn on
-     whichever side faces a tread. At zero the two stops collide and the edge
-     is hard again, which is exactly right at the block's boundary. */
-  --drawn-gradients-step-fade-top: 0px;
-  --drawn-gradients-step-fade-bottom: 0px;
+     Both window edges ramp, the ones on the block's own outer boundary
+     included. Those used to be left hard, on the grounds that half a centred
+     ramp would fall outside the box and be clipped to half coverage — true,
+     and the wrong fix. A hard mask edge is not crisp, it is ALIASED: the tile
+     snaps to whole pixels, so the block's top and bottom read as a different
+     kind of line from every edge the mask ramps. Measured 0 partial device
+     pixels there against 1 everywhere else.
+
+     The ramp stays inside the box instead, by clamping the tile rather than
+     dropping the stops: --step-deep-top and --step-deep-bottom below pull the
+     tile's edge back to the box's own when a centred ramp would cross it, so
+     the ramp runs inward from the boundary and full coverage is reached a half
+     feather in. Every tread then rasterises the same way. */
+  --drawn-gradients-step-fade-top: var(--drawn-gradients-step-feather);
+  --drawn-gradients-step-fade-bottom: var(--drawn-gradients-step-feather);
   --drawn-gradients-step-deep:
     linear-gradient(to bottom,
-                    #0000 0, #000 var(--drawn-gradients-step-fade-top),
-                    #000 calc(100% - var(--drawn-gradients-step-fade-bottom)),
-                    #0000 100%);
+                    #0000 var(--drawn-gradients-step-cut-bleed),
+                    #000 calc(var(--drawn-gradients-step-cut-bleed) +
+                              var(--drawn-gradients-step-fade-top)),
+                    #000 calc(100% - var(--drawn-gradients-step-cut-bleed) -
+                              2 * var(--drawn-gradients-step-fade-bottom)),
+                    #0000 calc(100% - var(--drawn-gradients-step-cut-bleed)));
   /* The shallow strip is positioned `left var(--step-edge)`, the same
      expression the corner discs use, and that is the whole trick. A corner
      disc's arc is tangent to its own tile's left edge, so the arc's leftmost
@@ -512,6 +525,56 @@
      plate was being subtracted from — two feathered layers meeting now union
      to slightly MORE coverage, which is a hair of extra roundness at the
      tangent rather than a gap. */
+
+  /* Where the deep strip's tile starts and stops: the window, opened by half
+     a feather so the ramp is centred on the tread — except where that would
+     take it past the box, and there it stops at the box and the ramp runs
+     inward. See the note on the fades above. */
+  --drawn-gradients-step-deep-top:
+    max(calc(var(--drawn-gradients-step-win-top) -
+             var(--drawn-gradients-step-fade-top) / 2), 0px);
+  --drawn-gradients-step-deep-bottom:
+    min(calc(var(--drawn-gradients-step-win-bottom) +
+             3 * var(--drawn-gradients-step-fade-bottom) / 4),
+        var(--drawn-gradients-step-box-h));
+  /* and the tile itself runs a bleed past both, so that neither ramp ends on a
+     tile edge, where a stop is lost to the same whole-pixel snapping the
+     corner discs bleed against. Everything past the ramp is transparent, so
+     the extra costs nothing; the box clips whatever falls outside it.
+
+     The two ends are not authored alike, and there is no principle in it,
+     only measurement. A ramp at the far end of a gradient renders about a
+     device pixel shorter and a device pixel earlier than the same ramp at the
+     near end: at one feather the block's outer bottom and every ascending
+     tread came back with ZERO partial device pixels — aliased — while the top
+     edge and every descending tread antialiased correctly. So the bottom ramp
+     is authored two feathers wide and its end is carried three quarters of a
+     feather past the window edge. Swept: that pair is the one that lands the
+     tread's half-coverage point on the arc's tangent (0.25 device px off,
+     against 0.50 at half a feather and 0.83 at one feather wide) while still
+     rendering a partial pixel at every ratio. */
+  --drawn-gradients-step-deep-h:
+    calc(var(--drawn-gradients-step-deep-bottom) -
+         var(--drawn-gradients-step-deep-top) +
+         2 * var(--drawn-gradients-step-cut-bleed));
+
+  /* The right edge, and the only layer here that does not union in. Everything
+     below it reaches the box's right edge, where the silhouette stops being
+     the mask's business and becomes the box's: a background edge is snapped to
+     whole device pixels, so the longest straight run in the shape rendered
+     with no antialiasing at all while the left edge beside it carried a
+     ramped pixel. Measured 0 partial device pixels against 1.
+
+     So the mask takes that edge back. One layer, opaque across the band and
+     ramping over the last feather, intersected with the union beneath it —
+     which puts the same ramp on whatever reaches the edge, the shallow strip
+     and the deep one alike, without a second copy of either. The silhouette
+     ends half a feather inside the box, which is where the ramp's half-
+     coverage point lands. */
+  --drawn-gradients-step-rim:
+    linear-gradient(to right,
+                    #000 calc(100% - var(--drawn-gradients-step-feather)),
+                    #0000 100%);
 
   /* A corner that is not this band's business this time round. */
   --drawn-gradients-step-nothing: linear-gradient(#0000, #0000);
@@ -740,20 +803,6 @@
          var(--drawn-gradients-step-overlap));
 }
 
-/* Which of a band's two window edges is a visible tread, and so gets the
-   ramp. Descending it is the top — the band above it is narrower, so the run
-   left of that band's fillet is this band's own top edge against the page.
-   Ascending it is the bottom. The other edge is either buried under a
-   neighbour or sitting on the block's outer boundary, where a ramp would
-   halve the coverage. */
-.drawn-gradients__usage--down .drawn-gradients__usage-row:not(:first-of-type) .drawn-gradients__surface--step {
-  --drawn-gradients-step-fade-top: var(--drawn-gradients-step-feather);
-}
-
-.drawn-gradients__usage--up .drawn-gradients__usage-row:not(:last-of-type) .drawn-gradients__surface--step {
-  --drawn-gradients-step-fade-bottom: var(--drawn-gradients-step-feather);
-}
-
 
 
 /* Radius, and it has to be corner by corner. A radius on every corner of every
@@ -866,19 +915,22 @@
   --drawn-gradients-step-edge: var(--drawn-gradients-step-radius);
 }
 
-/* Five layers, and every one of them unions in. Bottom to top: the deep strip
-   (inset a radius past the visible edge, spanning the whole row window), the
-   shallow strip (out to the visible edge, stopping short of any rounded
-   corner), the band's two left corners, and the fillet. See the note above for
-   why none of them subtracts. */
+/* Six layers. Five of them union in — bottom to top: the deep strip (inset a
+   radius past the visible edge, spanning the whole row window), the shallow
+   strip (out to the visible edge, stopping short of any rounded corner), the
+   band's two left corners, and the fillet. See the note above for why none of
+   them subtracts. The sixth is the rim, on top, and it intersects: it is the
+   right edge, and it applies to whatever the union put there. */
 .drawn-gradients__surface--step {
   mask-image:
+    var(--drawn-gradients-step-rim),
     var(--drawn-gradients-step-fill),
     var(--drawn-gradients-step-cut2),
     var(--drawn-gradients-step-cut1),
     var(--drawn-gradients-step-shallow),
     var(--drawn-gradients-step-deep);
   mask-size:
+    100% 100%,
     var(--drawn-gradients-step-fill-size),
     var(--drawn-gradients-step-cut-size),
     var(--drawn-gradients-step-cut-size),
@@ -886,20 +938,18 @@
               var(--drawn-gradients-step-b-top)),
     calc(100% - var(--drawn-gradients-step-edge) -
          var(--drawn-gradients-step-radius))
-      calc(var(--drawn-gradients-step-win-bottom) -
-           var(--drawn-gradients-step-win-top) +
-           var(--drawn-gradients-step-fade-top) / 2 +
-           var(--drawn-gradients-step-fade-bottom) / 2);
+      var(--drawn-gradients-step-deep-h);
   mask-position:
+    left 0 top 0,
     var(--drawn-gradients-step-fill-at),
     var(--drawn-gradients-step-cut2-at),
     var(--drawn-gradients-step-cut1-at),
     left 0 top var(--drawn-gradients-step-b-top),
     left calc(var(--drawn-gradients-step-edge) +
               var(--drawn-gradients-step-radius))
-      top calc(var(--drawn-gradients-step-win-top) -
-               var(--drawn-gradients-step-fade-top) / 2);
-  mask-composite: add, add, add, add, add;
+      top calc(var(--drawn-gradients-step-deep-top) -
+               var(--drawn-gradients-step-cut-bleed));
+  mask-composite: intersect, add, add, add, add, add;
   mask-repeat: no-repeat;
 }
 
