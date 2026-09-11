@@ -376,6 +376,26 @@ variants running on alabaster while moss was dressed and then removed from the
 document. Both now ask which sheet carries no material modifier — the variants
 are about behaviour, so they belong on the material the component ships with.
 
+A thumbnail is the component at 0.7 of its pixels, and one value cannot take
+that. Every rim, sheen and inner edge here is one CSS pixel, and on the thin
+materials the rim is most of what there is to see — crystal at 7% tint is
+carried by its edges, not by its body. The card lays the preview out at 480px
+and shows it at 336, so that line is rasterised at 0.7 of the pixel it asked
+for; on a 1x screen it drops under the one device pixel it takes to draw a line
+at all, stops being antialiased and washes out to a grey suggestion. The sheet
+does not get subtler, it gets unfinished.
+
+So the hairline is a variable rather than the seventeen literals it used to be,
+and `preview.html` restates it against the `preview:scale` the index reports —
+the frame cannot measure the factor for itself, since over `file://` the parent
+is behind an opaque origin. Only upward: a rim should shrink with everything
+else for as long as it still has a device pixel to live in, and `max(1, ...)`
+is the point at which it does not. Which means this changes nothing at 2x,
+where a 1px line already has 1.4 device pixels, and nothing in quick look,
+where the preview runs at full size. It is a custom property set from outside,
+which is what the property block is for, and no rule in the preview names a
+component class.
+
 Which of the two morphs the card plays on hover is a thumbnail decision, not a
 component one, and it went the other way at first. The panel is the headline
 move, so `active` opened the panel — but a card 336px wide unfolding into four

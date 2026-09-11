@@ -977,6 +977,31 @@
         if (panel) panel.setAttribute('aria-expanded', open ? 'true' : 'false');
       }
 
+      /*
+        Every rim, sheen and inner edge in this component is one CSS pixel, and
+        on the thinnest materials the rim is most of what there is to see — a
+        sheet at 7% tint is carried by its edges, not by its body. A card lays
+        this out at 480px and shows it at 336, so that line is rasterised at 0.7
+        of the pixel it asked for; on a 1x screen it falls under one device
+        pixel, stops being drawn as a line and washes out to a grey suggestion.
+
+        The frame cannot measure the factor itself — over file:// the parent is
+        behind an opaque origin — so the index reports it and the hairline is
+        restated against it here. Only upward: a rim should shrink with
+        everything else while it still has a device pixel to live in, and the
+        floor is the point at which it does not. A tunable set from outside,
+        which is what the property block is for; no rule here names a component
+        class. Standalone, no message arrives and the authored 1px stands.
+      */
+      function setScale(scale) {
+        if (!(scale > 0)) return;
+        var dpr = window.devicePixelRatio || 1;
+        var w = Math.max(1, 1 / (dpr * scale));
+        sheets.forEach(function (el) {
+          el.style.setProperty('--liquid-glass-toolbar-hairline', w.toFixed(3) + 'px');
+        });
+      }
+
       function apply(variant, active) {
         setStack(variant.stack);
         (variant.stack ? sheets : [lead]).forEach(function (el) {
@@ -990,6 +1015,10 @@
 
         if (data.type === 'preview') {
           apply(showing, data.active === true);
+        }
+
+        if (data.type === 'preview:scale') {
+          setScale(data.scale);
         }
 
         if (data.type === 'preview:variant') {
