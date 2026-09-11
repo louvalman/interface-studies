@@ -679,7 +679,12 @@ body.is-locked {
   }
 }
 
+/* Grows to fill the card so the call to action can sit at the bottom of it.
+   The track stretches every card to the tallest, so a body that fills its card
+   puts every "Open demo" on one line across the rail — notes run four lines or
+   five, and the links used to land wherever each note happened to stop. */
 .piece__body {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -730,7 +735,11 @@ body.is-locked {
 }
 
 .piece__cta {
-  margin-top: 0.6rem;
+  /* auto, not a fixed step: it takes up whatever the shorter note left over,
+     which is what lines the row up. The 0.6rem is the floor, for the card that
+     happens to be the tallest and has nothing spare. */
+  margin-top: auto;
+  padding-top: 0.6rem;
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
