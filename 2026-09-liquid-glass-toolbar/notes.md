@@ -352,7 +352,7 @@ rather than page prose.
 The card shows all five materials stacked, which is a deliberate departure from
 this repo's rule that a thumbnail holds one instance and no second copy. The rule
 is there to stop a thumbnail turning into a small demo page, and it is the right
-rule — but what this reference offers is a construction that comes in four
+rule — but what this reference offers is a construction that comes in five
 materials, and one bar cannot advertise that. So the card is the set, with no
 captions and no state labels, and the variant dots step into a single bar where
 a panel has somewhere to open. The stagger down the stack costs nothing to add
@@ -361,6 +361,52 @@ shorthand: a delay goes on the end of it without the component knowing. The
 sheets are added and removed rather than hidden — `component.css` gives the root
 a `display`, and an author rule beats the user-agent `[hidden]` one, which would
 have left all five on screen.
+
+Which makes rebuilding the stack a thing that has to be done sparingly, and
+getting the order right is what got that wrong. Appending all five in order is
+the tidy way to both restore the missing sheets and sort them, and it is also a
+*move* for the four already in place — a move is a removal and an insertion, and
+a re-inserted element has no before-change style, so every transition on it is
+cancelled and the next one never starts. Hover runs through the same function,
+and on hover the stack is already built, so the card went dead: the search field
+arrived open instead of opening. The state was landing correctly the whole time,
+which is why it looked like a CSS problem. `getAnimations()` is what settled it
+— nought running where the same class change made by hand produced fifty — and
+the repair is to touch only the sheets that are actually out of place.
+
+They run lightest to darkest — alabaster, crystal, slate, moss, basalt — and
+that order had to be measured rather than reasoned. Brightness and tint pull
+opposite ways: alabaster's `brightness: 1.02` makes it lighter than the page it
+sits on, while crystal's 7% tint leaves it near enough the page itself. Sampled
+off a render, moss and slate come out identical to four decimal places, so which
+of the two goes first is a coin flip settled on hue, not a measurement.
+
+Reordering broke two index assumptions that had been silently correct only
+because the default happened to sit first: the single-bar variants took
+`sheets[0]`, and the collapse kept `i === 0`. Together they left the behaviour
+variants running on alabaster while moss was dressed and then removed from the
+document. Both now ask which sheet carries no material modifier — the variants
+are about behaviour, so they belong on the material the component ships with.
+
+A thumbnail is the component at 0.7 of its pixels, and one value cannot take
+that. Every rim, sheen and inner edge here is one CSS pixel, and on the thin
+materials the rim is most of what there is to see — crystal at 7% tint is
+carried by its edges, not by its body. The card lays the preview out at 480px
+and shows it at 336, so that line is rasterised at 0.7 of the pixel it asked
+for; on a 1x screen it drops under the one device pixel it takes to draw a line
+at all, stops being antialiased and washes out to a grey suggestion. The sheet
+does not get subtler, it gets unfinished.
+
+So the hairline is a variable rather than the seventeen literals it used to be,
+and `preview.html` restates it against the `preview:scale` the index reports —
+the frame cannot measure the factor for itself, since over `file://` the parent
+is behind an opaque origin. Only upward: a rim should shrink with everything
+else for as long as it still has a device pixel to live in, and `max(1, ...)`
+is the point at which it does not. Which means this changes nothing at 2x,
+where a 1px line already has 1.4 device pixels, and nothing in quick look,
+where the preview runs at full size. It is a custom property set from outside,
+which is what the property block is for, and no rule in the preview names a
+component class.
 
 Which of the two morphs the card plays on hover is a thumbnail decision, not a
 component one, and it went the other way at first. The panel is the headline
