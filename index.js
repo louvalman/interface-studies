@@ -89,7 +89,7 @@
         + 'fundet andre steder; ingen er en kopi af en. Hver mappes notes.md '
         + 'nævner sin kilde og de beslutninger, den holder fast i.',
       'foot.typefaces': 'Skrifttyper',
-      'foot.stack': 'Teknologi',
+      'foot.stack': 'Stack',
       'foot.stackVal': 'HTML og CSS, intet byggetrin',
       'foot.references': 'Referencer',
       'foot.builtBy': 'Bygget af',
