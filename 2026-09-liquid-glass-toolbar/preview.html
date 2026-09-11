@@ -1,0 +1,1069 @@
+<!doctype html>
+<!--
+  The thumbnail the landing page iframes.
+
+  A deviation from the usual "one instance, no second copy", and a deliberate
+  one: what this reference offers is a construction that comes in five
+  materials, and a single bar cannot advertise that. The card shows the set; the
+  variant dots step into one bar and its states, where a panel has somewhere to
+  open. No captions and no state labels either way — the materials are the
+  picture.
+
+  Kept in step with component.html by hand: each sheet below is that file's
+  markup, unedited apart from the material class and its aria-label.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>2026-09-liquid-glass-toolbar &mdash; preview</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap">
+
+  <link rel="stylesheet" href="component.css">
+
+  <style>
+    /* Thumbnail scaffolding only. Nothing here names a component class. */
+    html { height: 100%; }
+
+    body {
+      margin: 0;
+      min-height: 100%;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      justify-items: center;
+      align-items: center;
+      padding: 1rem;
+      box-sizing: border-box;
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+
+      background-color: #e5e2da;
+      background-image:
+        linear-gradient(105deg, rgba(34, 32, 27, 0.15), rgba(34, 32, 27, 0) 46%),
+        linear-gradient(285deg, rgba(255, 253, 248, 0.85), rgba(255, 253, 248, 0) 48%),
+        radial-gradient(58% 46% at 12% 0%, rgba(180, 85, 47, 0.07), transparent 68%),
+        radial-gradient(46% 38% at 92% 4%, rgba(78, 110, 190, 0.06), transparent 70%),
+        linear-gradient(168deg, #efece4 0%, #e3dfd6 55%, #d4d0c5 100%);
+    }
+
+    .preview__stack {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      justify-items: center;
+      row-gap: 1.5rem;
+      width: 100%;
+    }
+
+    /*
+      The size the thumbnail wants, set from outside on every sheet at once.
+      These are the component's own custom properties, which is the supported way
+      to re-theme it; the selector names this file's wrapper, never a component
+      class. It wins on source order rather than specificity, since this
+      stylesheet comes after component.css.
+    */
+    .preview__stack > * {
+      --liquid-glass-toolbar-hit: 3.125rem;
+      --liquid-glass-toolbar-icon: 1.5625rem;
+      --liquid-glass-toolbar-label-size: 1.0625rem;
+      --liquid-glass-toolbar-time-size: 0.9375rem;
+      --liquid-glass-toolbar-label-gap: 0.5625rem;
+      --liquid-glass-toolbar-gap: 0.1875rem;
+      --liquid-glass-toolbar-pad: 0.375rem;
+      --liquid-glass-toolbar-split: 2.25rem;
+      --liquid-glass-toolbar-search-w: 6rem;
+      --liquid-glass-toolbar-panel-w: 24rem;
+      --liquid-glass-toolbar-row-h: 3.625rem;
+      --liquid-glass-toolbar-avatar: 2.5rem;
+      --liquid-glass-toolbar-dot: 0.5rem;
+      --liquid-glass-toolbar-badge: 0.4375rem;
+    }
+
+    /*
+      A stagger down the stack, and the reason it can be set from out here is
+      that the motion is a custom property too — the value is a whole shorthand,
+      so a delay goes on the end of it without the component knowing.
+    */
+    .preview__stack > *:nth-child(2) {
+      --liquid-glass-toolbar-reveal: 220ms cubic-bezier(0.33, 1, 0.68, 1) 70ms;
+    }
+    .preview__stack > *:nth-child(3) {
+      --liquid-glass-toolbar-reveal: 220ms cubic-bezier(0.33, 1, 0.68, 1) 140ms;
+    }
+    .preview__stack > *:nth-child(4) {
+      --liquid-glass-toolbar-reveal: 220ms cubic-bezier(0.33, 1, 0.68, 1) 210ms;
+    }
+    .preview__stack > *:nth-child(5) {
+      --liquid-glass-toolbar-reveal: 220ms cubic-bezier(0.33, 1, 0.68, 1) 280ms;
+    }
+  </style>
+</head>
+<body>
+  <div class="preview__stack" data-stack>
+
+      <nav class="liquid-glass-toolbar liquid-glass-toolbar--alabaster" aria-label="Primary, alabaster">
+        <div class="liquid-glass-toolbar__shell">
+
+          <div class="liquid-glass-toolbar__bar">
+
+            <a class="liquid-glass-toolbar__action" href="#" aria-current="page">
+              <span class="liquid-glass-toolbar__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M4.4 19.5v-7.4a7.6 7.6 0 0 1 15.2 0v7.4" />
+                  <path d="M2.6 19.5h18.8" />
+                </svg>
+              </span>
+              <span class="liquid-glass-toolbar__reveal">
+                <span class="liquid-glass-toolbar__label">Home</span>
+              </span>
+            </a>
+
+            <!-- The search item is a <label>, so a click anywhere on the icon focuses
+                 the input and `:focus-within` opens the field. No JavaScript decides
+                 this one. -->
+            <label class="liquid-glass-toolbar__action liquid-glass-toolbar__action--search">
+              <span class="liquid-glass-toolbar__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="10.4" cy="10.4" r="6.4" />
+                  <path d="M15.2 15.2 20 20" />
+                </svg>
+              </span>
+              <span class="liquid-glass-toolbar__reveal">
+                <input class="liquid-glass-toolbar__input" type="text"
+                       placeholder="Search…" aria-label="Search" />
+              </span>
+            </label>
+
+            <a class="liquid-glass-toolbar__action" href="#" aria-current="false">
+              <span class="liquid-glass-toolbar__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="3.4" y="4.4" width="17.2" height="6.2" rx="1.7" />
+                  <rect x="3.4" y="13.4" width="17.2" height="6.2" rx="1.7" />
+                  <path d="M9.9 7.5h4.2M9.9 16.5h4.2" />
+                </svg>
+              </span>
+              <span class="liquid-glass-toolbar__reveal">
+                <span class="liquid-glass-toolbar__label">Archive</span>
+              </span>
+            </a>
+
+            <button class="liquid-glass-toolbar__action liquid-glass-toolbar__action--panel"
+                    type="button" aria-expanded="false">
+              <span class="liquid-glass-toolbar__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M4.2 14.5v4M9.4 9.7v8.8M14.6 5.5v13M19.8 11.9v6.6" />
+                </svg>
+                <span class="liquid-glass-toolbar__badge" aria-hidden="true"></span>
+              </span>
+              <span class="liquid-glass-toolbar__reveal">
+                <span class="liquid-glass-toolbar__label">Activity</span>
+              </span>
+            </button>
+
+            <a class="liquid-glass-toolbar__action liquid-glass-toolbar__action--trailing" href="#" aria-current="false">
+              <span class="liquid-glass-toolbar__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M3.6 8.2h5.6M14.8 8.2h5.6" />
+                  <circle cx="12" cy="8.2" r="2.5" />
+                  <path d="M3.6 15.8h2.6M11.8 15.8h8.6" />
+                  <circle cx="9" cy="15.8" r="2.5" />
+                </svg>
+              </span>
+              <span class="liquid-glass-toolbar__reveal">
+                <span class="liquid-glass-toolbar__label">Settings</span>
+              </span>
+            </a>
+
+          </div>
+
+          <!-- The panel is inside the same glass surface as the bar. Opening it does
+               not slide a second sheet out from underneath — the one surface changes
+               shape. -->
+          <div class="liquid-glass-toolbar__panel">
+            <ul class="liquid-glass-toolbar__feed">
+
+              <li>
+                <a class="liquid-glass-toolbar__row liquid-glass-toolbar__row--unread" href="#">
+                  <span class="liquid-glass-toolbar__avatar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <circle cx="12" cy="9" r="3.6" />
+                      <path d="M5 20a7 7 0 0 1 14 0" />
+                    </svg>
+                  </span>
+                  <span class="liquid-glass-toolbar__line">
+                    <strong class="liquid-glass-toolbar__who">Mara</strong>
+                    commented on Toolbar morph
+                  </span>
+                  <span class="liquid-glass-toolbar__time">2m</span>
+                </a>
+              </li>
+
+              <li>
+                <a class="liquid-glass-toolbar__row liquid-glass-toolbar__row--unread" href="#">
+                  <span class="liquid-glass-toolbar__avatar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M12 3.4c.6 4.2 4.4 8 8.6 8.6-4.2.6-8 4.4-8.6 8.6-.6-4.2-4.4-8-8.6-8.6 4.2-.6 8-4.4 8.6-8.6z" />
+                    </svg>
+                  </span>
+                  <span class="liquid-glass-toolbar__line">
+                    <strong class="liquid-glass-toolbar__who">Preview</strong>
+                    build finished in 42s
+                  </span>
+                  <span class="liquid-glass-toolbar__time">14m</span>
+                </a>
+              </li>
+
+              <li>
+                <a class="liquid-glass-toolbar__row" href="#">
+                  <span class="liquid-glass-toolbar__avatar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <circle cx="12" cy="9" r="3.6" />
+                      <path d="M5 20a7 7 0 0 1 14 0" />
+                    </svg>
+                  </span>
+                  <span class="liquid-glass-toolbar__line">
+                    <strong class="liquid-glass-toolbar__who">Idris</strong>
+                    requested a review
+                  </span>
+                  <span class="liquid-glass-toolbar__time">1h</span>
+                </a>
+              </li>
+
+              <li>
+                <a class="liquid-glass-toolbar__row" href="#">
+                  <span class="liquid-glass-toolbar__avatar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M11.2 3.6H20v8.8l-8 8a1.9 1.9 0 0 1-2.7 0l-6.1-6.1a1.9 1.9 0 0 1 0-2.7z" />
+                      <circle cx="16.1" cy="7.6" r="1.4" />
+                    </svg>
+                  </span>
+                  <span class="liquid-glass-toolbar__line">
+                    <strong class="liquid-glass-toolbar__who">Invoice</strong>
+                    #2214 was paid
+                  </span>
+                  <span class="liquid-glass-toolbar__time">3h</span>
+                </a>
+              </li>
+
+            </ul>
+          </div>
+
+        </div>
+      </nav>
+
+      <nav class="liquid-glass-toolbar liquid-glass-toolbar--crystal" aria-label="Primary, crystal">
+        <div class="liquid-glass-toolbar__shell">
+
+          <div class="liquid-glass-toolbar__bar">
+
+            <a class="liquid-glass-toolbar__action" href="#" aria-current="page">
+              <span class="liquid-glass-toolbar__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M4.4 19.5v-7.4a7.6 7.6 0 0 1 15.2 0v7.4" />
+                  <path d="M2.6 19.5h18.8" />
+                </svg>
+              </span>
+              <span class="liquid-glass-toolbar__reveal">
+                <span class="liquid-glass-toolbar__label">Home</span>
+              </span>
+            </a>
+
+                  <label class="liquid-glass-toolbar__action liquid-glass-toolbar__action--search">
+              <span class="liquid-glass-toolbar__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="10.4" cy="10.4" r="6.4" />
+                  <path d="M15.2 15.2 20 20" />
+                </svg>
+              </span>
+              <span class="liquid-glass-toolbar__reveal">
+                <input class="liquid-glass-toolbar__input" type="text"
+                       placeholder="Search…" aria-label="Search" />
+              </span>
+            </label>
+
+            <a class="liquid-glass-toolbar__action" href="#" aria-current="false">
+              <span class="liquid-glass-toolbar__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="3.4" y="4.4" width="17.2" height="6.2" rx="1.7" />
+                  <rect x="3.4" y="13.4" width="17.2" height="6.2" rx="1.7" />
+                  <path d="M9.9 7.5h4.2M9.9 16.5h4.2" />
+                </svg>
+              </span>
+              <span class="liquid-glass-toolbar__reveal">
+                <span class="liquid-glass-toolbar__label">Archive</span>
+              </span>
+            </a>
+
+            <button class="liquid-glass-toolbar__action liquid-glass-toolbar__action--panel"
+                    type="button" aria-expanded="false">
+              <span class="liquid-glass-toolbar__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M4.2 14.5v4M9.4 9.7v8.8M14.6 5.5v13M19.8 11.9v6.6" />
+                </svg>
+                <span class="liquid-glass-toolbar__badge" aria-hidden="true"></span>
+              </span>
+              <span class="liquid-glass-toolbar__reveal">
+                <span class="liquid-glass-toolbar__label">Activity</span>
+              </span>
+            </button>
+
+            <a class="liquid-glass-toolbar__action liquid-glass-toolbar__action--trailing" href="#" aria-current="false">
+              <span class="liquid-glass-toolbar__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M3.6 8.2h5.6M14.8 8.2h5.6" />
+                  <circle cx="12" cy="8.2" r="2.5" />
+                  <path d="M3.6 15.8h2.6M11.8 15.8h8.6" />
+                  <circle cx="9" cy="15.8" r="2.5" />
+                </svg>
+              </span>
+              <span class="liquid-glass-toolbar__reveal">
+                <span class="liquid-glass-toolbar__label">Settings</span>
+              </span>
+            </a>
+
+          </div>
+
+              <div class="liquid-glass-toolbar__panel">
+            <ul class="liquid-glass-toolbar__feed">
+
+              <li>
+                <a class="liquid-glass-toolbar__row liquid-glass-toolbar__row--unread" href="#">
+                  <span class="liquid-glass-toolbar__avatar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <circle cx="12" cy="9" r="3.6" />
+                      <path d="M5 20a7 7 0 0 1 14 0" />
+                    </svg>
+                  </span>
+                  <span class="liquid-glass-toolbar__line">
+                    <strong class="liquid-glass-toolbar__who">Mara</strong>
+                    commented on Toolbar morph
+                  </span>
+                  <span class="liquid-glass-toolbar__time">2m</span>
+                </a>
+              </li>
+
+              <li>
+                <a class="liquid-glass-toolbar__row liquid-glass-toolbar__row--unread" href="#">
+                  <span class="liquid-glass-toolbar__avatar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M12 3.4c.6 4.2 4.4 8 8.6 8.6-4.2.6-8 4.4-8.6 8.6-.6-4.2-4.4-8-8.6-8.6 4.2-.6 8-4.4 8.6-8.6z" />
+                    </svg>
+                  </span>
+                  <span class="liquid-glass-toolbar__line">
+                    <strong class="liquid-glass-toolbar__who">Preview</strong>
+                    build finished in 42s
+                  </span>
+                  <span class="liquid-glass-toolbar__time">14m</span>
+                </a>
+              </li>
+
+              <li>
+                <a class="liquid-glass-toolbar__row" href="#">
+                  <span class="liquid-glass-toolbar__avatar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <circle cx="12" cy="9" r="3.6" />
+                      <path d="M5 20a7 7 0 0 1 14 0" />
+                    </svg>
+                  </span>
+                  <span class="liquid-glass-toolbar__line">
+                    <strong class="liquid-glass-toolbar__who">Idris</strong>
+                    requested a review
+                  </span>
+                  <span class="liquid-glass-toolbar__time">1h</span>
+                </a>
+              </li>
+
+              <li>
+                <a class="liquid-glass-toolbar__row" href="#">
+                  <span class="liquid-glass-toolbar__avatar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M11.2 3.6H20v8.8l-8 8a1.9 1.9 0 0 1-2.7 0l-6.1-6.1a1.9 1.9 0 0 1 0-2.7z" />
+                      <circle cx="16.1" cy="7.6" r="1.4" />
+                    </svg>
+                  </span>
+                  <span class="liquid-glass-toolbar__line">
+                    <strong class="liquid-glass-toolbar__who">Invoice</strong>
+                    #2214 was paid
+                  </span>
+                  <span class="liquid-glass-toolbar__time">3h</span>
+                </a>
+              </li>
+
+            </ul>
+          </div>
+
+        </div>
+      </nav>
+
+      <nav class="liquid-glass-toolbar liquid-glass-toolbar--slate" aria-label="Primary, slate">
+        <div class="liquid-glass-toolbar__shell">
+
+          <div class="liquid-glass-toolbar__bar">
+
+            <a class="liquid-glass-toolbar__action" href="#" aria-current="page">
+              <span class="liquid-glass-toolbar__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M4.4 19.5v-7.4a7.6 7.6 0 0 1 15.2 0v7.4" />
+                  <path d="M2.6 19.5h18.8" />
+                </svg>
+              </span>
+              <span class="liquid-glass-toolbar__reveal">
+                <span class="liquid-glass-toolbar__label">Home</span>
+              </span>
+            </a>
+
+            <!-- The search item is a <label>, so a click anywhere on the icon focuses
+                 the input and `:focus-within` opens the field. No JavaScript decides
+                 this one. -->
+            <label class="liquid-glass-toolbar__action liquid-glass-toolbar__action--search">
+              <span class="liquid-glass-toolbar__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="10.4" cy="10.4" r="6.4" />
+                  <path d="M15.2 15.2 20 20" />
+                </svg>
+              </span>
+              <span class="liquid-glass-toolbar__reveal">
+                <input class="liquid-glass-toolbar__input" type="text"
+                       placeholder="Search…" aria-label="Search" />
+              </span>
+            </label>
+
+            <a class="liquid-glass-toolbar__action" href="#" aria-current="false">
+              <span class="liquid-glass-toolbar__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="3.4" y="4.4" width="17.2" height="6.2" rx="1.7" />
+                  <rect x="3.4" y="13.4" width="17.2" height="6.2" rx="1.7" />
+                  <path d="M9.9 7.5h4.2M9.9 16.5h4.2" />
+                </svg>
+              </span>
+              <span class="liquid-glass-toolbar__reveal">
+                <span class="liquid-glass-toolbar__label">Archive</span>
+              </span>
+            </a>
+
+            <button class="liquid-glass-toolbar__action liquid-glass-toolbar__action--panel"
+                    type="button" aria-expanded="false">
+              <span class="liquid-glass-toolbar__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M4.2 14.5v4M9.4 9.7v8.8M14.6 5.5v13M19.8 11.9v6.6" />
+                </svg>
+                <span class="liquid-glass-toolbar__badge" aria-hidden="true"></span>
+              </span>
+              <span class="liquid-glass-toolbar__reveal">
+                <span class="liquid-glass-toolbar__label">Activity</span>
+              </span>
+            </button>
+
+            <a class="liquid-glass-toolbar__action liquid-glass-toolbar__action--trailing" href="#" aria-current="false">
+              <span class="liquid-glass-toolbar__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M3.6 8.2h5.6M14.8 8.2h5.6" />
+                  <circle cx="12" cy="8.2" r="2.5" />
+                  <path d="M3.6 15.8h2.6M11.8 15.8h8.6" />
+                  <circle cx="9" cy="15.8" r="2.5" />
+                </svg>
+              </span>
+              <span class="liquid-glass-toolbar__reveal">
+                <span class="liquid-glass-toolbar__label">Settings</span>
+              </span>
+            </a>
+
+          </div>
+
+          <!-- The panel is inside the same glass surface as the bar. Opening it does
+               not slide a second sheet out from underneath — the one surface changes
+               shape. -->
+          <div class="liquid-glass-toolbar__panel">
+            <ul class="liquid-glass-toolbar__feed">
+
+              <li>
+                <a class="liquid-glass-toolbar__row liquid-glass-toolbar__row--unread" href="#">
+                  <span class="liquid-glass-toolbar__avatar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <circle cx="12" cy="9" r="3.6" />
+                      <path d="M5 20a7 7 0 0 1 14 0" />
+                    </svg>
+                  </span>
+                  <span class="liquid-glass-toolbar__line">
+                    <strong class="liquid-glass-toolbar__who">Mara</strong>
+                    commented on Toolbar morph
+                  </span>
+                  <span class="liquid-glass-toolbar__time">2m</span>
+                </a>
+              </li>
+
+              <li>
+                <a class="liquid-glass-toolbar__row liquid-glass-toolbar__row--unread" href="#">
+                  <span class="liquid-glass-toolbar__avatar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M12 3.4c.6 4.2 4.4 8 8.6 8.6-4.2.6-8 4.4-8.6 8.6-.6-4.2-4.4-8-8.6-8.6 4.2-.6 8-4.4 8.6-8.6z" />
+                    </svg>
+                  </span>
+                  <span class="liquid-glass-toolbar__line">
+                    <strong class="liquid-glass-toolbar__who">Preview</strong>
+                    build finished in 42s
+                  </span>
+                  <span class="liquid-glass-toolbar__time">14m</span>
+                </a>
+              </li>
+
+              <li>
+                <a class="liquid-glass-toolbar__row" href="#">
+                  <span class="liquid-glass-toolbar__avatar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <circle cx="12" cy="9" r="3.6" />
+                      <path d="M5 20a7 7 0 0 1 14 0" />
+                    </svg>
+                  </span>
+                  <span class="liquid-glass-toolbar__line">
+                    <strong class="liquid-glass-toolbar__who">Idris</strong>
+                    requested a review
+                  </span>
+                  <span class="liquid-glass-toolbar__time">1h</span>
+                </a>
+              </li>
+
+              <li>
+                <a class="liquid-glass-toolbar__row" href="#">
+                  <span class="liquid-glass-toolbar__avatar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M11.2 3.6H20v8.8l-8 8a1.9 1.9 0 0 1-2.7 0l-6.1-6.1a1.9 1.9 0 0 1 0-2.7z" />
+                      <circle cx="16.1" cy="7.6" r="1.4" />
+                    </svg>
+                  </span>
+                  <span class="liquid-glass-toolbar__line">
+                    <strong class="liquid-glass-toolbar__who">Invoice</strong>
+                    #2214 was paid
+                  </span>
+                  <span class="liquid-glass-toolbar__time">3h</span>
+                </a>
+              </li>
+
+            </ul>
+          </div>
+
+        </div>
+      </nav>
+
+      <nav class="liquid-glass-toolbar" aria-label="Primary, moss">
+        <div class="liquid-glass-toolbar__shell">
+
+          <div class="liquid-glass-toolbar__bar">
+
+            <a class="liquid-glass-toolbar__action" href="#" aria-current="page">
+              <span class="liquid-glass-toolbar__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M4.4 19.5v-7.4a7.6 7.6 0 0 1 15.2 0v7.4" />
+                  <path d="M2.6 19.5h18.8" />
+                </svg>
+              </span>
+              <span class="liquid-glass-toolbar__reveal">
+                <span class="liquid-glass-toolbar__label">Home</span>
+              </span>
+            </a>
+
+            <!-- The search item is a <label>, so a click anywhere on the icon focuses
+                 the input and `:focus-within` opens the field. No JavaScript decides
+                 this one. -->
+            <label class="liquid-glass-toolbar__action liquid-glass-toolbar__action--search">
+              <span class="liquid-glass-toolbar__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="10.4" cy="10.4" r="6.4" />
+                  <path d="M15.2 15.2 20 20" />
+                </svg>
+              </span>
+              <span class="liquid-glass-toolbar__reveal">
+                <input class="liquid-glass-toolbar__input" type="text"
+                       placeholder="Search…" aria-label="Search" />
+              </span>
+            </label>
+
+            <a class="liquid-glass-toolbar__action" href="#" aria-current="false">
+              <span class="liquid-glass-toolbar__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="3.4" y="4.4" width="17.2" height="6.2" rx="1.7" />
+                  <rect x="3.4" y="13.4" width="17.2" height="6.2" rx="1.7" />
+                  <path d="M9.9 7.5h4.2M9.9 16.5h4.2" />
+                </svg>
+              </span>
+              <span class="liquid-glass-toolbar__reveal">
+                <span class="liquid-glass-toolbar__label">Archive</span>
+              </span>
+            </a>
+
+            <button class="liquid-glass-toolbar__action liquid-glass-toolbar__action--panel"
+                    type="button" aria-expanded="false">
+              <span class="liquid-glass-toolbar__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M4.2 14.5v4M9.4 9.7v8.8M14.6 5.5v13M19.8 11.9v6.6" />
+                </svg>
+                <span class="liquid-glass-toolbar__badge" aria-hidden="true"></span>
+              </span>
+              <span class="liquid-glass-toolbar__reveal">
+                <span class="liquid-glass-toolbar__label">Activity</span>
+              </span>
+            </button>
+
+            <a class="liquid-glass-toolbar__action liquid-glass-toolbar__action--trailing" href="#" aria-current="false">
+              <span class="liquid-glass-toolbar__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M3.6 8.2h5.6M14.8 8.2h5.6" />
+                  <circle cx="12" cy="8.2" r="2.5" />
+                  <path d="M3.6 15.8h2.6M11.8 15.8h8.6" />
+                  <circle cx="9" cy="15.8" r="2.5" />
+                </svg>
+              </span>
+              <span class="liquid-glass-toolbar__reveal">
+                <span class="liquid-glass-toolbar__label">Settings</span>
+              </span>
+            </a>
+
+          </div>
+
+          <!-- The panel is inside the same glass surface as the bar. Opening it does
+               not slide a second sheet out from underneath — the one surface changes
+               shape. -->
+          <div class="liquid-glass-toolbar__panel">
+            <ul class="liquid-glass-toolbar__feed">
+
+              <li>
+                <a class="liquid-glass-toolbar__row liquid-glass-toolbar__row--unread" href="#">
+                  <span class="liquid-glass-toolbar__avatar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <circle cx="12" cy="9" r="3.6" />
+                      <path d="M5 20a7 7 0 0 1 14 0" />
+                    </svg>
+                  </span>
+                  <span class="liquid-glass-toolbar__line">
+                    <strong class="liquid-glass-toolbar__who">Mara</strong>
+                    commented on Toolbar morph
+                  </span>
+                  <span class="liquid-glass-toolbar__time">2m</span>
+                </a>
+              </li>
+
+              <li>
+                <a class="liquid-glass-toolbar__row liquid-glass-toolbar__row--unread" href="#">
+                  <span class="liquid-glass-toolbar__avatar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M12 3.4c.6 4.2 4.4 8 8.6 8.6-4.2.6-8 4.4-8.6 8.6-.6-4.2-4.4-8-8.6-8.6 4.2-.6 8-4.4 8.6-8.6z" />
+                    </svg>
+                  </span>
+                  <span class="liquid-glass-toolbar__line">
+                    <strong class="liquid-glass-toolbar__who">Preview</strong>
+                    build finished in 42s
+                  </span>
+                  <span class="liquid-glass-toolbar__time">14m</span>
+                </a>
+              </li>
+
+              <li>
+                <a class="liquid-glass-toolbar__row" href="#">
+                  <span class="liquid-glass-toolbar__avatar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <circle cx="12" cy="9" r="3.6" />
+                      <path d="M5 20a7 7 0 0 1 14 0" />
+                    </svg>
+                  </span>
+                  <span class="liquid-glass-toolbar__line">
+                    <strong class="liquid-glass-toolbar__who">Idris</strong>
+                    requested a review
+                  </span>
+                  <span class="liquid-glass-toolbar__time">1h</span>
+                </a>
+              </li>
+
+              <li>
+                <a class="liquid-glass-toolbar__row" href="#">
+                  <span class="liquid-glass-toolbar__avatar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M11.2 3.6H20v8.8l-8 8a1.9 1.9 0 0 1-2.7 0l-6.1-6.1a1.9 1.9 0 0 1 0-2.7z" />
+                      <circle cx="16.1" cy="7.6" r="1.4" />
+                    </svg>
+                  </span>
+                  <span class="liquid-glass-toolbar__line">
+                    <strong class="liquid-glass-toolbar__who">Invoice</strong>
+                    #2214 was paid
+                  </span>
+                  <span class="liquid-glass-toolbar__time">3h</span>
+                </a>
+              </li>
+
+            </ul>
+          </div>
+
+        </div>
+      </nav>
+
+      <nav class="liquid-glass-toolbar liquid-glass-toolbar--basalt" aria-label="Primary, basalt">
+        <div class="liquid-glass-toolbar__shell">
+
+          <div class="liquid-glass-toolbar__bar">
+
+            <a class="liquid-glass-toolbar__action" href="#" aria-current="page">
+              <span class="liquid-glass-toolbar__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M4.4 19.5v-7.4a7.6 7.6 0 0 1 15.2 0v7.4" />
+                  <path d="M2.6 19.5h18.8" />
+                </svg>
+              </span>
+              <span class="liquid-glass-toolbar__reveal">
+                <span class="liquid-glass-toolbar__label">Home</span>
+              </span>
+            </a>
+
+            <!-- The search item is a <label>, so a click anywhere on the icon focuses
+                 the input and `:focus-within` opens the field. No JavaScript decides
+                 this one. -->
+            <label class="liquid-glass-toolbar__action liquid-glass-toolbar__action--search">
+              <span class="liquid-glass-toolbar__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="10.4" cy="10.4" r="6.4" />
+                  <path d="M15.2 15.2 20 20" />
+                </svg>
+              </span>
+              <span class="liquid-glass-toolbar__reveal">
+                <input class="liquid-glass-toolbar__input" type="text"
+                       placeholder="Search…" aria-label="Search" />
+              </span>
+            </label>
+
+            <a class="liquid-glass-toolbar__action" href="#" aria-current="false">
+              <span class="liquid-glass-toolbar__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="3.4" y="4.4" width="17.2" height="6.2" rx="1.7" />
+                  <rect x="3.4" y="13.4" width="17.2" height="6.2" rx="1.7" />
+                  <path d="M9.9 7.5h4.2M9.9 16.5h4.2" />
+                </svg>
+              </span>
+              <span class="liquid-glass-toolbar__reveal">
+                <span class="liquid-glass-toolbar__label">Archive</span>
+              </span>
+            </a>
+
+            <button class="liquid-glass-toolbar__action liquid-glass-toolbar__action--panel"
+                    type="button" aria-expanded="false">
+              <span class="liquid-glass-toolbar__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M4.2 14.5v4M9.4 9.7v8.8M14.6 5.5v13M19.8 11.9v6.6" />
+                </svg>
+                <span class="liquid-glass-toolbar__badge" aria-hidden="true"></span>
+              </span>
+              <span class="liquid-glass-toolbar__reveal">
+                <span class="liquid-glass-toolbar__label">Activity</span>
+              </span>
+            </button>
+
+            <a class="liquid-glass-toolbar__action liquid-glass-toolbar__action--trailing" href="#" aria-current="false">
+              <span class="liquid-glass-toolbar__icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M3.6 8.2h5.6M14.8 8.2h5.6" />
+                  <circle cx="12" cy="8.2" r="2.5" />
+                  <path d="M3.6 15.8h2.6M11.8 15.8h8.6" />
+                  <circle cx="9" cy="15.8" r="2.5" />
+                </svg>
+              </span>
+              <span class="liquid-glass-toolbar__reveal">
+                <span class="liquid-glass-toolbar__label">Settings</span>
+              </span>
+            </a>
+
+          </div>
+
+          <!-- The panel is inside the same glass surface as the bar. Opening it does
+               not slide a second sheet out from underneath — the one surface changes
+               shape. -->
+          <div class="liquid-glass-toolbar__panel">
+            <ul class="liquid-glass-toolbar__feed">
+
+              <li>
+                <a class="liquid-glass-toolbar__row liquid-glass-toolbar__row--unread" href="#">
+                  <span class="liquid-glass-toolbar__avatar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <circle cx="12" cy="9" r="3.6" />
+                      <path d="M5 20a7 7 0 0 1 14 0" />
+                    </svg>
+                  </span>
+                  <span class="liquid-glass-toolbar__line">
+                    <strong class="liquid-glass-toolbar__who">Mara</strong>
+                    commented on Toolbar morph
+                  </span>
+                  <span class="liquid-glass-toolbar__time">2m</span>
+                </a>
+              </li>
+
+              <li>
+                <a class="liquid-glass-toolbar__row liquid-glass-toolbar__row--unread" href="#">
+                  <span class="liquid-glass-toolbar__avatar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M12 3.4c.6 4.2 4.4 8 8.6 8.6-4.2.6-8 4.4-8.6 8.6-.6-4.2-4.4-8-8.6-8.6 4.2-.6 8-4.4 8.6-8.6z" />
+                    </svg>
+                  </span>
+                  <span class="liquid-glass-toolbar__line">
+                    <strong class="liquid-glass-toolbar__who">Preview</strong>
+                    build finished in 42s
+                  </span>
+                  <span class="liquid-glass-toolbar__time">14m</span>
+                </a>
+              </li>
+
+              <li>
+                <a class="liquid-glass-toolbar__row" href="#">
+                  <span class="liquid-glass-toolbar__avatar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <circle cx="12" cy="9" r="3.6" />
+                      <path d="M5 20a7 7 0 0 1 14 0" />
+                    </svg>
+                  </span>
+                  <span class="liquid-glass-toolbar__line">
+                    <strong class="liquid-glass-toolbar__who">Idris</strong>
+                    requested a review
+                  </span>
+                  <span class="liquid-glass-toolbar__time">1h</span>
+                </a>
+              </li>
+
+              <li>
+                <a class="liquid-glass-toolbar__row" href="#">
+                  <span class="liquid-glass-toolbar__avatar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M11.2 3.6H20v8.8l-8 8a1.9 1.9 0 0 1-2.7 0l-6.1-6.1a1.9 1.9 0 0 1 0-2.7z" />
+                      <circle cx="16.1" cy="7.6" r="1.4" />
+                    </svg>
+                  </span>
+                  <span class="liquid-glass-toolbar__line">
+                    <strong class="liquid-glass-toolbar__who">Invoice</strong>
+                    #2214 was paid
+                  </span>
+                  <span class="liquid-glass-toolbar__time">3h</span>
+                </a>
+              </li>
+
+            </ul>
+          </div>
+
+        </div>
+      </nav>
+  </div>
+
+  <script src="component.js"></script>
+
+  <!--
+    Thumbnail scaffolding, and the one place a study folder may carry script
+    without meeting the JavaScript bar. Inert when this file is opened on its
+    own; it only posts back when it is framed.
+  -->
+  <script>
+    (function () {
+      var CHANNEL = 'ui-reference-base';
+      var BASE = 'liquid-glass-toolbar--';
+      var stack = document.querySelector('[data-stack]');
+      if (!stack) return;
+
+      var sheets = Array.prototype.slice.call(
+        stack.querySelectorAll('.liquid-glass-toolbar')
+      );
+      if (!sheets.length) return;
+
+      /*
+        The sheet the single-bar variants use. Found by asking which one carries
+        no material modifier rather than by taking the first, because the stack
+        is ordered lightest to darkest and the default is no longer at the top —
+        those variants are about behaviour, so they should run on the material
+        the component ships with.
+      */
+      var lead = sheets.filter(function (el) {
+        return !/liquid-glass-toolbar--(alabaster|slate|basalt|crystal)/.test(el.className);
+      })[0] || sheets[0];
+
+      // First entry is the resting state, and it is what the card shows: the
+      // whole set. The rest step into one sheet, where a panel can open.
+      var VARIANTS = [
+        { id: 'materials', label: 'Materials', stack: true, current: 0, classes: [] },
+        { id: 'home', label: 'Home', stack: false, current: 0, classes: [] },
+        { id: 'search', label: 'Search', stack: false, current: null, classes: ['searching'] },
+        { id: 'activity', label: 'Activity', stack: false, current: null, classes: ['open'] }
+      ];
+
+      var MODIFIERS = ['searching', 'open'];
+      var showing = VARIANTS[0];
+
+      /*
+        Sheets are taken out of the document and put back rather than hidden.
+        component.css gives the root a `display`, and an author rule beats the
+        user-agent `[hidden]` one — so `hidden` would leave all four on screen.
+      */
+      function setStack(on) {
+        if (on) {
+          /*
+            appendChild moves a node that is already here, which is how the
+            whole list in order restores the missing sheets and puts them back
+            lightest-to-darkest — but a move is a removal and an insertion, and
+            a re-inserted element has no before-change style, so every running
+            transition is cancelled and the next one never starts. Hover goes
+            through here, and on hover the stack is already built: appending
+            unconditionally made the search field arrive instead of open.
+            So only the sheets that are actually out of place get touched.
+          */
+          sheets.forEach(function (el, i) {
+            if (stack.children[i] !== el) stack.appendChild(el);
+          });
+          return;
+        }
+        sheets.forEach(function (el) {
+          if (el !== lead && el.parentNode) stack.removeChild(el);
+        });
+        if (!lead.parentNode) stack.appendChild(lead);
+      }
+
+      function dress(el, variant, active) {
+        MODIFIERS.forEach(function (m) { el.classList.remove(BASE + m); });
+        variant.classes.forEach(function (m) { el.classList.add(BASE + m); });
+
+        // The search field is what the card plays while it is being looked at:
+        // one line of shape change, legible at thumbnail size, and a width this
+        // file sets rather than one the copy decides.
+        var morphing = variant.classes.some(function (m) {
+          return MODIFIERS.indexOf(m) !== -1;
+        });
+        if (active && !morphing) el.classList.add(BASE + 'searching');
+
+        var searching = el.classList.contains(BASE + 'searching');
+        var open = el.classList.contains(BASE + 'open');
+
+        var places = el.querySelectorAll('.liquid-glass-toolbar__action[aria-current]');
+        Array.prototype.forEach.call(places, function (a, i) {
+          var on = !open && !searching && i === variant.current;
+          a.setAttribute('aria-current', on ? 'page' : 'false');
+        });
+        var panel = el.querySelector('.liquid-glass-toolbar__action--panel');
+        if (panel) panel.setAttribute('aria-expanded', open ? 'true' : 'false');
+      }
+
+      /*
+        Every rim, sheen and inner edge in this component is one CSS pixel, and
+        on the thinnest materials the rim is most of what there is to see — a
+        sheet at 7% tint is carried by its edges, not by its body. A card lays
+        this out at 480px and shows it at 336, so that line is rasterised at 0.7
+        of the pixel it asked for; on a 1x screen it falls under one device
+        pixel, stops being drawn as a line and washes out to a grey suggestion.
+
+        The frame cannot measure the factor itself — over file:// the parent is
+        behind an opaque origin — so the index reports it and the hairline is
+        restated against it here. Only upward: a rim should shrink with
+        everything else while it still has a device pixel to live in, and the
+        floor is the point at which it does not. A tunable set from outside,
+        which is what the property block is for; no rule here names a component
+        class. Standalone, no message arrives and the authored 1px stands.
+      */
+      function setScale(scale) {
+        if (!(scale > 0)) return;
+        var dpr = window.devicePixelRatio || 1;
+        var w = Math.max(1, 1 / (dpr * scale));
+        sheets.forEach(function (el) {
+          el.style.setProperty('--liquid-glass-toolbar-hairline', w.toFixed(3) + 'px');
+        });
+      }
+
+      function apply(variant, active) {
+        setStack(variant.stack);
+        (variant.stack ? sheets : [lead]).forEach(function (el) {
+          dress(el, variant, active);
+        });
+      }
+
+      window.addEventListener('message', function (event) {
+        var data = event.data;
+        if (!data || data.source !== CHANNEL) return;
+
+        if (data.type === 'preview') {
+          apply(showing, data.active === true);
+        }
+
+        if (data.type === 'preview:scale') {
+          setScale(data.scale);
+        }
+
+        if (data.type === 'preview:variant') {
+          var variant = VARIANTS[data.index];
+          if (variant) {
+            showing = variant;
+            apply(variant, false);
+          }
+        }
+      });
+
+      apply(showing, false);
+
+      // Quick look runs this file with pointer events live, so the pointer —
+      // and with it the focus — ends up inside this document. Keys pressed
+      // here fire against *this* document and never reach the index, which is
+      // where the overlay's Escape handler lives: click the component, press
+      // Escape, and nothing happens. So the one key the overlay owns is handed
+      // back across the channel. Only Escape. Anything else is the component's
+      // to interpret — arrows move a caret in a field the component may have.
+      if (window.parent !== window) {
+        document.addEventListener('keydown', function (event) {
+          if (event.key !== 'Escape') return;
+          window.parent.postMessage({ source: CHANNEL, type: 'preview:key', key: 'Escape' }, '*');
+        });
+      }
+
+      if (window.parent !== window) {
+        window.parent.postMessage({
+          source: CHANNEL,
+          type: 'preview:ready',
+          variants: VARIANTS.map(function (v) { return { id: v.id, label: v.label }; })
+        }, '*');
+      }
+    })();
+  </script>
+
+</body>
+</html>

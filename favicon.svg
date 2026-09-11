@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Interface Studies">
+  <!-- Site chrome, and the same mark index.html draws inline — this is that
+       mark on a tile, because a tab strip needs a chip to sit on where the
+       page is already the ground.
+
+       A mark, not a wordmark: the favicon it replaced set "ref" in whatever
+       mono the OS happened to provide, which is a typographic decision a
+       favicon has no font to make, and three letters at 16px are a smudge
+       either way.
+
+       The construction is the raster-pulse field cut down to the smallest
+       grid that still states its rule: an odd field, so one cell is the true
+       centre, and dots on a pitch they never fill. Pitch 8; the radius falls
+       with distance from the centre — 3.5 at the core, 2.8 on the edges, 2.0
+       in the corners — which is the reference's own phase read as a still
+       frame, and what makes this a burst rather than a dice face. The centre
+       takes the accent, because on a 3x3 the two-tone banding has exactly two
+       rings to land on. Every centre sits on a whole pixel at 32, and the
+       narrowest gap still holds at 1.2px where this renders at 16.
+
+       Palette from index.css: paper #f5f4f1, ink #17181a, accent #b4552f.
+       Paper ground rather than the poster's dark field — the tile has to read
+       on a dark tab strip and a light one, and a near-black square only reads
+       on one of them. -->
+  <rect width="32" height="32" rx="7" fill="#f5f4f1"/>
+  <g fill="#17181a">
+    <circle cx="8" cy="8" r="2"/><circle cx="16" cy="8" r="2.8"/><circle cx="24" cy="8" r="2"/>
+    <circle cx="8" cy="16" r="2.8"/><circle cx="24" cy="16" r="2.8"/>
+    <circle cx="8" cy="24" r="2"/><circle cx="16" cy="24" r="2.8"/><circle cx="24" cy="24" r="2"/>
+  </g>
+  <circle cx="16" cy="16" r="3.5" fill="#b4552f"/>
+</svg>

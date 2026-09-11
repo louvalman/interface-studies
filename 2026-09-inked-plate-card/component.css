@@ -1,0 +1,358 @@
+/* 2026-09-inked-plate-card — self-contained, no globals, no imports. */
+
+.inked-plate-card {
+  /* --- tunables ------------------------------------------------------- */
+  --inked-plate-card-width: 21rem;
+  --inked-plate-card-pad: 1.125rem;
+  --inked-plate-card-radius: 0.875rem;
+  --inked-plate-card-plate-gap: 0.875rem;
+
+  /* The card is two plates facing each other across this gap. Both corners
+     that face the gap are cut at 45deg rather than rounded, so the seam reads
+     as two cut edges instead of one rounded box split in half. */
+  --inked-plate-card-seam: 0.375rem;
+  --inked-plate-card-seam-open: 0.8125rem;
+  --inked-plate-card-chamfer: 0.5rem;
+
+  --inked-plate-card-plate: #e8ebe4;
+  --inked-plate-card-ink: #14181a;
+  --inked-plate-card-muted: #6d746f;
+  --inked-plate-card-accent: #c8ef4a;
+  --inked-plate-card-line: #14181a;
+  --inked-plate-card-faint: 0.3;
+  --inked-plate-card-dot: rgba(20, 24, 26, 0.24);
+  --inked-plate-card-dot-pitch: 5px;
+  --inked-plate-card-dot-size: 1px;
+  --inked-plate-card-crop: rgba(20, 24, 26, 0.42);
+
+  --inked-plate-card-font: "Plus Jakarta Sans", system-ui, sans-serif;
+  --inked-plate-card-mono: "JetBrains Mono", ui-monospace, monospace;
+  --inked-plate-card-title-size: 1.125rem;
+  --inked-plate-card-title-weight: 500;
+  --inked-plate-card-note-size: 0.8125rem;
+  --inked-plate-card-no-size: 0.625rem;
+  --inked-plate-card-no-tracking: 0.14em;
+
+  /* The caption plate has a floor, so a two-line and a three-line note leave
+     the card the same height. Without it a row of these has a ragged bottom
+     edge — which is what the reference does, and is worth not repeating. */
+  --inked-plate-card-caption-min: 4.25rem;
+
+  --inked-plate-card-grip-pitch: 5px;
+
+  --inked-plate-card-art-ratio: 1;
+  --inked-plate-card-crop-len: 0.6875rem;
+  --inked-plate-card-crop-w: 1px;
+  --inked-plate-card-crop-inset: 0px;
+  --inked-plate-card-crop-inset-open: -3px;
+
+  /* Stroke width is in viewBox units, not px, so the line weight scales with
+     the drawing instead of getting heavier as the card gets smaller. */
+  --inked-plate-card-line-w: 1.15;
+
+  --inked-plate-card-draw: 520ms;
+  --inked-plate-card-redraw: 380ms;
+  --inked-plate-card-stagger: 34ms;
+  --inked-plate-card-restagger: calc(var(--inked-plate-card-stagger) * 0.45);
+  --inked-plate-card-draw-ease: cubic-bezier(0.32, 0.74, 0.18, 1);
+
+  --inked-plate-card-transition: 280ms cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Two mask layers, each removing one corner. They are intersected, not
+     added: mask layers union by default, and the union of two corner cuts
+     removes nothing at all. */
+  --inked-plate-card-cut-down:
+    linear-gradient(45deg, #0000 var(--inked-plate-card-chamfer), #000 0),
+    linear-gradient(-45deg, #0000 var(--inked-plate-card-chamfer), #000 0);
+  --inked-plate-card-cut-up:
+    linear-gradient(135deg, #0000 var(--inked-plate-card-chamfer), #000 0),
+    linear-gradient(225deg, #0000 var(--inked-plate-card-chamfer), #000 0);
+
+  --inked-plate-card-crop-mark:
+    linear-gradient(var(--inked-plate-card-crop), var(--inked-plate-card-crop));
+  /* -------------------------------------------------------------------- */
+
+  display: grid;
+  gap: var(--inked-plate-card-seam);
+  box-sizing: border-box;
+
+  /* The width is what the card wants, not what it insists on: a 320px column
+     squeezes it instead of pushing a scrollbar across the page. The artwork is
+     a ratio and the stroke is in viewBox units, so a fitted card is the same
+     card, only smaller. */
+  width: var(--inked-plate-card-width);
+  max-width: 100%;
+
+  /* No background of its own — the plates carry it. The radius is here only so
+     the focus ring rounds with them. */
+  border-radius: calc(var(--inked-plate-card-radius) + 3px);
+
+  color: var(--inked-plate-card-ink);
+  font-family: var(--inked-plate-card-font);
+  text-decoration: none;
+  transition: gap var(--inked-plate-card-transition);
+}
+
+.inked-plate-card:focus-visible {
+  outline: 2px solid var(--inked-plate-card-accent);
+  outline-offset: 3px;
+}
+
+/* --- plates ----------------------------------------------------------- */
+
+.inked-plate-card__plate,
+.inked-plate-card__caption {
+  box-sizing: border-box;
+  padding: var(--inked-plate-card-pad);
+  background: var(--inked-plate-card-plate);
+  border-radius: var(--inked-plate-card-radius);
+}
+
+.inked-plate-card__plate {
+  display: grid;
+  gap: var(--inked-plate-card-plate-gap);
+  -webkit-mask-image: var(--inked-plate-card-cut-down);
+  -webkit-mask-composite: source-in;
+  mask-image: var(--inked-plate-card-cut-down);
+  mask-composite: intersect;
+}
+
+.inked-plate-card__caption {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-height: var(--inked-plate-card-caption-min);
+  -webkit-mask-image: var(--inked-plate-card-cut-up);
+  -webkit-mask-composite: source-in;
+  mask-image: var(--inked-plate-card-cut-up);
+  mask-composite: intersect;
+}
+
+/* --- type ------------------------------------------------------------- */
+
+.inked-plate-card__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.inked-plate-card__title {
+  font-size: var(--inked-plate-card-title-size);
+  font-weight: var(--inked-plate-card-title-weight);
+  letter-spacing: -0.012em;
+  line-height: 1.2;
+}
+
+.inked-plate-card__no {
+  flex: 0 0 auto;
+  font-family: var(--inked-plate-card-mono);
+  font-size: var(--inked-plate-card-no-size);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--inked-plate-card-no-tracking);
+  color: var(--inked-plate-card-muted);
+}
+
+.inked-plate-card__note {
+  font-size: var(--inked-plate-card-note-size);
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+/* Three dots on a fixed pitch, repeated down — not three elements. */
+.inked-plate-card__grip {
+  flex: 0 0 auto;
+  width: 0.75rem;
+  height: calc(var(--inked-plate-card-grip-pitch) * 3);
+  background-image:
+    radial-gradient(circle 1px at 50% 50%, var(--inked-plate-card-muted) 100%, #0000 0);
+  background-size: 100% var(--inked-plate-card-grip-pitch);
+  background-repeat: repeat-y;
+}
+
+/* --- the drawing ------------------------------------------------------ */
+
+.inked-plate-card__art {
+  position: relative;
+  aspect-ratio: var(--inked-plate-card-art-ratio);
+  max-width: 100%;
+  /* A dot grid, not a texture image: one radial stop per tile, sized so the
+     dot lands on a whole pixel. A sub-pixel radius here renders as nothing on
+     a 1x screen. */
+  background-image:
+    radial-gradient(
+      circle var(--inked-plate-card-dot-size) at 50% 50%,
+      var(--inked-plate-card-dot) 99%,
+      #0000 0);
+  background-size: var(--inked-plate-card-dot-pitch) var(--inked-plate-card-dot-pitch);
+}
+
+/* Four corner brackets from eight background layers on one element, so the
+   crop marks cost no markup and move together. */
+.inked-plate-card__crop {
+  position: absolute;
+  inset: var(--inked-plate-card-crop-inset);
+  pointer-events: none;
+  background-image:
+    var(--inked-plate-card-crop-mark), var(--inked-plate-card-crop-mark),
+    var(--inked-plate-card-crop-mark), var(--inked-plate-card-crop-mark),
+    var(--inked-plate-card-crop-mark), var(--inked-plate-card-crop-mark),
+    var(--inked-plate-card-crop-mark), var(--inked-plate-card-crop-mark);
+  background-repeat: no-repeat;
+  background-position:
+    0 0, 0 0,
+    100% 0, 100% 0,
+    0 100%, 0 100%,
+    100% 100%, 100% 100%;
+  background-size:
+    var(--inked-plate-card-crop-len) var(--inked-plate-card-crop-w),
+    var(--inked-plate-card-crop-w) var(--inked-plate-card-crop-len),
+    var(--inked-plate-card-crop-len) var(--inked-plate-card-crop-w),
+    var(--inked-plate-card-crop-w) var(--inked-plate-card-crop-len),
+    var(--inked-plate-card-crop-len) var(--inked-plate-card-crop-w),
+    var(--inked-plate-card-crop-w) var(--inked-plate-card-crop-len),
+    var(--inked-plate-card-crop-len) var(--inked-plate-card-crop-w),
+    var(--inked-plate-card-crop-w) var(--inked-plate-card-crop-len);
+  transition: inset var(--inked-plate-card-transition);
+}
+
+.inked-plate-card__ink {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Each drawing sets its own interval, because a 48-line envelope and a
+   9-line waterfall cannot share one: 34ms across 48 lines runs the envelope
+   past a second and a half, and 12ms across 9 puts the waterfall away before
+   the eye catches it. Tuned so all three finish in about the same second. */
+.inked-plate-card__ink--vortex { --inked-plate-card-stagger: 34ms; }
+.inked-plate-card__ink--waterfall { --inked-plate-card-stagger: 44ms; }
+.inked-plate-card__ink--envelope { --inked-plate-card-stagger: 12ms; }
+
+.inked-plate-card__line {
+  fill: none;
+  stroke: var(--inked-plate-card-line);
+  stroke-width: var(--inked-plate-card-line-w);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+
+  /* pathLength="1" in the markup is what makes one keyframe pair draw every
+     path at the same rate — a 16-unit crosshair and a 500-unit ridgeline both
+     have a dash of exactly 1, so neither needs its real length measured. That
+     is the whole reason this needs no JavaScript. */
+  stroke-dasharray: 1;
+  animation: inked-plate-card-draw var(--inked-plate-card-draw)
+    var(--inked-plate-card-draw-ease) both;
+  animation-delay: calc(var(--inked-plate-card-stagger) * var(--i, 0));
+}
+
+.inked-plate-card__line--faint {
+  opacity: var(--inked-plate-card-faint);
+}
+
+/* Namespaced like the classes are: @keyframes names are global, so an
+   unprefixed `draw` would collide with whatever else is on the page. */
+@keyframes inked-plate-card-draw {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+
+/* Identical to the one above, and that is the point: swapping the
+   animation-name is the only thing that restarts a running CSS animation, so
+   the second copy is what lets the pointer re-ink the drawing without script.
+   Crossing back out swaps the name back, so the card re-inks on both
+   crossings rather than snapping to the finished state. */
+@keyframes inked-plate-card-redraw {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
+}
+
+/* --- pointer, press, and the index's live state ----------------------- */
+
+.inked-plate-card:hover,
+.inked-plate-card:focus-visible,
+.inked-plate-card--live {
+  gap: var(--inked-plate-card-seam-open);
+}
+
+.inked-plate-card:hover .inked-plate-card__crop,
+.inked-plate-card:focus-visible .inked-plate-card__crop,
+.inked-plate-card--live .inked-plate-card__crop {
+  inset: var(--inked-plate-card-crop-inset-open);
+}
+
+.inked-plate-card:hover .inked-plate-card__line,
+.inked-plate-card:focus-visible .inked-plate-card__line,
+.inked-plate-card--live .inked-plate-card__line {
+  animation-name: inked-plate-card-redraw;
+  animation-duration: var(--inked-plate-card-redraw);
+  animation-delay: calc(var(--inked-plate-card-restagger) * var(--i, 0));
+}
+
+/* A finger cannot hover, and the draw is the whole component — but the draw
+   already happens on load, so nothing here is gated behind a pointer. The
+   press is the re-ink, held for as long as the finger is down. */
+@media (hover: none) {
+  .inked-plate-card:active {
+    gap: var(--inked-plate-card-seam-open);
+  }
+
+  .inked-plate-card:active .inked-plate-card__crop {
+    inset: var(--inked-plate-card-crop-inset-open);
+  }
+
+  .inked-plate-card:active .inked-plate-card__line {
+    animation-name: inked-plate-card-redraw;
+    animation-duration: var(--inked-plate-card-redraw);
+    animation-delay: calc(var(--inked-plate-card-restagger) * var(--i, 0));
+  }
+}
+
+/* --- surfaces --------------------------------------------------------- */
+
+.inked-plate-card--acid {
+  --inked-plate-card-plate: #c8ef4a;
+  --inked-plate-card-ink: #141a08;
+  --inked-plate-card-muted: rgba(20, 26, 8, 0.62);
+  --inked-plate-card-line: #141a08;
+  --inked-plate-card-dot: rgba(20, 26, 8, 0.26);
+  --inked-plate-card-crop: rgba(20, 26, 8, 0.48);
+  --inked-plate-card-accent: #14181a;
+}
+
+.inked-plate-card--graphite {
+  --inked-plate-card-plate: #1b2024;
+  --inked-plate-card-ink: #e8ebe4;
+  --inked-plate-card-muted: #7f8892;
+  --inked-plate-card-line: #c8ef4a;
+  --inked-plate-card-dot: rgba(232, 235, 228, 0.16);
+  --inked-plate-card-crop: rgba(232, 235, 228, 0.3);
+}
+
+/* --- reduced motion --------------------------------------------------- */
+
+/* The drawing is the component, so it stays; only the drawing of it goes.
+   Every state that would re-ink is reset here too, or the pointer would put
+   the animation back. */
+@media (prefers-reduced-motion: reduce) {
+  .inked-plate-card {
+    transition: none;
+  }
+
+  .inked-plate-card__crop {
+    transition: none;
+  }
+
+  .inked-plate-card__line,
+  .inked-plate-card:hover .inked-plate-card__line,
+  .inked-plate-card:focus-visible .inked-plate-card__line,
+  .inked-plate-card:active .inked-plate-card__line,
+  .inked-plate-card--live .inked-plate-card__line {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}
