@@ -77,20 +77,33 @@ Surfaces are `--acid` (lime plate, ink lines) and `--graphite` (dark plate,
 lime lines); the default is porcelain. Each is three colour values and a dot
 opacity, nothing structural. `--live` is the index's hover.
 
-The two pages disagree about the ground, and only about the ground.
-`demo.html` keeps the dark one the aesthetic is built for — ink plates over a
-chalk plotter grid, which is where the component lives, and where `--graphite`
-sits beside the default so the pair isolates the surface: one drawing, one
-wipe, two colours to read it against. `preview.html` shows the same default
-card on the light `#f3f2ef` every reference in this repo shares, because the
-rail has to read as one set of cards and a dark frame among light ones reads
-as a hole rather than a card.
+The two pages disagree about the ground and about which surface leads, and
+both disagreements are the thumbnail's doing. `demo.html` keeps the dark ground
+the aesthetic is built for — ink plates over a chalk plotter grid, which is
+where the component lives, and where `--graphite` sits beside the default so
+the pair isolates the surface: one drawing, one wipe, two colours to read it
+against. It also leads with the porcelain default, which is the card to open
+on: it is what the component is with no modifier applied.
 
-What makes that work is that the plotter grid belongs to the page and not to
-the plate. On the light ground the grid runs up to the porcelain plate and
-stops, and that stop is the plate's edge — which is why a card whose fill is
-four percent lighter than what it sits on still reads as an object. Take the
-grid away and the same pairing needs a hairline.
+`preview.html` takes the light `#f3f2ef` every reference in this repo shares,
+because the rail has to read as one set of cards and a dark frame among light
+ones reads as a hole rather than a card. What makes a porcelain plate work on
+that ground is that the plotter grid belongs to the page and not to the plate:
+the grid runs up to the plate and stops, and that stop is the plate's edge,
+which is why a fill four percent lighter than what it sits on still reads as an
+object. Take the grid away and the same pairing needs a hairline.
+
+It holds at thumbnail size too — the card lays the preview out at
+`--preview-w` and shows it at `--preview-scale`, and at 0.7 the edge and the
+vortex both survive. What does not survive is being noticed: porcelain plate on
+porcelain ground inside the index's own light rail is three near-whites
+stacked, and a thumbnail's one job is to be picked out of a row of them. So the
+preview rests on `--acid` with the waterfall instead — the one surface with
+presence in that rail that does not go dark and read as a hole, and 9 curves
+that carry further than 13 nested squares at any scale. The cost is that the
+card advertises a modifier rather than the unmodified default, and that this is
+the loudest card on the page; porcelain is one quick-look dot behind it, and it
+is still what `demo.html` opens on.
 
 One change from the source rather than an extraction of it:
 `--…-caption-min` gives the caption plate a floor, so a two-line and a
