@@ -34,7 +34,8 @@ component, so they are patterns on a modifier, not three components.
   would have moved that floor to Chrome 133.
 
 - **One animation, 289 delays.** Every dot runs the same three-stop keyframe at
-  the same duration, and the travelling wave is one declaration:
+  the same duration — one set per state, alpha at rest and colour when active,
+  the same shape in two currencies — and the travelling wave is one declaration:
   `animation-delay: calc((var(--phase) - 1) * var(--spread) * var(--dur))`. The
   `- 1` makes the delay negative, so the field is already mid-pulse on the
   first frame instead of sitting dark for a cycle. The bright window is 0–16%
@@ -44,11 +45,21 @@ component, so they are patterns on a modifier, not three components.
   turned diagonal — same field, same keyframe, and the shape becomes motion.
 
 - **At rest the pulse moves brightness; active, it moves hue.** Resting, a dot
-  cycles between its own tone pulled 58% toward the field background and full
+  cycles between its own tone pulled 60% toward the field background and full
   strength, at 6.4s. On hover, `--open`, or `:active`, the pair swaps: the
   trough becomes the dot's own tone and the peak becomes the *other* tone, at
   1.9s — so a band of the second colour crosses the field instead of a band of
-  light. Both tones come out of one `color-mix()` keyed on `--tone`, and its
+  light. The two halves are paid for differently, and that is a decision
+  rather than an implementation detail: a tone pulled toward the field
+  background *is* alpha, so the resting wave is one static colour and an
+  opacity ramp, while the hue swap — which alpha cannot say — animates the
+  colour itself. Only the second is expensive, and it only ever runs on the
+  card under the pointer. The resting field costs nothing, where animating a
+  `var()`-derived `background-color` across 289 dots cost a whole main thread
+  in five thumbnails nobody was looking at. Alpha carries a little more chroma
+  than the same mix in oklab, which is the 60% against the 58% that drew this
+  field before — near enough to sit unnoticed, far enough to be worth writing
+  down. Both tones come out of one `color-mix()` keyed on `--tone`, and its
   inverse, so no state needs a second selector per colour. This is also the
   answer to `(hover: none)`: the component's whole second half lives in that
   state, so a press holds it for as long as it is held.

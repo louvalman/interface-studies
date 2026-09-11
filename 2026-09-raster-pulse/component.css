@@ -63,10 +63,15 @@
   --raster-pulse-panel: #f3f0f7;
   --raster-pulse-ink: #120b1c;
 
-  /* How far a dot's trough colour is pulled toward the field background. This
-     is the whole of the resting look: at 0% the field is flat and saturated,
-     at 100% only the ring being lit is visible at all. */
-  --raster-pulse-dim: 58%;
+  /* How far a dot is pulled toward the field background at the bottom of the
+     beat. This is the whole of the resting look: at 0% the field is flat and
+     saturated, at 100% only the ring being lit is visible at all. It is spent
+     as the dot's alpha rather than as a colour mix, for the reason set out on
+     .raster-pulse__dot — and alpha holds a little more chroma than the same
+     mix does in oklab, so it sits a couple of points above the mix that drew
+     the same field before. The active state overrides --trough outright and
+     never reads this. */
+  --raster-pulse-dim: 60%;
 
   /* --- motion --------------------------------------------------------- */
   --raster-pulse-dur: 6.4s;
@@ -158,7 +163,11 @@
   --own: color-mix(in oklab, var(--raster-pulse-tone-a), var(--raster-pulse-tone-b) calc(var(--tone) * 100%));
   --alt: color-mix(in oklab, var(--raster-pulse-tone-b), var(--raster-pulse-tone-a) calc(var(--tone) * 100%));
 
-  /* At rest the pulse is a brightness wave inside a dot's own tone. */
+  /* At rest the pulse is a brightness wave inside a dot's own tone, and a
+     tone pulled toward the field background is what alpha already means — so
+     the resting dot paints --peak once and rides the wave on opacity, with
+     --trough naming the colour that floor reproduces. Active, the wave moves
+     hue instead and overrides both. */
   --trough: color-mix(in oklab, var(--own), var(--raster-pulse-art-bg) var(--raster-pulse-dim));
   --peak: var(--own);
 
@@ -170,9 +179,19 @@
   /* A dot outside the shape is scaled to nothing rather than hidden, so it
      keeps its grid cell and the field stays square whatever the pattern. */
   transform: scale(calc(var(--raster-pulse-trough-scale) * var(--on)));
-  background-color: var(--trough);
 
-  animation: raster-pulse-beat var(--raster-pulse-dur) var(--raster-pulse-ease) infinite;
+  /* One tone, painted once, dimmed by alpha — not a colour that animates.
+     A keyframe holding var(--trough) cannot be resolved ahead of time, so the
+     browser re-runs the color-mix for every dot on every frame; at 289 dots
+     that is enough to saturate a main thread on its own, in five thumbnails
+     nobody is even looking at. Opacity composites instead, and the resting
+     field costs nothing. The colour animation is still there — it is what the
+     active state below switches back to, where the wave moves hue and alpha
+     cannot say it. */
+  background-color: var(--peak);
+  opacity: calc(100% - var(--raster-pulse-dim));
+
+  animation: raster-pulse-fade var(--raster-pulse-dur) var(--raster-pulse-ease) infinite;
   /* The whole wave, in one line: a dot further along --phase peaks later. The
      -1 offset makes the delay negative, so the field is already mid-pulse on
      the first frame instead of sitting dark for a cycle. */
@@ -180,7 +199,28 @@
 }
 
 /* Narrow bright window, long recovery — that is what makes the wave read as a
-   ring travelling outward rather than as the whole field breathing. */
+   ring travelling outward rather than as the whole field breathing. The two
+   keyframe sets are the same shape in two currencies: --fade rides alpha and
+   is what runs at rest, --beat moves the colour itself and runs only while a
+   card is active. */
+@keyframes raster-pulse-fade {
+  0%,
+  100% {
+    transform: scale(calc(var(--raster-pulse-trough-scale) * var(--on)));
+    opacity: calc(100% - var(--raster-pulse-dim));
+  }
+
+  16% {
+    transform: scale(calc(var(--raster-pulse-peak-scale) * var(--on)));
+    opacity: 100%;
+  }
+
+  44% {
+    transform: scale(calc(var(--raster-pulse-trough-scale) * var(--on)));
+    opacity: calc(100% - var(--raster-pulse-dim));
+  }
+}
+
 @keyframes raster-pulse-beat {
   0%,
   100% {
@@ -289,6 +329,12 @@
 .raster-pulse:hover .raster-pulse__dot {
   --trough: var(--own);
   --peak: var(--alt);
+
+  /* Hue cannot be an alpha ramp, so this state animates the colour itself and
+     pays for it. It only ever runs on the card under the pointer. */
+  background-color: var(--trough);
+  opacity: 1;
+  animation-name: raster-pulse-beat;
 }
 
 /* A finger cannot hover, and the whole second half of this component lives in
@@ -303,6 +349,9 @@
   .raster-pulse:active .raster-pulse__dot {
     --trough: var(--own);
     --peak: var(--alt);
+    background-color: var(--trough);
+    opacity: 1;
+    animation-name: raster-pulse-beat;
   }
 }
 
@@ -329,7 +378,7 @@
   --raster-pulse-art-bg: #f3f0f7;
   --raster-pulse-tone-a: #ff2e7e;
   --raster-pulse-tone-b: #120b1c;
-  --raster-pulse-dim: 46%;
+  --raster-pulse-dim: 50%;
 }
 
 .raster-pulse--halftone .raster-pulse__dot {
@@ -364,5 +413,6 @@
     animation: none;
     transform: scale(calc(var(--raster-pulse-still-scale) * var(--on)));
     background-color: var(--own);
+    opacity: 1;
   }
 }
