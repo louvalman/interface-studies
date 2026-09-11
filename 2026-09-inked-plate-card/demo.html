@@ -1,0 +1,1006 @@
+<!doctype html>
+<!--
+  The demo page. Background, the ground grid, font loading, the language
+  control and the back link live here and only here. It links component.css
+  and never redefines it — no rule below names a component class.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Inked plate card &mdash; Interface Studies</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap">
+
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+
+  <!-- What a link to this page looks like when it is pasted somewhere. The
+     card image is the index's, one level up — the same place this page
+     already takes its favicon and its back link from, so it goes stale in
+     exactly the same way and no worse. A copied-out folder loses the
+     picture and keeps the title and the sentence. -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Interface Studies" />
+  <meta property="og:title" content="Inked plate card &mdash; Interface Studies" />
+  <meta property="og:description" content="An artwork plate and a caption plate with their facing corners cut, over a crop-marked dot grid. The line drawing inks itself on load in pure CSS — every path declares a length of 1, so one keyframe pair draws all of them without measuring any." />
+  <meta property="og:image" content="../og.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <link rel="stylesheet" href="component.css">
+
+  <style>
+    /* Page scaffolding only. Nothing here may name a component class. */
+    /* Matches the index's --gutter exactly. The pages are separate documents
+       with no shared stylesheet, so the value is repeated rather than shared —
+       but it has to be the same number, or the language control and the
+       content edge shift on every trip between them. */
+    :root {
+      --demo-gutter: clamp(1.5rem, 6vw, 6rem);
+      --demo-ground: #101418;
+      --demo-grid: rgba(232, 235, 228, 0.05);
+      --demo-fg: #e8ebe4;
+      --demo-dim: #7f8892;
+      --demo-accent: #c8ef4a;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 4rem var(--demo-gutter);
+      box-sizing: border-box;
+
+      /* The ground the cards sit on: a plotter grid, faint enough that the
+         drawings stay the only lines you read. Page-level, so the component
+         never depends on it. */
+      background-color: var(--demo-ground);
+      background-image:
+        linear-gradient(var(--demo-grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--demo-grid) 1px, transparent 1px);
+      background-size: 44px 44px;
+
+      color: var(--demo-fg);
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+    }
+
+    /* Left-aligned at the gutter, not centred — the index hangs its masthead
+       and rail off the same edge, and a centred column here would step the
+       content inwards on every navigation. */
+    .demo {
+      max-width: 78rem;
+    }
+
+    /* The states used to stack down one 46rem column: the two that hold a
+       single card left four hundred pixels of empty column beside them, and
+       four tall cards came to 2400px of scroll. They lay out as a row now, a
+       pair beside a single, so the page is two rows on a laptop.
+
+       The widths are deliberately uneven — a caption that covers two cards is
+       twice as wide as one that covers one — so there is no centring here:
+       with nothing to line up on, a wrapped remainder centred under a row of
+       two different widths reads as a mistake rather than as a decision. The
+       cap is the natural width of one full row, which keeps a full row at the
+       gutter instead of trailing off across a wide monitor. */
+    .demo__grid {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: start;
+      gap: 3rem 2.5rem;
+      max-width: 66.75rem;   /* 43.25rem pair + gap + 21rem single */
+    }
+
+    /* Absolute, not fixed: the language is picked once and the chip has no
+       reason to ride the viewport down the page. */
+    .demo__lang {
+      position: absolute;
+      top: clamp(1.25rem, 3vw, 2.25rem);
+      right: var(--demo-gutter);
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: 0.1rem;
+      padding: 0.2rem 0.35rem;
+      border-radius: 999px;
+      background: rgba(232, 235, 228, 0.08);
+      backdrop-filter: blur(8px);
+    }
+
+    .demo__lang-btn {
+      padding: 0.35em 0.5em;
+      border: 0;
+      background: transparent;
+      color: var(--demo-dim);
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.625rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: color 240ms ease;
+    }
+
+    .demo__lang-btn:hover { color: var(--demo-fg); }
+
+    .demo__lang-btn[aria-pressed="true"] {
+      color: var(--demo-fg);
+      text-decoration: underline;
+      text-decoration-color: var(--demo-accent);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 0.4em;
+    }
+
+    .demo__lang-btn:focus-visible {
+      outline: 2px solid var(--demo-fg);
+      outline-offset: 2px;
+      border-radius: 0.25rem;
+    }
+
+    .demo__lang-sep {
+      width: 1px;
+      height: 0.7rem;
+      background: rgba(232, 235, 228, 0.16);
+    }
+
+    .demo__bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem;
+      /* The column used to be a grid and this sat in its 3rem gap; the states
+         are their own row now, so the space is stated here. */
+      margin-bottom: 3rem;
+    }
+
+    .demo__back,
+    .demo__replay {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.9rem 0.5rem 0.75rem;
+      border: 1px solid rgba(232, 235, 228, 0.16);
+      border-radius: 999px;
+      background: rgba(232, 235, 228, 0.04);
+      font-family: inherit;
+      font-size: 0.6875rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--demo-dim);
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .demo__back:hover,
+    .demo__replay:hover {
+      background: rgba(232, 235, 228, 0.1);
+      color: var(--demo-fg);
+    }
+
+    .demo__back svg,
+    .demo__replay svg { width: 0.85rem; height: 0.85rem; }
+
+    /* The card's own width as a flex basis, so a state never grows past the
+       cards it holds, and capped at whatever column it lands in, so a
+       component sized in rem shrinks with the page instead of pushing a
+       scrollbar across it. The basis is stated rather than left to `auto`
+       because a state holding .demo__pair is a grid of `1fr` tracks, whose
+       max-content width is one track, not two — leave it to `auto` and the
+       pair lays itself out as a column. */
+    .demo__state {
+      flex: 0 1 21rem;
+      min-width: 0;
+      display: grid;
+      /* The pair that keeps a demo off a phone's horizontal scrollbar: the
+         cell is capped at its column, and the column is told it may shrink
+         below its content. Without the second line an implicit `auto` track
+         takes its max-content width and overflows anyway. */
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.75rem;
+      max-width: 100%;
+    }
+
+    /* Two 21rem cards and the gap between them. */
+    .demo__state--pair { flex-basis: 43.25rem; }
+
+    /* Two cards where there is room for two, one where there is not — and the
+       tracks may shrink below their content either way. */
+    .demo__pair {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+      gap: 1.25rem;
+      max-width: 100%;
+    }
+
+    .demo__caption {
+      margin: 0;
+      font-size: 0.6875rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--demo-dim);
+    }
+
+    /* --- touch targets --- */
+
+    /* No hover means a finger, and a finger cannot aim at a 10px label. The
+       page's own controls grow; the component is not touched. Duplicated in
+       every demo page on purpose — no shared stylesheet, so a folder copied
+       out on its own takes this with it. */
+    @media (hover: none) {
+      .demo__lang-btn {
+        display: grid;
+        place-items: center;
+        min-width: 2.25rem;
+        min-height: 2.25rem;
+      }
+
+      .demo__back,
+      .demo__replay { min-height: 2.75rem; }
+    }
+
+    /* --- intro ----------------------------------------------------------
+       The page had no heading at all: it opened on a back link and a grid of
+       captions, so a reader arriving from the index had nothing naming what
+       they were looking at, and a screen reader had no heading to land on. */
+    .demo__intro {
+      max-width: 46rem;
+      margin-bottom: clamp(2.5rem, 6vw, 4rem);
+    }
+
+    .demo__kicker {
+      margin: 0 0 0.75rem;
+      font-family: %(mono)s;
+      font-size: 0.6875rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: %(soft)s;
+    }
+
+    .demo__heading {
+      margin: 0;
+      font-size: clamp(1.75rem, 4vw, 2.75rem);
+      font-weight: 600;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      color: %(ink)s;
+    }
+
+    .demo__lede {
+      margin: 1.25rem 0 0;
+      max-width: 52ch;
+      font-size: 1.0625rem;
+      line-height: 1.6;
+      color: %(body)s;
+    }
+
+    /* --- decisions ------------------------------------------------------
+
+       notes.md, rendered. The file stays the record; this is the shape the
+       contract asks every study to state — the type, the origin, and the
+       decisions the build captures — so the page that shows the component also
+       says what was extracted and why. It used to live only in the repo, which
+       meant the one artefact worth lifting was the one thing the site never
+       showed.
+
+       Kept in step with notes.md by hand, like the language table above it and
+       preview.html's markup: there is no build step to read the file, and
+       fetching it fails over file://, where each document gets an opaque
+       origin. The prose is left in the language it was written in — it is a
+       record of decisions, not page copy, and the same reasoning that leaves
+       component sample copy alone applies. Only the labels around it switch. */
+    .demo__notes {
+      margin-top: clamp(3.5rem, 8vw, 6rem);
+      padding-top: clamp(2rem, 4vw, 3rem);
+      border-top: 1px solid rgba(232, 235, 228, 0.14);
+      /* Prose measure, not the page's. The states above lay out as wide as
+         they need; a paragraph does not. */
+      max-width: 42rem;
+    }
+
+    .demo__notes-title {
+      margin: 0;
+      font-size: 1.125rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: var(--demo-fg);
+    }
+
+    /* The disclosure row. `list-style: none` kills the marker in Firefox and
+       Chrome; the ::-webkit- rule is still needed for Safari. */
+    .demo__notes-summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.25rem 0 0.75rem;
+      cursor: pointer;
+      list-style: none;
+    }
+
+    .demo__notes-summary::-webkit-details-marker { display: none; }
+
+    .demo__notes-summary:focus-visible {
+      outline: 2px solid var(--demo-fg);
+      outline-offset: 4px;
+      border-radius: 0.25rem;
+    }
+
+    .demo__notes-chevron {
+      flex: none;
+      width: 1rem;
+      height: 1rem;
+      color: var(--demo-dim);
+      transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .demo__notes-summary:hover .demo__notes-chevron { color: var(--demo-fg); }
+
+    .demo__notes[open] .demo__notes-chevron { transform: rotate(180deg); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .demo__notes-chevron { transition: none; }
+    }
+
+    /* Touch: the row is the target, and it has to be one you can hit. */
+    @media (hover: none) {
+      .demo__notes-summary { min-height: 2.75rem; }
+    }
+
+    .demo__notes-body { padding-bottom: 0.5rem; }
+
+    .demo__notes-meta {
+      margin: 0.75rem 0 0;
+      display: grid;
+      gap: 0.6rem;
+    }
+
+    .demo__notes-row {
+      display: grid;
+      grid-template-columns: 4.5rem minmax(0, 1fr);
+      gap: 0.9rem;
+      align-items: baseline;
+    }
+
+    .demo__notes-row dt {
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.625rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--demo-dim);
+    }
+
+    .demo__notes-row dd {
+      margin: 0;
+      font-size: 0.875rem;
+      line-height: 1.5;
+      color: rgba(232, 235, 228, 0.78);
+      /* A source URL is one unbroken word and the page is 320px wide on a
+         phone: without this it sets the whole column's minimum. */
+      overflow-wrap: anywhere;
+    }
+
+    .demo__notes-lede {
+      margin: 1.75rem 0 0;
+      font-size: 0.9375rem;
+      line-height: 1.7;
+      color: rgba(232, 235, 228, 0.78);
+    }
+
+    .demo__notes-list {
+      margin: 2.25rem 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 1.75rem;
+    }
+
+    .demo__notes-list > li {
+      display: grid;
+      gap: 0.45rem;
+    }
+
+    .demo__notes-head {
+      margin: 0;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      line-height: 1.45;
+      color: var(--demo-fg);
+    }
+
+    .demo__notes-list p {
+      margin: 0;
+      font-size: 0.9375rem;
+      line-height: 1.7;
+      color: rgba(232, 235, 228, 0.78);
+    }
+
+    .demo__notes code {
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.85em;
+      padding: 0.12em 0.32em;
+      border-radius: 0.25rem;
+      background: rgba(232, 235, 228, 0.07);
+      /* Declarations run long and a code span may not push the page sideways. */
+      overflow-wrap: anywhere;
+    }
+
+    .demo__notes a {
+      color: inherit;
+      text-decoration-color: var(--demo-accent);
+      text-underline-offset: 0.2em;
+    }
+
+    .demo__notes a:focus-visible {
+      outline: 2px solid var(--demo-fg);
+      outline-offset: 2px;
+      border-radius: 0.15rem;
+    }
+
+    .demo__notes-foot {
+      margin: 2.5rem 0 0;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.6875rem;
+      line-height: 1.7;
+      letter-spacing: 0.08em;
+      color: var(--demo-dim);
+    }
+  </style>
+</head>
+<body>
+  <div class="demo">
+
+    <div class="demo__lang" role="group" aria-label="Language">
+      <button class="demo__lang-btn" type="button" data-lang="en" aria-pressed="true">EN</button>
+      <span class="demo__lang-sep" aria-hidden="true"></span>
+      <button class="demo__lang-btn" type="button" data-lang="da" aria-pressed="false">DA</button>
+    </div>
+
+    <div class="demo__bar">
+      <a class="demo__back" href="../index.html">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M10 2 4 8l6 6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <span data-i18n="back">All studies</span>
+      </a>
+
+
+
+      <!-- The draw runs on load, so seeing it again means loading again. Page
+           chrome, not component behaviour — the component has no script. -->
+      <button class="demo__replay" type="button" data-replay>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M13.5 8a5.5 5.5 0 1 1-1.9-4.2M13 1.5V4h-2.5"
+                stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        <span data-i18n="replay">Draw again</span>
+      </button>
+    </div>
+
+    <header class="demo__intro">
+      <p class="demo__kicker">2026-09 &middot; <span data-i18n="type">Card</span></p>
+      <h1 class="demo__heading" data-i18n="heading">Inked plate card</h1>
+      <p class="demo__lede" data-i18n="lede">
+        An artwork plate and a caption plate with their facing corners cut, over
+        a crop-marked dot grid. The line drawing inks itself on load in pure
+        CSS &mdash; every path declares a length of 1, so one keyframe pair
+        draws all of them without measuring any.
+      </p>
+    </header>
+
+    <div class="demo__grid">
+
+      <!-- The same card twice, so the pair isolates the surface: one drawing,
+           one wipe, two grounds to read it against. -->
+      <section class="demo__state demo__state--pair">
+        <p class="demo__caption" data-i18n="state.default">
+          Default, and the --graphite surface beside it
+        </p>
+        <div class="demo__pair">
+            <a class="inked-plate-card" href="#">
+              <span class="inked-plate-card__plate">
+                <span class="inked-plate-card__head">
+                  <span class="inked-plate-card__title">Rammesætning</span>
+                  <span class="inked-plate-card__no">001</span>
+                </span>
+
+                <span class="inked-plate-card__art">
+                  <span class="inked-plate-card__crop" aria-hidden="true"></span>
+                  <svg class="inked-plate-card__ink inked-plate-card__ink--vortex" viewBox="0 0 200 200"
+                       fill="none" aria-hidden="true" focusable="false">
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:0"
+                          d="M 16 16 L 184 16 L 184 184 L 16 184 Z" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:1"
+                          d="M 29.8 16.9 L 183.1 29.8 L 170.2 183.1 L 16.9 170.2 Z" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:2"
+                          d="M 42.8 19.5 L 180.5 42.8 L 157.2 180.5 L 19.5 157.2 Z" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:3"
+                          d="M 54.9 23.7 L 176.3 54.9 L 145.1 176.3 L 23.7 145.1 Z" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:4"
+                          d="M 65.8 29.2 L 170.8 65.8 L 134.2 170.8 L 29.2 134.2 Z" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:5"
+                          d="M 75.4 36 L 164 75.4 L 124.6 164 L 36 124.6 Z" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:6"
+                          d="M 83.7 43.8 L 156.2 83.7 L 116.3 156.2 L 43.8 116.3 Z" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:7"
+                          d="M 90.4 52.4 L 147.6 90.4 L 109.6 147.6 L 52.4 109.6 Z" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:8"
+                          d="M 95.6 61.8 L 138.2 95.6 L 104.4 138.2 L 61.8 104.4 Z" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:9"
+                          d="M 99.1 71.6 L 128.4 99.1 L 100.9 128.4 L 71.6 100.9 Z" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:10"
+                          d="M 101 81.6 L 118.4 101 L 99 118.4 L 81.6 99 Z" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:11"
+                          d="M 92 100 L 108 100" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:12"
+                          d="M 100 92 L 100 108" />
+                  </svg>
+                </span>
+              </span>
+
+              <span class="inked-plate-card__caption">
+                <span class="inked-plate-card__note">Fastlægger sagens rammer: omfang, frister og parter.</span>
+                <span class="inked-plate-card__grip" aria-hidden="true"></span>
+              </span>
+            </a>
+            <a class="inked-plate-card inked-plate-card--graphite" href="#">
+              <span class="inked-plate-card__plate">
+                <span class="inked-plate-card__head">
+                  <span class="inked-plate-card__title">Rammesætning</span>
+                  <span class="inked-plate-card__no">001</span>
+                </span>
+
+                <span class="inked-plate-card__art">
+                  <span class="inked-plate-card__crop" aria-hidden="true"></span>
+                  <svg class="inked-plate-card__ink inked-plate-card__ink--vortex" viewBox="0 0 200 200"
+                       fill="none" aria-hidden="true" focusable="false">
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:0"
+                          d="M 16 16 L 184 16 L 184 184 L 16 184 Z" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:1"
+                          d="M 29.8 16.9 L 183.1 29.8 L 170.2 183.1 L 16.9 170.2 Z" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:2"
+                          d="M 42.8 19.5 L 180.5 42.8 L 157.2 180.5 L 19.5 157.2 Z" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:3"
+                          d="M 54.9 23.7 L 176.3 54.9 L 145.1 176.3 L 23.7 145.1 Z" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:4"
+                          d="M 65.8 29.2 L 170.8 65.8 L 134.2 170.8 L 29.2 134.2 Z" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:5"
+                          d="M 75.4 36 L 164 75.4 L 124.6 164 L 36 124.6 Z" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:6"
+                          d="M 83.7 43.8 L 156.2 83.7 L 116.3 156.2 L 43.8 116.3 Z" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:7"
+                          d="M 90.4 52.4 L 147.6 90.4 L 109.6 147.6 L 52.4 109.6 Z" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:8"
+                          d="M 95.6 61.8 L 138.2 95.6 L 104.4 138.2 L 61.8 104.4 Z" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:9"
+                          d="M 99.1 71.6 L 128.4 99.1 L 100.9 128.4 L 71.6 100.9 Z" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:10"
+                          d="M 101 81.6 L 118.4 101 L 99 118.4 L 81.6 99 Z" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:11"
+                          d="M 92 100 L 108 100" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:12"
+                          d="M 100 92 L 100 108" />
+                  </svg>
+                </span>
+              </span>
+
+              <span class="inked-plate-card__caption">
+                <span class="inked-plate-card__note">Fastlægger sagens rammer: omfang, frister og parter.</span>
+                <span class="inked-plate-card__grip" aria-hidden="true"></span>
+              </span>
+            </a>
+        </div>
+      </section>
+
+      <section class="demo__state">
+        <p class="demo__caption" data-i18n="state.hover">
+          Hover to re-ink it — or press, on touch
+        </p>
+          <a class="inked-plate-card" href="#">
+            <span class="inked-plate-card__plate">
+              <span class="inked-plate-card__head">
+                <span class="inked-plate-card__title">Rammesætning</span>
+                <span class="inked-plate-card__no">001</span>
+              </span>
+
+              <span class="inked-plate-card__art">
+                <span class="inked-plate-card__crop" aria-hidden="true"></span>
+                <svg class="inked-plate-card__ink inked-plate-card__ink--vortex" viewBox="0 0 200 200"
+                     fill="none" aria-hidden="true" focusable="false">
+                  <path class="inked-plate-card__line" pathLength="1" style="--i:0"
+                        d="M 16 16 L 184 16 L 184 184 L 16 184 Z" />
+                  <path class="inked-plate-card__line" pathLength="1" style="--i:1"
+                        d="M 29.8 16.9 L 183.1 29.8 L 170.2 183.1 L 16.9 170.2 Z" />
+                  <path class="inked-plate-card__line" pathLength="1" style="--i:2"
+                        d="M 42.8 19.5 L 180.5 42.8 L 157.2 180.5 L 19.5 157.2 Z" />
+                  <path class="inked-plate-card__line" pathLength="1" style="--i:3"
+                        d="M 54.9 23.7 L 176.3 54.9 L 145.1 176.3 L 23.7 145.1 Z" />
+                  <path class="inked-plate-card__line" pathLength="1" style="--i:4"
+                        d="M 65.8 29.2 L 170.8 65.8 L 134.2 170.8 L 29.2 134.2 Z" />
+                  <path class="inked-plate-card__line" pathLength="1" style="--i:5"
+                        d="M 75.4 36 L 164 75.4 L 124.6 164 L 36 124.6 Z" />
+                  <path class="inked-plate-card__line" pathLength="1" style="--i:6"
+                        d="M 83.7 43.8 L 156.2 83.7 L 116.3 156.2 L 43.8 116.3 Z" />
+                  <path class="inked-plate-card__line" pathLength="1" style="--i:7"
+                        d="M 90.4 52.4 L 147.6 90.4 L 109.6 147.6 L 52.4 109.6 Z" />
+                  <path class="inked-plate-card__line" pathLength="1" style="--i:8"
+                        d="M 95.6 61.8 L 138.2 95.6 L 104.4 138.2 L 61.8 104.4 Z" />
+                  <path class="inked-plate-card__line" pathLength="1" style="--i:9"
+                        d="M 99.1 71.6 L 128.4 99.1 L 100.9 128.4 L 71.6 100.9 Z" />
+                  <path class="inked-plate-card__line" pathLength="1" style="--i:10"
+                        d="M 101 81.6 L 118.4 101 L 99 118.4 L 81.6 99 Z" />
+                  <path class="inked-plate-card__line" pathLength="1" style="--i:11"
+                        d="M 92 100 L 108 100" />
+                  <path class="inked-plate-card__line" pathLength="1" style="--i:12"
+                        d="M 100 92 L 100 108" />
+                </svg>
+              </span>
+            </span>
+
+            <span class="inked-plate-card__caption">
+              <span class="inked-plate-card__note">Fastlægger sagens rammer: omfang, frister og parter.</span>
+              <span class="inked-plate-card__grip" aria-hidden="true"></span>
+            </span>
+          </a>
+      </section>
+
+      <section class="demo__state demo__state--pair">
+        <p class="demo__caption" data-i18n="state.drawings">
+          The other two drawings, each on its own interval — and --acid
+        </p>
+        <div class="demo__pair">
+            <a class="inked-plate-card inked-plate-card--acid" href="#">
+              <span class="inked-plate-card__plate">
+                <span class="inked-plate-card__head">
+                  <span class="inked-plate-card__title">Bølgelængder</span>
+                  <span class="inked-plate-card__no">002</span>
+                </span>
+
+                <span class="inked-plate-card__art">
+                  <span class="inked-plate-card__crop" aria-hidden="true"></span>
+                  <svg class="inked-plate-card__ink inked-plate-card__ink--waterfall" viewBox="0 0 200 200"
+                       fill="none" aria-hidden="true" focusable="false">
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:0"
+                          d="M 14 30 L 17.9 29.9 L 21.8 29.7 L 25.7 29.3 L 29.6 28.5 L 33.5 27.2 L 37.5 25.1 L 41.4 22.4 L 45.3 19.1 L 49.2 15.9 L 53.1 13.3 L 57 12.1 L 60.9 12.5 L 64.8 14.5 L 68.7 17.4 L 72.6 20.7 L 76.5 23.8 L 80.5 26.2 L 84.4 27.9 L 88.3 28.9 L 92.2 29.5 L 96.1 29.8 L 100 29.9 L 103.9 30 L 107.8 30 L 111.7 30 L 115.6 30 L 119.5 29.8 L 123.5 29.4 L 127.4 28.4 L 131.3 26.4 L 135.2 23.5 L 139.1 20.6 L 143 18.9 L 146.9 19.5 L 150.8 21.9 L 154.7 25 L 158.6 27.5 L 162.5 29 L 166.5 29.7 L 170.4 29.9 L 174.3 30 L 178.2 30 L 182.1 30 L 186 30" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:1"
+                          d="M 14 49 L 17.9 48.9 L 21.8 48.8 L 25.7 48.4 L 29.6 47.8 L 33.5 46.8 L 37.5 45.1 L 41.4 42.6 L 45.3 39.4 L 49.2 35.8 L 53.1 32.3 L 57 29.4 L 60.9 27.9 L 64.8 28.1 L 68.7 29.9 L 72.6 32.9 L 76.5 36.5 L 80.5 40.1 L 84.4 43.1 L 88.3 45.4 L 92.2 47 L 96.1 48 L 100 48.5 L 103.9 48.8 L 107.8 48.9 L 111.7 48.9 L 115.6 48.7 L 119.5 48 L 123.5 46.6 L 127.4 44.3 L 131.3 41.1 L 135.2 37.9 L 139.1 36 L 143 36.3 L 146.9 38.7 L 150.8 42 L 154.7 45 L 158.6 47.1 L 162.5 48.3 L 166.5 48.8 L 170.4 48.9 L 174.3 49 L 178.2 49 L 182.1 49 L 186 49" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:2"
+                          d="M 14 68 L 17.9 67.9 L 21.8 67.8 L 25.7 67.6 L 29.6 67.1 L 33.5 66.2 L 37.5 64.9 L 41.4 62.8 L 45.3 60 L 49.2 56.4 L 53.1 52.5 L 57 48.7 L 60.9 45.6 L 64.8 43.8 L 68.7 43.7 L 72.6 45.3 L 76.5 48.3 L 80.5 52 L 84.4 56 L 88.3 59.6 L 92.2 62.5 L 96.1 64.7 L 100 66.1 L 103.9 67 L 107.8 67.3 L 111.7 67.2 L 115.6 66.4 L 119.5 64.8 L 123.5 62 L 127.4 58.5 L 131.3 55.2 L 135.2 53.1 L 139.1 53.2 L 143 55.4 L 146.9 58.8 L 150.8 62.3 L 154.7 64.9 L 158.6 66.6 L 162.5 67.5 L 166.5 67.8 L 170.4 67.9 L 174.3 68 L 178.2 68 L 182.1 68 L 186 68" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:3"
+                          d="M 14 87 L 17.9 86.9 L 21.8 86.8 L 25.7 86.6 L 29.6 86.3 L 33.5 85.6 L 37.5 84.5 L 41.4 82.8 L 45.3 80.4 L 49.2 77.2 L 53.1 73.3 L 57 69.1 L 60.9 65 L 64.8 61.7 L 68.7 59.7 L 72.6 59.3 L 76.5 60.7 L 80.5 63.5 L 84.4 67.4 L 88.3 71.6 L 92.2 75.6 L 96.1 79.1 L 100 81.8 L 103.9 83.5 L 107.8 84.3 L 111.7 84 L 115.6 82.4 L 119.5 79.5 L 123.5 75.9 L 127.4 72.4 L 131.3 70.2 L 135.2 70 L 139.1 72 L 143 75.5 L 146.9 79.3 L 150.8 82.5 L 154.7 84.7 L 158.6 86 L 162.5 86.6 L 166.5 86.9 L 170.4 87 L 174.3 87 L 178.2 87 L 182.1 87 L 186 87" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:4"
+                          d="M 14 106 L 17.9 105.9 L 21.8 105.9 L 25.7 105.7 L 29.6 105.4 L 33.5 104.9 L 37.5 104 L 41.4 102.7 L 45.3 100.6 L 49.2 97.9 L 53.1 94.3 L 57 90.1 L 60.9 85.7 L 64.8 81.4 L 68.7 77.9 L 72.6 75.6 L 76.5 75 L 80.5 76.1 L 84.4 78.8 L 88.3 82.5 L 92.2 86.9 L 96.1 91.1 L 100 94.8 L 103.9 97.4 L 107.8 98.5 L 111.7 97.9 L 115.6 95.7 L 119.5 92.5 L 123.5 89.3 L 127.4 87.1 L 131.3 86.8 L 135.2 88.6 L 139.1 92.1 L 143 96.1 L 146.9 99.7 L 150.8 102.5 L 154.7 104.2 L 158.6 105.2 L 162.5 105.7 L 166.5 105.9 L 170.4 106 L 174.3 106 L 178.2 106 L 182.1 106 L 186 106" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:5"
+                          d="M 14 125 L 17.9 125 L 21.8 124.9 L 25.7 124.8 L 29.6 124.6 L 33.5 124.3 L 37.5 123.7 L 41.4 122.8 L 45.3 121.5 L 49.2 119.6 L 53.1 117.1 L 57 113.9 L 60.9 110.4 L 64.8 106.6 L 68.7 103 L 72.6 100 L 76.5 98 L 80.5 97.3 L 84.4 97.9 L 88.3 99.8 L 92.2 102.6 L 96.1 105.8 L 100 108.8 L 103.9 110.9 L 107.8 111.9 L 111.7 111.5 L 115.6 110 L 119.5 108.3 L 123.5 107.1 L 127.4 107.1 L 131.3 108.7 L 135.2 111.6 L 139.1 115 L 143 118.3 L 146.9 120.9 L 150.8 122.8 L 154.7 123.9 L 158.6 124.5 L 162.5 124.8 L 166.5 124.9 L 170.4 125 L 174.3 125 L 178.2 125 L 182.1 125 L 186 125" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:6"
+                          d="M 14 144 L 17.9 144 L 21.8 143.9 L 25.7 143.9 L 29.6 143.8 L 33.5 143.5 L 37.5 143.2 L 41.4 142.6 L 45.3 141.7 L 49.2 140.4 L 53.1 138.7 L 57 136.5 L 60.9 133.8 L 64.8 130.7 L 68.7 127.6 L 72.6 124.5 L 76.5 122 L 80.5 120.2 L 84.4 119.4 L 88.3 119.6 L 92.2 120.5 L 96.1 122 L 100 123.6 L 103.9 124.8 L 107.8 125.4 L 111.7 125.4 L 115.6 125.2 L 119.5 125.3 L 123.5 126.2 L 127.4 128 L 131.3 130.7 L 135.2 133.8 L 139.1 136.9 L 143 139.4 L 146.9 141.3 L 150.8 142.6 L 154.7 143.3 L 158.6 143.7 L 162.5 143.9 L 166.5 144 L 170.4 144 L 174.3 144 L 178.2 144 L 182.1 144 L 186 144" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:7"
+                          d="M 14 163 L 17.9 163 L 21.8 163 L 25.7 162.9 L 29.6 162.8 L 33.5 162.7 L 37.5 162.5 L 41.4 162.1 L 45.3 161.5 L 49.2 160.7 L 53.1 159.5 L 57 158 L 60.9 156 L 64.8 153.7 L 68.7 151.2 L 72.6 148.6 L 76.5 146 L 80.5 143.8 L 84.4 142.1 L 88.3 141 L 92.2 140.3 L 96.1 140.1 L 100 140.2 L 103.9 140.3 L 107.8 140.6 L 111.7 141.1 L 115.6 142 L 119.5 143.6 L 123.5 146 L 127.4 148.9 L 131.3 152.1 L 135.2 155.1 L 139.1 157.7 L 143 159.7 L 146.9 161.1 L 150.8 162 L 154.7 162.5 L 158.6 162.8 L 162.5 162.9 L 166.5 163 L 170.4 163 L 174.3 163 L 178.2 163 L 182.1 163 L 186 163" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:8"
+                          d="M 14 182 L 17.9 182 L 21.8 182 L 25.7 181.9 L 29.6 181.9 L 33.5 181.8 L 37.5 181.7 L 41.4 181.4 L 45.3 181.1 L 49.2 180.5 L 53.1 179.7 L 57 178.7 L 60.9 177.4 L 64.8 175.7 L 68.7 173.8 L 72.6 171.7 L 76.5 169.5 L 80.5 167.2 L 84.4 165.1 L 88.3 163.1 L 92.2 161.4 L 96.1 160 L 100 159 L 103.9 158.4 L 107.8 158.4 L 111.7 159.2 L 115.6 160.8 L 119.5 163.2 L 123.5 166.2 L 127.4 169.4 L 131.3 172.6 L 135.2 175.4 L 139.1 177.6 L 143 179.3 L 146.9 180.4 L 150.8 181.1 L 154.7 181.6 L 158.6 181.8 L 162.5 181.9 L 166.5 182 L 170.4 182 L 174.3 182 L 178.2 182 L 182.1 182 L 186 182" />
+                  </svg>
+                </span>
+              </span>
+
+              <span class="inked-plate-card__caption">
+                <span class="inked-plate-card__note">Fælles løft og samdrift skaber resultater på tværs af organisationens teams.</span>
+                <span class="inked-plate-card__grip" aria-hidden="true"></span>
+              </span>
+            </a>
+            <a class="inked-plate-card" href="#">
+              <span class="inked-plate-card__plate">
+                <span class="inked-plate-card__head">
+                  <span class="inked-plate-card__title">Netværk</span>
+                  <span class="inked-plate-card__no">003</span>
+                </span>
+
+                <span class="inked-plate-card__art">
+                  <span class="inked-plate-card__crop" aria-hidden="true"></span>
+                  <svg class="inked-plate-card__ink inked-plate-card__ink--envelope" viewBox="0 0 200 200"
+                       fill="none" aria-hidden="true" focusable="false">
+                    <path class="inked-plate-card__line inked-plate-card__line--faint" pathLength="1" style="--i:0"
+                          d="M 18 100 A 82 82 0 1 0 182 100 A 82 82 0 1 0 18 100 Z" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:1"
+                          d="M 110.7 18.7 L 131.4 24.2" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:2"
+                          d="M 121.2 20.8 L 158 42" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:3"
+                          d="M 131.4 24.2 L 175.8 68.6" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:4"
+                          d="M 141 29 L 182 100" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:5"
+                          d="M 149.9 34.9 L 175.8 131.4" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:6"
+                          d="M 158 42 L 158 158" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:7"
+                          d="M 165.1 50.1 L 131.4 175.8" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:8"
+                          d="M 171 59 L 100 182" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:9"
+                          d="M 175.8 68.6 L 68.6 175.8" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:10"
+                          d="M 179.2 78.8 L 42 158" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:11"
+                          d="M 181.3 89.3 L 24.2 131.4" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:12"
+                          d="M 182 100 L 18 100" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:13"
+                          d="M 181.3 110.7 L 24.2 68.6" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:14"
+                          d="M 179.2 121.2 L 42 42" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:15"
+                          d="M 175.8 131.4 L 68.6 24.2" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:16"
+                          d="M 171 141 L 100 18" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:17"
+                          d="M 165.1 149.9 L 131.4 24.2" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:18"
+                          d="M 158 158 L 158 42" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:19"
+                          d="M 149.9 165.1 L 175.8 68.6" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:20"
+                          d="M 141 171 L 182 100" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:21"
+                          d="M 131.4 175.8 L 175.8 131.4" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:22"
+                          d="M 121.2 179.2 L 158 158" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:23"
+                          d="M 110.7 181.3 L 131.4 175.8" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:24"
+                          d="M 100 182 L 100 182" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:25"
+                          d="M 89.3 181.3 L 68.6 175.8" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:26"
+                          d="M 78.8 179.2 L 42 158" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:27"
+                          d="M 68.6 175.8 L 24.2 131.4" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:28"
+                          d="M 59 171 L 18 100" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:29"
+                          d="M 50.1 165.1 L 24.2 68.6" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:30"
+                          d="M 42 158 L 42 42" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:31"
+                          d="M 34.9 149.9 L 68.6 24.2" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:32"
+                          d="M 29 141 L 100 18" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:33"
+                          d="M 24.2 131.4 L 131.4 24.2" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:34"
+                          d="M 20.8 121.2 L 158 42" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:35"
+                          d="M 18.7 110.7 L 175.8 68.6" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:36"
+                          d="M 18 100 L 182 100" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:37"
+                          d="M 18.7 89.3 L 175.8 131.4" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:38"
+                          d="M 20.8 78.8 L 158 158" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:39"
+                          d="M 24.2 68.6 L 131.4 175.8" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:40"
+                          d="M 29 59 L 100 182" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:41"
+                          d="M 34.9 50.1 L 68.6 175.8" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:42"
+                          d="M 42 42 L 42 158" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:43"
+                          d="M 50.1 34.9 L 24.2 131.4" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:44"
+                          d="M 59 29 L 18 100" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:45"
+                          d="M 68.6 24.2 L 24.2 68.6" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:46"
+                          d="M 78.8 20.8 L 42 42" />
+                    <path class="inked-plate-card__line" pathLength="1" style="--i:47"
+                          d="M 89.3 18.7 L 68.6 24.2" />
+                  </svg>
+                </span>
+              </span>
+
+              <span class="inked-plate-card__caption">
+                <span class="inked-plate-card__note">Viser relationer mellem parter, sager og forløb.</span>
+                <span class="inked-plate-card__grip" aria-hidden="true"></span>
+              </span>
+            </a>
+        </div>
+      </section>
+
+      <section class="demo__state">
+        <p class="demo__caption" data-i18n="state.long">
+          Longer note — the caption plate has a floor, not a fixed height
+        </p>
+          <a class="inked-plate-card" href="#">
+            <span class="inked-plate-card__plate">
+              <span class="inked-plate-card__head">
+                <span class="inked-plate-card__title">Overblik over sagen</span>
+                <span class="inked-plate-card__no">004</span>
+              </span>
+
+              <span class="inked-plate-card__art">
+                <span class="inked-plate-card__crop" aria-hidden="true"></span>
+                <svg class="inked-plate-card__ink inked-plate-card__ink--vortex" viewBox="0 0 200 200"
+                     fill="none" aria-hidden="true" focusable="false">
+                  <path class="inked-plate-card__line" pathLength="1" style="--i:0"
+                        d="M 16 16 L 184 16 L 184 184 L 16 184 Z" />
+                  <path class="inked-plate-card__line" pathLength="1" style="--i:1"
+                        d="M 29.8 16.9 L 183.1 29.8 L 170.2 183.1 L 16.9 170.2 Z" />
+                  <path class="inked-plate-card__line" pathLength="1" style="--i:2"
+                        d="M 42.8 19.5 L 180.5 42.8 L 157.2 180.5 L 19.5 157.2 Z" />
+                  <path class="inked-plate-card__line" pathLength="1" style="--i:3"
+                        d="M 54.9 23.7 L 176.3 54.9 L 145.1 176.3 L 23.7 145.1 Z" />
+                  <path class="inked-plate-card__line" pathLength="1" style="--i:4"
+                        d="M 65.8 29.2 L 170.8 65.8 L 134.2 170.8 L 29.2 134.2 Z" />
+                  <path class="inked-plate-card__line" pathLength="1" style="--i:5"
+                        d="M 75.4 36 L 164 75.4 L 124.6 164 L 36 124.6 Z" />
+                  <path class="inked-plate-card__line" pathLength="1" style="--i:6"
+                        d="M 83.7 43.8 L 156.2 83.7 L 116.3 156.2 L 43.8 116.3 Z" />
+                  <path class="inked-plate-card__line" pathLength="1" style="--i:7"
+                        d="M 90.4 52.4 L 147.6 90.4 L 109.6 147.6 L 52.4 109.6 Z" />
+                  <path class="inked-plate-card__line" pathLength="1" style="--i:8"
+                        d="M 95.6 61.8 L 138.2 95.6 L 104.4 138.2 L 61.8 104.4 Z" />
+                  <path class="inked-plate-card__line" pathLength="1" style="--i:9"
+                        d="M 99.1 71.6 L 128.4 99.1 L 100.9 128.4 L 71.6 100.9 Z" />
+                  <path class="inked-plate-card__line" pathLength="1" style="--i:10"
+                        d="M 101 81.6 L 118.4 101 L 99 118.4 L 81.6 99 Z" />
+                  <path class="inked-plate-card__line" pathLength="1" style="--i:11"
+                        d="M 92 100 L 108 100" />
+                  <path class="inked-plate-card__line" pathLength="1" style="--i:12"
+                        d="M 100 92 L 100 108" />
+                </svg>
+              </span>
+            </span>
+
+            <span class="inked-plate-card__caption">
+              <span class="inked-plate-card__note">Samler frister, parter og seneste handlinger på én flade, så sagsbehandleren kan se status uden at åbne hver enkelt sag.</span>
+              <span class="inked-plate-card__grip" aria-hidden="true"></span>
+            </span>
+          </a>
+      </section>
+    </div>
+
+  </div>
+
+  <!-- notes.md, rendered. Closed by default: the states are what the page is
+       for, and the decisions are what you open when you want to know why. A
+       <details> rather than a scripted panel — disclosure is the one thing the
+       element already is, keyboard and screen reader included, and this page
+       has no other reason to carry script. -->
+  <details class="demo__notes">
+    <summary class="demo__notes-summary">
+      <h2 class="demo__notes-title" data-i18n="notes.title">Decisions</h2>
+      <svg class="demo__notes-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+        <path d="M4 6l4 4 4-4" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </summary>
+
+    <div class="demo__notes-body">
+
+      <dl class="demo__notes-meta">
+        <div class="demo__notes-row">
+          <dt data-i18n="notes.type">Type</dt>
+          <dd data-i18n="type">Card</dd>
+        </div>
+        <div class="demo__notes-row">
+          <dt data-i18n="notes.source">Source</dt>
+          <dd><a href="https://aesthetic-cards.vercel.app/" target="_blank" rel="noopener noreferrer">aesthetic-cards.vercel.app</a></dd>
+        </div>
+      </dl>
+
+      <p class="demo__notes-lede">Extraction, not a copy. What is taken is the construction — two plates with cut facing corners, a crop-marked drawing field on a dot grid, and a line drawing that inks itself on load. What is left behind is everything that identifies the original: the orange and cream, the three shapes (nested circles with ± glyphs, a ruled triangle, a hatched Venn), the product copy, and the <code>◇ FEATURES</code> section header — a row of three cards is page layout, and this is one card.</p>
+      <p class="demo__notes-lede">Colours are lime on graphite instead of orange on warm grey, and the drawings are three of my own: concentric squares rotating into a vortex, a waterfall of drifting ridgelines, and a nephroid drawn as 47 straight chords across a circle.</p>
+
+      <ol class="demo__notes-list">
+        <li>
+          <h3 class="demo__notes-head">The card is two plates, and the seam is the point.</h3>
+          <p>Not one box with a rule across it: an artwork plate and a caption plate, 6px apart, and the two corners facing that gap are cut at 45° while the outer four stay at a 14px radius — each plate reads as a piece of cut sheet rather than half of a rounded box. The cut is <code>mask-image</code> with two <code>linear-gradient</code>s and <code>mask-composite: intersect</code>; <strong>intersect</strong> is load-bearing, because mask layers union by default and the union of two corner cuts removes nothing at all. Hover widens the seam to 13px and pushes the crop marks 3px outward, so the two plates separate a little rather than the card lifting.</p>
+        </li>
+        <li>
+          <h3 class="demo__notes-head"><code>pathLength="1"</code> is the whole reason the draw needs no JavaScript.</h3>
+          <p>Every path declares its length as 1, so <code>stroke-dasharray: 1</code> and a single keyframe pair from <code>stroke-dashoffset: 1</code> to <code>0</code> draw a 16-unit crosshair and a 500-unit ridgeline at exactly the same rate. Nothing has to measure a path, which is the only thing that would have forced a <code>component.js</code>. The drawing order is <code>--i</code> inline on each path — the one thing the markup carries that is not geometry — multiplied by the stagger to get the delay.</p>
+        </li>
+        <li>
+          <h3 class="demo__notes-head">The stagger is per drawing, not per component.</h3>
+          <p>34ms across the vortex's 13 squares, 44ms across the waterfall's 9 ridgelines, 12ms across the envelope's 48 paths — so all three finish within about the same second. One shared interval cannot do that: at 34ms the envelope runs past a second and a half, and at 12ms the waterfall is finished before the eye catches it starting.</p>
+        </li>
+        <li>
+          <h3 class="demo__notes-head">Re-inking on hover, and the name swap that makes it possible.</h3>
+          <p><code>inked-plate-card-redraw</code> is a byte-for-byte copy of <code>inked-plate-card-draw</code>, and it exists only because changing <code>animation-name</code> is the one thing that restarts a running CSS animation. Crossing back out swaps the name back and the card re-inks on the way out too — kept deliberately, because the alternative is snapping to the finished state, and a drawing that re-inks on both crossings reads as a plotter that answers the pointer.</p>
+        </li>
+        <li>
+          <h3 class="demo__notes-head">Line weight in viewBox units, type in rem.</h3>
+          <p><code>stroke-width: 1.15</code> is in the drawing's own coordinates, so the weight shrinks with the card instead of getting heavier as the card gets smaller — a card at 320px is the same drawing, only smaller. The type does not scale: 18px/500 title, 13px note, and a 10px mono number at 0.14em tracking, three sizes with nothing in between. The crop marks and the dot grid stay in px for the same reason a hairline does.</p>
+        </li>
+      </ol>
+
+      <p class="demo__notes-foot">
+        <a href="notes.md">notes.md</a>
+        <span data-i18n="notes.full">&mdash; the full record, including what was tried and dropped</span>
+      </p>
+    </div>
+  </details>
+
+  <!--
+    Language and the redraw button. Self-contained on purpose: the folder has
+    to survive being copied out, so it carries its own strings rather than
+    sharing a table with the index. The index appends ?lang= to the link that
+    opens this page, and the back link hands the choice back — over file://
+    each document gets its own opaque origin, so localStorage alone will not
+    carry it.
+
+    The cards' own copy is not translated: it is sample content, not page
+    language.
+  -->
+  <script>
+    (function () {
+      var STORE_KEY = 'interface-studies:lang';
+
+      var DA = {
+        'notes.title': 'Beslutninger',
+        'notes.type': 'Type',
+        'notes.source': 'Kilde',
+        'notes.full': '\u2014 hele optegnelsen, ogs\u00e5 det der blev pr\u00f8vet og forkastet',
+        'type': 'Kort',
+        'heading': 'Kort med tegnede plader',
+        'lede': 'En billedplade og en tekstplade med afskårne hjørner mod '
+          + 'hinanden, over et punktgitter med snitmærker. Stregtegningen '
+          + 'tegner sig selv ved indlæsning i ren CSS — hver streg angiver en '
+          + 'længde på 1, så ét sæt keyframes tegner dem alle uden at måle '
+          + 'nogen af dem.',
+        'back': 'Alle studier',
+        'replay': 'Tegn igen',
+        'state.default': 'Standard, med fladen --graphite ved siden af',
+        'state.hover': 'Hold musen over for at tegne igen — eller tryk, på berøring',
+        'state.drawings': 'De to andre tegninger, hver med sit eget interval — og --acid',
+        'state.long': 'Længere tekst — bundpladen har en minimumshøjde, ikke en fast højde'
+      };
+
+      var nodes = Array.prototype.slice.call(document.querySelectorAll('[data-i18n]'));
+      var buttons = Array.prototype.slice.call(document.querySelectorAll('[data-lang]'));
+      var back = document.querySelector('.demo__back');
+      var english = nodes.map(function (el) { return el.textContent; });
+
+      function apply(lang) {
+        var table = lang === 'da' ? DA : null;
+
+        nodes.forEach(function (el, i) {
+          var key = el.getAttribute('data-i18n');
+          el.textContent = table && table[key] ? table[key] : english[i];
+        });
+
+        // The tab follows the heading rather than keeping its own copy of it,
+        // so the study's name is the same string in both places and in both
+        // languages. The <title> in the markup is the no-script fallback.
+        var head = document.querySelector('.demo__heading');
+        if (head) document.title = head.textContent.trim() + ' \u2014 Interface Studies';
+
+        document.documentElement.lang = lang;
+        buttons.forEach(function (b) {
+          b.setAttribute('aria-pressed', b.dataset.lang === lang ? 'true' : 'false');
+        });
+        if (back) {
+          back.setAttribute('href', lang === 'en' ? '../index.html' : '../index.html?lang=' + lang);
+        }
+
+        try { localStorage.setItem(STORE_KEY, lang); } catch (err) { /* private mode */ }
+      }
+
+      buttons.forEach(function (b) {
+        b.addEventListener('click', function () { apply(b.dataset.lang); });
+      });
+
+      var fromQuery = new URLSearchParams(location.search).get('lang');
+      var stored = null;
+      try { stored = localStorage.getItem(STORE_KEY); } catch (err) { /* private mode */ }
+
+      apply(fromQuery || stored || 'en');
+
+      var replay = document.querySelector('[data-replay]');
+      if (replay) {
+        replay.addEventListener('click', function () { location.reload(); });
+      }
+    })();
+  </script>
+
+</body>
+</html>

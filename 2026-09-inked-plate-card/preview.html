@@ -1,0 +1,377 @@
+<!doctype html>
+<!--
+  The thumbnail the landing page iframes: one card, no captions and no second
+  copy. It links component.css and never redefines it — the width and the
+  surface come in as the component's own re-theming channels, not as overrides
+  of its internals.
+
+  Two things here differ from demo.html on purpose, and both are about being
+  read at thumbnail size.
+
+  The ground: this page uses the light #f3f2ef every study in this repo
+  sits on, so the rail reads as one set of cards rather than one dark frame
+  among light ones. The plotter grid runs in ink rather than chalk behind it.
+  The dark ground the aesthetic is built for is demo.html's, and it keeps it.
+
+  The surface: the demo leads with the porcelain default, this page leads with
+  --acid and the waterfall. Not because porcelain fails at thumbnail size — at
+  0.7 the grid still stops at the plate, the edge still holds, and the vortex
+  still reads. It is that porcelain on this ground inside the index's own light
+  rail is three near-whites stacked, and a thumbnail has to be picked out of a
+  row of them. Lime is the one surface that does that without going dark and
+  reading as a hole, and the waterfall's 9 curves carry further than 13 nested
+  squares at any size.
+
+  The cost, stated: the card in the rail now advertises a modifier rather than
+  the component's unmodified default, and it is the loudest card on the page.
+  Porcelain is one quick-look dot behind it, which is where the demo opens.
+-->
+<html lang="da">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>2026-09-inked-plate-card — preview</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap">
+
+  <link rel="stylesheet" href="component.css">
+
+  <style>
+    /* Thumbnail scaffolding only. Nothing here names a component class. */
+    /* The same ground every study in this repo sits on. Repeated as a
+       literal rather than shared, because the folder has to survive being
+       copied out — but it has to be the same number in all of them, or the
+       rail stops reading as one set of cards. <html> carries it too, so
+       <body>'s background does not propagate to the viewport canvas and leave
+       a seam at the frame edge. */
+    html { background-color: #f3f2ef; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      /* An implicit auto column takes its max-content width and overflows
+         quite happily, which leaves the card's own max-width: 100% resolving
+         against 384px rather than against the frame. The track has to be
+         allowed to shrink for the squeeze to reach the card. */
+      grid-template-columns: minmax(0, 1fr);
+      place-items: center;
+      /* Enough top clearance that the card never runs under the index card's
+         type and number badges, which sit over the top of this frame. */
+      padding: 2.5rem 1rem 1.5rem;
+      box-sizing: border-box;
+
+      background-color: #f3f2ef;
+      /* The plotter grid the demo page uses, in ink rather than in chalk. It
+         places the card on a drawing surface, and it is also what draws the
+         edge of the porcelain plate when quick look steps to it: the grid runs
+         up to the plate and stops. The lime plate this page rests on needs no
+         such help. */
+      background-image:
+        linear-gradient(rgba(20, 24, 26, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(20, 24, 26, 0.05) 1px, transparent 1px);
+      background-size: 44px 44px;
+
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+    }
+
+  </style>
+</head>
+<body>
+  <a class="inked-plate-card inked-plate-card--acid" href="#"
+     style="--inked-plate-card-width: 24rem;">
+    <span class="inked-plate-card__plate">
+      <span class="inked-plate-card__head">
+        <span class="inked-plate-card__title">Bølgelængder</span>
+        <span class="inked-plate-card__no">002</span>
+      </span>
+
+      <span class="inked-plate-card__art">
+        <span class="inked-plate-card__crop" aria-hidden="true"></span>
+        <svg class="inked-plate-card__ink inked-plate-card__ink--waterfall" viewBox="0 0 200 200"
+             fill="none" aria-hidden="true" focusable="false">
+          <path class="inked-plate-card__line" pathLength="1" style="--i:0"
+                d="M 14 30 L 17.9 29.9 L 21.8 29.7 L 25.7 29.3 L 29.6 28.5 L 33.5 27.2 L 37.5 25.1 L 41.4 22.4 L 45.3 19.1 L 49.2 15.9 L 53.1 13.3 L 57 12.1 L 60.9 12.5 L 64.8 14.5 L 68.7 17.4 L 72.6 20.7 L 76.5 23.8 L 80.5 26.2 L 84.4 27.9 L 88.3 28.9 L 92.2 29.5 L 96.1 29.8 L 100 29.9 L 103.9 30 L 107.8 30 L 111.7 30 L 115.6 30 L 119.5 29.8 L 123.5 29.4 L 127.4 28.4 L 131.3 26.4 L 135.2 23.5 L 139.1 20.6 L 143 18.9 L 146.9 19.5 L 150.8 21.9 L 154.7 25 L 158.6 27.5 L 162.5 29 L 166.5 29.7 L 170.4 29.9 L 174.3 30 L 178.2 30 L 182.1 30 L 186 30" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:1"
+                d="M 14 49 L 17.9 48.9 L 21.8 48.8 L 25.7 48.4 L 29.6 47.8 L 33.5 46.8 L 37.5 45.1 L 41.4 42.6 L 45.3 39.4 L 49.2 35.8 L 53.1 32.3 L 57 29.4 L 60.9 27.9 L 64.8 28.1 L 68.7 29.9 L 72.6 32.9 L 76.5 36.5 L 80.5 40.1 L 84.4 43.1 L 88.3 45.4 L 92.2 47 L 96.1 48 L 100 48.5 L 103.9 48.8 L 107.8 48.9 L 111.7 48.9 L 115.6 48.7 L 119.5 48 L 123.5 46.6 L 127.4 44.3 L 131.3 41.1 L 135.2 37.9 L 139.1 36 L 143 36.3 L 146.9 38.7 L 150.8 42 L 154.7 45 L 158.6 47.1 L 162.5 48.3 L 166.5 48.8 L 170.4 48.9 L 174.3 49 L 178.2 49 L 182.1 49 L 186 49" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:2"
+                d="M 14 68 L 17.9 67.9 L 21.8 67.8 L 25.7 67.6 L 29.6 67.1 L 33.5 66.2 L 37.5 64.9 L 41.4 62.8 L 45.3 60 L 49.2 56.4 L 53.1 52.5 L 57 48.7 L 60.9 45.6 L 64.8 43.8 L 68.7 43.7 L 72.6 45.3 L 76.5 48.3 L 80.5 52 L 84.4 56 L 88.3 59.6 L 92.2 62.5 L 96.1 64.7 L 100 66.1 L 103.9 67 L 107.8 67.3 L 111.7 67.2 L 115.6 66.4 L 119.5 64.8 L 123.5 62 L 127.4 58.5 L 131.3 55.2 L 135.2 53.1 L 139.1 53.2 L 143 55.4 L 146.9 58.8 L 150.8 62.3 L 154.7 64.9 L 158.6 66.6 L 162.5 67.5 L 166.5 67.8 L 170.4 67.9 L 174.3 68 L 178.2 68 L 182.1 68 L 186 68" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:3"
+                d="M 14 87 L 17.9 86.9 L 21.8 86.8 L 25.7 86.6 L 29.6 86.3 L 33.5 85.6 L 37.5 84.5 L 41.4 82.8 L 45.3 80.4 L 49.2 77.2 L 53.1 73.3 L 57 69.1 L 60.9 65 L 64.8 61.7 L 68.7 59.7 L 72.6 59.3 L 76.5 60.7 L 80.5 63.5 L 84.4 67.4 L 88.3 71.6 L 92.2 75.6 L 96.1 79.1 L 100 81.8 L 103.9 83.5 L 107.8 84.3 L 111.7 84 L 115.6 82.4 L 119.5 79.5 L 123.5 75.9 L 127.4 72.4 L 131.3 70.2 L 135.2 70 L 139.1 72 L 143 75.5 L 146.9 79.3 L 150.8 82.5 L 154.7 84.7 L 158.6 86 L 162.5 86.6 L 166.5 86.9 L 170.4 87 L 174.3 87 L 178.2 87 L 182.1 87 L 186 87" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:4"
+                d="M 14 106 L 17.9 105.9 L 21.8 105.9 L 25.7 105.7 L 29.6 105.4 L 33.5 104.9 L 37.5 104 L 41.4 102.7 L 45.3 100.6 L 49.2 97.9 L 53.1 94.3 L 57 90.1 L 60.9 85.7 L 64.8 81.4 L 68.7 77.9 L 72.6 75.6 L 76.5 75 L 80.5 76.1 L 84.4 78.8 L 88.3 82.5 L 92.2 86.9 L 96.1 91.1 L 100 94.8 L 103.9 97.4 L 107.8 98.5 L 111.7 97.9 L 115.6 95.7 L 119.5 92.5 L 123.5 89.3 L 127.4 87.1 L 131.3 86.8 L 135.2 88.6 L 139.1 92.1 L 143 96.1 L 146.9 99.7 L 150.8 102.5 L 154.7 104.2 L 158.6 105.2 L 162.5 105.7 L 166.5 105.9 L 170.4 106 L 174.3 106 L 178.2 106 L 182.1 106 L 186 106" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:5"
+                d="M 14 125 L 17.9 125 L 21.8 124.9 L 25.7 124.8 L 29.6 124.6 L 33.5 124.3 L 37.5 123.7 L 41.4 122.8 L 45.3 121.5 L 49.2 119.6 L 53.1 117.1 L 57 113.9 L 60.9 110.4 L 64.8 106.6 L 68.7 103 L 72.6 100 L 76.5 98 L 80.5 97.3 L 84.4 97.9 L 88.3 99.8 L 92.2 102.6 L 96.1 105.8 L 100 108.8 L 103.9 110.9 L 107.8 111.9 L 111.7 111.5 L 115.6 110 L 119.5 108.3 L 123.5 107.1 L 127.4 107.1 L 131.3 108.7 L 135.2 111.6 L 139.1 115 L 143 118.3 L 146.9 120.9 L 150.8 122.8 L 154.7 123.9 L 158.6 124.5 L 162.5 124.8 L 166.5 124.9 L 170.4 125 L 174.3 125 L 178.2 125 L 182.1 125 L 186 125" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:6"
+                d="M 14 144 L 17.9 144 L 21.8 143.9 L 25.7 143.9 L 29.6 143.8 L 33.5 143.5 L 37.5 143.2 L 41.4 142.6 L 45.3 141.7 L 49.2 140.4 L 53.1 138.7 L 57 136.5 L 60.9 133.8 L 64.8 130.7 L 68.7 127.6 L 72.6 124.5 L 76.5 122 L 80.5 120.2 L 84.4 119.4 L 88.3 119.6 L 92.2 120.5 L 96.1 122 L 100 123.6 L 103.9 124.8 L 107.8 125.4 L 111.7 125.4 L 115.6 125.2 L 119.5 125.3 L 123.5 126.2 L 127.4 128 L 131.3 130.7 L 135.2 133.8 L 139.1 136.9 L 143 139.4 L 146.9 141.3 L 150.8 142.6 L 154.7 143.3 L 158.6 143.7 L 162.5 143.9 L 166.5 144 L 170.4 144 L 174.3 144 L 178.2 144 L 182.1 144 L 186 144" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:7"
+                d="M 14 163 L 17.9 163 L 21.8 163 L 25.7 162.9 L 29.6 162.8 L 33.5 162.7 L 37.5 162.5 L 41.4 162.1 L 45.3 161.5 L 49.2 160.7 L 53.1 159.5 L 57 158 L 60.9 156 L 64.8 153.7 L 68.7 151.2 L 72.6 148.6 L 76.5 146 L 80.5 143.8 L 84.4 142.1 L 88.3 141 L 92.2 140.3 L 96.1 140.1 L 100 140.2 L 103.9 140.3 L 107.8 140.6 L 111.7 141.1 L 115.6 142 L 119.5 143.6 L 123.5 146 L 127.4 148.9 L 131.3 152.1 L 135.2 155.1 L 139.1 157.7 L 143 159.7 L 146.9 161.1 L 150.8 162 L 154.7 162.5 L 158.6 162.8 L 162.5 162.9 L 166.5 163 L 170.4 163 L 174.3 163 L 178.2 163 L 182.1 163 L 186 163" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:8"
+                d="M 14 182 L 17.9 182 L 21.8 182 L 25.7 181.9 L 29.6 181.9 L 33.5 181.8 L 37.5 181.7 L 41.4 181.4 L 45.3 181.1 L 49.2 180.5 L 53.1 179.7 L 57 178.7 L 60.9 177.4 L 64.8 175.7 L 68.7 173.8 L 72.6 171.7 L 76.5 169.5 L 80.5 167.2 L 84.4 165.1 L 88.3 163.1 L 92.2 161.4 L 96.1 160 L 100 159 L 103.9 158.4 L 107.8 158.4 L 111.7 159.2 L 115.6 160.8 L 119.5 163.2 L 123.5 166.2 L 127.4 169.4 L 131.3 172.6 L 135.2 175.4 L 139.1 177.6 L 143 179.3 L 146.9 180.4 L 150.8 181.1 L 154.7 181.6 L 158.6 181.8 L 162.5 181.9 L 166.5 182 L 170.4 182 L 174.3 182 L 178.2 182 L 182.1 182 L 186 182" />
+        </svg>
+      </span>
+    </span>
+
+    <span class="inked-plate-card__caption">
+      <span class="inked-plate-card__note">Fælles løft og samdrift skaber resultater på tværs af organisationens teams.</span>
+      <span class="inked-plate-card__grip" aria-hidden="true"></span>
+    </span>
+  </a>
+
+  <!-- The two drawings the resting card does not show. Inert here, and cloned
+       in by the variant switch below — a fresh node is also what restarts the
+       draw, so stepping through the dots re-inks each one. -->
+  <template data-drawings>
+        <svg class="inked-plate-card__ink inked-plate-card__ink--vortex" viewBox="0 0 200 200"
+             fill="none" aria-hidden="true" focusable="false">
+          <path class="inked-plate-card__line" pathLength="1" style="--i:0"
+                d="M 16 16 L 184 16 L 184 184 L 16 184 Z" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:1"
+                d="M 29.8 16.9 L 183.1 29.8 L 170.2 183.1 L 16.9 170.2 Z" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:2"
+                d="M 42.8 19.5 L 180.5 42.8 L 157.2 180.5 L 19.5 157.2 Z" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:3"
+                d="M 54.9 23.7 L 176.3 54.9 L 145.1 176.3 L 23.7 145.1 Z" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:4"
+                d="M 65.8 29.2 L 170.8 65.8 L 134.2 170.8 L 29.2 134.2 Z" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:5"
+                d="M 75.4 36 L 164 75.4 L 124.6 164 L 36 124.6 Z" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:6"
+                d="M 83.7 43.8 L 156.2 83.7 L 116.3 156.2 L 43.8 116.3 Z" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:7"
+                d="M 90.4 52.4 L 147.6 90.4 L 109.6 147.6 L 52.4 109.6 Z" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:8"
+                d="M 95.6 61.8 L 138.2 95.6 L 104.4 138.2 L 61.8 104.4 Z" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:9"
+                d="M 99.1 71.6 L 128.4 99.1 L 100.9 128.4 L 71.6 100.9 Z" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:10"
+                d="M 101 81.6 L 118.4 101 L 99 118.4 L 81.6 99 Z" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:11"
+                d="M 92 100 L 108 100" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:12"
+                d="M 100 92 L 100 108" />
+        </svg>
+        <svg class="inked-plate-card__ink inked-plate-card__ink--envelope" viewBox="0 0 200 200"
+             fill="none" aria-hidden="true" focusable="false">
+          <path class="inked-plate-card__line inked-plate-card__line--faint" pathLength="1" style="--i:0"
+                d="M 18 100 A 82 82 0 1 0 182 100 A 82 82 0 1 0 18 100 Z" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:1"
+                d="M 110.7 18.7 L 131.4 24.2" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:2"
+                d="M 121.2 20.8 L 158 42" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:3"
+                d="M 131.4 24.2 L 175.8 68.6" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:4"
+                d="M 141 29 L 182 100" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:5"
+                d="M 149.9 34.9 L 175.8 131.4" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:6"
+                d="M 158 42 L 158 158" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:7"
+                d="M 165.1 50.1 L 131.4 175.8" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:8"
+                d="M 171 59 L 100 182" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:9"
+                d="M 175.8 68.6 L 68.6 175.8" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:10"
+                d="M 179.2 78.8 L 42 158" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:11"
+                d="M 181.3 89.3 L 24.2 131.4" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:12"
+                d="M 182 100 L 18 100" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:13"
+                d="M 181.3 110.7 L 24.2 68.6" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:14"
+                d="M 179.2 121.2 L 42 42" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:15"
+                d="M 175.8 131.4 L 68.6 24.2" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:16"
+                d="M 171 141 L 100 18" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:17"
+                d="M 165.1 149.9 L 131.4 24.2" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:18"
+                d="M 158 158 L 158 42" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:19"
+                d="M 149.9 165.1 L 175.8 68.6" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:20"
+                d="M 141 171 L 182 100" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:21"
+                d="M 131.4 175.8 L 175.8 131.4" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:22"
+                d="M 121.2 179.2 L 158 158" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:23"
+                d="M 110.7 181.3 L 131.4 175.8" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:24"
+                d="M 100 182 L 100 182" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:25"
+                d="M 89.3 181.3 L 68.6 175.8" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:26"
+                d="M 78.8 179.2 L 42 158" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:27"
+                d="M 68.6 175.8 L 24.2 131.4" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:28"
+                d="M 59 171 L 18 100" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:29"
+                d="M 50.1 165.1 L 24.2 68.6" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:30"
+                d="M 42 158 L 42 42" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:31"
+                d="M 34.9 149.9 L 68.6 24.2" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:32"
+                d="M 29 141 L 100 18" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:33"
+                d="M 24.2 131.4 L 131.4 24.2" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:34"
+                d="M 20.8 121.2 L 158 42" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:35"
+                d="M 18.7 110.7 L 175.8 68.6" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:36"
+                d="M 18 100 L 182 100" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:37"
+                d="M 18.7 89.3 L 175.8 131.4" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:38"
+                d="M 20.8 78.8 L 158 158" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:39"
+                d="M 24.2 68.6 L 131.4 175.8" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:40"
+                d="M 29 59 L 100 182" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:41"
+                d="M 34.9 50.1 L 68.6 175.8" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:42"
+                d="M 42 42 L 42 158" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:43"
+                d="M 50.1 34.9 L 24.2 131.4" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:44"
+                d="M 59 29 L 18 100" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:45"
+                d="M 68.6 24.2 L 24.2 68.6" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:46"
+                d="M 78.8 20.8 L 42 42" />
+          <path class="inked-plate-card__line" pathLength="1" style="--i:47"
+                d="M 89.3 18.7 L 68.6 24.2" />
+        </svg>
+  </template>
+
+  <!--
+    Thumbnail scaffolding, and the one place a study folder may carry
+    script. Two jobs, both driven by the index, both inert when this file is
+    opened on its own:
+
+      1. A card's iframe has pointer events off, so the component's :hover can
+         never fire there. The index says when a card is being looked at, and
+         --live is what the component already has for that state. It also
+         means the index's scroll-into-read-position is what re-inks the
+         drawing — the observer the CSS-only draw cannot have.
+      2. Quick look steps through the three surfaces, each with its own
+         drawing. The list lives here because the index must never name a
+         component class: it is handed labels and draws dots.
+
+    The resting state is the markup, not something this script applies, so the
+    thumbnail is right with scripting off as well.
+  -->
+  <script>
+    (function () {
+      var CHANNEL = 'interface-studies';
+      var BASE = 'inked-plate-card';
+      var root = document.querySelector('.' + BASE);
+      if (!root) return;
+
+      var art = root.querySelector('.' + BASE + '__art');
+      var title = root.querySelector('.' + BASE + '__title');
+      var no = root.querySelector('.' + BASE + '__no');
+      var note = root.querySelector('.' + BASE + '__note');
+
+      // The resting drawing is the one in the markup; the other two come out
+      // of the template, so all three live in this file exactly once.
+      var pool = [root.querySelector('.' + BASE + '__ink').cloneNode(true)];
+      var tpl = document.querySelector('[data-drawings]');
+      if (tpl) {
+        Array.prototype.forEach.call(tpl.content.querySelectorAll('svg'), function (s) {
+          pool.push(s.cloneNode(true));
+        });
+      }
+
+      // Lime leads, because it is the resting state in the markup above and
+      // the first entry is what the card thumbnail shows. Drawing indices
+      // follow the pool: 0 is the waterfall in the markup, 1 and 2 the vortex
+      // and the envelope out of the template, in that order.
+      var VARIANTS = [
+        {
+          id: 'acid', label: 'Lime', classes: ['--acid'], drawing: 0,
+          title: 'Bølgelængder', no: '002',
+          note: 'Fælles løft og samdrift skaber resultater på tværs af organisationens teams.'
+        },
+        {
+          id: 'porcelain', label: 'Porcelæn', classes: [], drawing: 1,
+          title: 'Rammesætning', no: '001',
+          note: 'Fastlægger sagens rammer: omfang, frister og parter.'
+        },
+        {
+          id: 'graphite', label: 'Grafit', classes: ['--graphite'], drawing: 2,
+          title: 'Netværk', no: '003',
+          note: 'Viser relationer mellem parter, sager og forløb.'
+        }
+      ];
+
+      function apply(variant) {
+        VARIANTS.forEach(function (v) {
+          v.classes.forEach(function (c) { root.classList.remove(BASE + c); });
+        });
+        variant.classes.forEach(function (c) { root.classList.add(BASE + c); });
+
+        title.textContent = variant.title;
+        no.textContent = variant.no;
+        note.textContent = variant.note;
+
+        var current = art.querySelector('.' + BASE + '__ink');
+        var next = pool[variant.drawing].cloneNode(true);
+        if (current) art.replaceChild(next, current);
+        else art.appendChild(next);
+      }
+
+      window.addEventListener('message', function (event) {
+        var data = event.data;
+        if (!data || data.source !== CHANNEL) return;
+
+        if (data.type === 'preview') {
+          root.classList.toggle(BASE + '--live', data.active === true);
+        }
+
+        if (data.type === 'preview:variant') {
+          var variant = VARIANTS[data.index];
+          if (variant) apply(variant);
+        }
+      });
+
+      // Announces the listener is live, so a hover that landed before this
+      // file parsed is re-sent rather than lost — and hands the index the
+      // labels it needs for the quick-look dots.
+      // Quick look runs this file with pointer events live, so the pointer —
+      // and with it the focus — ends up inside this document. Keys pressed
+      // here fire against *this* document and never reach the index, which is
+      // where the overlay's Escape handler lives: click the component, press
+      // Escape, and nothing happens. So the one key the overlay owns is handed
+      // back across the channel. Only Escape. Anything else is the component's
+      // to interpret — arrows move a caret in a field the component may have.
+      if (window.parent !== window) {
+        document.addEventListener('keydown', function (event) {
+          if (event.key !== 'Escape') return;
+          window.parent.postMessage({ source: CHANNEL, type: 'preview:key', key: 'Escape' }, '*');
+        });
+      }
+
+      if (window.parent !== window) {
+        window.parent.postMessage({
+          source: CHANNEL,
+          type: 'preview:ready',
+          variants: VARIANTS.map(function (v) { return { id: v.id, label: v.label }; })
+        }, '*');
+      }
+    })();
+  </script>
+
+</body>
+</html>
