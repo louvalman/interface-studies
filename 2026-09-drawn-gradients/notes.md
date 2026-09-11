@@ -153,21 +153,56 @@ still the same shape, only smaller.
   quick look picks its own factor, so integral edges land on fractional device
   pixels once transformed. Two boxes meeting on a fractional boundary each
   paint partial coverage of the same device pixel row, and partial over partial
-  does not composite back to full — a hairline at every tread, which is exactly
-  what it looked like. So the bands overlap by `--…-step-overlap` and there is
-  no shared edge left to antialias.
+  does not composite back to full. So the bands overlap by `--…-step-overlap`
+  and there is no shared edge left to antialias.
 
-  **Which band grows is not a free choice**, and getting it wrong is worse than
-  the hairline. The narrower of the pair has to grow toward the wider one. Grow
-  the wider one and its overlap runs past the end of the tread with nothing
-  beneath it — measured at 2px of ledge along 80px of tread, far more visible
-  than what it was meant to fix. Descending, the upper band is the narrower, so
-  it hangs under the next; ascending, the lower band is, so it reaches up
-  instead. That is the second job the `--down` / `--up` modifier does, and the
-  reason the first attempt at this only worked on one of the two directions.
-  Either way the overlap is invisible, because the band it grows into paints
-  the same field at the same absolute position over the top of it — which also
-  means any size is safe, so it is set generously rather than tightly.
+  **Which band laps over which is not a free choice**, and getting it wrong is
+  worse than the hairline. The narrower of the pair has to reach toward the
+  wider one. Reach the other way and the overlap runs past the end of the tread
+  with nothing beneath it — measured at 2px of ledge along 80px of tread, far
+  more visible than what it was meant to fix. Descending, the upper band is the
+  narrower, so it hangs under the next; ascending, the lower band is, so it
+  reaches up instead. That is the second job the `--down` / `--up` modifier
+  does, and the reason the first attempt at this only worked on one of the two
+  directions.
+
+  **And that still left a seam, which took a different kind of measurement to
+  find.** Three passes at this reported the treads clean, because the probe
+  sampled a single column. Sampling the *whole* tread, averaged across the
+  band and compared against the gradient's own row-to-row step, shows a single
+  device row at every tread jumping 5 to 32 times that step — in both
+  directions, at 1x, 2x and 3x, and present in all three of those earlier
+  builds. It was never fixed; it was never looked at properly.
+
+  Isolating the bands one at a time is what explained it. At the seam row the
+  band underneath is fully opaque and exactly right; the band on top
+  contributes its own antialiased first row, and that row's colour does not
+  match. Two boxes at different offsets rasterise the same gradient into two
+  different textures, and under a fractional transform a partial-coverage row
+  samples one of them at a slightly different place. Compositing that sliver
+  over the band beneath lands the row off the gradient's own progression.
+  Swapping the gradient for a flat colour drops the same seam below 1%, so it
+  was never a coverage gap — which is why widening the overlap only moved it,
+  fading the edge only smeared it, and equalising the band heights did nothing.
+  The box *tops* are what differ, and they have to.
+
+  **So no band paints its own field any more.** Both the field and the
+  silhouette moved to a `::before` whose box spans the whole block vertically
+  and is the band's own width horizontally — the same rectangle, vertically, in
+  every band of the block. Identical boxes rasterise identically, so at a tread
+  the two bands are sampling one texture and a partial row over a full one
+  composites back to the colour it already was. The band itself paints nothing
+  and so clips nothing; the row each band shows is a mask window rather than a
+  box edge, and two adjacent windows still overlap by `--…-step-overlap` so no
+  two mask edges land on the same device pixel either. Every tread now measures
+  1.1 to 2.4 times the gradient's own row step, which is to say indistinguishable
+  from the gradient.
+
+  Keeping the carrier the band's *width* is what makes it cheap: everything
+  horizontal — the plate's left edge, the corner cuts, the fillet — is still
+  measured from the band's own box and needed no change. Only the vertical
+  offsets are now counted down the block instead of from a box edge, which is
+  what `--…-step-top` and `--…-step-bottom` carry.
 
   **`--step` and `--drawn` do not combine in a scaled context, and that is the
   one measured limit here.** The slicing works — one drawing spans the block
@@ -263,11 +298,13 @@ still the same shape, only smaller.
   attempts to see: the notch's position comes from the band's own layout, never
   from the label's width.
 
-  The cut is one mask of four layers, and both the order and the operators are
+  The cut is one mask of five layers, and both the order and the operators are
   load-bearing. Bottom to top: the two left corners, each a radial gradient
   opaque *outside* its arc, so each is a picture of the material that corner
   removes; then the plate, composited `subtract`; then the fillet, composited
-  `add` — above the plate, where no cut can eat it.
+  `add` — above the plate, where no cut can eat it; and over everything the
+  row window, composited `intersect`, which is what confines a carrier that
+  spans the whole block to this band's own row.
 
   The plate is the layer doing the subtracting, not the cuts, and that reads
   upside down from how one would say it out loud. Mask layers composite source

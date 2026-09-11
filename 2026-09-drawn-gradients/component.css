@@ -309,21 +309,29 @@
   border-radius: 0;
   box-shadow: none;
 
-  /* Both in lengths off --step-row-h, not percentages of the band's own box.
-     A percentage background-position resolves against (band height - image
-     height), which ties the slice to however the box happened to round; a
-     length puts every band's slice at the same absolute offset. It also drops
-     the 0 / 50 / 100% arithmetic, which was the confusing part. */
-  background-size:
-    var(--drawn-gradients-step-field)
-    calc(var(--drawn-gradients-step-rows) * var(--drawn-gradients-step-row-h));
-  /* Longhands on purpose: `background-position: right <y>` is ambiguous with
-     the three-value syntax, where `right <length>` means an offset from the
-     right rather than an x and a y. */
-  background-position-x: right;
-  background-position-y:
-    calc(-1 * var(--drawn-gradients-step-row) *
-         var(--drawn-gradients-step-row-h));
+  /* The band paints nothing at all. Both the field and the silhouette are on
+     ::before below, whose box is the same rectangle, vertically, in every
+     band of the block — which is the whole point; see the note there. */
+  background-color: transparent;
+  background-image: none;
+
+  /* Where this band's own row sits inside whatever box is being masked. For
+     the carrier that is its offset down the block; --drawn overrides it,
+     because there the masked box is the band and the row starts at its top. */
+  --drawn-gradients-step-top:
+    calc(var(--drawn-gradients-step-row) * var(--drawn-gradients-step-row-h));
+  --drawn-gradients-step-bottom:
+    calc(var(--drawn-gradients-step-top) + var(--drawn-gradients-step-row-h));
+
+  /* The window either edge of the row opens to, so a band laps over the one
+     it hands over to. Set per direction; square by default. */
+  --drawn-gradients-step-win-top: var(--drawn-gradients-step-top);
+  --drawn-gradients-step-win-bottom: var(--drawn-gradients-step-bottom);
+
+  /* Where the plate's left edge falls. The directional rules move the box a
+     radius to the left and put the edge back at the radius; without one there
+     is no extension and the edge is the box's own. */
+  --drawn-gradients-step-edge: 0px;
 
   /* The pieces the corner mask below is assembled from. Declared here, on the
      band, rather than up in the tunables block: a var() in a custom property
@@ -367,10 +375,21 @@
      pixel, a gradient stop is not. */
   --drawn-gradients-step-plate:
     linear-gradient(to right,
-                    #0000 calc(var(--drawn-gradients-step-radius) -
+                    #0000 calc(var(--drawn-gradients-step-edge) -
                                var(--drawn-gradients-step-feather) / 2),
-                    #000 calc(var(--drawn-gradients-step-radius) +
+                    #000 calc(var(--drawn-gradients-step-edge) +
                               var(--drawn-gradients-step-feather) / 2));
+
+  /* This band's row, cut out of a field that spans the whole block. Hard
+     stops on purpose: the neighbouring window laps --step-overlap past this
+     one, and both windows cut the same texture, so a partial row of one over
+     a full row of the other composites back to the colour it already was. */
+  --drawn-gradients-step-window:
+    linear-gradient(to bottom,
+                    #0000 var(--drawn-gradients-step-win-top),
+                    #000 var(--drawn-gradients-step-win-top),
+                    #000 var(--drawn-gradients-step-win-bottom),
+                    #0000 var(--drawn-gradients-step-win-bottom));
 
   /* A corner that is not this band's business this time round. */
   --drawn-gradients-step-nothing: linear-gradient(#0000, #0000);
@@ -385,7 +404,86 @@
          var(--drawn-gradients-step-overlap));
 }
 
-/* --- drawn: shapes, blurred until they are a gradient ------------------ */
+/* --- one field, one box shape, in every band --------------------------- */
+/* The bands each show a different slice of one gradient, and the obvious way
+   to do that — give every band the image and offset it with
+   background-position — produced a seam at every tread that survived three
+   attempts to close it.
+
+   The cause is not layout, and it took isolating the bands one at a time to
+   see. At the seam row the band underneath is fully opaque and exactly right;
+   the band on top contributes its own antialiased first row, and that row's
+   colour does not match. Two boxes at different offsets rasterise the same
+   gradient into two different textures, and under the index's 0.7 transform a
+   partial-coverage row samples one of them at a slightly different place.
+   Compositing that sliver over the band beneath lands the row off the
+   gradient's own progression — a single device row jumping 5 to 32 times the
+   row-to-row step, at every tread, in both directions. Replacing the gradient
+   with a flat colour drops the same seam below 1%, so it was never a coverage
+   gap: widening the overlap only moved it, fading the edge only smeared it,
+   and equalising the band heights did nothing, because the box *tops* are what
+   differ and they have to.
+
+   So neither the field nor the silhouette lives on the band any more. Both
+   move to ::before, whose box spans the whole block vertically and is the
+   band's own width horizontally — the same rectangle, vertically, in every
+   band. Identical boxes rasterise identically, so at a tread the two bands
+   are sampling the same texture and a partial row over a full one composites
+   back to the colour it already was. The band itself paints nothing and
+   therefore clips nothing; the row window is a mask layer instead of a box
+   edge, and two adjacent windows overlap by --step-overlap so no two mask
+   edges land on the same device pixel either.
+
+   It keeps the band's width, so everything horizontal — the plate's left
+   edge, the corner cuts, the fillet — is still measured from the band's own
+   box and needs no change. Only the vertical offsets are now counted down the
+   block rather than from the box edge, which is what --step-top and
+   --step-bottom carry. */
+.drawn-gradients__surface--step::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(-1 * var(--drawn-gradients-step-top));
+  height: calc(var(--drawn-gradients-step-rows) *
+               var(--drawn-gradients-step-row-h));
+  background-color: var(--drawn-gradients-base);
+  background-image: var(--drawn-gradients-art);
+
+  /* The block's outer corners, and the window sorts out which band shows
+     which: the carrier spans the whole block, so its top pair is the block's
+     top pair and its bottom pair the block's bottom, and every band but the
+     first and last has both outside its own row. The left pair falls inside
+     the strip the plate masks away, where the corner cuts do the work. */
+  border-radius: var(--drawn-gradients-step-radius);
+
+  /* The field is as wide as --step-field and as tall as the whole block, and
+     anchored to the right edge the bands share. */
+  background-size: var(--drawn-gradients-step-field) 100%;
+  background-position: right top;
+  background-repeat: no-repeat;
+  pointer-events: none;
+}
+
+/* --drawn paints its field from the SVG instead, on a child that is already
+   built this way, so it keeps its base and masks the band directly. There the
+   masked box IS the row, so the row starts at its top. */
+.drawn-gradients__surface--step.drawn-gradients__surface--drawn::before {
+  content: none;
+}
+
+.drawn-gradients__surface--step.drawn-gradients__surface--drawn {
+  background-color: var(--drawn-gradients-base);
+  --drawn-gradients-step-top: 0px;
+}
+
+/* Ascending, a drawn band grows upward by the overlap, so its row starts that
+   far down its own box. */
+.drawn-gradients__usage--up .drawn-gradients__usage-row:not(:first-of-type) .drawn-gradients__surface--step.drawn-gradients__surface--drawn {
+  --drawn-gradients-step-top: var(--drawn-gradients-step-overlap);
+}
+
+/* --- drawn: shapes, blurred until they are a gradient ------------------ *//* --- drawn: shapes, blurred until they are a gradient ------------------ */
 /* The other way to make the same surface. Instead of stacking gradient
    stops, draw a few overlapping shapes in flat colour and blur them past
    recognition — the overlaps become the mid-tones a stop list has to be
@@ -547,27 +645,36 @@
    A block with no direction declared gets no overlap. In a rag that goes out
    and back there is no answer that holds at every tread — the narrower band is
    the upper one at one and the lower one at the next — and a hairline is the
-   better of the two failures. */
+   better of the two failures.
+
+   For the stop recipe this is a mask window rather than a taller box, because
+   the box no longer paints anything; only --drawn still grows, since there the
+   masked box is the band. */
 .drawn-gradients__usage--down .drawn-gradients__usage-row:not(:last-of-type) .drawn-gradients__surface--step {
+  --drawn-gradients-step-win-bottom:
+    calc(var(--drawn-gradients-step-bottom) +
+         var(--drawn-gradients-step-overlap));
+}
+
+.drawn-gradients__usage--up .drawn-gradients__usage-row:not(:first-of-type) .drawn-gradients__surface--step {
+  --drawn-gradients-step-win-top:
+    calc(var(--drawn-gradients-step-top) -
+         var(--drawn-gradients-step-overlap));
+}
+
+/* flex-start / flex-end rather than the inherited stretch, or the row's
+   `align-items: center` would split the extra height over both edges and put
+   half of it on the wrong side. */
+.drawn-gradients__usage--down .drawn-gradients__usage-row:not(:last-of-type) .drawn-gradients__surface--step.drawn-gradients__surface--drawn {
   align-self: flex-start;
   height: calc(100% + var(--drawn-gradients-step-overlap));
 }
 
-.drawn-gradients__usage--up .drawn-gradients__usage-row:not(:first-of-type) .drawn-gradients__surface--step {
+.drawn-gradients__usage--up .drawn-gradients__usage-row:not(:first-of-type) .drawn-gradients__surface--step.drawn-gradients__surface--drawn {
   align-self: flex-end;
   height: calc(100% + var(--drawn-gradients-step-overlap));
-
-  /* Growing upward moves the band's own top edge, and the field is measured
-     from that edge — so the whole slice slid up with it and stopped matching
-     the band above, which is a step in the gradient at the tread rather than
-     the seam the overlap was there to remove. Add the overlap back. Growing
-     downward needs no such correction, which is why only this direction was
-     wrong. */
-  background-position-y:
-    calc(-1 * var(--drawn-gradients-step-row) *
-         var(--drawn-gradients-step-row-h) +
-         var(--drawn-gradients-step-overlap));
 }
+
 
 /* The drawing is positioned from the same edge, so it needs the same
    correction. */
@@ -676,33 +783,44 @@
    answer for a rag that is not monotonic. */
 .drawn-gradients__usage--down .drawn-gradients__surface--step,
 .drawn-gradients__usage--up .drawn-gradients__surface--step {
-  /* The box, one radius wider than the band. The floor carries that radius
-     too, or the narrowest band would lose that much of its visible width,
-     plus this band's share of --step-rise. */
+  /* The box, one radius wider than the band, and the plate's edge put back at
+     the radius so the visible edge does not move. The floor carries that
+     radius too, or the narrowest band would lose that much of its visible
+     width, plus this band's share of --step-rise. */
   margin-left: calc(-1 * var(--drawn-gradients-step-radius));
   min-width: calc(var(--drawn-gradients-step-min-w) +
                   var(--drawn-gradients-step-radius) +
                   var(--drawn-gradients-step-depth) *
                   var(--drawn-gradients-step-rise));
+  --drawn-gradients-step-edge: var(--drawn-gradients-step-radius);
+}
 
-  /* Four layers, bottom to top: two corner cuts, the plate, one fillet. The
-     order and the operators are the load-bearing part — see the note above. */
+/* The mask goes on whichever box actually paints: the carrier for the stop
+   recipe, the band itself for --drawn, whose field is an SVG child. Five
+   layers, bottom to top: two corner cuts, the plate, one fillet, and the row
+   window over everything. The order and the operators are load-bearing — see
+   the note above. */
+.drawn-gradients__surface--step:not(.drawn-gradients__surface--drawn)::before,
+.drawn-gradients__surface--step.drawn-gradients__surface--drawn {
   mask-image:
+    var(--drawn-gradients-step-window),
     var(--drawn-gradients-step-fill),
     var(--drawn-gradients-step-plate),
     var(--drawn-gradients-step-cut2),
     var(--drawn-gradients-step-cut1);
   mask-size:
+    100% 100%,
     var(--drawn-gradients-step-fill-size),
     100% 100%,
     var(--drawn-gradients-step-cut-size),
     var(--drawn-gradients-step-cut-size);
   mask-position:
+    left top,
     var(--drawn-gradients-step-fill-at),
     left top,
     var(--drawn-gradients-step-cut2-at),
     var(--drawn-gradients-step-cut1-at);
-  mask-composite: add, subtract, add, add;
+  mask-composite: intersect, add, subtract, add, add;
   mask-repeat: no-repeat;
 }
 
@@ -715,11 +833,16 @@
   --drawn-gradients-step-fill: var(--drawn-gradients-step-nothing);
   --drawn-gradients-step-cut1-at:
     left calc(var(--drawn-gradients-step-radius) -
-              var(--drawn-gradients-step-cut-bleed)) top 0;
+              var(--drawn-gradients-step-cut-bleed))
+    top var(--drawn-gradients-step-top);
   --drawn-gradients-step-cut2-at:
     left calc(var(--drawn-gradients-step-radius) -
-              var(--drawn-gradients-step-cut-bleed)) bottom 0;
-  --drawn-gradients-step-fill-at: left 0 bottom 0;
+              var(--drawn-gradients-step-cut-bleed))
+    top calc(var(--drawn-gradients-step-bottom) -
+             var(--drawn-gradients-step-radius));
+  --drawn-gradients-step-fill-at:
+    left 0 top calc(var(--drawn-gradients-step-bottom) -
+                    var(--drawn-gradients-step-radius));
 }
 
 .drawn-gradients__usage--down .drawn-gradients__usage-row:not(:last-of-type) .drawn-gradients__surface--step {
@@ -734,11 +857,16 @@
   --drawn-gradients-step-fill: var(--drawn-gradients-step-nothing);
   --drawn-gradients-step-cut1-at:
     left calc(var(--drawn-gradients-step-radius) -
-              var(--drawn-gradients-step-cut-bleed)) bottom 0;
+              var(--drawn-gradients-step-cut-bleed))
+    top calc(var(--drawn-gradients-step-bottom) -
+             var(--drawn-gradients-step-radius));
   --drawn-gradients-step-cut2-at:
     left calc(var(--drawn-gradients-step-radius) -
-              var(--drawn-gradients-step-cut-bleed)) top 0;
-  --drawn-gradients-step-fill-at: left 0 top 0;
+              var(--drawn-gradients-step-cut-bleed))
+    top var(--drawn-gradients-step-top);
+  --drawn-gradients-step-fill-at:
+    left 0 top calc(var(--drawn-gradients-step-top) -
+                    var(--drawn-gradients-step-overlap));
 }
 
 .drawn-gradients__usage--up .drawn-gradients__usage-row:not(:first-of-type) .drawn-gradients__surface--step {
