@@ -42,7 +42,14 @@
 
   const COPY = {
     da: {
-      'head.title': 'Små studier i interfacedesign.',
+      // Danish builds compounds, and 'interfacedesign' is one word at a 36px
+      // hero — wider than a 320px line has to give, which is a sideways
+      // scrollbar across the whole page. The soft hyphen is the compound's own
+      // seam: invisible until the line actually needs it, breaking where a
+      // Danish reader would break the word, and needing no hyphenation
+      // dictionary, which is what `hyphens: auto` would be waiting on. A new
+      // long compound in this table wants one too.
+      'head.title': 'Små studier i interface\u00ADdesign.',
       'head.lede': 'Hvert studie tager en anden tilgang til én interfacedetalje '
         + '— et typografipar, en spatieringsrytme, en hover-adfærd — og bygger '
         + 'kun den, i ren HTML og CSS uden framework.',
@@ -111,8 +118,6 @@
       'a11y.carousel': 'Karrusel',
       'a11y.previous': 'Forrige',
       'a11y.next': 'Næste',
-      'a11y.previousWrap': 'Forrige — videre til det sidste studie',
-      'a11y.nextWrap': 'Næste — tilbage til det første studie',
       'a11y.pauseRail': 'Sæt karrusellen på pause',
       'a11y.playRail': 'Start karrusellen igen',
       'a11y.railRegion': 'Studiekarrusel',
@@ -544,9 +549,18 @@
     });
 
     // The rail is a different length now: renumber it, put it back at the
-    // start, and let sync() redo the count, the progress and the wrap edges.
+    // start, rebuild the row the loop cycles through, and let sync() redo the
+    // count and the progress. Filtering to a type small enough that the row no
+    // longer covers the viewport takes the loop and the drift with it, which
+    // is what syncDriftBtn reads.
     number();
     track.scrollLeft = 0;
+    rebuildRing();
+
+    // Not restarted here: the chip handler stops the drift on purpose, and a
+    // row that becomes loopable again on the way back to "All" is not a reason
+    // to override that. The control is what offers it back.
+    syncDriftBtn();
     sync();
   }
 
@@ -620,21 +634,15 @@
 
   // --- rail -------------------------------------------------------------
 
-  // Losing the disabled state loses the one signal that said "this is the
-  // end", so the button about to wrap says so instead — the only cue a screen
-  // reader gets, since the cut itself is visual. English lives here rather
-  // than in the markup's data-i18n-aria because the label is now state, not a
-  // fixed string; the Danish comes off the same table the hint reads.
+  // The drift control's label is state rather than a fixed string, so English
+  // lives here instead of in the markup's data-i18n-aria and the Danish comes
+  // off the same table the hint reads. prev and next keep their markup labels:
+  // a looping rail has no end for them to announce.
   const NAV_EN = {
-    'a11y.previous': 'Previous',
-    'a11y.next': 'Next',
-    'a11y.previousWrap': 'Previous — on to the last study',
-    'a11y.nextWrap': 'Next — back to the first study',
     'a11y.pauseRail': 'Pause the carousel',
     'a11y.playRail': 'Start the carousel again'
   };
 
-  let wrapEdge = null;   // 'start' | 'end' | null — which press would wrap
   let navCopy = null;    // held, so a language switch re-labels without a scroll
 
   function navText(key) {
@@ -642,18 +650,6 @@
   }
 
   function renderNav() {
-    if (prev) {
-      prev.setAttribute(
-        'aria-label',
-        navText(wrapEdge === 'start' ? 'a11y.previousWrap' : 'a11y.previous')
-      );
-    }
-    if (next) {
-      next.setAttribute(
-        'aria-label',
-        navText(wrapEdge === 'end' ? 'a11y.nextWrap' : 'a11y.next')
-      );
-    }
     if (driftBtn) {
       // 'held' is still the rail running as far as the reader is concerned —
       // it is deferring to their pointer, not waiting to be restarted — so the
@@ -668,8 +664,10 @@
   }
 
   // One card plus the flex gap — the distance a single step should cover.
+  // Measured off a card in the row rather than the first in the file, which
+  // the filter may have taken out and left with a zero width.
   function step() {
-    const first = pieces()[0];
+    const first = ring[0] || laidOut()[0];
     if (!first) return track.clientWidth;
     const gap = parseFloat(getComputedStyle(track).columnGap) || 0;
     return first.getBoundingClientRect().width + gap;
@@ -677,6 +675,111 @@
 
   function maxScroll() {
     return Math.max(0, track.scrollWidth - track.clientWidth);
+  }
+
+  // --- the loop ---------------------------------------------------------
+
+  // The rail has no ends. Rather than cloning the set — which would mean a
+  // second live component for every card — each card is recycled: the one that
+  // has scrolled clear of the left goes to the back of the row, and the scroll
+  // position is pulled back by exactly its width in the same breath. Every
+  // pixel under the viewport is where it was, so there is no moment to see.
+  //
+  // The move is a flex `order`, never a DOM move. Re-inserting an iframe
+  // discards its browsing context and the component inside reloads from
+  // scratch — a same-parent appendChild is enough to do it — whereas `order`
+  // repositions the card with the DOM untouched and the component still
+  // running. That is the whole reason this is possible without clones.
+  let ring = [];
+
+  // What the row is currently made of. A filtered card is display:none, so it
+  // occupies no place in the row and must not hold one in the ring either —
+  // rotating it would move nothing while still pulling the scroll back by a
+  // card, and the recycle would stop lining up.
+  const laidOut = () =>
+    pieces().filter((el) => !el.classList.contains('is-filtered'));
+
+  function applyRing() {
+    ring.forEach((el, i) => { el.style.order = String(i); });
+  }
+
+  // Rebuilt whenever the set of laid-out cards changes, which is what the type
+  // filter does. Re-assigning every order from scratch also clears whatever a
+  // card was left holding while it was filtered out.
+  function rebuildRing() {
+    ring = laidOut();
+    applyRing();
+    recycle();
+  }
+
+  // The row has to cover the viewport with a card to spare, or there is
+  // nothing to recycle into and the row would show its own end. A wide
+  // viewport holding few studies is below that line; it is the one case the
+  // rail stays finite in, and every study added raises the ceiling by a card.
+  function loopable() {
+    const w = step();
+    return w > 0 && (ring.length - 1) * w - track.clientWidth >= w;
+  }
+
+  // scrollLeft is held within half a card either side of one card in, so there
+  // is always row to the left to scroll back into and the rest of it to the
+  // right. Returns the distance the scroll was moved, because anything holding
+  // a scroll position of its own — a drag's origin, a step's two ends — has to
+  // move with it or it will fight the recycle on the next frame.
+  function recycle() {
+    if (!loopable()) return 0;
+
+    const w = step();
+    let shifted = 0;
+    let guard = ring.length * 2;
+
+    while (guard-- > 0 && track.scrollLeft >= w * 1.5) {
+      rotate(1);
+      track.scrollLeft -= w;
+      shifted -= w;
+    }
+
+    guard = ring.length * 2;
+    while (guard-- > 0 && track.scrollLeft < w * 0.5) {
+      rotate(-1);
+      track.scrollLeft += w;
+      shifted += w;
+    }
+
+    return shifted;
+  }
+
+  // Mandatory snap re-snaps whenever the layout under it changes, and a
+  // recycle is a layout change — left alone it drags the scroll to the next
+  // card and undoes exactly the compensation that makes the move invisible.
+  // Suppressed for the frame the move happens in, and restored after, by which
+  // point the scroll is back on the card it started on and re-snapping is a
+  // no-op. The class is a third way into the same rule .is-drifting uses.
+  let snapFrame = 0;
+
+  function rotate(direction) {
+    if (direction > 0) ring.push(ring.shift());
+    else ring.unshift(ring.pop());
+    applyRing();
+
+    track.classList.add('is-recycling');
+    cancelAnimationFrame(snapFrame);
+    snapFrame = requestAnimationFrame(() => {
+      snapFrame = 0;
+      track.classList.remove('is-recycling');
+    });
+  }
+
+  // Called where the row's width may have changed under the rail. Dropping
+  // below the loopable line with a rotated ring would leave a finite rail not
+  // starting at the newest study, so it is put back in its authored order.
+  function normalise() {
+    if (loopable()) { recycle(); return; }
+    const row = laidOut();
+    if (!ring.length || ring.every((el, i) => el === row[i])) return;
+    ring = row;
+    applyRing();
+    track.scrollLeft = 0;
   }
 
   // The card sitting in the read position: the one whose left edge is nearest
@@ -721,18 +824,6 @@
 
   function sync() {
     const max = maxScroll();
-    const ratio = max > 0 ? track.scrollLeft / max : 1;
-
-    if (progress) {
-      // The track stays: it is the rule the footer used to draw for itself.
-      // Only the fill is conditional — with nothing to scroll there is no
-      // position to report, and a full bar would read as a heavy divider
-      // rather than as progress.
-      progress.style.setProperty(
-        '--rail-progress',
-        max > 0 ? (ratio * 100).toFixed(2) + '%' : '0%'
-      );
-    }
 
     // The rail counts what it is showing; the masthead and the footer count
     // what exists. Filtering to one type does not mean four studies stopped
@@ -747,65 +838,89 @@
     markActive(active);
     if (indexOut) indexOut.textContent = pad(Math.min(count, active + 1));
 
-    // The rail wraps rather than dead-ending, so neither button goes dead at
-    // an edge — only when there is nothing to scroll at all. 1px of slack, so
-    // a fractional scrollLeft at an edge still counts as being there.
-    const idle = max <= 0;
-    if (prev) prev.disabled = idle;
-    if (next) next.disabled = idle;
-    wrapEdge = idle ? null
-      : track.scrollLeft <= 1 ? 'start'
-      : track.scrollLeft >= max - 1 ? 'end'
-      : null;
+    if (progress) {
+      // The track stays: it is the rule the footer used to draw for itself.
+      // What it fills with is no longer distance along the row — that is
+      // nothing on a rail with no end — but how far through the set the card
+      // in the read position is, which is what the number beside it says.
+      progress.style.setProperty(
+        '--rail-progress',
+        max > 0 && count > 0 ? ((active + 1) / count * 100).toFixed(2) + '%' : '0%'
+      );
+    }
+
+    // A looping rail has no ends, so nothing disables on it. Where the row is
+    // too thin to loop it is finite again, and the buttons say so at its edges
+    // the way they always did — 1px of slack, so a fractional scrollLeft at an
+    // edge still counts as being there.
+    const endless = loopable();
+    if (prev) prev.disabled = !endless && track.scrollLeft <= 1;
+    if (next) next.disabled = !endless && track.scrollLeft >= max - 1;
     renderNav();
   }
 
-  // Past the last card the step returns to the first, and back again from the
-  // first. A disabled button at the end states that the set is finished, which
-  // is the one thing this page is not — studies keep arriving, and the
-  // number beside the rail already says where in the set you are.
-  //
-  // The wrap is a cut, not a scroll. Smooth-scrolling the whole rail back
-  // would sweep every card past the viewport, and with a live component
-  // running in each one that is a paint storm that grows with the set; it also
-  // reads as a glitch rather than a rewind. So the track fades down, the
-  // scroll position jumps inside the fade, and it fades back.
-  const WRAP_FADE = 160;
-  let fadeTimer = 0;
+  // Steps are animated here rather than handed to `behavior: 'smooth'`,
+  // because recycling has to be able to move the scroll position underneath
+  // one: writing scrollLeft during a native smooth scroll cancels it, and the
+  // step would stop halfway. Driving it ourselves means a recycle mid-step
+  // shifts both ends of the animation and it lands where it was always going.
+  const STEP_MS = 420;
+  let stepFrame = 0;
+  let stepFrom = 0;
+  let stepTarget = 0;
+  let stepStart = 0;
 
-  function wrap(left) {
-    clearTimeout(fadeTimer);
+  function stepTo(target) {
+    cancelAnimationFrame(stepFrame);
+    stepFrame = 0;
 
     if (reduced.matches) {
-      track.scrollTo({ left: left, behavior: 'auto' });
+      track.scrollLeft = target;
+      recycle();
       return;
     }
 
-    track.classList.add('is-wrapping');
-    fadeTimer = setTimeout(() => {
-      track.scrollTo({ left: left, behavior: 'auto' });
-      track.classList.remove('is-wrapping');
-    }, WRAP_FADE);
+    stepFrom = track.scrollLeft;
+    stepTarget = target;
+    stepStart = 0;
+    track.classList.add('is-stepping');
+    stepFrame = requestAnimationFrame(stepTick);
+  }
+
+  function stepTick(now) {
+    if (!stepStart) stepStart = now;
+
+    const t = Math.min(1, (now - stepStart) / STEP_MS);
+    const eased = 1 - Math.pow(1 - t, 3);
+    track.scrollLeft = stepFrom + (stepTarget - stepFrom) * eased;
+
+    const shift = recycle();
+    if (shift) { stepFrom += shift; stepTarget += shift; }
+
+    if (t < 1) {
+      stepFrame = requestAnimationFrame(stepTick);
+      return;
+    }
+
+    track.classList.remove('is-stepping');
+    stepFrame = 0;
   }
 
   function scrollBy(direction) {
-    const max = maxScroll();
-    if (max <= 0) return;   // nothing to scroll, so nothing to wrap around
-
-    if (direction > 0 && track.scrollLeft >= max - 1) { wrap(0); return; }
-    if (direction < 0 && track.scrollLeft <= 1) { wrap(max); return; }
-
-    track.scrollBy({
-      left: direction * step(),
-      behavior: reduced.matches ? 'auto' : 'smooth'
-    });
+    const w = step();
+    if (w <= 0) return;
+    stepTo(track.scrollLeft + direction * w);
   }
 
+  // Home and End had nowhere to go once the row stopped having ends, so they
+  // mean the set's ends instead: the newest study and the oldest. Both are
+  // always somewhere in the row, so this is an ordinary scroll to a card.
   function scrollToEdge(end) {
-    track.scrollTo({
-      left: end ? maxScroll() : 0,
-      behavior: reduced.matches ? 'auto' : 'smooth'
-    });
+    const list = real();
+    const target = end ? list[list.length - 1] : list[0];
+    if (!target) return;
+    const inset = parseFloat(getComputedStyle(track).scrollPaddingLeft) || 0;
+    stepTo(target.offsetLeft - inset);
   }
 
   // Land on a card. Snap does this for itself when it is on; this is for the
@@ -831,8 +946,18 @@
     if (event.key === 'End') { event.preventDefault(); driftStop(); scrollToEdge(true); }
   });
 
-  track.addEventListener('scroll', sync, { passive: true });
-  window.addEventListener('resize', sync);
+  // A scroll the rail did not drive — a swipe and its momentum, a trackpad,
+  // a focus jump. The drift, a step and a drag each recycle on their own
+  // schedule, and would fight a second one here.
+  track.addEventListener('scroll', () => {
+    if (!stepFrame && !dragging && drift !== 'on') recycle();
+    sync();
+  }, { passive: true });
+
+  window.addEventListener('resize', () => {
+    normalise();
+    sync();
+  });
 
   // --- drift ------------------------------------------------------------
 
@@ -866,7 +991,7 @@
   let taken = false;           // the reader has stopped it; it does not come back on its own
 
   function driftable() {
-    return !reduced.matches && maxScroll() > 0;
+    return !reduced.matches && loopable();
   }
 
   function driftTick(now) {
@@ -880,27 +1005,18 @@
     const dt = Math.min(elapsed, 64) / 1000;
     if (!dt) return;
 
-    const max = maxScroll();
-    if (max <= 0) { driftStop(false); return; }
+    // The row can stop being loopable underneath the drift — a window widened
+    // past what the set can fill — and there is no end to drift to once it is.
+    if (!loopable()) { driftStop(false); return; }
 
-    const at = track.scrollLeft;
+    const want = track.scrollLeft + driftCarry + DRIFT_SPEED * dt;
+    track.scrollLeft = want;
+    // scrollLeft quantises to whole pixels, but carrying the remainder costs
+    // nothing and keeps the rate honest.
+    driftCarry = want - track.scrollLeft;
 
-    if (at >= max - 1) {
-      // The end, taken as the same cut the buttons take. The drift holds its
-      // breath across the fade rather than writing scrollLeft into a jump.
-      drift = 'held';
-      cancelAnimationFrame(driftFrame);
-      wrap(0);
-      clearTimeout(holdTimer);
-      holdTimer = setTimeout(() => driftRun(), WRAP_FADE + 80);
-      return;
-    }
-
-    const want = at + driftCarry + DRIFT_SPEED * dt;
-    track.scrollLeft = Math.min(want, max);
-    // scrollLeft is fractional in every engine that matters, but carrying the
-    // remainder costs nothing and keeps the rate honest where one rounds.
-    driftCarry = Math.min(want, max) - track.scrollLeft;
+    // The reason there is no longer anything to see at the end of the row.
+    recycle();
   }
 
   function driftRun() {
@@ -1038,7 +1154,13 @@
       track.classList.add('is-dragging');
       track.setPointerCapture(event.pointerId);
     }
-    if (moved) track.scrollLeft = originScroll - delta;
+    if (moved) {
+      track.scrollLeft = originScroll - delta;
+      // A recycle under the drag moves the scroll out from under the origin
+      // this is measured against; without this the next frame would drag the
+      // rail back by exactly the card that was just recycled.
+      originScroll += recycle();
+    }
   });
 
   function endDrag(event) {
@@ -1504,11 +1626,16 @@
   order();
   buildFilter();   // after order(), so the chips count a settled rail
   number();
+
+  // After order(), which is the last thing that touches the DOM order the ring
+  // is built from. The first recycle puts a card's worth of row to the left of
+  // the newest study, which is where the rail rests.
+  rebuildRing();
   sync();
 
   window.addEventListener('resize', () => {
-    // A window narrowed back into having something to scroll sets the rail
-    // going again, unless the reader had already stopped it.
+    // A window narrowed back into a row it can loop sets the rail going again,
+    // unless the reader had already stopped it.
     if (!taken && drift === 'off') driftRun();
     syncDriftBtn();
   });
