@@ -397,7 +397,7 @@ rather than page prose.
 The card shows all five materials stacked, which is a deliberate departure from
 this repo's rule that a thumbnail holds one instance and no second copy. The rule
 is there to stop a thumbnail turning into a small demo page, and it is the right
-rule — but what this reference offers is a construction that comes in five
+rule — but what this study offers is a construction that comes in five
 materials, and one bar cannot advertise that. So the card is the set, with no
 captions and no state labels, and the variant dots step into a single bar where
 a panel has somewhere to open. The stagger down the stack costs nothing to add
