@@ -30,15 +30,13 @@
   --inked-plate-card-title-size: 1.125rem;
   --inked-plate-card-title-weight: 500;
   --inked-plate-card-note-size: 0.8125rem;
-  --inked-plate-card-no-size: 0.625rem;
-  --inked-plate-card-no-tracking: 0.14em;
+  --inked-plate-card-count-size: 0.625rem;
+  --inked-plate-card-count-tracking: 0.14em;
 
   /* The caption plate has a floor, so a two-line and a three-line note leave
      the card the same height. Without it a row of these has a ragged bottom
-     edge — which is what the reference does, and is worth not repeating. */
+     edge: they look like a set until you look at where they end. */
   --inked-plate-card-caption-min: 4.25rem;
-
-  --inked-plate-card-grip-pitch: 5px;
 
   --inked-plate-card-art-ratio: 1;
   --inked-plate-card-crop-len: 0.6875rem;
@@ -119,9 +117,13 @@
 
 .inked-plate-card__caption {
   display: flex;
-  align-items: flex-start;
+  /* The count sits on the note's first baseline rather than on its box top:
+     10px mono against 13px text, and flex-start puts the two on visibly
+     different lines. A multi-line flex item aligns on its first baseline,
+     which is the one the count belongs beside. */
+  align-items: baseline;
   justify-content: space-between;
-  gap: 0.75rem;
+  gap: 1.25rem;
   min-height: var(--inked-plate-card-caption-min);
   -webkit-mask-image: var(--inked-plate-card-cut-up);
   -webkit-mask-composite: source-in;
@@ -145,12 +147,21 @@
   line-height: 1.2;
 }
 
-.inked-plate-card__no {
+/*
+  The caption plate's right-hand slot states what the drawing is made of — the
+  number of paths the plotter had to run. A catalogue number would say nothing
+  the card does not already say by being one card, and a menu glyph would
+  promise an action this component does not have; a path count is a fact about
+  the artwork on the plate above it, and it changes when the drawing does.
+*/
+.inked-plate-card__count {
   flex: 0 0 auto;
   font-family: var(--inked-plate-card-mono);
-  font-size: var(--inked-plate-card-no-size);
+  font-size: var(--inked-plate-card-count-size);
   font-variant-numeric: tabular-nums;
-  letter-spacing: var(--inked-plate-card-no-tracking);
+  letter-spacing: var(--inked-plate-card-count-tracking);
+  text-transform: uppercase;
+  white-space: nowrap;
   color: var(--inked-plate-card-muted);
 }
 
@@ -158,17 +169,6 @@
   font-size: var(--inked-plate-card-note-size);
   line-height: 1.45;
   text-wrap: pretty;
-}
-
-/* Three dots on a fixed pitch, repeated down — not three elements. */
-.inked-plate-card__grip {
-  flex: 0 0 auto;
-  width: 0.75rem;
-  height: calc(var(--inked-plate-card-grip-pitch) * 3);
-  background-image:
-    radial-gradient(circle 1px at 50% 50%, var(--inked-plate-card-muted) 100%, #0000 0);
-  background-size: 100% var(--inked-plate-card-grip-pitch);
-  background-repeat: repeat-y;
 }
 
 /* --- the drawing ------------------------------------------------------ */

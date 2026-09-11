@@ -37,26 +37,57 @@ type: card
 
 Valid types: `card`, `button`, `layout`, `aesthetic`, `navigation`.
 
-Below that: the origin, then 2–5 bullets naming the *specific* decisions the
-build captures. For a recreation the origin is the source URL; for a component
-built from an original design, say so (`Source: original design`).
+Below that, the component in its own terms: a short opening paragraph saying
+what it is and what it does, then 2–5 bullets naming the *specific* decisions
+the build captures.
 
 Type scale. Spacing rhythm. Border treatment. Hover behaviour. Name the actual
 decision, not a general impression — "48px/16px type pair with the label at 11px
 uppercase, letter-spaced 0.08em" is useful; "clean and modern typography" is
 not.
 
-## Recreation means extraction, not pixel-matching
+### Inspiration goes at the bottom
 
-This applies when the reference comes from someone else's interface. Take the
-handful of decisions that make it work, and ignore its content and its branding
-— the copy, the logo, the product name, the photography are not what is being
-captured. A version that is 80% visually faithful but isolates the right four
-decisions is correct. A pixel-perfect clone carrying someone else's brand is
-not.
+Where a study started is a footnote, not its subject. So the last line of the
+file is an `Inspiration:` line — a URL for something seen elsewhere,
+`Inspiration: none — original design` for a build of your own — with at most a
+sentence or two after it if there is something worth saying about what was
+taken.
 
-A component built from an original Figma design has no such constraint: build
-what the design specifies.
+It sits at the bottom because the file opens on the component, not on a
+lineage. A reader who wants to know where the idea came from can go looking;
+a reader who wants to know what the thing *is* should not have to read past a
+paragraph of provenance to find out.
+
+Do not write the disclaimer. Earlier versions of these files opened with a
+paragraph of "this is an extraction, not a copy" and then an inventory of what
+was left behind — the brand, the copy, the photography, the product name. That
+is the repo's standing rule (below), stated once there; restating it per study
+argues with a charge nobody made, and it spends the top of the file on the
+reference instead of on the build. Name a specific departure only where it is
+itself a decision — a construction that was changed on purpose, a mechanism the
+reference has that this one does not — and name it in a bullet, where the other
+decisions are.
+
+## Extraction, not pixel-matching
+
+The standing rule, and it does not need restating per study. When a reference
+comes from someone else's interface, take the handful of decisions that make it
+work and leave its content and its branding — the copy, the logo, the product
+name, the photography are not what is being captured. A version that is 80%
+visually faithful but isolates the right four decisions is correct. A
+pixel-perfect clone carrying someone else's brand is not.
+
+The bar is higher than swapping the palette. If the item set, the lockup, the
+silhouette and the sample copy all still map one-to-one onto the reference,
+what has been built is the reference in different colours — the decisions were
+copied along with everything else, which is the failure this rule exists to
+prevent. Take the construction and then have an opinion of your own with it:
+change what the component is *for*, what it is made of, or how it behaves, and
+let the borrowed part be the technique rather than the object.
+
+A component built from an original design has no such constraint: build what
+the design specifies.
 
 ## `type:` scopes the output
 
@@ -169,8 +200,9 @@ loses the picture and keeps the words.
 The decisions are the study. A page that shows five states and names none
 of them is a gallery, and the one artefact worth lifting stays in a file the
 site never opens. So every demo carries a `Decisions` block: the `type:`, the
-source, the origin prose, and one entry per decision bullet — the same shape
-`notes.md` has, so the two read side by side.
+opening paragraph, one entry per decision bullet, and the `Inspiration:` line
+last — the same shape and the same order `notes.md` has, so the two read side
+by side.
 
 It is a `<details>`, closed. The states are what the page is for; the decisions
 are what you open when you want to know why one of them is the way it is. A
@@ -185,12 +217,17 @@ one, edit the other.
 
 The decision prose stays in the language `notes.md` was written in. It is a
 record, not page copy — the same reason component sample copy is left alone by
-the language switch. Only the labels around it (`Decisions`, `Type`, `Source`)
-carry `data-i18n`.
+the language switch. Only the labels around it (`Decisions`, `Type`,
+`Inspiration`) carry `data-i18n`.
 
 A `notes.md` that has grown past the contract's 2–5 bullets renders the bullets
 in its first group — the decisions the build captures — and links the file for
 the rest.
+
+The inspiration row sits below the decisions, beside that link, and not in the
+meta list at the top. The block opens on what the component is; where it came
+from is the last thing in it, for the same reason it is the last line of
+`notes.md`.
 
 ## preview.html
 

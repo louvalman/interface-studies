@@ -437,6 +437,14 @@
       border-radius: 0.15rem;
     }
 
+    /* The inspiration row, below the decisions rather than above them. */
+    .demo__notes-meta--foot { margin-top: 2.5rem; }
+    .demo__notes-meta--foot + .demo__notes-foot { margin-top: 1.1rem; }
+    /* 'Inspiration' is longer than 'Type' and sets its own column. */
+    .demo__notes-meta--foot .demo__notes-row {
+      grid-template-columns: 6.25rem minmax(0, 1fr);
+    }
+
     .demo__notes-foot {
       margin: 2.5rem 0 0;
       font-family: "JetBrains Mono", ui-monospace, monospace;
@@ -501,7 +509,6 @@
               <span class="inked-plate-card__plate">
                 <span class="inked-plate-card__head">
                   <span class="inked-plate-card__title">Rammesætning</span>
-                  <span class="inked-plate-card__no">001</span>
                 </span>
 
                 <span class="inked-plate-card__art">
@@ -540,14 +547,13 @@
 
               <span class="inked-plate-card__caption">
                 <span class="inked-plate-card__note">Fastlægger sagens rammer: omfang, frister og parter.</span>
-                <span class="inked-plate-card__grip" aria-hidden="true"></span>
+                <span class="inked-plate-card__count">13 paths</span>
               </span>
             </a>
             <a class="inked-plate-card inked-plate-card--graphite" href="#">
               <span class="inked-plate-card__plate">
                 <span class="inked-plate-card__head">
                   <span class="inked-plate-card__title">Rammesætning</span>
-                  <span class="inked-plate-card__no">001</span>
                 </span>
 
                 <span class="inked-plate-card__art">
@@ -586,7 +592,7 @@
 
               <span class="inked-plate-card__caption">
                 <span class="inked-plate-card__note">Fastlægger sagens rammer: omfang, frister og parter.</span>
-                <span class="inked-plate-card__grip" aria-hidden="true"></span>
+                <span class="inked-plate-card__count">13 paths</span>
               </span>
             </a>
         </div>
@@ -600,7 +606,6 @@
             <span class="inked-plate-card__plate">
               <span class="inked-plate-card__head">
                 <span class="inked-plate-card__title">Rammesætning</span>
-                <span class="inked-plate-card__no">001</span>
               </span>
 
               <span class="inked-plate-card__art">
@@ -639,7 +644,7 @@
 
             <span class="inked-plate-card__caption">
               <span class="inked-plate-card__note">Fastlægger sagens rammer: omfang, frister og parter.</span>
-              <span class="inked-plate-card__grip" aria-hidden="true"></span>
+              <span class="inked-plate-card__count">13 paths</span>
             </span>
           </a>
       </section>
@@ -653,7 +658,6 @@
               <span class="inked-plate-card__plate">
                 <span class="inked-plate-card__head">
                   <span class="inked-plate-card__title">Bølgelængder</span>
-                  <span class="inked-plate-card__no">002</span>
                 </span>
 
                 <span class="inked-plate-card__art">
@@ -684,14 +688,13 @@
 
               <span class="inked-plate-card__caption">
                 <span class="inked-plate-card__note">Fælles løft og samdrift skaber resultater på tværs af organisationens teams.</span>
-                <span class="inked-plate-card__grip" aria-hidden="true"></span>
+                <span class="inked-plate-card__count">9 paths</span>
               </span>
             </a>
             <a class="inked-plate-card" href="#">
               <span class="inked-plate-card__plate">
                 <span class="inked-plate-card__head">
                   <span class="inked-plate-card__title">Netværk</span>
-                  <span class="inked-plate-card__no">003</span>
                 </span>
 
                 <span class="inked-plate-card__art">
@@ -800,7 +803,7 @@
 
               <span class="inked-plate-card__caption">
                 <span class="inked-plate-card__note">Viser relationer mellem parter, sager og forløb.</span>
-                <span class="inked-plate-card__grip" aria-hidden="true"></span>
+                <span class="inked-plate-card__count">48 paths</span>
               </span>
             </a>
         </div>
@@ -814,7 +817,6 @@
             <span class="inked-plate-card__plate">
               <span class="inked-plate-card__head">
                 <span class="inked-plate-card__title">Overblik over sagen</span>
-                <span class="inked-plate-card__no">004</span>
               </span>
 
               <span class="inked-plate-card__art">
@@ -853,7 +855,7 @@
 
             <span class="inked-plate-card__caption">
               <span class="inked-plate-card__note">Samler frister, parter og seneste handlinger på én flade, så sagsbehandleren kan se status uden at åbne hver enkelt sag.</span>
-              <span class="inked-plate-card__grip" aria-hidden="true"></span>
+              <span class="inked-plate-card__count">13 paths</span>
             </span>
           </a>
       </section>
@@ -881,19 +883,19 @@
           <dt data-i18n="notes.type">Type</dt>
           <dd data-i18n="type">Card</dd>
         </div>
-        <div class="demo__notes-row">
-          <dt data-i18n="notes.source">Source</dt>
-          <dd><a href="https://aesthetic-cards.vercel.app/" target="_blank" rel="noopener noreferrer">aesthetic-cards.vercel.app</a></dd>
-        </div>
       </dl>
 
-      <p class="demo__notes-lede">Extraction, not a copy. What is taken is the construction — two plates with cut facing corners, a crop-marked drawing field on a dot grid, and a line drawing that inks itself on load. What is left behind is everything that identifies the original: the orange and cream, the three shapes (nested circles with ± glyphs, a ruled triangle, a hatched Venn), the product copy, and the <code>◇ FEATURES</code> section header — a row of three cards is page layout, and this is one card.</p>
-      <p class="demo__notes-lede">Colours are lime on graphite instead of orange on warm grey, and the drawings are three of my own: concentric squares rotating into a vortex, a waterfall of drifting ridgelines, and a nephroid drawn as 47 straight chords across a circle.</p>
+      <p class="demo__notes-lede">One card as two plates: a drawing plate and a caption plate, 6px apart, with the two corners facing that gap cut at 45° so each reads as a piece of cut sheet rather than as half of a rounded box. The drawing field sits on a dot grid inside crop marks, and the line drawing inks itself on load — every path draws at the same rate, in an order the markup declares, with no script anywhere. The plates carry a title and a note, and the only other thing printed on them is the number of paths the drawing took.</p>
+      <p class="demo__notes-lede">The drawings are three of my own: concentric squares rotating into a vortex, a waterfall of drifting ridgelines, and a nephroid drawn as 47 straight chords across a circle. Surfaces are porcelain, <code>--acid</code> (lime plate, ink lines) and <code>--graphite</code> (dark plate, lime lines).</p>
 
       <ol class="demo__notes-list">
         <li>
           <h3 class="demo__notes-head">The card is two plates, and the seam is the point.</h3>
           <p>Not one box with a rule across it: an artwork plate and a caption plate, 6px apart, and the two corners facing that gap are cut at 45° while the outer four stay at a 14px radius — each plate reads as a piece of cut sheet rather than half of a rounded box. The cut is <code>mask-image</code> with two <code>linear-gradient</code>s and <code>mask-composite: intersect</code>; <strong>intersect</strong> is load-bearing, because mask layers union by default and the union of two corner cuts removes nothing at all. Hover widens the seam to 13px and pushes the crop marks 3px outward, so the two plates separate a little rather than the card lifting.</p>
+        </li>
+        <li>
+          <h3 class="demo__notes-head">The plate is annotated with what the drawing is made of.</h3>
+          <p>The caption plate's right-hand slot says <code>13 paths</code>, <code>9 paths</code>, <code>48 paths</code> — a fact about the artwork above it that changes when the drawing does. It stands where two pieces of borrowed furniture used to be: a catalogue number at the top right of the drawing plate, which said nothing a single card does not already say, and a ⋮ in the caption, which promised a menu this component has not got. Both are the kind of thing that arrives with a construction and stays because nobody asked what it was for. Moving the one annotation down also separates the two plates by job: the drawing plate carries the title and the drawing, the caption plate carries the prose and the measurement. It sits on the note's first baseline rather than at its box top, because 10px mono against 13px text aligned flush at the top reads as two lines that missed each other.</p>
         </li>
         <li>
           <h3 class="demo__notes-head"><code>pathLength="1"</code> is the whole reason the draw needs no JavaScript.</h3>
@@ -909,9 +911,18 @@
         </li>
         <li>
           <h3 class="demo__notes-head">Line weight in viewBox units, type in rem.</h3>
-          <p><code>stroke-width: 1.15</code> is in the drawing's own coordinates, so the weight shrinks with the card instead of getting heavier as the card gets smaller — a card at 320px is the same drawing, only smaller. The type does not scale: 18px/500 title, 13px note, and a 10px mono number at 0.14em tracking, three sizes with nothing in between. The crop marks and the dot grid stay in px for the same reason a hairline does.</p>
+          <p><code>stroke-width: 1.15</code> is in the drawing's own coordinates, so the weight shrinks with the card instead of getting heavier as the card gets smaller — a card at 320px is the same drawing, only smaller. The type does not scale: 18px/500 title, 13px note, and a 10px mono count at 0.14em tracking, three sizes with nothing in between. The crop marks and the dot grid stay in px for the same reason a hairline does.</p>
         </li>
       </ol>
+
+      <!-- Where it started, last: the block opens on the component, and the
+           lineage is a footnote to it. Same order notes.md has. -->
+      <dl class="demo__notes-meta demo__notes-meta--foot">
+        <div class="demo__notes-row">
+          <dt data-i18n="notes.inspiration">Inspiration</dt>
+          <dd><a href="https://aesthetic-cards.vercel.app/" target="_blank" rel="noopener noreferrer">aesthetic-cards.vercel.app</a></dd>
+        </div>
+      </dl>
 
       <p class="demo__notes-foot">
         <a href="notes.md">notes.md</a>
@@ -938,7 +949,7 @@
       var DA = {
         'notes.title': 'Beslutninger',
         'notes.type': 'Type',
-        'notes.source': 'Kilde',
+        'notes.inspiration': 'Inspiration',
         'notes.full': '\u2014 hele optegnelsen, ogs\u00e5 det der blev pr\u00f8vet og forkastet',
         'type': 'Kort',
         'heading': 'Kort med tegnede plader',

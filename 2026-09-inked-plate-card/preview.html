@@ -86,7 +86,6 @@
     <span class="inked-plate-card__plate">
       <span class="inked-plate-card__head">
         <span class="inked-plate-card__title">Bølgelængder</span>
-        <span class="inked-plate-card__no">002</span>
       </span>
 
       <span class="inked-plate-card__art">
@@ -117,7 +116,7 @@
 
     <span class="inked-plate-card__caption">
       <span class="inked-plate-card__note">Fælles løft og samdrift skaber resultater på tværs af organisationens teams.</span>
-      <span class="inked-plate-card__grip" aria-hidden="true"></span>
+      <span class="inked-plate-card__count">9 paths</span>
     </span>
   </a>
 
@@ -281,7 +280,7 @@
 
       var art = root.querySelector('.' + BASE + '__art');
       var title = root.querySelector('.' + BASE + '__title');
-      var no = root.querySelector('.' + BASE + '__no');
+      var count = root.querySelector('.' + BASE + '__count');
       var note = root.querySelector('.' + BASE + '__note');
 
       // The resting drawing is the one in the markup; the other two come out
@@ -301,17 +300,17 @@
       var VARIANTS = [
         {
           id: 'acid', label: 'Lime', classes: ['--acid'], drawing: 0,
-          title: 'Bølgelængder', no: '002',
+          title: 'Bølgelængder', count: '9 paths',
           note: 'Fælles løft og samdrift skaber resultater på tværs af organisationens teams.'
         },
         {
           id: 'porcelain', label: 'Porcelæn', classes: [], drawing: 1,
-          title: 'Rammesætning', no: '001',
+          title: 'Rammesætning', count: '13 paths',
           note: 'Fastlægger sagens rammer: omfang, frister og parter.'
         },
         {
           id: 'graphite', label: 'Grafit', classes: ['--graphite'], drawing: 2,
-          title: 'Netværk', no: '003',
+          title: 'Netværk', count: '48 paths',
           note: 'Viser relationer mellem parter, sager og forløb.'
         }
       ];
@@ -323,7 +322,7 @@
         variant.classes.forEach(function (c) { root.classList.add(BASE + c); });
 
         title.textContent = variant.title;
-        no.textContent = variant.no;
+        count.textContent = variant.count;
         note.textContent = variant.note;
 
         var current = art.querySelector('.' + BASE + '__ink');
