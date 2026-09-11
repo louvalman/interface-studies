@@ -231,6 +231,11 @@ body.is-locked {
 
 .head__title {
   margin: 0;
+  /* The backstop under the soft hyphens in index.js's Danish table: a compound
+     that arrives without one breaks rather than pushing the page sideways.
+     It only fires where a word cannot fit a line on its own, so a title that
+     hyphenates or fits is untouched. */
+  overflow-wrap: break-word;
   font-size: clamp(2.25rem, 6vw, 4rem);
   font-weight: 600;
   line-height: 1.04;
