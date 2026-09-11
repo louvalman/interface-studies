@@ -97,7 +97,10 @@ on each side, which is what the eye reads and what `getBBox()` leaves out.
   gap says the last item is a different kind of thing, before any label appears
   to explain it. It is also the component's only slack: it is the first thing to
   give when the bar is squeezed, so a label opening or a narrow column eats into
-  empty space before it starts clipping text.
+  empty space before it starts clipping text. First is a claim that has to be
+  enforced, though, not just declared with a big shrink factor: flex shrink is
+  proportional, not ordered, and a split with six times the factor still handed
+  a third of an overflow to the item beside it. See the search field below.
 
   It gives in the other direction too, and that took a second round to notice.
   The bar stretches to the surface, and the surface is not always the width the
@@ -287,9 +290,9 @@ squeeze back to squares, the open label clips, the feed lines ellipsise, and the
 page does not scroll sideways.
 
 Below about 264px of container, though, no amount of shrinking helps: five
-targets at `--hit`, four gaps and the surface's own padding do not fit, and
-because the surface clips, what went missing was the trailing action. The
-component quietly lost its last item rather than getting tight. Nothing here
+targets at `--hit`, the gaps between them and the surface's own padding do not
+fit, and because the surface clips, what went missing was the trailing action.
+The component quietly lost its last item rather than getting tight. Nothing here
 squeezes its way out of that — the actions hold a min-width so they stay
 tappable, and their padding is not a flex length, so an action forced narrower
 just spills its icon into its neighbour. So there is one container query, and it
@@ -303,6 +306,21 @@ width comes from its own contents then resolves to zero, so the root takes
 `width: 100%` and centres the surface inside it rather than shrinking to fit
 around it.
 
+The query fires at 25rem, and the gap between that and the 264px above is the
+correction this reference needed most. 264px is what the *collapsed* row costs,
+and this bar is never collapsed: one action always carries its label, and the
+label is the widest thing in the component. Five squares, the split and an open
+"Activity" come to about 390px, so every phone held upright sat in the band
+between the two numbers — wide enough to stay at full scale, too narrow to show
+the word. The surface clipped "Home" to its first letter rather than the
+component standing down to the scale that fits, which is the same failure as the
+missing trailing action, one step further in. A breakpoint has to be measured
+against the state the component is actually in, not against the state its parts
+add up to. 25rem clears the widest label with the split still off zero at the
+boundary, and it is a literal because a container query condition cannot read a
+custom property: a caller that moves `--hit` far from 3rem moves the width this
+should switch at, and has to move this with it.
+
 Worth knowing what the narrow scale gives up: at 320px there is no room for a
 label at all, so the reveal stays shut and the lit pill is the only thing saying
 which item you are on. That is the right thing to lose — the label was never the
@@ -315,6 +333,32 @@ label in exactly the way a truncated word is worse than an icon. So the narrow
 block repeats the three open-state selectors at `0fr` and takes the trailing pad
 back with them, or the pill keeps the air it was given to sit beside a word that
 is no longer there. Same weight, later in the file: source order decides it.
+
+The search field is the one payload that cannot stand down the same way — an
+input that is not there is not a search — so it does the opposite: at the narrow
+scale the row clears out for it. The other four actions take their icons to zero
+width and their padding with them, and the field opens across the surface. It is
+the same trade the label makes, the other way round: there is room for one of the
+two, and while the caret is in the field the field is the one that matters. The
+alternative was arithmetic: five squares, their gaps and the padding leave about
+12px of a 320px column, which is a field in name only. Nothing animates `width`
+on the actions themselves, because that would be interpolating from `auto` and
+would not move — an action is auto-width around two lengths that do animate, its
+own padding and the icon's width, so it follows them down.
+
+At every scale the track itself is now a ceiling rather than a length. `14rem`
+was fixed inside a surface that clips, so under about 31rem of container the
+field was cut off mid-placeholder; it is capped at what the row has left once
+five squares, the gaps, the padding and the pill's trailing allowance are taken
+off `100cqi`. Two details make that hold. The floor of the clamp is `0px`,
+because a negative track would drop the declaration and leave the field in an
+`auto` column — wider than the one it was clipped out of. And the open field
+does not take part in the squeeze: flex shrink is proportional, not ordered, so
+a split with six times the shrink factor still absorbed only two thirds of an
+overflow and handed the rest back to the field. Frozen at `flex-shrink: 0`, the
+deficit lands on the split until it is at zero, and the other actions cannot
+take it either because their min-width floors them at one square. The label stays
+shrinkable on purpose: it is the thing that should give at the boundary.
 
 Almost nothing here is spent on hover, which is what makes it survive a touch
 device: the morph runs on taps and on focus. The two things that are hover —
@@ -334,7 +378,8 @@ with the state that proves it: the anatomy of the bar, the reveal, the extended
 view, the motion, the five materials, the narrow scale. The prose is page
 scaffolding like the background is — it says what the thing in front of it is
 doing, so the page can be read as well as poked at, and it is where the numbers
-that are not visible in a screenshot live: 220 against 300, 264px, 4:1.
+that are not visible in a screenshot live: 220 against 300, 25rem against 264px,
+4:1.
 
 Two things came out of writing it down. The motion section needed the two clocks
 drawn rather than described — three bars on a 400ms track, because "220 and 300"

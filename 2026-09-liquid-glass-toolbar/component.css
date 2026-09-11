@@ -31,6 +31,22 @@
   --liquid-glass-toolbar-radius-open:
     calc(var(--liquid-glass-toolbar-pad) + var(--liquid-glass-toolbar-hit) / 2);
   --liquid-glass-toolbar-search-w: 14rem;
+  /*
+    And the ceiling that width is capped to, because 14rem is a fixed length
+    inside a surface that clips: on any container under about 31rem the field
+    was cut off mid-placeholder rather than opening to what there was room for.
+    It is measured, not chosen — everything the row still has to show with the
+    field open comes off the container first and the field takes the rest: five
+    squares, the five gaps between the six flex items, the surface's own
+    padding, and the trailing allowance the lit pill is given. The split is not
+    in the sum, because it is the one elastic thing in the row and gives its
+    space up before anything else does.
+  */
+  --liquid-glass-toolbar-search-max: calc(100cqi - (
+    5 * var(--liquid-glass-toolbar-hit) +
+    5 * var(--liquid-glass-toolbar-gap) +
+    2 * var(--liquid-glass-toolbar-pad) +
+    var(--liquid-glass-toolbar-label-trail)));
   --liquid-glass-toolbar-panel-w: 30rem;        /* a floor, not a width */
   --liquid-glass-toolbar-label-gap: 0.5625rem;
   /* An optical allowance, not a measurement error. A collapsed action is padded
@@ -259,6 +275,10 @@
   width: var(--liquid-glass-toolbar-split);
   flex: 1 6 auto;
   min-width: 0;
+  /* For the one state that takes it to zero — a narrow container opening the
+     search field. Everywhere else the flex algorithm is already re-solving this
+     every frame, and a transition on a value nothing sets does nothing. */
+  transition: width var(--liquid-glass-toolbar-reveal);
 }
 
 .liquid-glass-toolbar__action--trailing {
@@ -316,6 +336,10 @@
   flex: none;
   width: var(--liquid-glass-toolbar-icon);
   height: var(--liquid-glass-toolbar-icon);
+  /* Two lengths, so the one state that takes an icon out of the row — a narrow
+     container opening the search field — can travel instead of snapping. It
+     costs nothing elsewhere: the width is otherwise constant within a scale. */
+  transition: width var(--liquid-glass-toolbar-reveal);
 }
 
 .liquid-glass-toolbar__icon svg {
@@ -332,6 +356,9 @@
   height: var(--liquid-glass-toolbar-badge);
   border-radius: 50%;
   background: var(--liquid-glass-toolbar-accent);
+  /* It is positioned off the icon's corner, so an icon collapsing to zero would
+     leave the dot behind on its own. */
+  transition: opacity var(--liquid-glass-toolbar-fade);
 }
 
 /* --- the reveal --------------------------------------------------------- */
@@ -438,9 +465,34 @@
   grid-template-columns: 1fr;
 }
 
+/*
+  And the open field does not take part in the squeeze, which is what makes that
+  ceiling hold. Flex shrink is proportional, not ordered: the split has six times
+  the shrink factor and still only absorbed two thirds of an overflow, handing
+  the rest to the field — so a track sized to exactly fit was clipped anyway.
+  Frozen, the deficit lands on the split until it is at zero, and the four other
+  actions cannot take it either, because their min-width floors them at a square.
+
+  Only the field. An open *label* stays shrinkable on purpose: it is the thing
+  that should give at the boundary, and freezing it would push the overflow back
+  out to the trailing action, which is the failure this whole section exists to
+  stop.
+*/
+.liquid-glass-toolbar__action--search:focus-within,
+.liquid-glass-toolbar--searching .liquid-glass-toolbar__action--search {
+  flex-shrink: 0;
+}
+
 .liquid-glass-toolbar__action--search:focus-within .liquid-glass-toolbar__reveal,
 .liquid-glass-toolbar--searching .liquid-glass-toolbar__action--search .liquid-glass-toolbar__reveal {
-  grid-template-columns: var(--liquid-glass-toolbar-search-w);
+  /* The width it wants, capped at the width there is. clamp's floor is what
+     keeps a container narrower than the closed row from resolving to a
+     negative track, which would drop the declaration and leave the field in an
+     `auto` column — wider than the one it was clipped out of. */
+  grid-template-columns: clamp(
+    0px,
+    var(--liquid-glass-toolbar-search-max),
+    var(--liquid-glass-toolbar-search-w));
 }
 
 /*
@@ -845,12 +897,13 @@
 /* --- too narrow for five full targets ------------------------------------ */
 
 /*
-  Five actions at --hit, four gaps and the surface's own padding need about
-  264px. Below that the row cannot fit, and because the surface clips, what
-  overflowed was the trailing action — the component quietly lost its last item
-  rather than getting tight. Nothing shrinks its way out of that: the actions
-  hold a min-width so they stay tappable, and their padding is not a flex
-  length, so an action forced narrower just spills its icon into its neighbour.
+  Five actions at --hit, the gaps between them and the surface's own padding
+  need about 264px. Below that the row cannot fit, and because the surface
+  clips, what overflowed was the trailing action — the component quietly lost
+  its last item rather than getting tight. Nothing shrinks its way out of that:
+  the actions hold a min-width so they stay tappable, and their padding is not a
+  flex length, so an action forced narrower just spills its icon into its
+  neighbour.
 
   So the component scales instead of squeezing. One breakpoint, and it moves
   only the values the rest of the file is already derived from — padding, the
@@ -858,8 +911,20 @@
   it stays the same component, smaller. The targets land at 40px rather than
   48px, which is the honest cost of a container this narrow and still a great
   deal better than an icon that is not there.
+
+  The breakpoint is 25rem and not the 264px that sum comes to, because 264px is
+  what the *collapsed* row needs and this bar is never collapsed: one action
+  always carries its label, and the label is the widest thing in the component.
+  Five squares plus the split plus an open "Activity" is about 390px, so every
+  phone held upright sat in the band between the two numbers — wide enough to
+  stay at full scale, too narrow to show the word, and the surface clipped the
+  label to its first letter rather than the component standing down to the
+  scale that fits. 25rem clears the widest label with the split still off zero
+  at the boundary. It is a literal because a container query condition cannot
+  read a custom property: a caller that moves --hit far from 3rem moves the
+  width this should switch at, and has to move this with it.
 */
-@container liquid-glass-toolbar (max-width: 17rem) {
+@container liquid-glass-toolbar (max-width: 25rem) {
   .liquid-glass-toolbar__shell {
     --liquid-glass-toolbar-hit: 2.5rem;
     --liquid-glass-toolbar-icon: 1.25rem;
@@ -869,6 +934,16 @@
     --liquid-glass-toolbar-label-size: 0.9375rem;
     --liquid-glass-toolbar-row-h: 3rem;
     --liquid-glass-toolbar-avatar: 2rem;
+
+    /* The field's ceiling is a different sum at this scale, because the row
+       clears itself out of the way for it below: one square, the gaps, the
+       padding and the trailing allowance. It is only ever read in the searching
+       state, so it can be restated here rather than under that state. */
+    --liquid-glass-toolbar-search-max: calc(100cqi - (
+      var(--liquid-glass-toolbar-hit) +
+      5 * var(--liquid-glass-toolbar-gap) +
+      2 * var(--liquid-glass-toolbar-pad) +
+      var(--liquid-glass-toolbar-label-trail)));
   }
 
   /*
@@ -893,6 +968,52 @@
   .liquid-glass-toolbar__action[aria-expanded="true"] .liquid-glass-toolbar__reveal,
   .liquid-glass-toolbar--open .liquid-glass-toolbar__action--panel .liquid-glass-toolbar__reveal {
     grid-template-columns: 0fr;
+  }
+
+  /*
+    The search field is the one payload that cannot stand down the way the label
+    does: an input that is not there is not a search. But five squares, their
+    gaps and the padding leave about 12px of it in a 320px column, which is a
+    field in name only, so at this scale the row gives it everything instead.
+    The other four actions go — icon to zero width, padding to zero, badge out —
+    and the field opens across the surface. It is the same trade the label makes
+    one line up, only the other way round: there is room for one of the two, and
+    while the caret is in the field the field is the one that matters.
+
+    Both halves travel rather than snapping. Nothing here animates `width` on
+    the action itself — that would be interpolating from `auto` and would not
+    move — the action is auto-width around two lengths that do animate, its own
+    padding and the icon's width, so it follows them down.
+  */
+  .liquid-glass-toolbar__bar:has(.liquid-glass-toolbar__action--search:focus-within)
+    .liquid-glass-toolbar__action:not(.liquid-glass-toolbar__action--search),
+  .liquid-glass-toolbar--searching .liquid-glass-toolbar__bar
+    .liquid-glass-toolbar__action:not(.liquid-glass-toolbar__action--search) {
+    min-width: 0;
+    padding-inline: 0;
+  }
+
+  .liquid-glass-toolbar__bar:has(.liquid-glass-toolbar__action--search:focus-within)
+    .liquid-glass-toolbar__action:not(.liquid-glass-toolbar__action--search)
+    .liquid-glass-toolbar__icon,
+  .liquid-glass-toolbar--searching .liquid-glass-toolbar__bar
+    .liquid-glass-toolbar__action:not(.liquid-glass-toolbar__action--search)
+    .liquid-glass-toolbar__icon {
+    width: 0;
+  }
+
+  .liquid-glass-toolbar__bar:has(.liquid-glass-toolbar__action--search:focus-within)
+    .liquid-glass-toolbar__badge,
+  .liquid-glass-toolbar--searching .liquid-glass-toolbar__badge {
+    opacity: 0;
+  }
+
+  /* And the split with them, or the field opens into a pill with 20px of dead
+     air pinned to its end — the gap was holding a trailing action that is no
+     longer there to be held apart from anything. */
+  .liquid-glass-toolbar__bar:has(.liquid-glass-toolbar__action--search:focus-within)::before,
+  .liquid-glass-toolbar--searching .liquid-glass-toolbar__bar::before {
+    width: 0;
   }
 }
 
