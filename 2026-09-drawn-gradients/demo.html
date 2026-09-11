@@ -1108,6 +1108,58 @@
           </div>
         </div>
       </section>
+
+      <section class="demo__state">
+        <p class="demo__caption" data-i18n="state.mix">Both recipes at once</p>
+        <p class="demo__hint">--mix, --…-mix: 1 / 0.5 / 0</p>
+        <!-- --drawn puts the drawing in place of the stop list; --mix puts it
+             on top of it and --…-mix is the opacity, so the two recipes can be
+             cross-faded rather than swapped. At 1 it is the drawn surface, at 0
+             the stopped one, and the middle is both at once — which is the only
+             state here that could not be reached by a class. It is also the one
+             thing in the recipe besides the base that interpolates, so it is
+             what a hover can spend: the card in the rail rests at 1 and
+             dissolves to 0 when it is looked at. -->
+        <div class="drawn-gradients" style="--drawn-gradients-size: 7rem;
+                                            --drawn-gradients-blur-ratio: 0.24;">
+          <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--mix drawn-gradients__surface--dusk"
+               style="--drawn-gradients-mix: 1;">  <!-- the drawing -->
+            <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+                 preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <ellipse class="drawn-gradients__blob drawn-gradients__blob--hot"
+                       cx="26" cy="20" rx="82" ry="54" transform="rotate(-18 26 20)" />
+              <ellipse class="drawn-gradients__blob drawn-gradients__blob--cool"
+                       cx="104" cy="48" rx="70" ry="48" transform="rotate(24 104 48)" />
+              <ellipse class="drawn-gradients__blob drawn-gradients__blob--warm"
+                       cx="54" cy="104" rx="88" ry="52" transform="rotate(-8 54 104)" />
+            </svg>
+          </div>
+          <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--mix drawn-gradients__surface--dusk"
+               style="--drawn-gradients-mix: 0.5;">  <!-- both -->
+            <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+                 preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <ellipse class="drawn-gradients__blob drawn-gradients__blob--hot"
+                       cx="26" cy="20" rx="82" ry="54" transform="rotate(-18 26 20)" />
+              <ellipse class="drawn-gradients__blob drawn-gradients__blob--cool"
+                       cx="104" cy="48" rx="70" ry="48" transform="rotate(24 104 48)" />
+              <ellipse class="drawn-gradients__blob drawn-gradients__blob--warm"
+                       cx="54" cy="104" rx="88" ry="52" transform="rotate(-8 54 104)" />
+            </svg>
+          </div>
+          <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--mix drawn-gradients__surface--dusk"
+               style="--drawn-gradients-mix: 0;">  <!-- the stop list -->
+            <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+                 preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <ellipse class="drawn-gradients__blob drawn-gradients__blob--hot"
+                       cx="26" cy="20" rx="82" ry="54" transform="rotate(-18 26 20)" />
+              <ellipse class="drawn-gradients__blob drawn-gradients__blob--cool"
+                       cx="104" cy="48" rx="70" ry="48" transform="rotate(24 104 48)" />
+              <ellipse class="drawn-gradients__blob drawn-gradients__blob--warm"
+                       cx="54" cy="104" rx="88" ry="52" transform="rotate(-8 54 104)" />
+            </svg>
+          </div>
+        </div>
+      </section>
     </div>
   </section>
 
@@ -1477,6 +1529,7 @@
         'state.night': 'Falder til blæk',
         'state.retuned': 'Puljer flyttet',
         'state.settle': 'Faldretning',
+        'state.mix': 'Begge opskrifter på én gang',
         'sample.label': 'Etiket',
         'sample.line': 'Pladsholderlinje',
         'sample.bandTitle': 'En sektionsoverskrift',

@@ -114,6 +114,30 @@ that insisted on its width there would scroll the page sideways rather than
 fit. Because the radius and the type are ratios of the surface, a fitted one is
 still the same shape, only smaller.
 
+- **The two recipes can be cross-faded, not only swapped.** `--drawn` drops
+  the stop list — `background-image: none` — because there the drawing IS the
+  surface, and that makes the swap a cut: nothing is underneath to fade into.
+  `--mix` keeps both on one surface, the drawing over the stops, and
+  `--…-mix` is its opacity: 1 is the drawn surface, 0 is the stopped one,
+  and the middle is a genuine double exposure of the two. It is the only part
+  of this recipe besides the base that interpolates, which is what lets a state
+  be *eased through* rather than cut to — the index card rests at 1 and
+  dissolves to 0 when it is looked at.
+
+  The curve is symmetric on purpose, and that took measuring. A quint ease-out
+  looks right on a single element and is the wrong shape for a cross-fade: it
+  was down to 0.28 a fifth of the way in and spent the remaining three fifths
+  between 0.09 and 0 — a fast fade with a long dead tail, which reads as a cut
+  followed by nothing. `cubic-bezier(0.65, 0, 0.35, 1)` over 520ms keeps the
+  change in the middle, where both images are on screen together and the double
+  exposure is the whole effect. Measured through it: 0.99, 0.92, 0.71, 0.30,
+  0.08, 0.01, 0.
+
+  One thing it has to borrow from `--drawn`: on a `--step` band the drawing is
+  sized to the whole block and anchored right, not to the band. Left off, each
+  mixed band drew its own copy and the field broke into three with a hard step
+  at every tread.
+
 - **`--step`: geometry that comes out of the copy.** The other shapes are
   things to look at; this one exists to be used, and it is not a shape at all.
   It is one band per line of type, each starting where its own label ends — so

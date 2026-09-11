@@ -17,8 +17,9 @@
   as two objects. The card is a field with the type cut out of it, fading away
   from itself in both directions.
 
-  What moves when the card is looked at is where that field settles to: the
-  page's ground at rest, ink on hover. See the script at the end of the file.
+  What moves when the card is looked at is the recipe. At rest the drawing is
+  showing; looked at, it dissolves off and leaves the stop list underneath.
+  See the script at the end of the file.
 
   It links component.css and never redefines it. The one thing set from here is
   scale, through the component's own tunables and inline on the root, because
@@ -75,22 +76,52 @@
       <div class="drawn-gradients__usage drawn-gradients__usage--down">
         <div class="drawn-gradients__usage-row">
           <span class="drawn-gradients__usage-line drawn-gradients__usage-line--label">Overlapping art</span>
-          <span class="drawn-gradients__surface drawn-gradients__surface--step drawn-gradients__surface--ice drawn-gradients__surface--rise"
-                style="--drawn-gradients-step-row: 0;"></span>
+          <span class="drawn-gradients__surface drawn-gradients__surface--step drawn-gradients__surface--mix drawn-gradients__surface--ice drawn-gradients__surface--rise"
+                style="--drawn-gradients-step-row: 0;">
+          <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+               preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <ellipse class="drawn-gradients__blob drawn-gradients__blob--hot"
+                     cx="26" cy="20" rx="82" ry="54" transform="rotate(-18 26 20)" />
+            <ellipse class="drawn-gradients__blob drawn-gradients__blob--cool"
+                     cx="104" cy="48" rx="70" ry="48" transform="rotate(24 104 48)" />
+            <ellipse class="drawn-gradients__blob drawn-gradients__blob--warm"
+                     cx="54" cy="104" rx="88" ry="52" transform="rotate(-8 54 104)" />
+          </svg>
+          </span>
         </div>
         <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">34%</span>
 
         <div class="drawn-gradients__usage-row">
           <span class="drawn-gradients__usage-line drawn-gradients__usage-line--label">Flat colour</span>
-          <span class="drawn-gradients__surface drawn-gradients__surface--step drawn-gradients__surface--ice drawn-gradients__surface--rise"
-                style="--drawn-gradients-step-row: 1;"></span>
+          <span class="drawn-gradients__surface drawn-gradients__surface--step drawn-gradients__surface--mix drawn-gradients__surface--ice drawn-gradients__surface--rise"
+                style="--drawn-gradients-step-row: 1;">
+          <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+               preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <ellipse class="drawn-gradients__blob drawn-gradients__blob--hot"
+                     cx="26" cy="20" rx="82" ry="54" transform="rotate(-18 26 20)" />
+            <ellipse class="drawn-gradients__blob drawn-gradients__blob--cool"
+                     cx="104" cy="48" rx="70" ry="48" transform="rotate(24 104 48)" />
+            <ellipse class="drawn-gradients__blob drawn-gradients__blob--warm"
+                     cx="54" cy="104" rx="88" ry="52" transform="rotate(-8 54 104)" />
+          </svg>
+          </span>
         </div>
         <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">61%</span>
 
         <div class="drawn-gradients__usage-row">
           <span class="drawn-gradients__usage-line drawn-gradients__usage-line--label">Wash</span>
-          <span class="drawn-gradients__surface drawn-gradients__surface--step drawn-gradients__surface--ice drawn-gradients__surface--rise"
-                style="--drawn-gradients-step-row: 2;"></span>
+          <span class="drawn-gradients__surface drawn-gradients__surface--step drawn-gradients__surface--mix drawn-gradients__surface--ice drawn-gradients__surface--rise"
+                style="--drawn-gradients-step-row: 2;">
+          <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+               preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <ellipse class="drawn-gradients__blob drawn-gradients__blob--hot"
+                     cx="26" cy="20" rx="82" ry="54" transform="rotate(-18 26 20)" />
+            <ellipse class="drawn-gradients__blob drawn-gradients__blob--cool"
+                     cx="104" cy="48" rx="70" ry="48" transform="rotate(24 104 48)" />
+            <ellipse class="drawn-gradients__blob drawn-gradients__blob--warm"
+                     cx="54" cy="104" rx="88" ry="52" transform="rotate(-8 54 104)" />
+          </svg>
+          </span>
         </div>
         <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">82%</span>
       </div>
@@ -98,46 +129,56 @@
       <div class="drawn-gradients__usage drawn-gradients__usage--up">
         <div class="drawn-gradients__usage-row">
           <span class="drawn-gradients__usage-line drawn-gradients__usage-line--label">Wash</span>
-          <span class="drawn-gradients__surface drawn-gradients__surface--step drawn-gradients__surface--arc"
-                style="--drawn-gradients-step-row: 0;"></span>
+          <span class="drawn-gradients__surface drawn-gradients__surface--step drawn-gradients__surface--mix drawn-gradients__surface--arc"
+                style="--drawn-gradients-step-row: 0;">
+          <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+               preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <ellipse class="drawn-gradients__blob drawn-gradients__blob--hot"
+                     cx="26" cy="20" rx="82" ry="54" transform="rotate(-18 26 20)" />
+            <ellipse class="drawn-gradients__blob drawn-gradients__blob--cool"
+                     cx="104" cy="48" rx="70" ry="48" transform="rotate(24 104 48)" />
+            <ellipse class="drawn-gradients__blob drawn-gradients__blob--warm"
+                     cx="54" cy="104" rx="88" ry="52" transform="rotate(-8 54 104)" />
+          </svg>
+          </span>
         </div>
         <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">82%</span>
 
         <div class="drawn-gradients__usage-row">
           <span class="drawn-gradients__usage-line drawn-gradients__usage-line--label">Flat colour</span>
-          <span class="drawn-gradients__surface drawn-gradients__surface--step drawn-gradients__surface--arc"
-                style="--drawn-gradients-step-row: 1;"></span>
+          <span class="drawn-gradients__surface drawn-gradients__surface--step drawn-gradients__surface--mix drawn-gradients__surface--arc"
+                style="--drawn-gradients-step-row: 1;">
+          <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+               preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <ellipse class="drawn-gradients__blob drawn-gradients__blob--hot"
+                     cx="26" cy="20" rx="82" ry="54" transform="rotate(-18 26 20)" />
+            <ellipse class="drawn-gradients__blob drawn-gradients__blob--cool"
+                     cx="104" cy="48" rx="70" ry="48" transform="rotate(24 104 48)" />
+            <ellipse class="drawn-gradients__blob drawn-gradients__blob--warm"
+                     cx="54" cy="104" rx="88" ry="52" transform="rotate(-8 54 104)" />
+          </svg>
+          </span>
         </div>
         <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">61%</span>
 
         <div class="drawn-gradients__usage-row">
           <span class="drawn-gradients__usage-line drawn-gradients__usage-line--label">Overlapping art</span>
-          <span class="drawn-gradients__surface drawn-gradients__surface--step drawn-gradients__surface--arc"
-                style="--drawn-gradients-step-row: 2;"></span>
+          <span class="drawn-gradients__surface drawn-gradients__surface--step drawn-gradients__surface--mix drawn-gradients__surface--arc"
+                style="--drawn-gradients-step-row: 2;">
+          <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+               preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <ellipse class="drawn-gradients__blob drawn-gradients__blob--hot"
+                     cx="26" cy="20" rx="82" ry="54" transform="rotate(-18 26 20)" />
+            <ellipse class="drawn-gradients__blob drawn-gradients__blob--cool"
+                     cx="104" cy="48" rx="70" ry="48" transform="rotate(24 104 48)" />
+            <ellipse class="drawn-gradients__blob drawn-gradients__blob--warm"
+                     cx="54" cy="104" rx="88" ry="52" transform="rotate(-8 54 104)" />
+          </svg>
+          </span>
         </div>
         <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">34%</span>
       </div>
   </section>
-
-  <!-- The drawing the card puts on when it is looked at: nebula, the same
-       three drifting ellipses the demo shows, at the same blur. It is a
-       template rather than markup in the bands because a band only styles
-       .drawn-gradients__draw once it carries --drawn — left in the document
-       at rest it would be an absolutely positioned SVG with nothing to
-       position against. The script clones one per band and removes them
-       again, which is also what the contract says to do with a state's
-       element: add and remove the node rather than hiding it. -->
-  <template data-art>
-    <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
-         preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-      <ellipse class="drawn-gradients__blob drawn-gradients__blob--hot"
-               cx="26" cy="20" rx="82" ry="54" transform="rotate(-18 26 20)" />
-      <ellipse class="drawn-gradients__blob drawn-gradients__blob--cool"
-               cx="104" cy="48" rx="70" ry="48" transform="rotate(24 104 48)" />
-      <ellipse class="drawn-gradients__blob drawn-gradients__blob--warm"
-               cx="54" cy="104" rx="88" ry="52" transform="rotate(-8 54 104)" />
-    </svg>
-  </template>
 
   <!--
     Thumbnail scaffolding only, driven by the index and inert when this file is
@@ -148,18 +189,27 @@
     The surface base is set from here rather than from component.css: the
     recipe settles to the surface colour it sits on, and only this page knows
     what colour that is. `active` is a bigger move than a colour, though: the
-    card changes RECIPE. At rest it is the stop list — one field sliced across
-    the bands, gathering where the two blocks meet and dissolving out into the
-    page at both narrow ends. Looked at, every band puts on the nebula drawing
-    instead: the same silhouette, the same hues, made the other way, out of
-    three blurred ellipses rather than a ramp. That is the folder's whole
-    thesis, and the card is the one place it can be stated as a change rather
-    than as two states side by side.
+    card changes RECIPE. At rest the nebula drawing is showing — three blurred
+    ellipses per band, colour carried right to the silhouette's edges. Looked
+    at, the drawing dissolves off and leaves the stop list underneath: the same
+    shape and the same hues, made the other way, gathering where the two blocks
+    meet and washing out into the page at both narrow ends. That is the
+    folder's whole thesis, and the card is the one place it can be a change
+    rather than two states side by side.
 
-    It also solves what the colour versions were reaching for. The stop recipe
-    dissolves the narrow ends into the page, so half the silhouette is
-    invisible at rest; the drawing carries colour to its own edges, so the
-    whole staircase arrives with it.
+    Colour at rest, wash on hover, and not the other way round. The drawn
+    surface is the one that holds at thumbnail size: it fills its silhouette,
+    so the card reads as an object in a rail of objects. The stop recipe's ends
+    dissolve into the page, which is the better picture but only once you are
+    looking at it — so it is what looking at it gets you.
+
+    It cross-fades because the two are ON one surface rather than swapping:
+    --mix puts the drawing over the stop list instead of in place of it, and
+    --drawn-gradients-mix is its opacity. An earlier version toggled --drawn
+    and cut, because --drawn sets background-image: none and there was nothing
+    underneath to fade into. --…-mix-ease is the curve: 520ms rather than the
+    280 --ease spends on a colour, because this moves the whole surface from
+    one construction to the other.
 
     Colours were tried first and all of them were smaller. A base off the page
     — sand, a paper tint — read as the card being slightly warmer rather than
@@ -168,8 +218,8 @@
     end's complement greys out through the middle. Amber is lovely under the
     magenta and turns the blue block to khaki; a cool slate completes the blue
     and fights the magenta; lilac avoids both by sitting between the two hues
-    and is dull for the same reason. Under the drawing a base does almost
-    nothing — the blobs cover the surface — so it stays on the page's ground.
+    and is dull for the same reason. The base stays on the page's ground now:
+    it is what the stopped end of the mix washes out to.
 
     A theme swap was the other candidate and is the one thing this must not
     do. The hues are the variant axis, and quick look sets them from the dots;
@@ -178,11 +228,7 @@
     look is most of the time. A theme PER BAND was tried too, for a card that
     changes to many colours at once, and it breaks the piece: --step exists to
     slice one field across the bands, so giving each its own hues makes each
-    band paint its own field, the slices stop lining up, and the joins show.
-
-    The swap is a cut rather than a fade, and it has to be: --drawn sets
-    background-image: none, so the stops are gone the moment the class lands
-    and there is nothing to cross-fade with. The base still eases, it just has
+    band paint its own field, the slices stop lining up, and the joins show. The base still eases, it just has
     nowhere to go now.
 
     The settle *direction* was the other candidate — swapping --rise onto the
@@ -206,8 +252,6 @@
          outside, which is what that block is for: the recipe settles to the
          surface colour it sits on and only this page knows its own. */
       var GROUND = '#f3f2ef';
-      var DRAWN = BASE + 'drawn';
-      var art = document.querySelector('[data-art]');
       var surfaces = Array.prototype.slice.call(
         document.querySelectorAll('.drawn-gradients__surface')
       );
@@ -257,16 +301,10 @@
           // shows, since the blobs run past the frame.
           el.style.setProperty('--drawn-gradients-base', GROUND);
 
-          // The recipe itself is what being looked at changes. The drawing is
-          // added and removed rather than hidden: --drawn is what gives
-          // .drawn-gradients__draw something to position against.
-          el.classList.toggle(DRAWN, active);
-          var drawing = el.querySelector('.drawn-gradients__draw');
-          if (active && !drawing && art) {
-            el.appendChild(art.content.cloneNode(true));
-          } else if (!active && drawing) {
-            drawing.remove();
-          }
+          // The recipe itself is what being looked at changes, and the whole
+          // move is this one number: 1 is the drawing, 0 is the stop list,
+          // and component.css eases between them.
+          el.style.setProperty('--drawn-gradients-mix', active ? '0' : '1');
         });
       }
 
