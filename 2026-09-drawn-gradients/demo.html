@@ -191,15 +191,6 @@
       justify-content: center;
     }
 
-    /* One item per line is not a line to centre: the caption is set left
-       above its surface, and a lone centred column drifts away from it and
-       from everything else on the page. Below the point where two no longer
-       fit — 2 × 7rem-pair plus the gap floor against a 6vw gutter, which is
-       just under 36.5rem — the row goes back to the gutter. */
-    @media (max-width: 36.5rem) {
-      .demo__grid--tiles { justify-content: flex-start; }
-    }
-
     /* A wrapped flex line still overflows if an item refuses to shrink, and
        a column of surfaces sized in rem is exactly that. Capped at the line,
        so the squeeze reaches the surfaces rather than the page. */
@@ -292,6 +283,36 @@
       font-family: "JetBrains Mono", ui-monospace, monospace;
       font-size: 0.6875rem;
       color: #55565a;
+    }
+
+    /* Below 36.5rem — 2 × 7rem-pair plus the gap floor against a 6vw gutter —
+       every line holds one example, and left-setting them put all of the
+       leftover on the right: a 15rem pair in a 24rem column, ragged down the
+       whole page. So the example centres here too, and the caption and the
+       hint centre with it — a left-set caption over a centred pair is the
+       misalignment this was meant to avoid, not a fix for it.
+
+       The state box is already the width of the example it holds, so centring
+       the line is enough to move it; what was left was the two labels sitting
+       left inside it. They are centred by name — not by an `align-items` on
+       the state, which sizes every child to its own content and blew a
+       full-bleed example past both edges of a 320px screen, and not by a
+       `text-align` on the state either, which inherits, and the groups
+       further down put real copy inside the component. Nothing here reaches
+       into a component class.
+
+       It sits down here rather than beside the grid rules because .demo__hint
+       carries align-self: flex-start at every other width, and one class
+       beats one class on source order alone. */
+    @media (max-width: 36.5rem) {
+      .demo__grid { justify-content: center; }
+
+      .demo__caption { text-align: center; }
+
+      .demo__hint {
+        align-self: center;
+        text-align: center;
+      }
     }
 
     /* --- touch targets --- */
