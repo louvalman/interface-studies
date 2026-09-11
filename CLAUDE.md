@@ -215,12 +215,12 @@ position:
 
 ```js
 // index -> preview
-{ source: 'ui-reference-base', type: 'preview', active: true | false }
-{ source: 'ui-reference-base', type: 'preview:variant', index: n }
-{ source: 'ui-reference-base', type: 'preview:scale', scale: n }
+{ source: 'interface-studies', type: 'preview', active: true | false }
+{ source: 'interface-studies', type: 'preview:variant', index: n }
+{ source: 'interface-studies', type: 'preview:scale', scale: n }
 
 // preview -> index, once its listener is live
-{ source: 'ui-reference-base', type: 'preview:ready',
+{ source: 'interface-studies', type: 'preview:ready',
   variants: [{ id, label }] }        // variants optional
 ```
 
@@ -250,7 +250,7 @@ one key back:
 
 ```js
 // preview -> index
-{ source: 'ui-reference-base', type: 'preview:key', key: 'Escape' }
+{ source: 'interface-studies', type: 'preview:key', key: 'Escape' }
 ```
 
 Escape and nothing else. Arrow keys are the component's — it may hold a field

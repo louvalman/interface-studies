@@ -9,13 +9,13 @@
 //
 // The contract, deliberately generic — nothing here names a component class:
 //
-//   parent -> preview   { source: 'ui-reference-base', type: 'preview',
+//   parent -> preview   { source: 'interface-studies', type: 'preview',
 //                         active: true | false }
-//   parent -> preview   { source: 'ui-reference-base', type: 'preview:variant',
+//   parent -> preview   { source: 'interface-studies', type: 'preview:variant',
 //                         index: n }
-//   parent -> preview   { source: 'ui-reference-base', type: 'preview:scale',
+//   parent -> preview   { source: 'interface-studies', type: 'preview:scale',
 //                         scale: n }
-//   preview -> parent   { source: 'ui-reference-base', type: 'preview:ready',
+//   preview -> parent   { source: 'interface-studies', type: 'preview:ready',
 //                         variants?: [{ id, label }] }
 //
 // `preview:scale` is how much the preview's own pixels are being shrunk on
@@ -38,7 +38,7 @@
 // labels quick look shows stay in whatever language the preview reports them.
 
 (function () {
-  const STORE_KEY = 'ui-reference-base:lang';
+  const STORE_KEY = 'interface-studies:lang';
 
   const COPY = {
     da: {
@@ -227,7 +227,7 @@
   // the skeleton only ever exists while something is around to clear it.
   document.documentElement.classList.add('js');
 
-  const CHANNEL = 'ui-reference-base';
+  const CHANNEL = 'interface-studies';
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
   const coarse = window.matchMedia('(hover: none)');
 
