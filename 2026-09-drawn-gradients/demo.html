@@ -1013,6 +1013,44 @@
                       --drawn-gradients-settle: 20%;"></div>
         </div>
       </section>
+
+      <section class="demo__state">
+        <p class="demo__caption" data-i18n="state.settle">Settle direction</p>
+        <p class="demo__hint">default / --rise</p>
+        <!-- The axis on its own, both ways round and on both recipes. The
+             stop pair moves three custom properties; the drawn pair mirrors
+             the artwork, because --drawn paints no stop list and the flip
+             would otherwise be a silent no-op there. Bare shapes: --rise puts
+             the settled half at the top, which is where content would sit. -->
+        <div class="drawn-gradients" style="--drawn-gradients-size: 6.5rem;">
+          <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--mint"></div>
+          <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--mint drawn-gradients__surface--rise"></div>
+        </div>
+        <div class="drawn-gradients" style="--drawn-gradients-size: 6.5rem;">
+          <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--mint">
+          <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+               preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <circle class="drawn-gradients__blob drawn-gradients__blob--hot"
+                    cx="86" cy="26" r="44" />
+            <circle class="drawn-gradients__blob drawn-gradients__blob--warm"
+                    cx="34" cy="48" r="38" />
+            <path class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  d="M-10 76 L130 44 L130 130 L-10 130 Z" />
+          </svg>
+          </div>
+          <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--mint drawn-gradients__surface--rise">
+          <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+               preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <circle class="drawn-gradients__blob drawn-gradients__blob--hot"
+                    cx="86" cy="26" r="44" />
+            <circle class="drawn-gradients__blob drawn-gradients__blob--warm"
+                    cx="34" cy="48" r="38" />
+            <path class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  d="M-10 76 L130 44 L130 130 L-10 130 Z" />
+          </svg>
+          </div>
+        </div>
+      </section>
     </div>
   </section>
 
@@ -1381,6 +1419,7 @@
         'state.five': 'Fem temaer',
         'state.night': 'Falder til blæk',
         'state.retuned': 'Puljer flyttet',
+        'state.settle': 'Faldretning',
         'sample.label': 'Etiket',
         'sample.line': 'Pladsholderlinje',
         'sample.bandTitle': 'En sektionsoverskrift',
