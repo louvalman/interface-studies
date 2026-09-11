@@ -40,7 +40,7 @@
         + 'åbn det i fuld størrelse.',
       'meta.references': 'Referencer',
       'meta.portable': 'Portabel',
-      'meta.anyStack': 'Enhver stak',
+      'meta.anyStack': 'Enhver stack',
       'meta.eachRef': 'Hver reference',
       'meta.standsAlone': 'Står alene',
       'rail.reference': 'Reference',
