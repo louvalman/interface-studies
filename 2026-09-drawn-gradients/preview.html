@@ -126,29 +126,40 @@
 
     The surface base is set from here rather than from component.css: the
     recipe settles to the surface colour it sits on, and only this page knows
-    what colour that is. Under --night the surface brings its own, and that is
-    what `active` means here — the card's hover moves what the field settles
-    *to*, from this page's ground to ink, while the hues, the shape and the
-    direction all stay put. One axis moves, and the surface eases into it
-    because the base is the one part of the recipe that can animate.
+    what colour that is. That is also what `active` means here — the card's
+    hover moves what the field settles *to*, from this page's ground to sand,
+    while the hues, the shape and the direction all stay put. One axis moves,
+    and the surface eases into it because the base is the one part of the
+    recipe that can animate: it is a background-color under stops that fade to
+    transparent, and component.css names it in the transition.
 
-    Ink is a state rather than a variant for the same reason the ground is
-    constant: the rail reads as one set of cards only if nothing behind them
-    moves, so the resting card settles into the page and the dark version is
-    something the card does when you look at it.
+    Sand rather than ink, and rather than a warmer paper. At rest the field
+    settles to the page's own ground, so the narrow ends dissolve and the card
+    is a field with the type cut out of it — which is right for a rail of
+    cards, but it means the silhouette is only half visible. A base a few
+    steps off the page brings the whole staircase back, both blocks equally:
+    the shape arrives when the card is looked at. Tried and rejected: a paper
+    tint two steps off the ground, which was too close to read as a change at
+    all, and a cool slate, which sits inside the upper block's own hue and so
+    completed the blue while fighting the magenta below. Sand is off both.
 
-    The other thing `active` could have moved is the settle *direction* —
-    swapping --rise onto the lower block, so the pair fades inward instead of
-    outward. It was built and dropped: the widest bands carry most of the
-    field's area and they are the ones that wash out, so the staircase stops
-    reading at exactly the moment the card is being looked at. Ink keeps the
-    silhouette and sharpens it against the page.
+    What it is NOT is a theme swap. The hues are the variant axis, and quick
+    look sets them from the dots; hover setting the same three properties
+    would mean a picked variant vanished for as long as the pointer was inside
+    the frame, which in quick look is most of the time. The base is a
+    different property, so the two compose — exactly as they did when this
+    state was ink.
+
+    The settle *direction* was the other candidate — swapping --rise onto the
+    lower block so the pair fades inward. Built and dropped: the widest bands
+    carry most of the field's area and they are the ones that wash out, so the
+    staircase stops reading at exactly the moment the card is being looked at.
 
     Two routes into the same state, and neither is the component's own :hover.
     A card thumbnail has pointer events off, so the index sends the message;
     quick look runs this file with pointer events on, where the listeners
     below fire instead and the message never arrives. The state is one
-    function either way. It is not a CSS :hover rule because the ink swap is
+    function either way. It is not a CSS :hover rule because the base swap is
     a thumbnail's editorial decision about its own resting state, not
     something a gradient field does when a pointer is over it.
   -->
@@ -156,14 +167,17 @@
     (function () {
       var CHANNEL = 'ui-reference-base';
       var BASE = 'drawn-gradients__surface--';
+      /* What the field settles to: this page's ground at rest, sand when the
+         card is being looked at. Both are set as the component's own tunable,
+         from outside, which is what that block is for. */
       var GROUND = '#f3f2ef';
+      var LOOKED_AT = '#ead9c6';
       var surfaces = Array.prototype.slice.call(
         document.querySelectorAll('.drawn-gradients__surface')
       );
       if (!surfaces.length) return;
 
       var COLOURS = ['dawn', 'dusk', 'mint', 'ice', 'arc'];
-      var NIGHT = BASE + 'night';
 
       // Colour is authored per block too: ice above, arc below. Captured here,
       // before anything is applied, so the resting variant can put it back —
@@ -176,8 +190,8 @@
       });
 
       // First entry is the resting state, and it is what the card shows. The
-      // colour axis only: ink is not on this list, because it is what being
-      // looked at means rather than a state to pick.
+      // colour axis only: the base is not on this list, because it is what
+      // being looked at means rather than a state to pick.
       var VARIANTS = [
         { id: 'authored', label: 'Ice over arc', theme: null },
         { id: 'arc', label: 'Arc', theme: 'arc' },
@@ -201,16 +215,13 @@
           (variant.theme ? [variant.theme] : authored[i])
             .forEach(function (c) { el.classList.add(BASE + c); });
 
-          el.classList.toggle(NIGHT, active);
-
-          // On paper the fill has to settle into this page rather than to
-          // white — that is the recipe's third decision, and only this page
-          // knows its own colour. Under --night the surface brings its own,
-          // so the inline value has to go rather than be overridden: it would
-          // win over the class.
+          // The fill settles into this page rather than to white — that is
+          // the recipe's third decision, and only this page knows its own
+          // colour. Being looked at moves it off the page and the silhouette
+          // arrives with it.
           el.style.setProperty(
             '--drawn-gradients-base',
-            active ? '' : GROUND
+            active ? LOOKED_AT : GROUND
           );
         });
       }
