@@ -34,12 +34,25 @@
   --liquid-glass-toolbar-panel-w: 30rem;        /* a floor, not a width */
   --liquid-glass-toolbar-label-gap: 0.5625rem;
   /* An optical allowance, not a measurement error. A collapsed action is padded
-     symmetrically, but the icon does not fill its box — this set leaves about
-     an --icon/9 bearing inside it — so an expanded pill has that much free air
-     before the glyph and none after the text. Text also reads tighter against a
-     stadium's curve than a roundish glyph does, so the trailing side is given
-     back slightly more than the bearing it is owed. */
-  --liquid-glass-toolbar-label-trail: calc(var(--liquid-glass-toolbar-icon) / 6);
+     symmetrically, but the icon does not fill its box, so an expanded pill has
+     that bearing as free air before the glyph and nothing answering it after
+     the text. The trail is that bearing, handed to the trailing side.
+
+     Every icon here is symmetric inside its own box, but the bearing is not the
+     same from one to the next — measured at a 24px icon: Home 1.8, Archive 2.6,
+     Settings 2.8, Activity 3.4. --icon/9 is the mean across the four that carry
+     a label, so one constant is as close as a single value gets; the residual is
+     under a pixel either way.
+
+     It used to be --icon/6, which is the mean plus a deliberate 1.35px on top —
+     text reads tighter against a stadium's curve than a roundish glyph does, so
+     the trailing side was given back more than it was owed. That overshoot was
+     set against a 16px label. At 13px the word is smaller and sits further from
+     where the curve actually closes in, and the correction had grown larger than
+     the thing it corrects: on Home, the narrowest bearing in the set, the pill
+     was carrying 2.2px more air after the word than before the glyph. Visible,
+     and visible first on the one item the thumbnail shows at rest. */
+  --liquid-glass-toolbar-label-trail: calc(var(--liquid-glass-toolbar-icon) / 9);
 
   /* the feed. Sized off the row height so the whole panel scales with one
      value, the way the bar scales off --hit. */
@@ -108,13 +121,19 @@
      the destination the lozenge is already pointing at — so it is set a step
      under the surrounding text rather than level with it. At 16px/600 beside a
      24px icon the word was the heaviest mass in the component and the pill had
-     to grow to hold it; at 13px/500 the icon leads and the label follows, which
-     is the order the component is about. Tracking flips sign with the size: the
+     to grow to hold it; at 13px the icon leads and the label follows, which is
+     the order the component is about. Tracking flips sign with the size: the
      small negative that keeps a 16px word from looking loose closes the
-     counters up at 13px, so it opens out instead. */
+     counters up at 13px, so it opens out instead — by a hair, not a caps-style
+     track. */
   --liquid-glass-toolbar-label-size: 0.8125rem;
-  --liquid-glass-toolbar-label-weight: 500;
-  --liquid-glass-toolbar-label-track: 0.01em;
+  /* 600, and it buys legibility rather than emphasis. On the dark materials the
+     label sits at about 4:1 against the lit pill, and 500 at 13px gives that up
+     — the stroke thins faster than the contrast can carry. This is not the 600
+     at 16px that made the word the heaviest thing on the bar: the size was what
+     read as clunky, the weight is what keeps the word on the surface. */
+  --liquid-glass-toolbar-label-weight: 600;
+  --liquid-glass-toolbar-label-track: 0.005em;
   /* The feed is prose, and it is not chained to the label above it. One token
      served both until the label came down, and dragging a sentence to 13px to
      keep them equal would have been the tail wagging: a notification row is

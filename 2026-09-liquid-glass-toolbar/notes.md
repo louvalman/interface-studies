@@ -74,14 +74,35 @@ on each side, which is what the eye reads and what `getBBox()` leaves out.
   set.
 
   An expanded pill is not padded symmetrically either, and it should not be. A
-  collapsed one is — but the icon does not fill its box, so there is about an
-  `--icon/9` bearing of free air before the glyph that the text at the other end
-  never gets. Measured on the resting bar: 14.6px before, 12.0px after.
-  `--label-trail` gives the trailing side that back and a little more, since
-  text reads tighter against a stadium's curve than a roundish glyph does. It is
-  applied in the expanded state only, so the collapsed action stays exactly
-  square, and it moves on the label's clock so the pill does not finish growing
-  after the word inside it has stopped.
+  collapsed one is — but the icon does not fill its box, so there is a bearing of
+  free air before the glyph that the text at the other end never gets.
+  `--label-trail` hands the trailing side that bearing back. It is applied in the
+  expanded state only, so the collapsed action stays exactly square, and it moves
+  on the label's clock so the pill does not finish growing after the word inside
+  it has stopped.
+
+  The bearing is not one number, which is the part that took measuring. Every
+  icon in the set is symmetric inside its own box, but they do not agree with
+  each other — at a 24px icon: Home 1.8, Archive 2.6, Settings 2.8, Activity 3.4.
+  `--icon/9` is the mean across the four that carry a label, so a single constant
+  lands within a pixel of right for all of them and exactly right for none.
+
+  It was `--icon/6` — the mean plus a deliberate 1.35px, on the theory that text
+  reads tighter against a stadium's curve than a roundish glyph does. That was
+  tuned against a 16px label, and it did not survive the label coming down to
+  13px: the word is smaller and no longer reaches the part of the curve that
+  closes in, so the correction had outgrown the thing it corrected. On Home —
+  the narrowest bearing in the set, and the item the thumbnail shows at rest —
+  the pill was carrying 2.2px more air after the word than before the glyph,
+  which is enough to see. At `--icon/9` the residual there is 1.1px, and the only
+  way past that is to normalise the icons to one bearing rather than average
+  over four.
+
+  Vertically the label is centred by `line-height: var(--hit)`, which centres the
+  em box rather than the glyphs. "Home" has no descenders, so its ink sits 0.5px
+  below the pill's centre — measured, and left alone, because correcting it means
+  either a magic number tied to one face's metrics or script the component does
+  not otherwise need.
 
   The same rule caught the panel, in the other axis and much less visibly. Its
   row collapses to `0fr` when closed, but the feed inside carried a
