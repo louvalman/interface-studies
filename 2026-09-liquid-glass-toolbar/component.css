@@ -96,7 +96,14 @@
   --liquid-glass-toolbar-warm-rim: rgba(226, 242, 218, 0.24);
 
   /* --- ink ------------------------------------------------------------- */
-  --liquid-glass-toolbar-font: "Plus Jakarta Sans", system-ui, sans-serif;
+  /* A text face, not a display one, and that is the whole reason it is not
+     the face the demo page is set in. This label runs at 13px on a surface
+     that is deliberately blurring what is behind it, and a geometric with
+     round terminals has nothing to hold that edge with — it goes soft at 16px
+     and to mush at 13px. Inter is drawn for exactly this size: tall x-height,
+     open apertures, flat-cut terminals. It is also narrower, so the word costs
+     the pill less width at the same size. */
+  --liquid-glass-toolbar-font: Inter, system-ui, sans-serif;
   --liquid-glass-toolbar-fg: rgba(243, 249, 240, 0.97);
   --liquid-glass-toolbar-muted: rgba(226, 238, 222, 0.64);
   --liquid-glass-toolbar-dim: rgba(226, 238, 222, 0.46);
@@ -108,13 +115,19 @@
      the destination the lozenge is already pointing at — so it is set a step
      under the surrounding text rather than level with it. At 16px/600 beside a
      24px icon the word was the heaviest mass in the component and the pill had
-     to grow to hold it; at 13px/500 the icon leads and the label follows, which
-     is the order the component is about. Tracking flips sign with the size: the
-     small negative that keeps a 16px word from looking loose closes the
-     counters up at 13px, so it opens out instead. */
+     to grow to hold it; at 13px the icon leads and the label follows, which is
+     the order the component is about. Tracking flips sign with the size too:
+     the small negative that keeps a 16px word from looking loose closes the
+     counters up at 13px, so it opens out instead — only a hair, since Inter is
+     already spaced for this size and more would read as a caps-style track. */
   --liquid-glass-toolbar-label-size: 0.8125rem;
-  --liquid-glass-toolbar-label-weight: 500;
-  --liquid-glass-toolbar-label-track: 0.01em;
+  /* 600, and it is buying legibility rather than emphasis. On the dark
+     materials the label sits at about 4:1 against the lit pill, and a 500 at
+     13px gives that up — the stroke thins faster than the contrast can carry.
+     600 at 13px is not the 600 at 16px that made the word the heaviest thing on
+     the bar; the size is what was clunky, the weight is what keeps it legible. */
+  --liquid-glass-toolbar-label-weight: 600;
+  --liquid-glass-toolbar-label-track: 0.005em;
   /* The feed is prose, and it is not chained to the label above it. One token
      served both until the label came down, and dragging a sentence to 13px to
      keep them equal would have been the tail wagging: a notification row is
