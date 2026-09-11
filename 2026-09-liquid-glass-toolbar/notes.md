@@ -362,6 +362,18 @@ sheets are added and removed rather than hidden — `component.css` gives the ro
 a `display`, and an author rule beats the user-agent `[hidden]` one, which would
 have left all five on screen.
 
+Which makes rebuilding the stack a thing that has to be done sparingly, and
+getting the order right is what got that wrong. Appending all five in order is
+the tidy way to both restore the missing sheets and sort them, and it is also a
+*move* for the four already in place — a move is a removal and an insertion, and
+a re-inserted element has no before-change style, so every transition on it is
+cancelled and the next one never starts. Hover runs through the same function,
+and on hover the stack is already built, so the card went dead: the search field
+arrived open instead of opening. The state was landing correctly the whole time,
+which is why it looked like a CSS problem. `getAnimations()` is what settled it
+— nought running where the same class change made by hand produced fifty — and
+the repair is to touch only the sheets that are actually out of place.
+
 They run lightest to darkest — alabaster, crystal, slate, moss, basalt — and
 that order had to be measured rather than reasoned. Brightness and tint pull
 opposite ways: alabaster's `brightness: 1.02` makes it lighter than the page it

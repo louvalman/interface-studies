@@ -941,10 +941,19 @@
       */
       function setStack(on) {
         if (on) {
-          // appendChild moves a node that is already here, so appending the
-          // whole list in order both restores the missing sheets and puts them
-          // back lightest-to-darkest.
-          sheets.forEach(function (el) { stack.appendChild(el); });
+          /*
+            appendChild moves a node that is already here, which is how the
+            whole list in order restores the missing sheets and puts them back
+            lightest-to-darkest — but a move is a removal and an insertion, and
+            a re-inserted element has no before-change style, so every running
+            transition is cancelled and the next one never starts. Hover goes
+            through here, and on hover the stack is already built: appending
+            unconditionally made the search field arrive instead of open.
+            So only the sheets that are actually out of place get touched.
+          */
+          sheets.forEach(function (el, i) {
+            if (stack.children[i] !== el) stack.appendChild(el);
+          });
           return;
         }
         sheets.forEach(function (el) {
