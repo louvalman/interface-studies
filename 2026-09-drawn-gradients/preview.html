@@ -17,6 +17,9 @@
   as two objects. The card is a field with the type cut out of it, fading away
   from itself in both directions.
 
+  What moves when the card is looked at is where that field settles to: the
+  page's ground at rest, ink on hover. See the script at the end of the file.
+
   It links component.css and never redefines it. The one thing set from here is
   scale, through the component's own tunables and inline on the root, because
   the tunable block lives on .drawn-gradients itself and an inherited value
@@ -123,10 +126,31 @@
 
     The surface base is set from here rather than from component.css: the
     recipe settles to the surface colour it sits on, and only this page knows
-    what colour that is. The --night variant is the exception — there the
-    surface brings its own base — and it is a variant rather than a class in
-    the markup above, because the resting pair settles into the page at both
-    ends and nothing in it carries ink.
+    what colour that is. Under --night the surface brings its own, and that is
+    what `active` means here — the card's hover moves what the field settles
+    *to*, from this page's ground to ink, while the hues, the shape and the
+    direction all stay put. One axis moves, and the surface eases into it
+    because the base is the one part of the recipe that can animate.
+
+    Ink is a state rather than a variant for the same reason the ground is
+    constant: the rail reads as one set of cards only if nothing behind them
+    moves, so the resting card settles into the page and the dark version is
+    something the card does when you look at it.
+
+    The other thing `active` could have moved is the settle *direction* —
+    swapping --rise onto the lower block, so the pair fades inward instead of
+    outward. It was built and dropped: the widest bands carry most of the
+    field's area and they are the ones that wash out, so the staircase stops
+    reading at exactly the moment the card is being looked at. Ink keeps the
+    silhouette and sharpens it against the page.
+
+    Two routes into the same state, and neither is the component's own :hover.
+    A card thumbnail has pointer events off, so the index sends the message;
+    quick look runs this file with pointer events on, where the listeners
+    below fire instead and the message never arrives. The state is one
+    function either way. It is not a CSS :hover rule because the ink swap is
+    a thumbnail's editorial decision about its own resting state, not
+    something a gradient field does when a pointer is over it.
   -->
   <script>
     (function () {
@@ -151,14 +175,11 @@
         });
       });
 
-      // First entry is the resting state, and it is what the card shows.
-      // --night is a variant here rather than authored on a surface: the
-      // resting pair settles into the page at both ends, so nothing in the
-      // markup carries ink, and this is what keeps that axis reachable from
-      // the card at all.
+      // First entry is the resting state, and it is what the card shows. The
+      // colour axis only: ink is not on this list, because it is what being
+      // looked at means rather than a state to pick.
       var VARIANTS = [
         { id: 'authored', label: 'Ice over arc', theme: null },
-        { id: 'night', label: 'Arc on ink', theme: 'arc', night: true },
         { id: 'arc', label: 'Arc', theme: 'arc' },
         { id: 'ice', label: 'Ice', theme: 'ice' },
         { id: 'dusk', label: 'Dusk', theme: 'dusk' },
@@ -166,36 +187,66 @@
         { id: 'dawn', label: 'Dawn', theme: 'dawn' }
       ];
 
-      function apply(variant) {
+      // Two inputs, one render, because the two arrive independently: quick
+      // look can step a variant while the pointer is already inside it, and
+      // applying either one on its own would drop the other.
+      var variant = VARIANTS[0];
+      var active = false;
+
+      function render() {
         surfaces.forEach(function (el, i) {
           COLOURS.forEach(function (c) { el.classList.remove(BASE + c); });
 
           (variant.theme ? [variant.theme] : authored[i])
             .forEach(function (c) { el.classList.add(BASE + c); });
 
-          el.classList.toggle(NIGHT, !!variant.night);
+          el.classList.toggle(NIGHT, active);
 
           // On paper the fill has to settle into this page rather than to
           // white — that is the recipe's third decision, and only this page
-          // knows its own colour. A --night surface brings its own base.
+          // knows its own colour. Under --night the surface brings its own,
+          // so the inline value has to go rather than be overridden: it would
+          // win over the class.
           el.style.setProperty(
             '--drawn-gradients-base',
-            variant.night ? '' : GROUND
+            active ? '' : GROUND
           );
         });
+      }
+
+      function setActive(next) {
+        next = !!next;
+        if (next === active) return;
+        active = next;
+        render();
       }
 
       window.addEventListener('message', function (event) {
         var data = event.data;
         if (!data || data.source !== CHANNEL) return;
 
+        if (data.type === 'preview') {
+          setActive(data.active);
+        }
+
         if (data.type === 'preview:variant') {
-          var variant = VARIANTS[data.index];
-          if (variant) apply(variant);
+          var next = VARIANTS[data.index];
+          if (next) { variant = next; render(); }
         }
       });
 
-      apply(VARIANTS[0]);
+      // The quick-look route. Inert in a card, whose iframe has pointer events
+      // off, and inert on a coarse pointer, where the index sends the message
+      // for the card in the read position instead — so a touch device reaches
+      // the same state without a pointer, which is the whole reason the
+      // contract exists.
+      var root = document.querySelector('.drawn-gradients');
+      if (root) {
+        root.addEventListener('pointerenter', function () { setActive(true); });
+        root.addEventListener('pointerleave', function () { setActive(false); });
+      }
+
+      render();
 
       if (window.parent !== window) {
         window.parent.postMessage({

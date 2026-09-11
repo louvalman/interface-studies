@@ -410,9 +410,40 @@ What that cost is the one dark surface in the rail. The upper block used to
 settle to ink, which anchored the card and advertised `--night` from the index;
 the mirrored pair settles into the page at both ends instead, and a base that
 is ink at one end and paper at the other is not a pair fading away from
-itself — it is two objects again. So `--night` moved into quick look as a
-variant of its own: on ink the same composition reads as colour gathered in
-the middle with both narrow ends going dark, which is the axis shown rather
-than described. The resting card is lighter than it was, and that is the
-trade.
+itself — it is two objects again.
+
+**So ink became what being looked at means.** The card's hover — and, on a
+touch device, the card in the read position, which is the same message —
+moves what the field settles *to*, from the page's ground to ink. The hues,
+the shape and the direction all stay put; one axis moves. It is the better
+home for `--night` than a quick-look dot was, for the same reason the ground
+is a constant: the rail reads as one set of cards only if nothing behind them
+moves, so the resting card settles into the page, and the dark version is
+something the card does when you look at it rather than a state to pick out
+of a list. The resting card is lighter than it was, and that is the trade.
+
+The surface eases into it rather than cutting, because the base is the only
+part of the recipe that *can* ease: a `background-image` of gradient stops
+does not interpolate, so a theme swap is a cut whatever you ask for — but
+`--night` moves the base, the border and the shadow and nothing else, which
+are all animatable. `--…-ease` is the one duration in the file, and the
+transition lists those three properties only; naming the gradient would cost
+a repaint and change nothing.
+
+The other thing hover could have moved is the settle *direction* — swapping
+`--rise` onto the lower block, so the pair fades inward instead of outward.
+Built, looked at, dropped. The widest bands carry most of the field's area and
+they are precisely the ones that wash out, so the staircase stops reading at
+the exact moment the card is being looked at: two saturated tips with a pale
+gap where the shape used to be. Ink does the opposite — it keeps the
+silhouette and sharpens it against the page — which is the test for a hover
+state on a thumbnail. It has to make the component *more* legible, not less.
+
+Neither route is the component's own `:hover`, and that is deliberate. A card
+thumbnail has pointer events off, so the index sends the message; quick look
+runs the same file with pointer events on, where a `pointerenter` listener in
+`preview.html` fires instead and no message arrives. Both call one function.
+A `:hover` rule in `component.css` would have been wrong anyway: settling to
+ink is a thumbnail's editorial decision about its own resting state, not
+something a gradient field does when a pointer crosses it.
 

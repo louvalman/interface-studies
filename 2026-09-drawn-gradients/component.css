@@ -126,6 +126,13 @@
      off. Set this to a colour to put an outline back. */
   --drawn-gradients-raw-stroke: none;
 
+  /* The base is the one part of the recipe that can animate: gradient stops do
+     not interpolate, so a theme swap is a cut whatever this says — but --night
+     moves the base, the border and the shadow and nothing else, which means
+     the settle can be a state a surface eases into rather than only a static
+     theme. That is what the thumbnail's hover spends. */
+  --drawn-gradients-ease: 280ms cubic-bezier(0.4, 0, 0.2, 1);
+
   --drawn-gradients-ink: #1b1c1f;
   --drawn-gradients-ink-soft: #55565a;
   --drawn-gradients-shadow: 0 18px 40px -24px rgba(24, 20, 16, 0.45);
@@ -198,6 +205,13 @@
   background-origin: border-box;
   background-repeat: no-repeat;
   box-shadow: var(--drawn-gradients-shadow);
+  /* Only the three properties --night actually moves. The gradient itself is
+     not in the list because a background-image of stops cannot interpolate —
+     asking for it would cost a repaint and change nothing. */
+  transition:
+    background-color var(--drawn-gradients-ease),
+    border-color var(--drawn-gradients-ease),
+    box-shadow var(--drawn-gradients-ease);
 }
 
 /* --- shapes ------------------------------------------------------------ */
@@ -811,4 +825,12 @@
    field still spans the bands. */
 .drawn-gradients__surface--rise .drawn-gradients__draw {
   transform: scaleY(-1);
+}
+
+/* --- reduced motion ---------------------------------------------------- */
+/* The base still moves, it just stops easing there. */
+@media (prefers-reduced-motion: reduce) {
+  .drawn-gradients__surface {
+    transition-duration: 1ms;
+  }
 }
