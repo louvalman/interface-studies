@@ -70,7 +70,8 @@
                   max-width: 100%;
                   --drawn-gradients-size: 8.4rem;
                   --drawn-gradients-row-gap: 1.75rem;
-                  --drawn-gradients-width: 26rem;">
+                  --drawn-gradients-width: 26rem;
+                  --drawn-gradients-blur-ratio: 0.24;">
       <div class="drawn-gradients__usage drawn-gradients__usage--down">
         <div class="drawn-gradients__usage-row">
           <span class="drawn-gradients__usage-line drawn-gradients__usage-line--label">Overlapping art</span>
@@ -118,6 +119,26 @@
       </div>
   </section>
 
+  <!-- The drawing the card puts on when it is looked at: nebula, the same
+       three drifting ellipses the demo shows, at the same blur. It is a
+       template rather than markup in the bands because a band only styles
+       .drawn-gradients__draw once it carries --drawn — left in the document
+       at rest it would be an absolutely positioned SVG with nothing to
+       position against. The script clones one per band and removes them
+       again, which is also what the contract says to do with a state's
+       element: add and remove the node rather than hiding it. -->
+  <template data-art>
+    <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+         preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <ellipse class="drawn-gradients__blob drawn-gradients__blob--hot"
+               cx="26" cy="20" rx="82" ry="54" transform="rotate(-18 26 20)" />
+      <ellipse class="drawn-gradients__blob drawn-gradients__blob--cool"
+               cx="104" cy="48" rx="70" ry="48" transform="rotate(24 104 48)" />
+      <ellipse class="drawn-gradients__blob drawn-gradients__blob--warm"
+               cx="54" cy="104" rx="88" ry="52" transform="rotate(-8 54 104)" />
+    </svg>
+  </template>
+
   <!--
     Thumbnail scaffolding only, driven by the index and inert when this file is
     opened on its own. Quick look steps the theme axis while the shape and the
@@ -126,37 +147,43 @@
 
     The surface base is set from here rather than from component.css: the
     recipe settles to the surface colour it sits on, and only this page knows
-    what colour that is. That is also what `active` means here — the card's
-    hover moves what the field settles *to*, from this page's ground to lime,
-    while the hues, the shape and the direction all stay put. One axis moves,
-    and the surface eases into it because the base is the one part of the
-    recipe that can animate: it is a background-color under stops that fade to
-    transparent, and component.css names it in the transition.
+    what colour that is. `active` is a bigger move than a colour, though: the
+    card changes RECIPE. At rest it is the stop list — one field sliced across
+    the bands, gathering where the two blocks meet and dissolving out into the
+    page at both narrow ends. Looked at, every band puts on the nebula drawing
+    instead: the same silhouette, the same hues, made the other way, out of
+    three blurred ellipses rather than a ramp. That is the folder's whole
+    thesis, and the card is the one place it can be stated as a change rather
+    than as two states side by side.
 
-    At rest the field settles to the page's own ground, so the narrow ends
-    dissolve and the card is a field with the type cut out of it — right for a
-    rail of cards, and it also means half the silhouette is invisible. A base
-    off the page brings the whole staircase back, both blocks equally: the
-    shape arrives when the card is looked at, and so does a third colour the
-    resting card never shows.
+    It also solves what the colour versions were reaching for. The stop recipe
+    dissolves the narrow ends into the page, so half the silhouette is
+    invisible at rest; the drawing carries colour to its own edges, so the
+    whole staircase arrives with it.
 
-    Lime, and it took a sweep to land on. The base is what BOTH blocks ramp
-    into, so it has to hold against a blue hot end above and a magenta one
-    below, and a base near either one's complement greys out through the
-    middle: amber is lovely under the magenta and turns the blue block to
-    khaki, and a cool slate completes the blue while fighting the magenta.
-    Lilac avoids all of that by sitting between the two hues, and is dull for
-    the same reason — the card just gets a little more purple. Lime is outside
-    both: blue ramps to acid, magenta ramps through coral, and neither goes
-    grey. Also tried: sand and a paper tint, which read as the card being
-    slightly warmer rather than as an event.
+    Colours were tried first and all of them were smaller. A base off the page
+    — sand, a paper tint — read as the card being slightly warmer rather than
+    as an event. Lime was the best of them, and the sweep behind it is worth
+    keeping: the base is what BOTH blocks ramp into, so a base near either hot
+    end's complement greys out through the middle. Amber is lovely under the
+    magenta and turns the blue block to khaki; a cool slate completes the blue
+    and fights the magenta; lilac avoids both by sitting between the two hues
+    and is dull for the same reason. Under the drawing a base does almost
+    nothing — the blobs cover the surface — so it stays on the page's ground.
 
-    What it is NOT is a theme swap. The hues are the variant axis, and quick
-    look sets them from the dots; hover setting the same three properties
-    would mean a picked variant vanished for as long as the pointer was inside
-    the frame, which in quick look is most of the time. The base is a
-    different property, so the two compose — exactly as they did when this
-    state was ink.
+    A theme swap was the other candidate and is the one thing this must not
+    do. The hues are the variant axis, and quick look sets them from the dots;
+    hover setting the same three properties would mean a picked variant
+    vanished for as long as the pointer was inside the frame, which in quick
+    look is most of the time. A theme PER BAND was tried too, for a card that
+    changes to many colours at once, and it breaks the piece: --step exists to
+    slice one field across the bands, so giving each its own hues makes each
+    band paint its own field, the slices stop lining up, and the joins show.
+
+    The swap is a cut rather than a fade, and it has to be: --drawn sets
+    background-image: none, so the stops are gone the moment the class lands
+    and there is nothing to cross-fade with. The base still eases, it just has
+    nowhere to go now.
 
     The settle *direction* was the other candidate — swapping --rise onto the
     lower block so the pair fades inward. Built and dropped: the widest bands
@@ -175,11 +202,12 @@
     (function () {
       var CHANNEL = 'ui-reference-base';
       var BASE = 'drawn-gradients__surface--';
-      /* What the field settles to: this page's ground at rest, lime when the
-         card is being looked at. Both are set as the component's own tunable,
-         from outside, which is what that block is for. */
+      /* What the field settles to. Set as the component's own tunable, from
+         outside, which is what that block is for: the recipe settles to the
+         surface colour it sits on and only this page knows its own. */
       var GROUND = '#f3f2ef';
-      var LOOKED_AT = '#d9e34e';
+      var DRAWN = BASE + 'drawn';
+      var art = document.querySelector('[data-art]');
       var surfaces = Array.prototype.slice.call(
         document.querySelectorAll('.drawn-gradients__surface')
       );
@@ -225,12 +253,20 @@
 
           // The fill settles into this page rather than to white — that is
           // the recipe's third decision, and only this page knows its own
-          // colour. Being looked at moves it off the page and the silhouette
-          // arrives with it.
-          el.style.setProperty(
-            '--drawn-gradients-base',
-            active ? LOOKED_AT : GROUND
-          );
+          // colour. It holds in both states; under the drawing it barely
+          // shows, since the blobs run past the frame.
+          el.style.setProperty('--drawn-gradients-base', GROUND);
+
+          // The recipe itself is what being looked at changes. The drawing is
+          // added and removed rather than hidden: --drawn is what gives
+          // .drawn-gradients__draw something to position against.
+          el.classList.toggle(DRAWN, active);
+          var drawing = el.querySelector('.drawn-gradients__draw');
+          if (active && !drawing && art) {
+            el.appendChild(art.content.cloneNode(true));
+          } else if (!active && drawing) {
+            drawing.remove();
+          }
         });
       }
 
