@@ -1,0 +1,77 @@
+<!--
+  One card: an artwork plate and a caption plate, facing each other across a
+  seam. The pair is the component — there is no outer box around them.
+
+  Two things in here are load-bearing and are not decoration:
+
+    pathLength="1"   normalises every path to a dash of 1, so one keyframe
+                     pair draws all of them at the same rate. Without it each
+                     path needs its real length measured, which needs script.
+
+    style="--i:n"    the path's place in the drawing order. component.css
+                     multiplies it by the stagger to get the delay, and this
+                     is the only thing the markup carries that is not
+                     geometry. Renumber from 0 if you re-order the paths.
+
+  The <svg> is swappable: __ink--vortex, __ink--waterfall and __ink--envelope
+  are three drawings against the same card, and each sets its own stagger.
+  The other two are in demo.html.
+-->
+
+<a class="inked-plate-card" href="#">
+  <span class="inked-plate-card__plate">
+    <span class="inked-plate-card__head">
+      <span class="inked-plate-card__title">Rammesætning</span>
+      <span class="inked-plate-card__no">001</span>
+    </span>
+
+    <span class="inked-plate-card__art">
+      <span class="inked-plate-card__crop" aria-hidden="true"></span>
+      <svg class="inked-plate-card__ink inked-plate-card__ink--vortex" viewBox="0 0 200 200"
+           fill="none" aria-hidden="true" focusable="false">
+        <path class="inked-plate-card__line" pathLength="1" style="--i:0"
+              d="M 16 16 L 184 16 L 184 184 L 16 184 Z" />
+        <path class="inked-plate-card__line" pathLength="1" style="--i:1"
+              d="M 29.8 16.9 L 183.1 29.8 L 170.2 183.1 L 16.9 170.2 Z" />
+        <path class="inked-plate-card__line" pathLength="1" style="--i:2"
+              d="M 42.8 19.5 L 180.5 42.8 L 157.2 180.5 L 19.5 157.2 Z" />
+        <path class="inked-plate-card__line" pathLength="1" style="--i:3"
+              d="M 54.9 23.7 L 176.3 54.9 L 145.1 176.3 L 23.7 145.1 Z" />
+        <path class="inked-plate-card__line" pathLength="1" style="--i:4"
+              d="M 65.8 29.2 L 170.8 65.8 L 134.2 170.8 L 29.2 134.2 Z" />
+        <path class="inked-plate-card__line" pathLength="1" style="--i:5"
+              d="M 75.4 36 L 164 75.4 L 124.6 164 L 36 124.6 Z" />
+        <path class="inked-plate-card__line" pathLength="1" style="--i:6"
+              d="M 83.7 43.8 L 156.2 83.7 L 116.3 156.2 L 43.8 116.3 Z" />
+        <path class="inked-plate-card__line" pathLength="1" style="--i:7"
+              d="M 90.4 52.4 L 147.6 90.4 L 109.6 147.6 L 52.4 109.6 Z" />
+        <path class="inked-plate-card__line" pathLength="1" style="--i:8"
+              d="M 95.6 61.8 L 138.2 95.6 L 104.4 138.2 L 61.8 104.4 Z" />
+        <path class="inked-plate-card__line" pathLength="1" style="--i:9"
+              d="M 99.1 71.6 L 128.4 99.1 L 100.9 128.4 L 71.6 100.9 Z" />
+        <path class="inked-plate-card__line" pathLength="1" style="--i:10"
+              d="M 101 81.6 L 118.4 101 L 99 118.4 L 81.6 99 Z" />
+        <path class="inked-plate-card__line" pathLength="1" style="--i:11"
+              d="M 92 100 L 108 100" />
+        <path class="inked-plate-card__line" pathLength="1" style="--i:12"
+              d="M 100 92 L 100 108" />
+      </svg>
+    </span>
+  </span>
+
+  <span class="inked-plate-card__caption">
+    <span class="inked-plate-card__note">Fastlægger sagens rammer: omfang, frister og parter.</span>
+    <span class="inked-plate-card__grip" aria-hidden="true"></span>
+  </span>
+</a>
+
+<!--
+  Surfaces:
+    .inked-plate-card--acid       lime plate, ink lines
+    .inked-plate-card--graphite   dark plate, lime lines
+
+  State:
+    .inked-plate-card--live       what :hover does, for a preview that is
+                                  told it is being looked at rather than
+                                  hovered (see preview.html)
+-->

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="ref">
+  <!-- Site chrome. Palette from index.css: paper #f5f4f1, ink #17181a,
+       accent #b4552f. Set in the platform mono, which is the site's label
+       voice. A favicon cannot load a web font, so this renders in whatever
+       mono the OS provides rather than JetBrains Mono; the letterforms shift
+       slightly between platforms, which at this size is not worth outlining
+       the type to avoid. -->
+  <rect width="32" height="32" rx="7" fill="#f5f4f1"/>
+  <text x="16" y="20.2"
+        text-anchor="middle"
+        font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
+        font-size="15"
+        font-weight="600"
+        letter-spacing="-0.4"
+        fill="#17181a">ref</text>
+  <rect x="8.25" y="23" width="15.5" height="1.6" rx="0.8" fill="#b4552f"/>
+</svg>
