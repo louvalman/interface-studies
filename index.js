@@ -31,16 +31,16 @@
   const COPY = {
     da: {
       'head.title': 'Interfacedetaljer, bygget som genbrugelige dele.',
-      'head.lede': 'Komponenter bygget i ren HTML og CSS — nogle videreudviklet '
-        + 'ud fra grænseflader fundet andre steder, nogle fra originale designs — gemt '
-        + 'så typografien, spatieringen og bevægelsen forbliver genbrugelig.',
+      'head.lede': 'Komponenter bygget i ren HTML og CSS, uden binding til '
+        + 'noget framework — gemt så typografien, spatieringen og bevægelsen '
+        + 'overlever at blive løftet ind i et.',
       'head.ledeHint': 'Hold musen over et kort for at afspille det, eller åbn '
         + 'det i fuld størrelse.',
       'head.ledeHintTouch': 'Tryk på hurtigt kig for at afspille et kort, eller '
         + 'åbn det i fuld størrelse.',
       'meta.references': 'Referencer',
-      'meta.builtWith': 'Bygget med',
-      'meta.htmlCss': 'HTML & CSS',
+      'meta.portable': 'Portabel',
+      'meta.anyStack': 'Enhver stack',
       'meta.eachRef': 'Hver reference',
       'meta.standsAlone': 'Står alene',
       'rail.reference': 'Reference',
@@ -52,7 +52,7 @@
       'piece.liquidGlassToolbar.title': 'Værktøjslinje i flydende glas',
       'piece.liquidGlassToolbar.note': 'Én glasflade der skifter form — det '
         + 'valgte punkt folder sig ud til en pille med etiket, søgning til et '
-        + 'felt, aktivitet til et panel — i fire materialer fra én opskrift.',
+        + 'felt, aktivitet til et panel — i fem materialer fra én opskrift.',
       'cta.quickLookToolbar': 'Hurtigt kig: Værktøjslinje i flydende glas',
       'piece.inkedPlate.title': 'Kort med tegnede plader',
       'piece.inkedPlate.note': 'En billedplade og en tekstplade med afskårne '
@@ -85,8 +85,11 @@
       'foot.blurb': 'Hver reference er selvstændig. Kopiér en mappe ud, og den '
         + 'virker uden noget andet herfra — intet delt stylesheet, intet '
         + 'byggetrin, ingen afhængighed af denne side.',
+      'foot.sources': 'Nogle referencer tager udgangspunkt i en grænseflade '
+        + 'fundet andre steder; ingen er en kopi af en. Hver mappes notes.md '
+        + 'nævner sin kilde og de beslutninger, den holder fast i.',
       'foot.typefaces': 'Skrifttyper',
-      'foot.stack': 'Teknologi',
+      'foot.stack': 'Stack',
       'foot.stackVal': 'HTML og CSS, intet byggetrin',
       'foot.references': 'Referencer',
       'foot.builtBy': 'Bygget af',

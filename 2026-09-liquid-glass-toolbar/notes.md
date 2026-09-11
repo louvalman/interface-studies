@@ -153,10 +153,13 @@ on each side, which is what the eye reads and what `getBBox()` leaves out.
   places where a variable cannot carry the change — suppressing the other items'
   tint, their reveals, and the search track's unit — are written as selectors.
 
-- **Glass as a recipe, so a theme is a tint swap.** Three shadows doing three
+- **Glass as a recipe, so a theme is a tint swap.** Four shadows doing four
   jobs: a 1px inset rim that separates glass from what is behind it, an inset
-  highlight along the top edge that gives the sheet thickness, and a soft drop
-  that lifts it off the page. The lit lozenge used to carry a second, weaker
+  highlight along the top edge that gives the sheet thickness, a hairline
+  along the inside of the bottom that is the same light coming back off the
+  far face, and a soft drop that lifts it off the page. Two of those are new
+  and so are two filter scalars — see the thinning note below; the bottom edge
+  is `0 0 0 0 transparent` and the scalars are 1 unless a material asks. The lit lozenge used to carry a second, weaker
   `backdrop-filter` of its own, and it looked marginally better and cost far
   too much — see the motion note below. It is a translucent tint and a rim now.
   The hue is carried by the tint alone: the glass is
@@ -165,11 +168,11 @@ on each side, which is what the eye reads and what `getBBox()` leaves out.
   other colours. The one saturated value is the accent, clay from across the
   wheel, and it is spent only on the two marks that mean unread. `--light`
   changes nothing below the variable block — tint, rim, sheen and ink — and the
-  same construction comes back in four materials. Moss is the default and has no
-  modifier; `--alabaster`, `--slate` and `--basalt` are the others. Named for
-  materials rather than for brightness, which is not decoration: only alabaster
-  flips to dark ink, so `--light` would have been describing one member of the
-  set by the single property the others do not share.
+  same construction comes back in five materials. Moss is the default and has no
+  modifier; `--alabaster`, `--slate`, `--basalt` and `--crystal` are the others.
+  Named for materials rather than for brightness, which is not decoration: two
+  of the five flip to dark ink, so `--light` would have been describing part of
+  the set by a property the rest do not share.
 
   Alabaster took a round to get right, and the mistake is the useful part. The
   first version tinted it with the dark theme's own hue, and a green-grey glass
@@ -199,6 +202,54 @@ on each side, which is what the eye reads and what `getBBox()` leaves out.
   starts reading as a hole. And the accent moves with each — the warm mark that
   reads on moss is not the warm that reads on a near-black.
 
+- **Thin the tint, and the filter has to take the work.** The first version of
+  the set carried its colour in the tint, at 42–64% opacity. That is a coloured
+  surface with a texture underneath it rather than glass: nothing of the page
+  survives the trip through it, and the backdrop filter is only there to keep
+  the texture from being legible. Every material is thinner now — 28–44%, and
+  crystal at 7% — and thinning is not a slider you can turn on its own. Three
+  things had to move with it.
+
+  The filter grew `brightness` and `contrast`. Brightness does the darkening the
+  tint used to do, which is the whole trick for the dark materials: moss at 28%
+  over a light page is a pale green wash, and moss at 28% over a page turned
+  down to 0.56 is a dark sheet you can see the page's cross-light through. It is
+  also better ink: the label went from 2.3:1 against the lit pill to about 4:1,
+  because the surface under it got *darker* while getting more transparent.
+  Contrast keeps the ground's range from flattening as it is pushed around.
+
+  The blur came down, 14px to 8px, and this is the counter-intuitive half. Blur
+  is frost, not glass — past about 10px whatever is behind the sheet stops being
+  a place and becomes a wash, and at that point the tint is doing all the work
+  again. Clear glass displaces what is behind it; it does not hide it.
+
+  And the edges took over what the body gave up. Every rim and sheen went up,
+  the lit lozenge became a rim with a thin body rather than a pale fill — a
+  glaze is a transparent body with a lit edge, and it is now that in all five
+  rather than only in alabaster — and each drop gained a second, tight contact
+  shadow, because one soft shadow lifts an opaque card fine and a thin one still
+  reads as painted on.
+
+- **Crystal, the one that is actually glass.** At 7% the tint decides nothing
+  and the material is carried entirely by what it does to the light and by its
+  edges. Its brightness goes slightly *below* 1, which is the single most useful
+  thing on this page: real glass absorbs a little, and a sheet a shade darker
+  than the page with bright edges reads as glass, where a brighter one reads as
+  paint. Every attempt to sell it by *adding* — more saturation, more contrast,
+  more lift — came back looking like amber or like a white sticker, because on a
+  warm ground those all push toward cream. `--edge` is the other half: a
+  hairline along the inside of the bottom, the cheapest available stand-in for
+  refraction, which CSS cannot do, and most of what gives a pane this thin any
+  thickness at all.
+
+  It cost alabaster a round, and the mistake is instructive. Thinning alabaster
+  along with the others put it and crystal in the same place — two pale sheets
+  on warm paper, distinguishable only by their rims — and a set of five with two
+  members doing the same thing is a set of four with a spare. Alabaster went
+  back up to 44% and kept its brightness near 1: it is milk glass, a body you
+  cannot see through, and crystal is a pane you can. What separates them is not
+  how light they are.
+
 - **Everything here animates layout, so the savings are elsewhere.** A label
   opening is a track going `0fr -> 1fr`, the panel is a row and a width, and the
   surface is `fit-content` around all of it — none of that can be moved onto a
@@ -215,7 +266,9 @@ on each side, which is what the eye reads and what `getBBox()` leaves out.
   of the backdrop, and it was on the one element that resizes on every frame of
   every morph. And the blur came down from 20px to 14px, because backdrop blur
   costs by radius and it re-runs whenever the surface changes size — which here
-  is constantly.
+  is constantly. It came down again later, to 8px, for a reason that has nothing
+  to do with cost and everything to do with looking like glass; the saving was
+  free.
 
   What is left is one clock split in two: `--reveal` at 220ms for a label, about
   60px of travel, and `--morph` at 300ms for the panel, about ten times that. A
@@ -255,6 +308,14 @@ label at all, so the reveal stays shut and the lit pill is the only thing saying
 which item you are on. That is the right thing to lose — the label was never the
 selection indicator's only channel.
 
+It stays shut because the query says so, which it did not always. Scaling the
+values alone left about 50px in the track, and 50px is not a word — it is the
+first letter and a half of one, cut off by the surface, which is worse than no
+label in exactly the way a truncated word is worse than an icon. So the narrow
+block repeats the three open-state selectors at `0fr` and takes the trailing pad
+back with them, or the pill keeps the air it was given to sit beside a word that
+is no longer there. Same weight, later in the file: source order decides it.
+
 Almost nothing here is spent on hover, which is what makes it survive a touch
 device: the morph runs on taps and on focus. The two things that are hover —
 the icon that brightens before you commit to it, and the row under the pointer —
@@ -268,7 +329,27 @@ in to call `focus()` would take focus off the page around it. `component.js`
 drops both the moment somebody actually touches the toolbar, so the class and
 the attribute can never disagree about what is lit.
 
-The card shows all four materials stacked, which is a deliberate departure from
+The demo page is six sections rather than three, and each one is a single claim
+with the state that proves it: the anatomy of the bar, the reveal, the extended
+view, the motion, the five materials, the narrow scale. The prose is page
+scaffolding like the background is — it says what the thing in front of it is
+doing, so the page can be read as well as poked at, and it is where the numbers
+that are not visible in a screenshot live: 220 against 300, 264px, 4:1.
+
+Two things came out of writing it down. The motion section needed the two clocks
+drawn rather than described — three bars on a 400ms track, because "220 and 300"
+is two numbers and a picture of them is a relationship. And the narrow section
+is the reason the container query now shuts the label: putting the state on the
+page at 15rem is what made the clipped word impossible to keep claiming was
+fine. A demo that only shows the states that already work is not doing its job.
+
+The i18n block is the template's, with one change: the prose carries inline
+`<code>`, so the swap is `innerHTML` rather than `textContent`. Both sides of the
+table are static strings in the file. Material names are not translated — they
+are shown as the class that selects them, which makes them class-name hints
+rather than page prose.
+
+The card shows all five materials stacked, which is a deliberate departure from
 this repo's rule that a thumbnail holds one instance and no second copy. The rule
 is there to stop a thumbnail turning into a small demo page, and it is the right
 rule — but what this reference offers is a construction that comes in four
@@ -279,7 +360,7 @@ from outside, because the motion is a custom property whose value is a whole
 shorthand: a delay goes on the end of it without the component knowing. The
 sheets are added and removed rather than hidden — `component.css` gives the root
 a `display`, and an author rule beats the user-agent `[hidden]` one, which would
-have left all four on screen.
+have left all five on screen.
 
 Which of the two morphs the card plays on hover is a thumbnail decision, not a
 component one, and it went the other way at first. The panel is the headline

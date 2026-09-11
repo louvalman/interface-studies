@@ -54,9 +54,9 @@
          only the part that holds true either way is markup. -->
       <p class="head__lede">
         <span data-i18n="head.lede">
-          Components built in plain HTML and CSS — some iterated upon from
-          interfaces found elsewhere, some from original designs — kept so the
-          type, the spacing and the motion stay reusable.
+          Components built in plain HTML and CSS, tied to no framework — kept
+          so the type, the spacing and the motion survive being lifted into
+          one.
         </span>
         <span data-lede-hint>
           Hover a card to run it in place, or open one at full size.
@@ -69,9 +69,9 @@
           <dd class="head__meta-val" id="meta-count">—</dd>
         </div>
         <div class="head__meta-item">
-          <dt class="head__meta-key" data-i18n="meta.builtWith">Built with</dt>
-          <dd class="head__meta-val" data-i18n="meta.htmlCss">
-            HTML &amp; CSS
+          <dt class="head__meta-key" data-i18n="meta.portable">Portable</dt>
+          <dd class="head__meta-val" data-i18n="meta.anyStack">
+            Any stack
           </dd>
         </div>
         <div class="head__meta-item">
@@ -209,7 +209,7 @@
               data-i18n="piece.liquidGlassToolbar.note">
               One glass surface that changes shape &mdash; the selected item
               opens into a labelled pill, search into a field, activity into a
-              panel &mdash; in four materials off a single recipe.
+              panel &mdash; in five materials off a single recipe.
             </p>
             <span class="piece__cta">
               <span class="piece__cta-text" data-i18n="cta.openDemo">
@@ -546,6 +546,16 @@
             Every reference is self-contained. Copy a folder out and it works
             with nothing else from here — no shared stylesheet, no build step,
             no dependency on this page.
+          </p>
+
+          <!-- Where the references came from. It sits down here rather than
+             in the masthead because it is provenance, not a pitch: the
+             sources are credited in the folders, and the folders are where
+             someone checking would look. -->
+          <p class="foot__note" data-i18n="foot.sources">
+            Some references start from an interface found elsewhere; none is a
+            copy of one. Each folder's notes.md names its source and the
+            decisions the build keeps.
           </p>
 
           <!-- Handles live here and nowhere else. -->
