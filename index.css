@@ -471,24 +471,14 @@ body.is-locked {
   border-radius: 0.5rem;
 }
 
-/* The rail wraps at either end, and the wrap is a cut: the track fades down,
-   scrollLeft jumps inside the fade, and it fades back. index.js skips the
-   whole thing under reduced motion and jumps outright, so this transition is
-   never the thing being reduced. */
-.rail__track {
-  transition: opacity 160ms var(--ease);
-}
-
-.rail__track.is-wrapping {
-  opacity: 0;
-}
-
-/* The drift writes scrollLeft every frame, so snap has to come off for the
-   same reason dragging takes it off — mandatory snap yanks the scroll back to
-   a card on every write — and scroll-behavior with it, or each write would
-   queue a smooth animation against the last. Snap returns when the drift
-   stops, and lands the rail on a card for free. */
-.rail__track.is-drifting {
+/* The drift and a step both write scrollLeft every frame, so snap has to come
+   off for the same reason dragging takes it off — mandatory snap yanks the
+   scroll back to a card on every write — and scroll-behavior with it, or each
+   write would queue a smooth animation against the last. Snap returns when
+   they stop, and lands the rail on a card for free. */
+.rail__track.is-drifting,
+.rail__track.is-stepping,
+.rail__track.is-recycling {
   scroll-snap-type: none;
   scroll-behavior: auto;
 }
