@@ -146,6 +146,33 @@ on each side, which is what the eye reads and what `getBBox()` leaves out.
   while the incoming one grows, and because they are adjacent in a flex row the
   highlight reads as one mass travelling.
 
+- **The label is set as chrome, not as body copy.** 13px/500, tracked +0.01em,
+  beside a 24px icon in a 48px pill. The first pass ran it at 16px/600 with the
+  small negative tracking a 16px word wants, and that is a body size and a body
+  weight: the word became the heaviest mass on a bar whose whole subject is a
+  row of 1.6px strokes, and the pill had to grow to hold it. A caption on a
+  glyph is set a step under the text around it, not level with it — the icon
+  leads and the label follows, which is also the reading order the component is
+  arguing for. Tracking flips sign with the size rather than carrying over: the
+  small negative that keeps a 16px word from looking loose closes the counters
+  at 13px and turns the word into a smudge on a translucent surface.
+
+  Size, weight and tracking are three tunables now, not one hardcoded pair, and
+  the feed came off the same token while they moved. One `--label-size` served
+  the pill label, the search input and the notification line, which is fine
+  while they agree and a trap the moment they do not: dragging a sentence down
+  to 13px to keep it equal to a pill label is the chrome setting the type scale
+  for the prose. The line has `--row-size` at 15px, the pill has `--label-size`
+  at 13px, and the search input stays on `--label-size` because it sits in the
+  bar's own optical row and has to match the label it replaces. The narrow
+  container scales `--row-size` now rather than `--label-size` — at that width
+  the label track is shut and the feed is the only text left to scale.
+
+  The thumbnail restates both, the way it restates the hairline. It lays the
+  component out about 4% larger than base, and the type used to be bumped 6–7%
+  on top of that — type running hotter than the geometry it sits in, in exactly
+  the frame where the component is judged first.
+
 - **The open state is five variables, declared once.** `--open` and the `:has()`
   that detects a real `aria-expanded` both set the same five custom properties,
   and every rule downstream reads those. The alternative is repeating a

@@ -104,8 +104,23 @@
      and it is spent on the two things that mean "unread". */
   --liquid-glass-toolbar-accent: #d5793f;
 
-  --liquid-glass-toolbar-label-size: 1rem;
-  --liquid-glass-toolbar-time-size: 0.875rem;
+  /* Bar chrome, not body copy. A label here is a caption on a glyph — it names
+     the destination the lozenge is already pointing at — so it is set a step
+     under the surrounding text rather than level with it. At 16px/600 beside a
+     24px icon the word was the heaviest mass in the component and the pill had
+     to grow to hold it; at 13px/500 the icon leads and the label follows, which
+     is the order the component is about. Tracking flips sign with the size: the
+     small negative that keeps a 16px word from looking loose closes the
+     counters up at 13px, so it opens out instead. */
+  --liquid-glass-toolbar-label-size: 0.8125rem;
+  --liquid-glass-toolbar-label-weight: 500;
+  --liquid-glass-toolbar-label-track: 0.01em;
+  /* The feed is prose, and it is not chained to the label above it. One token
+     served both until the label came down, and dragging a sentence to 13px to
+     keep them equal would have been the tail wagging: a notification row is
+     read, a pill label is recognised. */
+  --liquid-glass-toolbar-row-size: 0.9375rem;
+  --liquid-glass-toolbar-time-size: 0.8125rem;
 
   /* --- motion ---------------------------------------------------------- */
   /*
@@ -380,8 +395,8 @@
      width the open track measures. */
   text-indent: var(--liquid-glass-toolbar-label-gap);
   font-size: var(--liquid-glass-toolbar-label-size);
-  font-weight: 600;
-  letter-spacing: -0.005em;
+  font-weight: var(--liquid-glass-toolbar-label-weight);
+  letter-spacing: var(--liquid-glass-toolbar-label-track);
   line-height: var(--liquid-glass-toolbar-hit);
 }
 
@@ -395,7 +410,8 @@
   color: var(--liquid-glass-toolbar-fg);
   font-family: inherit;
   font-size: var(--liquid-glass-toolbar-label-size);
-  font-weight: 500;
+  font-weight: var(--liquid-glass-toolbar-label-weight);
+  letter-spacing: var(--liquid-glass-toolbar-label-track);
   -webkit-appearance: none;
   appearance: none;
 }
@@ -593,7 +609,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: var(--liquid-glass-toolbar-label-size);
+  font-size: var(--liquid-glass-toolbar-row-size);
   line-height: 1.35;
 }
 
@@ -866,7 +882,7 @@
     --liquid-glass-toolbar-pad: 0.3125rem;
     --liquid-glass-toolbar-gap: 0.125rem;
     --liquid-glass-toolbar-split: 1.25rem;
-    --liquid-glass-toolbar-label-size: 0.9375rem;
+    --liquid-glass-toolbar-row-size: 0.875rem;
     --liquid-glass-toolbar-row-h: 3rem;
     --liquid-glass-toolbar-avatar: 2rem;
   }
