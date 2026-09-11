@@ -42,10 +42,10 @@
 
   const COPY = {
     da: {
-      'head.title': 'Interfacedetaljer, bearbejdet indtil de holder.',
-      'head.lede': 'Hvert studie tager få beslutninger — et typografipar, en '
-        + 'spatieringsrytme, en hover-adfærd — og bygger kun dem, i ren HTML '
-        + 'og CSS, uden binding til noget framework.',
+      'head.title': 'Små studier i interfacedesign.',
+      'head.lede': 'Hvert studie tager en anden tilgang til én interfacedetalje '
+        + '— et typografipar, en spatieringsrytme, en hover-adfærd — og bygger '
+        + 'kun den, i ren HTML og CSS uden framework.',
       'head.ledeHint': 'Hold musen over et kort for at afspille det, eller åbn '
         + 'det i fuld størrelse.',
       'head.ledeHintTouch': 'Tryk på hurtigt kig for at afspille et kort, eller '
@@ -1452,8 +1452,8 @@
   };
 
   const LEDE_EN = {
-    pointer: 'Hover a card to run it in place, or open one at full size.',
-    touch: 'Tap quick look to run a card in place, or open one at full size.'
+    pointer: 'Hover a card to run it in place, or open it at full size.',
+    touch: 'Tap quick look to run a card in place, or open it at full size.'
   };
 
   // Held so a pointer-type change can re-render without waiting for the next
