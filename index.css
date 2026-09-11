@@ -303,27 +303,16 @@ body.is-locked {
   padding: 0 var(--gutter) 1.25rem;
 }
 
-.rail__meta {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-}
-
-.rail__count,
-.rail__hint {
+.rail__count {
   margin: 0;
+  /* "Study 01 / 05" is one thing to read; a narrow bar may drop the buttons to
+     their own line, but it may never break the label across two. */
+  white-space: nowrap;
   font-family: var(--mono);
   font-size: 0.6875rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-}
-
-.rail__count { color: var(--ink); }
-
-.rail__hint {
-  font-size: 0.625rem;
-  letter-spacing: 0.14em;
-  color: var(--muted);
+  color: var(--ink);
 }
 
 .rail__nav {
@@ -1361,29 +1350,14 @@ body.is-locked {
     --preview-scale: 0.55;     /* 264 / 480 */
   }
 
-  /* Four rows of furniture before the first card — count, hint, buttons,
-     chips — is most of a phone's first screen spent on the controls for a rail
-     you cannot see yet. The bar stacked whole; it becomes a small grid instead,
-     so the count keeps the buttons company on one line and only the hint drops
-     below them. Three rows, and the rail starts about fifty pixels higher.
-
-     display: contents on the wrapper lifts the count and the hint into this
-     grid without touching the markup — it is a layout div with nothing to say,
-     so it loses nothing by not generating a box. */
+  /* The bar is a count and three buttons now, so it stays one row all the way
+     down — it used to stack, and then to be a small grid, only because a hint
+     line needed somewhere to go. */
   .rail__bar {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    grid-template-areas:
-      "count nav"
-      "hint  hint";
     align-items: center;
-    gap: 0.5rem 1rem;
+    flex-wrap: wrap;
+    gap: 0.75rem;
   }
-
-  .rail__meta { display: contents; }
-  .rail__count { grid-area: count; }
-  .rail__hint { grid-area: hint; }
-  .rail__nav { grid-area: nav; }
 
   .rail__filter { padding-bottom: 1rem; }
 }
