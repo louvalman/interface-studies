@@ -129,6 +129,19 @@ still the same shape, only smaller.
   fill, while a short one sat in a gap twice the size. A staircase that is not
   a measurement of the text is decoration standing next to it.
 
+  Which puts a constraint on the sample copy, and it is the one thing about
+  this shape that has to be authored rather than derived. The band measures
+  the LABEL — it starts where the label ends — while the reader's eye sees a
+  bar with a number beside it and reads the bar as measuring the number. The
+  two are only ever consistent by hand. So the rows are ordered longest label
+  to smallest value, and every value carries the same unit: 34% / 61% / 82%
+  against "Overlapping art" / "Flat colour" / "Wash". Before that it was
+  03 / 0.85 / 82% — an index, a ratio and a percentage in one column, none of
+  them comparable, the widest band carrying the one that could not be ranked
+  at all. Mixed units also left the value column ragged where it is set flush
+  right. Rename a label and the step moves; change a value and nothing moves,
+  which is exactly why the copy has to be kept in that order.
+
   Three bands read as one field because **they share a right edge**. Anchor the
   image there with `background-position-x: right`, give every band the same
   `--…-step-field` width — a length, never a percentage, which would resolve
