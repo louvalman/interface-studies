@@ -127,21 +127,29 @@
     The surface base is set from here rather than from component.css: the
     recipe settles to the surface colour it sits on, and only this page knows
     what colour that is. That is also what `active` means here — the card's
-    hover moves what the field settles *to*, from this page's ground to sand,
+    hover moves what the field settles *to*, from this page's ground to lime,
     while the hues, the shape and the direction all stay put. One axis moves,
     and the surface eases into it because the base is the one part of the
     recipe that can animate: it is a background-color under stops that fade to
     transparent, and component.css names it in the transition.
 
-    Sand rather than ink, and rather than a warmer paper. At rest the field
-    settles to the page's own ground, so the narrow ends dissolve and the card
-    is a field with the type cut out of it — which is right for a rail of
-    cards, but it means the silhouette is only half visible. A base a few
-    steps off the page brings the whole staircase back, both blocks equally:
-    the shape arrives when the card is looked at. Tried and rejected: a paper
-    tint two steps off the ground, which was too close to read as a change at
-    all, and a cool slate, which sits inside the upper block's own hue and so
-    completed the blue while fighting the magenta below. Sand is off both.
+    At rest the field settles to the page's own ground, so the narrow ends
+    dissolve and the card is a field with the type cut out of it — right for a
+    rail of cards, and it also means half the silhouette is invisible. A base
+    off the page brings the whole staircase back, both blocks equally: the
+    shape arrives when the card is looked at, and so does a third colour the
+    resting card never shows.
+
+    Lime, and it took a sweep to land on. The base is what BOTH blocks ramp
+    into, so it has to hold against a blue hot end above and a magenta one
+    below, and a base near either one's complement greys out through the
+    middle: amber is lovely under the magenta and turns the blue block to
+    khaki, and a cool slate completes the blue while fighting the magenta.
+    Lilac avoids all of that by sitting between the two hues, and is dull for
+    the same reason — the card just gets a little more purple. Lime is outside
+    both: blue ramps to acid, magenta ramps through coral, and neither goes
+    grey. Also tried: sand and a paper tint, which read as the card being
+    slightly warmer rather than as an event.
 
     What it is NOT is a theme swap. The hues are the variant axis, and quick
     look sets them from the dots; hover setting the same three properties
@@ -167,11 +175,11 @@
     (function () {
       var CHANNEL = 'ui-reference-base';
       var BASE = 'drawn-gradients__surface--';
-      /* What the field settles to: this page's ground at rest, sand when the
+      /* What the field settles to: this page's ground at rest, lime when the
          card is being looked at. Both are set as the component's own tunable,
          from outside, which is what that block is for. */
       var GROUND = '#f3f2ef';
-      var LOOKED_AT = '#ead9c6';
+      var LOOKED_AT = '#d9e34e';
       var surfaces = Array.prototype.slice.call(
         document.querySelectorAll('.drawn-gradients__surface')
       );
