@@ -158,10 +158,46 @@
       color: #8a8a84;
     }
 
+    /* The examples are intrinsically sized — a pair of surfaces sized in rem
+       neither grows nor shrinks to a track — so a wrapped line leaves its
+       remainder hanging off the left edge under a full line above it.
+
+       --demo-grid-max is half the fix and lives here; the other half is the
+       centring on --tiles below, and neither works alone. The cap is the
+       natural width of one full line, so a line that fills it has no leftover
+       to distribute and still starts at the gutter, in step with the band
+       title above it — which is what lets the centring stay out of the way
+       until a line actually wraps. Flex, not grid: a short last row is
+       left-set whatever grid's `justify-content` says, because the tracks are
+       the same for every row. */
     .demo__grid {
       display: flex;
       flex-wrap: wrap;
       gap: clamp(1.5rem, 4vw, 3rem);
+      max-width: var(--demo-grid-max, 100%);
+    }
+
+    /* Only a row of equal-width examples earns this. Three pairs of 7rem
+       surfaces plus two gaps is the natural line of every colour band, and
+       the four shapes land on the same number — so the cap binds, and the
+       centring below has nothing to do until a line actually wraps.
+
+       The groups further down hold examples of four different widths, and
+       there the same pair reads as a mistake: a lone 14rem card centred under
+       a line of three unequal ones is not aligned to anything. Those stay at
+       the gutter. */
+    .demo__grid--tiles {
+      --demo-grid-max: 52rem;
+      justify-content: center;
+    }
+
+    /* One item per line is not a line to centre: the caption is set left
+       above its surface, and a lone centred column drifts away from it and
+       from everything else on the page. Below the point where two no longer
+       fit — 2 × 7rem-pair plus the gap floor against a 6vw gutter, which is
+       just under 36.5rem — the row goes back to the gutter. */
+    @media (max-width: 36.5rem) {
+      .demo__grid--tiles { justify-content: flex-start; }
     }
 
     /* A wrapped flex line still overflows if an item refuses to shrink, and
@@ -322,7 +358,7 @@
         <span class="demo__swatch demo__swatch--dawn" aria-hidden="true"></span>
         <span data-i18n="band.orange">Orange</span>
       </p>
-      <div class="demo__grid">
+      <div class="demo__grid demo__grid--tiles">
       <section class="demo__state">
         <p class="demo__caption" data-i18n="drawn.sunburst">Sunburst — radiating wedges</p>
         <p class="demo__hint">blur 0.16</p>
@@ -434,7 +470,7 @@
         <span class="demo__swatch demo__swatch--ice" aria-hidden="true"></span>
         <span data-i18n="band.blue">Blue</span>
       </p>
-      <div class="demo__grid">
+      <div class="demo__grid demo__grid--tiles">
       <section class="demo__state">
         <p class="demo__caption" data-i18n="drawn.a">Quatrefoil, ribbon, star</p>
         <p class="demo__hint">--drawn / --raw</p>
@@ -593,7 +629,7 @@
         <span class="demo__swatch demo__swatch--mint" aria-hidden="true"></span>
         <span data-i18n="band.mint">Mint</span>
       </p>
-      <div class="demo__grid">
+      <div class="demo__grid demo__grid--tiles">
       <section class="demo__state">
         <p class="demo__caption" data-i18n="drawn.ocean">Ocean — stacked swells</p>
         <p class="demo__hint">blur 0.2</p>
@@ -706,7 +742,7 @@
         <span class="demo__swatch demo__swatch--night" aria-hidden="true"></span>
         <span data-i18n="band.night">Night</span>
       </p>
-      <div class="demo__grid">
+      <div class="demo__grid demo__grid--tiles">
       <section class="demo__state">
         <p class="demo__caption" data-i18n="drawn.scanlines">Scanlines — analogue bands</p>
         <p class="demo__hint">blur 0.09</p>
@@ -878,7 +914,7 @@
       </p>
     </div>
 
-    <div class="demo__grid">
+    <div class="demo__grid demo__grid--tiles">
       <section class="demo__state">
         <p class="demo__caption" data-i18n="state.tile">Tile</p>
         <p class="demo__hint">--tile</p>

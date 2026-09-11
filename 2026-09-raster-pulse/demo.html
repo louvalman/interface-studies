@@ -21,8 +21,6 @@
     body {
       margin: 0;
       min-height: 100vh;
-      display: grid;
-      place-items: start center;
       padding: 4rem var(--demo-gutter);
       box-sizing: border-box;
       /* The same #f3f2ef every reference in this repo sits on, repeated here
@@ -36,10 +34,40 @@
       font-family: "Space Grotesk", system-ui, sans-serif;
     }
 
+    /* Left-aligned at the gutter, not centred — the index hangs its masthead
+       and rail off the same edge, and a centred column here would step the
+       content inwards on every navigation. */
     .demo {
-      display: grid;
-      gap: 4rem;
-      width: min(100%, 30rem);
+      max-width: 78rem;
+    }
+
+    /* The posters are 22rem each and the page used to stack all five down one
+       30rem column: eight rem of empty column beside every one of them, and
+       roughly 3500px of scroll to see five states of one component. They lay
+       out as a row instead, three to a line on a laptop.
+
+       The max-width is the natural width of one full line, so a full line has
+       no leftover to distribute and still starts at the gutter; `center` then
+       only has something to do when the line wraps, at which point the two
+       left over sit under the middle of the three above rather than hanging
+       off the left edge. The two only work together: the cap without the
+       centring leaves the remainder hanging left, the centring without the
+       cap pushes a full line into the middle of the page. Flex, not grid —
+       grid leaves a short last row at the gutter whatever `justify-content`
+       says, because the tracks are the same for every row. */
+    .demo__grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 4rem 2.5rem;
+      max-width: 71rem;    /* 3 × 22rem + 2 gaps */
+    }
+
+    /* One poster per line is not a line to centre: the caption is set left
+       above it. Below the width where a second fits — 2 × 22rem + the gap,
+       against a 6vw gutter — the row goes back to the gutter. */
+    @media (max-width: 52.8rem) {
+      .demo__grid { justify-content: flex-start; }
     }
 
     .demo__lang {
@@ -92,8 +120,10 @@
     }
 
     .demo__back {
-      justify-self: start;
       display: inline-flex;
+      /* The column used to be a grid and this sat in its 4rem gap; the states
+         are their own row now, so the space is stated here. */
+      margin-bottom: 3rem;
       align-items: center;
       gap: 0.5rem;
       padding: 0.5rem 0.9rem 0.5rem 0.75rem;
@@ -114,10 +144,14 @@
 
     .demo__back svg { width: 0.85rem; height: 0.85rem; }
 
-    /* The pair that keeps this page off a phone's horizontal scrollbar: the
-       cell is capped at its column, and the column is told it may shrink
-       below its content. */
+    /* `0 1 22rem` is the poster's own width as a flex basis: the state never
+       grows past the poster it holds, so a short line stays a line of posters
+       rather than two stretched cells, and it may still shrink — which, with
+       the two lines under it, is what keeps this page off a phone's
+       horizontal scrollbar: the cell is capped at its column, and the column
+       is told it may shrink below its content. */
     .demo__state {
+      flex: 0 1 22rem;
       display: grid;
       grid-template-columns: minmax(0, 1fr);
       gap: 0.9rem;
@@ -161,6 +195,7 @@
       <span data-i18n="back">All references</span>
     </a>
 
+    <div class="demo__grid">
       <section class="demo__state">
         <p class="demo__caption" data-i18n="state.default">Default &mdash; ring field, resting pulse</p>
         <article class="raster-pulse">
@@ -365,6 +400,7 @@
           </div>
         </article>
       </section>
+    </div>
 
   </div>
 

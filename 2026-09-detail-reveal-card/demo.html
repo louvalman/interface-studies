@@ -201,22 +201,48 @@
 
     /* --- card cells --- */
 
-    /* `min()` around the track minimum is what keeps this off a phone's
-       scrollbar: a bare minmax(21rem, 1fr) lays a 21rem track into a column
-       narrower than that and lets it hang over the edge. Below 21rem the
-       track follows the column instead, and the card shrinks with it. */
+    /* Flex rather than grid, and the reason is the short row. `auto-fill`
+       kept laying a third track into a 78rem column whether or not a group
+       had a third card, so a pair of cards sat in tracks one and two of three
+       with a dead column beside it and 120px between them instead of 40; and
+       when the three-card group did wrap, grid left the third card at the
+       gutter under the middle of the row above, because tracks are the same
+       for every row.
+
+       A wrapping flex line fixes both. --demo-grid-max is the natural width
+       of one full row for that group — so a full row has no leftover to
+       distribute and still starts at the gutter, in line with the group title
+       — and `center` only has something to do once a row actually wraps, at
+       which point the remainder sits under the middle of the row it came
+       from. The pair only works together: the cap without the centring leaves
+       the remainder hanging left, the centring without the cap pushes a full
+       row into the middle of the page. */
     .demo__grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(min(21rem, 100%), 1fr));
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
       gap: clamp(2rem, 4vw, 3rem) 2.5rem;
-      justify-items: start;
+      max-width: var(--demo-grid-max, 100%);
     }
 
-    /* `justify-items: start` on the grid means a cell is sized to its content
-       rather than stretched — which, for a cell holding a 21rem card, is
-       21rem however narrow the track got. Capping it at the track is what
-       passes the squeeze down to the card. */
+    /* One per group, because the groups are not the same length. */
+    .demo__grid--two   { --demo-grid-max: 44.5rem; }  /* 2 × 21rem + 1 gap  */
+    .demo__grid--three { --demo-grid-max: 68rem; }    /* 3 × 21rem + 2 gaps */
+
+    /* One card per row is not a row to centre: the caption and the hint are
+       set left above the card, and a lone centred column drifts away from
+       them. Below the width where a second card fits — 2 × 21rem + the gap,
+       against a 6vw gutter — the row goes back to the gutter. */
+    @media (max-width: 50.5rem) {
+      .demo__grid { justify-content: flex-start; }
+    }
+
+    /* `0 1 21rem` is the card's own width as a flex basis: the state never
+       grows past the card it holds, so a short row stays a row of cards
+       rather than three stretched cells, and it may still shrink — which is
+       what passes a narrow screen down to the card. */
     .demo__state {
+      flex: 0 1 21rem;
       display: grid;
       /* An implicit `auto` column takes its max-content size and is happy to
          overflow the cell it sits in, so capping the cell alone does nothing
@@ -307,7 +333,7 @@
         <p class="demo__group-note" data-i18n="group.behaviourNote">The base card at rest, and the same card pinned open.</p>
       </div>
 
-      <div class="demo__grid">
+      <div class="demo__grid demo__grid--two">
 
         <section class="demo__state">
           <p class="demo__caption" data-i18n="state.default">Default</p>
@@ -394,7 +420,7 @@
         </p>
       </div>
 
-      <div class="demo__grid">
+      <div class="demo__grid demo__grid--two">
 
         <section class="demo__state">
           <p class="demo__caption" data-i18n="state.dark">Dark</p>
@@ -490,7 +516,7 @@
         </p>
       </div>
 
-      <div class="demo__grid">
+      <div class="demo__grid demo__grid--three">
 
         <section class="demo__state">
           <p class="demo__caption" data-i18n="state.map">Map</p>
