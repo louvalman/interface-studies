@@ -960,6 +960,16 @@ body.is-locked {
   color: var(--ink-soft);
 }
 
+/* The provenance line, a step quieter than the blurb above it: it is there
+   to be found by someone looking for it, not read on the way past. */
+.foot__note {
+  margin: 1.25rem 0 0;
+  max-width: 42ch;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
 .foot__social {
   margin-top: 1.5rem;
   display: flex;
@@ -1045,6 +1055,27 @@ body.is-locked {
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--muted);
+}
+
+/* The one link in the footer bar that is a name rather than a control, so
+   it is underlined rather than left to hover to announce itself. */
+.foot__author {
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid var(--hairline);
+  transition: color 240ms var(--ease), border-color 240ms var(--ease);
+}
+
+.foot__author:hover,
+.foot__author:active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.foot__author:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+  border-radius: 0.2rem;
 }
 
 .foot__top {

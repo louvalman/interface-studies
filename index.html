@@ -54,9 +54,9 @@
          only the part that holds true either way is markup. -->
       <p class="head__lede">
         <span data-i18n="head.lede">
-          Components built in plain HTML and CSS — some iterated upon from
-          interfaces found elsewhere, some from original designs — kept so the
-          type, the spacing and the motion stay reusable.
+          Components built in plain HTML and CSS, tied to no framework — kept
+          so the type, the spacing and the motion survive being lifted into
+          one.
         </span>
         <span data-lede-hint>
           Hover a card to run it in place, or open one at full size.
@@ -69,16 +69,16 @@
           <dd class="head__meta-val" id="meta-count">—</dd>
         </div>
         <div class="head__meta-item">
-          <dt class="head__meta-key" data-i18n="meta.builtWith">Built with</dt>
-          <dd class="head__meta-val" data-i18n="meta.htmlCss">
-            HTML &amp; CSS
+          <dt class="head__meta-key" data-i18n="meta.portable">Portable</dt>
+          <dd class="head__meta-val" data-i18n="meta.anyStack">
+            Any stack
           </dd>
         </div>
         <div class="head__meta-item">
-          <dt class="head__meta-key" data-i18n="meta.sharedCode">
-            Shared code
-          </dt>
-          <dd class="head__meta-val" data-i18n="meta.none">None</dd>
+          <dt class="head__meta-key" data-i18n="meta.eachRef">Each reference</dt>
+          <dd class="head__meta-val" data-i18n="meta.standsAlone">
+            Stands alone
+          </dd>
         </div>
       </dl>
     </header>
@@ -142,7 +142,13 @@
       <!-- Add a reference: copy one <article class="piece"> block and point the
          iframe at the new folder's preview.html and the title link at its
          demo.html. Keep the newest first. Everything the quick-look overlay
-         shows is read back out of this block, so nothing is declared twice. -->
+         shows is read back out of this block, so nothing is declared twice.
+         Two things here are not yours to set. index.js sorts the rail by
+         data-date, newest first, so where you paste the block does not matter
+         — set the date and let it land. And the number is written from the
+         card's position afterwards, so leave the em dash alone. Both were a
+         second source of truth for something already stated once, and a card
+         added at the front used to invalidate every number below it. -->
       <div
         class="rail__track"
         data-rail-track
@@ -150,7 +156,227 @@
         role="region"
         data-i18n-aria="a11y.railRegion"
         aria-label="Reference carousel">
-        <article class="piece" data-piece>
+        <article class="piece" data-piece data-date="2026-09-10T12:00">
+          <div class="piece__frame">
+            <iframe
+              class="piece__preview"
+              src="2026-09-liquid-glass-toolbar/preview.html"
+              loading="lazy"
+              scrolling="no"
+              tabindex="-1"
+              aria-hidden="true"
+              data-preview></iframe>
+            <span class="piece__type" data-i18n="type.navigation">
+              Navigation
+            </span>
+            <span class="piece__no">&mdash;</span>
+            <button
+              class="piece__expand"
+              type="button"
+              data-expand
+              data-i18n-aria="cta.quickLookToolbar"
+              aria-label="Quick look: Liquid glass toolbar">
+              <svg
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+                aria-hidden="true">
+                <path
+                  d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+              <span class="piece__expand-text" data-i18n="cta.quickLook">
+                Quick look
+              </span>
+            </button>
+          </div>
+          <div class="piece__body">
+            <span class="piece__slug">2026 &middot; 09</span>
+            <h2 class="piece__title">
+              <a
+                class="piece__link"
+                href="2026-09-liquid-glass-toolbar/demo.html"
+                data-lang-link="2026-09-liquid-glass-toolbar/demo.html"
+                data-i18n="piece.liquidGlassToolbar.title">
+                Liquid glass toolbar
+              </a>
+            </h2>
+            <p
+              class="piece__note"
+              data-note
+              data-i18n="piece.liquidGlassToolbar.note">
+              One glass surface that changes shape &mdash; the selected item
+              opens into a labelled pill, search into a field, activity into a
+              panel &mdash; in five materials off a single recipe.
+            </p>
+            <span class="piece__cta">
+              <span class="piece__cta-text" data-i18n="cta.openDemo">
+                Open demo
+              </span>
+              <svg
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+                aria-hidden="true">
+                <path
+                  d="M4 12 12 4M6 4h6v6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+            </span>
+          </div>
+        </article>
+
+        <article class="piece" data-piece data-date="2026-09-10T11:16">
+          <div class="piece__frame">
+            <iframe
+              class="piece__preview"
+              src="2026-09-inked-plate-card/preview.html"
+              loading="lazy"
+              scrolling="no"
+              tabindex="-1"
+              aria-hidden="true"
+              data-preview></iframe>
+            <span class="piece__type" data-i18n="type.card">Card</span>
+            <span class="piece__no">&mdash;</span>
+            <button
+              class="piece__expand"
+              type="button"
+              data-expand
+              data-i18n-aria="cta.quickLookInked"
+              aria-label="Quick look: Inked plate card">
+              <svg
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+                aria-hidden="true">
+                <path
+                  d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+              <span class="piece__expand-text" data-i18n="cta.quickLook">
+                Quick look
+              </span>
+            </button>
+          </div>
+          <div class="piece__body">
+            <span class="piece__slug">2026 &middot; 09</span>
+            <h2 class="piece__title">
+              <a
+                class="piece__link"
+                href="2026-09-inked-plate-card/demo.html"
+                data-lang-link="2026-09-inked-plate-card/demo.html"
+                data-i18n="piece.inkedPlate.title">
+                Inked plate card
+              </a>
+            </h2>
+            <p
+              class="piece__note"
+              data-note
+              data-i18n="piece.inkedPlate.note">
+              An artwork plate and a caption plate with their facing corners
+              cut, over a crop-marked dot grid. The line drawing inks itself on
+              load in pure CSS &mdash; every path declares a length of 1, so one
+              keyframe pair draws all of them without measuring any.
+            </p>
+            <span class="piece__cta">
+              <span class="piece__cta-text" data-i18n="cta.openDemo">
+                Open demo
+              </span>
+              <svg
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+                aria-hidden="true">
+                <path
+                  d="M4 12 12 4M6 4h6v6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+            </span>
+          </div>
+        </article>
+
+        <article class="piece" data-piece data-date="2026-09-10T10:52">
+          <div class="piece__frame">
+            <iframe
+              class="piece__preview"
+              src="2026-09-raster-pulse/preview.html"
+              loading="lazy"
+              scrolling="no"
+              tabindex="-1"
+              aria-hidden="true"
+              data-preview></iframe>
+            <span class="piece__type" data-i18n="type.card">Card</span>
+            <span class="piece__no">&mdash;</span>
+            <button
+              class="piece__expand"
+              type="button"
+              data-expand
+              data-i18n-aria="cta.quickLookRaster"
+              aria-label="Quick look: Raster pulse">
+              <svg
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+                aria-hidden="true">
+                <path
+                  d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+              <span class="piece__expand-text" data-i18n="cta.quickLook">
+                Quick look
+              </span>
+            </button>
+          </div>
+          <div class="piece__body">
+            <span class="piece__slug">2026 &middot; 09</span>
+            <h2 class="piece__title">
+              <a
+                class="piece__link"
+                href="2026-09-raster-pulse/demo.html"
+                data-lang-link="2026-09-raster-pulse/demo.html"
+                data-i18n="piece.rasterPulse.title">
+                Raster pulse
+              </a>
+            </h2>
+            <p
+              class="piece__note"
+              data-note
+              data-i18n="piece.rasterPulse.note">
+              A poster card whose dot field works out its own shape. Every dot
+              carries nothing but its grid coordinate; CSS derives whether it
+              belongs to the pattern, which of two tones it takes, and where it
+              sits in the pulse travelling through the field.
+            </p>
+            <span class="piece__cta">
+              <span class="piece__cta-text" data-i18n="cta.openDemo">
+                Open demo
+              </span>
+              <svg
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+                aria-hidden="true">
+                <path
+                  d="M4 12 12 4M6 4h6v6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+            </span>
+          </div>
+        </article>
+
+        <article class="piece" data-piece data-date="2026-09-10T00:27">
           <div class="piece__frame">
             <iframe
               class="piece__preview"
@@ -163,7 +389,7 @@
             <span class="piece__type" data-i18n="type.aesthetic">
               Aesthetic
             </span>
-            <span class="piece__no">01</span>
+            <span class="piece__no">&mdash;</span>
             <button
               class="piece__expand"
               type="button"
@@ -202,8 +428,9 @@
               data-note
               data-i18n="piece.drawnGradients.note">
               Gradient fields made by drawing a few overlapping SVG shapes in
-              flat colour and blurring them past recognition — the overlaps
-              become mid-tones a hand-written stop list has to be tuned for.
+              flat colour and blurring them past recognition. A stepped
+              silhouette then puts the fill inside a block of type, its treads
+              landing on the same lines.
             </p>
             <span class="piece__cta">
               <span class="piece__cta-text" data-i18n="cta.openDemo">
@@ -224,7 +451,7 @@
           </div>
         </article>
 
-        <article class="piece" data-piece>
+        <article class="piece" data-piece data-date="2026-09-09T00:45">
           <div class="piece__frame">
             <iframe
               class="piece__preview"
@@ -235,7 +462,7 @@
               aria-hidden="true"
               data-preview></iframe>
             <span class="piece__type" data-i18n="type.card">Card</span>
-            <span class="piece__no">02</span>
+            <span class="piece__no">&mdash;</span>
             <button
               class="piece__expand"
               type="button"
@@ -321,6 +548,16 @@
             no dependency on this page.
           </p>
 
+          <!-- Where the references came from. It sits down here rather than
+             in the masthead because it is provenance, not a pitch: the
+             sources are credited in the folders, and the folders are where
+             someone checking would look. -->
+          <p class="foot__note" data-i18n="foot.sources">
+            Some references start from an interface found elsewhere; none is a
+            copy of one. Each folder's notes.md names its source and the
+            decisions the build keeps.
+          </p>
+
           <!-- Handles live here and nowhere else. -->
           <nav
             class="foot__social"
@@ -363,12 +600,6 @@
             </dd>
           </div>
           <div class="foot__row">
-            <dt class="foot__key" data-i18n="foot.shared">Shared code</dt>
-            <dd class="foot__val" data-i18n="foot.sharedVal">
-              None &mdash; each folder stands alone
-            </dd>
-          </div>
-          <div class="foot__row">
             <dt class="foot__key" data-i18n="foot.references">References</dt>
             <dd class="foot__val" id="foot-count">&mdash;</dd>
           </div>
@@ -376,8 +607,15 @@
       </div>
 
       <div class="foot__bar">
-        <p class="foot__line" data-i18n="foot.line">
-          Built by hand &middot; 2026
+        <p class="foot__line">
+          <span data-i18n="foot.builtBy">Built by</span>
+          <a
+            class="foot__author"
+            href="https://github.com/louvalman"
+            target="_blank"
+            rel="noopener noreferrer">louval</a>
+          <span aria-hidden="true">&middot;</span>
+          2026
         </p>
         <a class="foot__top" href="#top">
           <span data-i18n="foot.backToTop">Back to top</span>

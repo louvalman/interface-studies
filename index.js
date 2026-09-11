@@ -31,28 +31,48 @@
   const COPY = {
     da: {
       'head.title': 'Interfacedetaljer, bygget som genbrugelige dele.',
-      'head.lede': 'Komponenter bygget i ren HTML og CSS — nogle videreudviklet '
-        + 'ud fra grænseflader fundet andre steder, nogle fra originale designs — gemt '
-        + 'så typografien, spatieringen og bevægelsen forbliver genbrugelig.',
+      'head.lede': 'Komponenter bygget i ren HTML og CSS, uden binding til '
+        + 'noget framework — gemt så typografien, spatieringen og bevægelsen '
+        + 'overlever at blive løftet ind i et.',
       'head.ledeHint': 'Hold musen over et kort for at afspille det, eller åbn '
         + 'det i fuld størrelse.',
       'head.ledeHintTouch': 'Tryk på hurtigt kig for at afspille et kort, eller '
         + 'åbn det i fuld størrelse.',
       'meta.references': 'Referencer',
-      'meta.builtWith': 'Bygget med',
-      'meta.htmlCss': 'HTML & CSS',
-      'meta.sharedCode': 'Delt kode',
-      'meta.none': 'Ingen',
+      'meta.portable': 'Portabel',
+      'meta.anyStack': 'Enhver stack',
+      'meta.eachRef': 'Hver reference',
+      'meta.standsAlone': 'Står alene',
       'rail.reference': 'Reference',
       'rail.hint': 'Hold musen over for at afspille · træk for at rulle · ← →',
       'rail.hintTouch': 'Stryg for at rulle · tryk på hurtigt kig',
       'type.card': 'Kort',
       'type.aesthetic': 'Æstetik',
+      'type.navigation': 'Navigation',
+      'piece.liquidGlassToolbar.title': 'Værktøjslinje i flydende glas',
+      'piece.liquidGlassToolbar.note': 'Én glasflade der skifter form — det '
+        + 'valgte punkt folder sig ud til en pille med etiket, søgning til et '
+        + 'felt, aktivitet til et panel — i fem materialer fra én opskrift.',
+      'cta.quickLookToolbar': 'Hurtigt kig: Værktøjslinje i flydende glas',
+      'piece.inkedPlate.title': 'Kort med tegnede plader',
+      'piece.inkedPlate.note': 'En billedplade og en tekstplade med afskårne '
+        + 'hjørner mod hinanden, over et punktgitter med snitmærker. '
+        + 'Stregtegningen tegner sig selv ved indlæsning i ren CSS — hver '
+        + 'streg angiver en længde på 1, så ét sæt keyframes tegner dem alle '
+        + 'uden at måle nogen af dem.',
+      'cta.quickLookInked': 'Hurtigt kig: Kort med tegnede plader',
+      'piece.rasterPulse.title': 'Rasterpuls',
+      'piece.rasterPulse.note': 'Et plakatkort, hvis punktfelt selv regner '
+        + 'sin form ud. Hvert punkt bærer intet andet end sin koordinat i '
+        + 'gitteret; CSS udleder, om det hører til mønsteret, hvilken af to '
+        + 'toner det får, og hvor det ligger i den puls, der vandrer gennem '
+        + 'feltet.',
+      'cta.quickLookRaster': 'Hurtigt kig: Rasterpuls',
       'piece.drawnGradients.title': 'Tegnede gradienter',
       'piece.drawnGradients.note': 'Gradientflader lavet ved at tegne nogle få '
-        + 'overlappende SVG-former i flad farve og sløre dem til ukendelighed — '
-        + 'overlappene bliver de mellemtoner, som en håndskrevet stopliste '
-        + 'ellers skal justeres for at ramme.',
+        + 'overlappende SVG-former i flad farve og sløre dem til ukendelighed. '
+        + 'En trappeformet silhuet lægger derefter fladen ind i en tekstblok, '
+        + 'med trinnene på de samme linjer.',
       'cta.quickLookGradients': 'Hurtigt kig: Tegnede gradienter',
       'piece.detailReveal.title': 'Kort med detaljeafsløring',
       'piece.detailReveal.note': 'Et detaljepanel der stiger op fra bundkanten '
@@ -65,13 +85,14 @@
       'foot.blurb': 'Hver reference er selvstændig. Kopiér en mappe ud, og den '
         + 'virker uden noget andet herfra — intet delt stylesheet, intet '
         + 'byggetrin, ingen afhængighed af denne side.',
+      'foot.sources': 'Nogle referencer tager udgangspunkt i en grænseflade '
+        + 'fundet andre steder; ingen er en kopi af en. Hver mappes notes.md '
+        + 'nævner sin kilde og de beslutninger, den holder fast i.',
       'foot.typefaces': 'Skrifttyper',
-      'foot.stack': 'Teknologi',
+      'foot.stack': 'Stack',
       'foot.stackVal': 'HTML og CSS, intet byggetrin',
-      'foot.shared': 'Delt kode',
-      'foot.sharedVal': 'Ingen — hver mappe står alene',
       'foot.references': 'Referencer',
-      'foot.line': 'Bygget i hånden · 2026',
+      'foot.builtBy': 'Bygget af',
       'foot.backToTop': 'Til toppen',
       'a11y.elsewhere': 'Andre steder',
       'a11y.carousel': 'Karrusel',
@@ -206,6 +227,54 @@
   const real = () => pieces().filter((el) => el.matches('[data-piece]'));
 
   const pad = (n) => String(n).padStart(2, '0');
+
+  // Order is derived from each card's own date rather than from where its block
+  // sits in the file. A date is a fact about the reference and does not change
+  // when someone else adds one; a position is not, and two sessions adding a
+  // card at the front at the same time is exactly how a hand-kept order goes
+  // wrong — git merges both and the winner is whichever way the merge fell.
+  //
+  // data-date is the key. Without it the folder name is the fallback, which is
+  // YYYY-MM-slug and so carries a month and no day — a dated card therefore
+  // sorts ahead of an undated one in the same month, which is the right way
+  // round for a card whose date nobody wrote down.
+  function orderKey(piece) {
+    if (piece.dataset.date) return piece.dataset.date;
+    const frame = piece.querySelector('[data-preview]');
+    const src = frame ? frame.getAttribute('src') || '' : '';
+    const found = /(\d{4})-(\d{2})-/.exec(src);
+    return found ? found[1] + '-' + found[2] : '';
+  }
+
+  function order() {
+    const list = real();
+    const sorted = list.slice().sort((a, b) => {
+      const ka = orderKey(a);
+      const kb = orderKey(b);
+      return ka === kb ? 0 : ka < kb ? 1 : -1;
+    });
+
+    // Array.prototype.sort is stable, so cards sharing a date keep the order
+    // they were written in. And nothing is moved unless the order actually
+    // differs: re-inserting an iframe reloads it, and the authored order is
+    // usually already right, so the common case touches no DOM at all.
+    if (sorted.every((piece, n) => piece === list[n])) return;
+
+    const ghost = track.querySelector('.piece--ghost');
+    sorted.forEach((piece) => track.insertBefore(piece, ghost));
+  }
+
+  // Card numbers are positional, so they are written from the list rather than
+  // typed into it. Hand-maintained they were a second source of truth for
+  // something the DOM order already says, and every reference added above an
+  // existing one silently invalidated all the numbers below it. Run once: the
+  // list is static, and sync() is on the scroll path.
+  function number() {
+    real().forEach((piece, n) => {
+      const out = piece.querySelector('.piece__no');
+      if (out) out.textContent = pad(n + 1);
+    });
+  }
 
   // --- preview messaging ------------------------------------------------
 
@@ -849,5 +918,7 @@
   }
 
   renderHint(null);
+  order();
+  number();
   sync();
 })();

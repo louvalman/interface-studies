@@ -266,10 +266,19 @@ holds the block to copy. Translate the page's own prose only — component sampl
 copy and class-name hints stay as they are.
 
 The card list is hand-maintained in `index.html`. Adding a reference means
-adding one `<article class="piece">` block to it, newest first, pointing at the
-new folder's `demo.html` and `preview.html`. The card is an `<article>` with a
-stretched link on the title rather than an `<a>` wrapping everything, because
-the quick-look button lives inside the card and an anchor may not contain a
-button. Everything the overlay shows is read back out of that block, so no
-title, note or path is written twice. That is the only file outside the
-reference folder that a new reference may touch.
+adding one `<article class="piece">` block to it, pointing at the new folder's
+`demo.html` and `preview.html`, and carrying a `data-date` — `index.js` sorts
+the rail by that, newest first, so where the block is pasted does not matter.
+Leave the `piece__no` em dash alone too: the number is written from the card's
+position once the rail is sorted. Both used to be typed in, and both were a
+second source of truth for something already stated once — a card added at the
+front invalidated every number below it, and two sessions adding one at the
+same time left the order to whichever way the merge fell. Without a `data-date`
+a card falls back to the month in its folder name, which sorts it behind
+anything dated in that month.
+
+The card is an `<article>` with a stretched link on the title rather than an
+`<a>` wrapping everything, because the quick-look button lives inside the card
+and an anchor may not contain a button. Everything the overlay shows is read
+back out of that block, so no title, note or path is written twice. That is the
+only file outside the reference folder that a new reference may touch.

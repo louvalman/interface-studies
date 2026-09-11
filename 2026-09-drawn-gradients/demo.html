@@ -177,6 +177,42 @@
 
     .demo__caption { margin: 0; font-size: 0.9375rem; font-weight: 500; }
 
+    /* The drawn set is read down the page by colour — one theme family per
+       band. The swatch is page chrome: it labels the band, it never styles a
+       surface, so nothing here reaches into a component class. */
+    .demo__band + .demo__band { margin-top: clamp(2.25rem, 5vw, 3.5rem); }
+
+    .demo__band-title {
+      display: flex;
+      align-items: center;
+      /* Column gap sits between the dots of a two-swatch band as well as
+         between the dots and the word, so it is set small and the word is
+         given its own margin instead. */
+      gap: 0.3rem;
+      margin: 0 0 1.25rem;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.6875rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #55565a;
+    }
+
+    .demo__swatch {
+      width: 0.6rem;
+      height: 0.6rem;
+      flex: none;
+      border-radius: 50%;
+      background: var(--demo-swatch, #8a8a84);
+    }
+
+    .demo__swatch + :not(.demo__swatch) { margin-left: 0.35rem; }
+
+    .demo__swatch--dawn  { --demo-swatch: #ee7b39; }
+    .demo__swatch--dusk  { --demo-swatch: #6d5bef; }
+    .demo__swatch--ice   { --demo-swatch: #3f7ff0; }
+    .demo__swatch--mint  { --demo-swatch: #12a894; }
+    .demo__swatch--night { --demo-swatch: #16171b; }
+
     .demo__steps {
       margin: clamp(2rem, 4vw, 3rem) 0 0;
       padding: 0;
@@ -275,79 +311,86 @@
         Start here: this is where the colour comes from. Draw a few overlapping
         shapes in flat colour and blur them past recognition — the overlaps
         become the mid-tones a stop list has to be hand-tuned to produce. Each
-        pair below is the same SVG: as drawn, then blurred.
+        pair below is the same SVG: as drawn, then blurred. They are grouped by
+        colour, three to a family — the theme is a separate axis from the
+        drawing, so any of these shapes takes any of these colours.
       </p>
     </div>
 
-    <div class="demo__grid">
+    <div class="demo__band">
+      <p class="demo__band-title">
+        <span class="demo__swatch demo__swatch--dawn" aria-hidden="true"></span>
+        <span data-i18n="band.orange">Orange</span>
+      </p>
+      <div class="demo__grid">
       <section class="demo__state">
-        <p class="demo__caption" data-i18n="drawn.a">Quatrefoil, ribbon, star</p>
-        <p class="demo__hint">--drawn / --raw</p>
-        <div class="drawn-gradients" style="--drawn-gradients-size: 7rem;">
-          <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--raw drawn-gradients__surface--dusk">
+        <p class="demo__caption" data-i18n="drawn.sunburst">Sunburst — radiating wedges</p>
+        <p class="demo__hint">blur 0.16</p>
+        <div class="drawn-gradients" style="--drawn-gradients-size: 7rem; --drawn-gradients-blur-ratio: 0.16;">
+          <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--raw drawn-gradients__surface--dawn">
           <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
                preserveAspectRatio="xMidYMid slice" aria-hidden="true">
             <path class="drawn-gradients__blob drawn-gradients__blob--hot"
-                  d="M62 2 C82 2 82 42 102 42 C122 42 122 76 102 76 C82 76 82 116 62 116
-                     C42 116 42 76 22 76 C2 76 2 42 22 42 C42 42 42 2 62 2 Z" />
+                  d="M60 62 L60.0 -43.0 L128.2 -17.8 Z" />
             <path class="drawn-gradients__blob drawn-gradients__blob--warm"
-                  d="M-10 76 C16 48 40 100 64 74 C88 48 112 74 130 60 L130 104
-                     C112 118 88 92 64 116 C40 140 16 90 -10 116 Z" />
+                  d="M60 62 L150.9 9.5 L163.2 81.1 Z" />
             <path class="drawn-gradients__blob drawn-gradients__blob--cool"
-                  d="M32 14 L44 42 L74 45 L51 64 L58 94 L32 78 L6 94 L13 64
-                     L-10 45 L20 42 Z" />
+                  d="M60 62 L150.9 114.5 L95.0 161.0 Z" />
+            <path class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  d="M60 62 L60.0 167.0 L-8.2 141.8 Z" />
+            <path class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  d="M60 62 L-30.9 114.5 L-43.2 42.9 Z" />
+            <path class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  d="M60 62 L-30.9 9.5 L25.0 -37.0 Z" />
           </svg>
           </div>
-          <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--dusk">
+          <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--dawn">
           <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
                preserveAspectRatio="xMidYMid slice" aria-hidden="true">
             <path class="drawn-gradients__blob drawn-gradients__blob--hot"
-                  d="M62 2 C82 2 82 42 102 42 C122 42 122 76 102 76 C82 76 82 116 62 116
-                     C42 116 42 76 22 76 C2 76 2 42 22 42 C42 42 42 2 62 2 Z" />
+                  d="M60 62 L60.0 -43.0 L128.2 -17.8 Z" />
             <path class="drawn-gradients__blob drawn-gradients__blob--warm"
-                  d="M-10 76 C16 48 40 100 64 74 C88 48 112 74 130 60 L130 104
-                     C112 118 88 92 64 116 C40 140 16 90 -10 116 Z" />
+                  d="M60 62 L150.9 9.5 L163.2 81.1 Z" />
             <path class="drawn-gradients__blob drawn-gradients__blob--cool"
-                  d="M32 14 L44 42 L74 45 L51 64 L58 94 L32 78 L6 94 L13 64
-                     L-10 45 L20 42 Z" />
+                  d="M60 62 L150.9 114.5 L95.0 161.0 Z" />
+            <path class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  d="M60 62 L60.0 167.0 L-8.2 141.8 Z" />
+            <path class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  d="M60 62 L-30.9 114.5 L-43.2 42.9 Z" />
+            <path class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  d="M60 62 L-30.9 9.5 L25.0 -37.0 Z" />
           </svg>
           </div>
         </div>
       </section>
-
       <section class="demo__state">
-        <p class="demo__caption" data-i18n="drawn.b">Crescent, teardrop, wedge</p>
-        <p class="demo__hint">--drawn / --raw</p>
-        <div class="drawn-gradients" style="--drawn-gradients-size: 7rem;">
-          <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--raw drawn-gradients__surface--mint">
+        <p class="demo__caption" data-i18n="drawn.desert">Desert — dunes and a low sun</p>
+        <p class="demo__hint">blur 0.18</p>
+        <div class="drawn-gradients" style="--drawn-gradients-size: 7rem; --drawn-gradients-blur-ratio: 0.18;">
+          <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--raw drawn-gradients__surface--dawn">
           <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
                preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-            <path class="drawn-gradients__blob drawn-gradients__blob--cool"
-                  d="M66 2 A56 56 0 1 0 66 118 A44 44 0 1 1 66 2 Z" />
+            <circle class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  cx="84" cy="30" r="24" />
             <path class="drawn-gradients__blob drawn-gradients__blob--hot"
-                  d="M76 18 C100 46 116 64 116 84 A40 40 0 0 1 36 84
-                     C36 64 52 46 76 18 Z" />
+                  d="M-10 130 L-10 74 C26 54 48 70 74 50 C100 30 118 46 130 38 L130 130 Z" />
             <path class="drawn-gradients__blob drawn-gradients__blob--warm"
-                  d="M40 34 C48 34 54 40 78 82 C86 96 78 112 62 112 L18 112
-                     C2 112 -6 96 2 82 C26 40 32 34 40 34 Z" />
+                  d="M-10 130 L-10 100 C28 82 56 96 84 80 C108 66 122 78 130 72 L130 130 Z" />
           </svg>
           </div>
-          <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--mint">
+          <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--dawn">
           <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
                preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-            <path class="drawn-gradients__blob drawn-gradients__blob--cool"
-                  d="M66 2 A56 56 0 1 0 66 118 A44 44 0 1 1 66 2 Z" />
+            <circle class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  cx="84" cy="30" r="24" />
             <path class="drawn-gradients__blob drawn-gradients__blob--hot"
-                  d="M76 18 C100 46 116 64 116 84 A40 40 0 0 1 36 84
-                     C36 64 52 46 76 18 Z" />
+                  d="M-10 130 L-10 74 C26 54 48 70 74 50 C100 30 118 46 130 38 L130 130 Z" />
             <path class="drawn-gradients__blob drawn-gradients__blob--warm"
-                  d="M40 34 C48 34 54 40 78 82 C86 96 78 112 62 112 L18 112
-                     C2 112 -6 96 2 82 C26 40 32 34 40 34 Z" />
+                  d="M-10 130 L-10 100 C28 82 56 96 84 80 C108 66 122 78 130 72 L130 130 Z" />
           </svg>
           </div>
         </div>
       </section>
-
       <section class="demo__state">
         <p class="demo__caption" data-i18n="drawn.c">One leaf, turned three times</p>
         <p class="demo__hint">transform="rotate(...)"</p>
@@ -382,110 +425,50 @@
           </div>
         </div>
       </section>
+      </div>
+    </div>
 
+    <div class="demo__band">
+      <p class="demo__band-title">
+        <span class="demo__swatch demo__swatch--dusk" aria-hidden="true"></span>
+        <span class="demo__swatch demo__swatch--ice" aria-hidden="true"></span>
+        <span data-i18n="band.blue">Blue</span>
+      </p>
+      <div class="demo__grid">
       <section class="demo__state">
-        <p class="demo__caption" data-i18n="drawn.ocean">Ocean — stacked swells</p>
-        <p class="demo__hint">blur 0.2</p>
-        <div class="drawn-gradients" style="--drawn-gradients-size: 7rem; --drawn-gradients-blur-ratio: 0.2;">
-          <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--raw drawn-gradients__surface--mint">
-          <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
-               preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-            <path class="drawn-gradients__blob drawn-gradients__blob--cool"
-                  d="M-10 -10 L130 -10 L130 34 C98 22 76 46 46 34 C22 24 4 40 -10 32 Z" />
-            <path class="drawn-gradients__blob drawn-gradients__blob--hot"
-                  d="M-10 32 C4 40 22 24 46 34 C76 46 98 22 130 34 L130 76 C96 66 74 90 44 76 C20 65 4 82 -10 74 Z" />
-            <path class="drawn-gradients__blob drawn-gradients__blob--warm"
-                  d="M-10 74 C4 82 20 65 44 76 C74 90 96 66 130 76 L130 130 L-10 130 Z" />
-          </svg>
-          </div>
-          <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--mint">
-          <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
-               preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-            <path class="drawn-gradients__blob drawn-gradients__blob--cool"
-                  d="M-10 -10 L130 -10 L130 34 C98 22 76 46 46 34 C22 24 4 40 -10 32 Z" />
-            <path class="drawn-gradients__blob drawn-gradients__blob--hot"
-                  d="M-10 32 C4 40 22 24 46 34 C76 46 98 22 130 34 L130 76 C96 66 74 90 44 76 C20 65 4 82 -10 74 Z" />
-            <path class="drawn-gradients__blob drawn-gradients__blob--warm"
-                  d="M-10 74 C4 82 20 65 44 76 C74 90 96 66 130 76 L130 130 L-10 130 Z" />
-          </svg>
-          </div>
-        </div>
-      </section>
-
-      <section class="demo__state">
-        <p class="demo__caption" data-i18n="drawn.desert">Desert — dunes and a low sun</p>
-        <p class="demo__hint">blur 0.18</p>
-        <div class="drawn-gradients" style="--drawn-gradients-size: 7rem; --drawn-gradients-blur-ratio: 0.18;">
-          <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--raw drawn-gradients__surface--dawn">
-          <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
-               preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-            <circle class="drawn-gradients__blob drawn-gradients__blob--cool"
-                  cx="84" cy="30" r="24" />
-            <path class="drawn-gradients__blob drawn-gradients__blob--hot"
-                  d="M-10 130 L-10 74 C26 54 48 70 74 50 C100 30 118 46 130 38 L130 130 Z" />
-            <path class="drawn-gradients__blob drawn-gradients__blob--warm"
-                  d="M-10 130 L-10 100 C28 82 56 96 84 80 C108 66 122 78 130 72 L130 130 Z" />
-          </svg>
-          </div>
-          <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--dawn">
-          <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
-               preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-            <circle class="drawn-gradients__blob drawn-gradients__blob--cool"
-                  cx="84" cy="30" r="24" />
-            <path class="drawn-gradients__blob drawn-gradients__blob--hot"
-                  d="M-10 130 L-10 74 C26 54 48 70 74 50 C100 30 118 46 130 38 L130 130 Z" />
-            <path class="drawn-gradients__blob drawn-gradients__blob--warm"
-                  d="M-10 130 L-10 100 C28 82 56 96 84 80 C108 66 122 78 130 72 L130 130 Z" />
-          </svg>
-          </div>
-        </div>
-      </section>
-
-      <section class="demo__state">
-        <p class="demo__caption" data-i18n="drawn.spots">Spots — a scattered field</p>
-        <p class="demo__hint">blur 0.16</p>
-        <div class="drawn-gradients" style="--drawn-gradients-size: 7rem; --drawn-gradients-blur-ratio: 0.16;">
+        <p class="demo__caption" data-i18n="drawn.a">Quatrefoil, ribbon, star</p>
+        <p class="demo__hint">--drawn / --raw</p>
+        <div class="drawn-gradients" style="--drawn-gradients-size: 7rem;">
           <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--raw drawn-gradients__surface--dusk">
           <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
                preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-            <circle class="drawn-gradients__blob drawn-gradients__blob--hot"
-                  cx="18" cy="22" r="26" />
-            <circle class="drawn-gradients__blob drawn-gradients__blob--warm"
-                  cx="72" cy="14" r="20" />
-            <circle class="drawn-gradients__blob drawn-gradients__blob--cool"
-                  cx="108" cy="44" r="26" />
-            <circle class="drawn-gradients__blob drawn-gradients__blob--warm"
-                  cx="44" cy="58" r="24" />
-            <circle class="drawn-gradients__blob drawn-gradients__blob--hot"
-                  cx="96" cy="96" r="28" />
-            <circle class="drawn-gradients__blob drawn-gradients__blob--cool"
-                  cx="16" cy="92" r="22" />
-            <circle class="drawn-gradients__blob drawn-gradients__blob--warm"
-                  cx="60" cy="118" r="20" />
+            <path class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  d="M62 2 C82 2 82 42 102 42 C122 42 122 76 102 76 C82 76 82 116 62 116
+                     C42 116 42 76 22 76 C2 76 2 42 22 42 C42 42 42 2 62 2 Z" />
+            <path class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  d="M-10 76 C16 48 40 100 64 74 C88 48 112 74 130 60 L130 104
+                     C112 118 88 92 64 116 C40 140 16 90 -10 116 Z" />
+            <path class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  d="M32 14 L44 42 L74 45 L51 64 L58 94 L32 78 L6 94 L13 64
+                     L-10 45 L20 42 Z" />
           </svg>
           </div>
           <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--dusk">
           <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
                preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-            <circle class="drawn-gradients__blob drawn-gradients__blob--hot"
-                  cx="18" cy="22" r="26" />
-            <circle class="drawn-gradients__blob drawn-gradients__blob--warm"
-                  cx="72" cy="14" r="20" />
-            <circle class="drawn-gradients__blob drawn-gradients__blob--cool"
-                  cx="108" cy="44" r="26" />
-            <circle class="drawn-gradients__blob drawn-gradients__blob--warm"
-                  cx="44" cy="58" r="24" />
-            <circle class="drawn-gradients__blob drawn-gradients__blob--hot"
-                  cx="96" cy="96" r="28" />
-            <circle class="drawn-gradients__blob drawn-gradients__blob--cool"
-                  cx="16" cy="92" r="22" />
-            <circle class="drawn-gradients__blob drawn-gradients__blob--warm"
-                  cx="60" cy="118" r="20" />
+            <path class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  d="M62 2 C82 2 82 42 102 42 C122 42 122 76 102 76 C82 76 82 116 62 116
+                     C42 116 42 76 22 76 C2 76 2 42 22 42 C42 42 42 2 62 2 Z" />
+            <path class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  d="M-10 76 C16 48 40 100 64 74 C88 48 112 74 130 60 L130 104
+                     C112 118 88 92 64 116 C40 140 16 90 -10 116 Z" />
+            <path class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  d="M32 14 L44 42 L74 45 L51 64 L58 94 L32 78 L6 94 L13 64
+                     L-10 45 L20 42 Z" />
           </svg>
           </div>
         </div>
       </section>
-
       <section class="demo__state">
         <p class="demo__caption" data-i18n="drawn.pixels">Pixels — a coarse mosaic</p>
         <p class="demo__hint">blur 0.1</p>
@@ -550,53 +533,185 @@
           </div>
         </div>
       </section>
-
       <section class="demo__state">
-        <p class="demo__caption" data-i18n="drawn.sunburst">Sunburst — radiating wedges</p>
-        <p class="demo__hint">blur 0.16</p>
-        <div class="drawn-gradients" style="--drawn-gradients-size: 7rem; --drawn-gradients-blur-ratio: 0.16;">
-          <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--raw drawn-gradients__surface--dawn">
+        <p class="demo__caption" data-i18n="drawn.prism">Prism — crossed diagonals</p>
+        <p class="demo__hint">blur 0.12</p>
+        <div class="drawn-gradients" style="--drawn-gradients-size: 7rem; --drawn-gradients-blur-ratio: 0.12;">
+          <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--raw drawn-gradients__surface--ice">
           <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
                preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-            <path class="drawn-gradients__blob drawn-gradients__blob--hot"
-                  d="M60 62 L60.0 -43.0 L128.2 -17.8 Z" />
-            <path class="drawn-gradients__blob drawn-gradients__blob--warm"
-                  d="M60 62 L150.9 9.5 L163.2 81.1 Z" />
-            <path class="drawn-gradients__blob drawn-gradients__blob--cool"
-                  d="M60 62 L150.9 114.5 L95.0 161.0 Z" />
-            <path class="drawn-gradients__blob drawn-gradients__blob--hot"
-                  d="M60 62 L60.0 167.0 L-8.2 141.8 Z" />
-            <path class="drawn-gradients__blob drawn-gradients__blob--warm"
-                  d="M60 62 L-30.9 114.5 L-43.2 42.9 Z" />
-            <path class="drawn-gradients__blob drawn-gradients__blob--cool"
-                  d="M60 62 L-30.9 9.5 L25.0 -37.0 Z" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  x="-50" y="6" width="220" height="26"
+                  transform="rotate(35 60 60)" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  x="-50" y="50" width="220" height="18"
+                  transform="rotate(35 60 60)" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  x="-50" y="86" width="220" height="24"
+                  transform="rotate(35 60 60)" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  x="-50" y="14" width="220" height="20"
+                  transform="rotate(-35 60 60)" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  x="-50" y="58" width="220" height="26"
+                  transform="rotate(-35 60 60)" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  x="-50" y="94" width="220" height="16"
+                  transform="rotate(-35 60 60)" />
           </svg>
           </div>
-          <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--dawn">
+          <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--ice">
           <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
                preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-            <path class="drawn-gradients__blob drawn-gradients__blob--hot"
-                  d="M60 62 L60.0 -43.0 L128.2 -17.8 Z" />
-            <path class="drawn-gradients__blob drawn-gradients__blob--warm"
-                  d="M60 62 L150.9 9.5 L163.2 81.1 Z" />
-            <path class="drawn-gradients__blob drawn-gradients__blob--cool"
-                  d="M60 62 L150.9 114.5 L95.0 161.0 Z" />
-            <path class="drawn-gradients__blob drawn-gradients__blob--hot"
-                  d="M60 62 L60.0 167.0 L-8.2 141.8 Z" />
-            <path class="drawn-gradients__blob drawn-gradients__blob--warm"
-                  d="M60 62 L-30.9 114.5 L-43.2 42.9 Z" />
-            <path class="drawn-gradients__blob drawn-gradients__blob--cool"
-                  d="M60 62 L-30.9 9.5 L25.0 -37.0 Z" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  x="-50" y="6" width="220" height="26"
+                  transform="rotate(35 60 60)" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  x="-50" y="50" width="220" height="18"
+                  transform="rotate(35 60 60)" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  x="-50" y="86" width="220" height="24"
+                  transform="rotate(35 60 60)" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  x="-50" y="14" width="220" height="20"
+                  transform="rotate(-35 60 60)" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  x="-50" y="58" width="220" height="26"
+                  transform="rotate(-35 60 60)" />
+            <rect class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  x="-50" y="94" width="220" height="16"
+                  transform="rotate(-35 60 60)" />
           </svg>
           </div>
         </div>
       </section>
+      </div>
+    </div>
 
+    <div class="demo__band">
+      <p class="demo__band-title">
+        <span class="demo__swatch demo__swatch--mint" aria-hidden="true"></span>
+        <span data-i18n="band.mint">Mint</span>
+      </p>
+      <div class="demo__grid">
+      <section class="demo__state">
+        <p class="demo__caption" data-i18n="drawn.ocean">Ocean — stacked swells</p>
+        <p class="demo__hint">blur 0.2</p>
+        <div class="drawn-gradients" style="--drawn-gradients-size: 7rem; --drawn-gradients-blur-ratio: 0.2;">
+          <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--raw drawn-gradients__surface--mint">
+          <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+               preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <path class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  d="M-10 -10 L130 -10 L130 34 C98 22 76 46 46 34 C22 24 4 40 -10 32 Z" />
+            <path class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  d="M-10 32 C4 40 22 24 46 34 C76 46 98 22 130 34 L130 76 C96 66 74 90 44 76 C20 65 4 82 -10 74 Z" />
+            <path class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  d="M-10 74 C4 82 20 65 44 76 C74 90 96 66 130 76 L130 130 L-10 130 Z" />
+          </svg>
+          </div>
+          <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--mint">
+          <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+               preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <path class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  d="M-10 -10 L130 -10 L130 34 C98 22 76 46 46 34 C22 24 4 40 -10 32 Z" />
+            <path class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  d="M-10 32 C4 40 22 24 46 34 C76 46 98 22 130 34 L130 76 C96 66 74 90 44 76 C20 65 4 82 -10 74 Z" />
+            <path class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  d="M-10 74 C4 82 20 65 44 76 C74 90 96 66 130 76 L130 130 L-10 130 Z" />
+          </svg>
+          </div>
+        </div>
+      </section>
+      <section class="demo__state">
+        <p class="demo__caption" data-i18n="drawn.b">Crescent, teardrop, wedge</p>
+        <p class="demo__hint">--drawn / --raw</p>
+        <div class="drawn-gradients" style="--drawn-gradients-size: 7rem;">
+          <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--raw drawn-gradients__surface--mint">
+          <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+               preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <path class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  d="M66 2 A56 56 0 1 0 66 118 A44 44 0 1 1 66 2 Z" />
+            <path class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  d="M76 18 C100 46 116 64 116 84 A40 40 0 0 1 36 84
+                     C36 64 52 46 76 18 Z" />
+            <path class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  d="M40 34 C48 34 54 40 78 82 C86 96 78 112 62 112 L18 112
+                     C2 112 -6 96 2 82 C26 40 32 34 40 34 Z" />
+          </svg>
+          </div>
+          <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--mint">
+          <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+               preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <path class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  d="M66 2 A56 56 0 1 0 66 118 A44 44 0 1 1 66 2 Z" />
+            <path class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  d="M76 18 C100 46 116 64 116 84 A40 40 0 0 1 36 84
+                     C36 64 52 46 76 18 Z" />
+            <path class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  d="M40 34 C48 34 54 40 78 82 C86 96 78 112 62 112 L18 112
+                     C2 112 -6 96 2 82 C26 40 32 34 40 34 Z" />
+          </svg>
+          </div>
+        </div>
+      </section>
+      <section class="demo__state">
+        <p class="demo__caption" data-i18n="drawn.spots">Spots — a scattered field</p>
+        <p class="demo__hint">blur 0.16</p>
+        <div class="drawn-gradients" style="--drawn-gradients-size: 7rem; --drawn-gradients-blur-ratio: 0.16;">
+          <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--raw drawn-gradients__surface--mint">
+          <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+               preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <circle class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  cx="18" cy="22" r="26" />
+            <circle class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  cx="72" cy="14" r="20" />
+            <circle class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  cx="108" cy="44" r="26" />
+            <circle class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  cx="44" cy="58" r="24" />
+            <circle class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  cx="96" cy="96" r="28" />
+            <circle class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  cx="16" cy="92" r="22" />
+            <circle class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  cx="60" cy="118" r="20" />
+          </svg>
+          </div>
+          <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--mint">
+          <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+               preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <circle class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  cx="18" cy="22" r="26" />
+            <circle class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  cx="72" cy="14" r="20" />
+            <circle class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  cx="108" cy="44" r="26" />
+            <circle class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  cx="44" cy="58" r="24" />
+            <circle class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  cx="96" cy="96" r="28" />
+            <circle class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  cx="16" cy="92" r="22" />
+            <circle class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  cx="60" cy="118" r="20" />
+          </svg>
+          </div>
+        </div>
+      </section>
+      </div>
+    </div>
+
+    <div class="demo__band">
+      <p class="demo__band-title">
+        <span class="demo__swatch demo__swatch--night" aria-hidden="true"></span>
+        <span data-i18n="band.night">Night</span>
+      </p>
+      <div class="demo__grid">
       <section class="demo__state">
         <p class="demo__caption" data-i18n="drawn.scanlines">Scanlines — analogue bands</p>
         <p class="demo__hint">blur 0.09</p>
         <div class="drawn-gradients" style="--drawn-gradients-size: 7rem; --drawn-gradients-blur-ratio: 0.09;">
-          <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--raw drawn-gradients__surface--dusk">
+          <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--raw drawn-gradients__surface--dusk drawn-gradients__surface--night">
           <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
                preserveAspectRatio="xMidYMid slice" aria-hidden="true">
             <rect class="drawn-gradients__blob drawn-gradients__blob--hot"
@@ -615,7 +730,7 @@
                   x="-10" y="112" width="140" height="22" />
           </svg>
           </div>
-          <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--dusk">
+          <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--dusk drawn-gradients__surface--night">
           <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
                preserveAspectRatio="xMidYMid slice" aria-hidden="true">
             <rect class="drawn-gradients__blob drawn-gradients__blob--hot"
@@ -636,6 +751,81 @@
           </div>
         </div>
       </section>
+      <section class="demo__state">
+        <p class="demo__caption" data-i18n="drawn.ripples">Ripples — concentric rings</p>
+        <p class="demo__hint">blur 0.14</p>
+        <div class="drawn-gradients" style="--drawn-gradients-size: 7rem; --drawn-gradients-blur-ratio: 0.14;">
+          <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--raw drawn-gradients__surface--ice drawn-gradients__surface--night">
+          <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+               preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <circle class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  cx="34" cy="26" r="150" />
+            <circle class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  cx="34" cy="26" r="118" />
+            <circle class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  cx="34" cy="26" r="90" />
+            <circle class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  cx="34" cy="26" r="64" />
+            <circle class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  cx="34" cy="26" r="40" />
+            <circle class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  cx="34" cy="26" r="20" />
+          </svg>
+          </div>
+          <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--ice drawn-gradients__surface--night">
+          <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+               preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <circle class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  cx="34" cy="26" r="150" />
+            <circle class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  cx="34" cy="26" r="118" />
+            <circle class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  cx="34" cy="26" r="90" />
+            <circle class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  cx="34" cy="26" r="64" />
+            <circle class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  cx="34" cy="26" r="40" />
+            <circle class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  cx="34" cy="26" r="20" />
+          </svg>
+          </div>
+        </div>
+      </section>
+      <section class="demo__state">
+        <p class="demo__caption" data-i18n="drawn.nebula">Nebula — drifting clouds</p>
+        <p class="demo__hint">blur 0.24</p>
+        <div class="drawn-gradients" style="--drawn-gradients-size: 7rem; --drawn-gradients-blur-ratio: 0.24;">
+          <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--raw drawn-gradients__surface--dusk drawn-gradients__surface--night">
+          <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+               preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <ellipse class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  cx="26" cy="20" rx="82" ry="54"
+                  transform="rotate(-18 26 20)" />
+            <ellipse class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  cx="104" cy="48" rx="70" ry="48"
+                  transform="rotate(24 104 48)" />
+            <ellipse class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  cx="54" cy="104" rx="88" ry="52"
+                  transform="rotate(-8 54 104)" />
+          </svg>
+          </div>
+          <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--drawn drawn-gradients__surface--dusk drawn-gradients__surface--night">
+          <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+               preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <ellipse class="drawn-gradients__blob drawn-gradients__blob--hot"
+                  cx="26" cy="20" rx="82" ry="54"
+                  transform="rotate(-18 26 20)" />
+            <ellipse class="drawn-gradients__blob drawn-gradients__blob--cool"
+                  cx="104" cy="48" rx="70" ry="48"
+                  transform="rotate(24 104 48)" />
+            <ellipse class="drawn-gradients__blob drawn-gradients__blob--warm"
+                  cx="54" cy="104" rx="88" ry="52"
+                  transform="rotate(-8 54 104)" />
+          </svg>
+          </div>
+        </div>
+      </section>
+      </div>
     </div>
 
     <ol class="demo__steps">
@@ -661,9 +851,10 @@
       </li>
       <li class="demo__step">
         <strong data-i18n="tech.4t">Reuse one path.</strong>
-        <span data-i18n="tech.4b">The third pair is a single leaf rotated twice.
-        Repeating one curve reads as a deliberate set, and the shapes stay in
-        proportion to each other for free.</span>
+        <span data-i18n="tech.4b">The leaf pair in the orange band is a single
+        curve rotated twice, and the prism in the blue band is one band angled
+        two ways. Repeating one shape reads as a deliberate set, and the parts
+        stay in proportion to each other for free.</span>
       </li>
       <li class="demo__step">
         <strong data-i18n="tech.5t">Know which one to ship.</strong>
@@ -783,13 +974,14 @@
 
     <div class="demo__grid">
       <section class="demo__state">
-        <p class="demo__caption" data-i18n="state.four">Four themes</p>
-        <p class="demo__hint">--dawn --dusk --mint --ice</p>
+        <p class="demo__caption" data-i18n="state.five">Five themes</p>
+        <p class="demo__hint">--dawn --dusk --mint --ice --arc</p>
         <div class="drawn-gradients" style="--drawn-gradients-width: 36rem; --drawn-gradients-size: 7.5rem;">
           <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--dawn"></div>
           <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--dusk"></div>
           <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--mint"></div>
           <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--ice"></div>
+          <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--arc"></div>
         </div>
       </section>
 
@@ -830,7 +1022,9 @@
       <h2 class="demo__group-title" data-i18n="group.inUse">In use</h2>
       <p class="demo__group-note" data-i18n="group.inUseNote">
         Content sits in the lower half, where the recipe has settled to the base
-        and nothing needs a scrim to stay legible.
+        and nothing needs a scrim to stay legible. --step is the other way
+        round: the surface goes inside a block of type, its steps landing on
+        the same lines.
       </p>
     </div>
 
@@ -847,6 +1041,170 @@
               <p class="drawn-gradients__label" data-i18n="sample.line">Placeholder line</p>
             </div>
           </article>
+        </div>
+      </section>
+
+      <section class="demo__state">
+        <p class="demo__caption" data-i18n="state.stepDown">Long to short &mdash; the step walks left</p>
+        <p class="demo__hint">--step --ice --night</p>
+        <!-- The source's case. The labels shorten down the block, so each
+             step sits further left than the one above it and the edge reads
+             as one staircase. Nothing here sets that: it is the rag. -->
+        <div class="drawn-gradients" style="width: 26rem; max-width: 100%; --drawn-gradients-size: 8rem;">
+          <div class="drawn-gradients__usage drawn-gradients__usage--down">
+            <div class="drawn-gradients__usage-row">
+              <span class="drawn-gradients__usage-line drawn-gradients__usage-line--label">Overlapping art</span>
+              <span class="drawn-gradients__surface drawn-gradients__surface--step drawn-gradients__surface--ice drawn-gradients__surface--night"
+                    style="--drawn-gradients-step-row: 0;"></span>
+            </div>
+            <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">03</span>
+
+            <div class="drawn-gradients__usage-row">
+              <span class="drawn-gradients__usage-line drawn-gradients__usage-line--label">Flat colour</span>
+              <span class="drawn-gradients__surface drawn-gradients__surface--step drawn-gradients__surface--ice drawn-gradients__surface--night"
+                    style="--drawn-gradients-step-row: 1;"></span>
+            </div>
+            <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">0.85</span>
+
+            <div class="drawn-gradients__usage-row">
+              <span class="drawn-gradients__usage-line drawn-gradients__usage-line--label">Wash</span>
+              <span class="drawn-gradients__surface drawn-gradients__surface--step drawn-gradients__surface--ice drawn-gradients__surface--night"
+                    style="--drawn-gradients-step-row: 2;"></span>
+            </div>
+            <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">82%</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="demo__state">
+        <p class="demo__caption" data-i18n="state.stepUp">Short to long &mdash; the step walks right</p>
+        <p class="demo__hint">--step --arc --drawn</p>
+        <!-- The same construction with the copy the other way round. The
+             base is set to the page's own ground here rather than left at
+             white: the recipe settles to the surface colour it sits on, the
+             bands carry no border or shadow to define an edge of their own,
+             and only the page knows what colour it is. -->
+        <div class="drawn-gradients" style="width: 26rem; max-width: 100%; --drawn-gradients-size: 8rem;">
+          <div class="drawn-gradients__usage drawn-gradients__usage--up">
+            <div class="drawn-gradients__usage-row">
+              <span class="drawn-gradients__usage-line drawn-gradients__usage-line--label">Wash</span>
+              <span class="drawn-gradients__surface drawn-gradients__surface--step drawn-gradients__surface--arc drawn-gradients__surface--drawn"
+                    style="--drawn-gradients-step-row: 0; --drawn-gradients-base: #f3f2ef;">
+              <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+                   preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+                <ellipse class="drawn-gradients__blob drawn-gradients__blob--hot"
+                         cx="26" cy="20" rx="82" ry="54" transform="rotate(-18 26 20)" />
+                <ellipse class="drawn-gradients__blob drawn-gradients__blob--cool"
+                         cx="104" cy="48" rx="70" ry="48" transform="rotate(24 104 48)" />
+                <ellipse class="drawn-gradients__blob drawn-gradients__blob--warm"
+                         cx="54" cy="104" rx="88" ry="52" transform="rotate(-8 54 104)" />
+              </svg>
+              </span>
+            </div>
+            <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">82%</span>
+
+            <div class="drawn-gradients__usage-row">
+              <span class="drawn-gradients__usage-line drawn-gradients__usage-line--label">Flat colour</span>
+              <span class="drawn-gradients__surface drawn-gradients__surface--step drawn-gradients__surface--arc drawn-gradients__surface--drawn"
+                    style="--drawn-gradients-step-row: 1; --drawn-gradients-base: #f3f2ef;">
+              <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+                   preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+                <ellipse class="drawn-gradients__blob drawn-gradients__blob--hot"
+                         cx="26" cy="20" rx="82" ry="54" transform="rotate(-18 26 20)" />
+                <ellipse class="drawn-gradients__blob drawn-gradients__blob--cool"
+                         cx="104" cy="48" rx="70" ry="48" transform="rotate(24 104 48)" />
+                <ellipse class="drawn-gradients__blob drawn-gradients__blob--warm"
+                         cx="54" cy="104" rx="88" ry="52" transform="rotate(-8 54 104)" />
+              </svg>
+              </span>
+            </div>
+            <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">0.85</span>
+
+            <div class="drawn-gradients__usage-row">
+              <span class="drawn-gradients__usage-line drawn-gradients__usage-line--label">Overlapping art</span>
+              <span class="drawn-gradients__surface drawn-gradients__surface--step drawn-gradients__surface--arc drawn-gradients__surface--drawn"
+                    style="--drawn-gradients-step-row: 2; --drawn-gradients-base: #f3f2ef;">
+              <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+                   preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+                <ellipse class="drawn-gradients__blob drawn-gradients__blob--hot"
+                         cx="26" cy="20" rx="82" ry="54" transform="rotate(-18 26 20)" />
+                <ellipse class="drawn-gradients__blob drawn-gradients__blob--cool"
+                         cx="104" cy="48" rx="70" ry="48" transform="rotate(24 104 48)" />
+                <ellipse class="drawn-gradients__blob drawn-gradients__blob--warm"
+                         cx="54" cy="104" rx="88" ry="52" transform="rotate(-8 54 104)" />
+              </svg>
+              </span>
+            </div>
+            <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">03</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="demo__state">
+        <p class="demo__caption" data-i18n="state.stepDrawn">Long to short, drawn rather than stopped</p>
+        <p class="demo__hint">--step --arc --drawn --down</p>
+        <!-- The same direction as the first state and the other recipe: the
+             drawing sliced across the bands instead of the stop list. There
+             is deliberately no state here for a rag that is not monotonic.
+             The construction needs one — it is what tells a band which of its
+             left corners is exposed, and which of a pair may grow to cover
+             the join — so a block without it is not a state of this component
+             but a misuse of it, and rendering the hairline that results is
+             advertising a defect. The requirement is in notes.md, in prose,
+             where a requirement belongs. -->
+        <div class="drawn-gradients" style="width: 26rem; max-width: 100%; --drawn-gradients-size: 8rem;">
+          <div class="drawn-gradients__usage drawn-gradients__usage--down">
+            <div class="drawn-gradients__usage-row">
+              <span class="drawn-gradients__usage-line drawn-gradients__usage-line--label">Overlapping art</span>
+              <span class="drawn-gradients__surface drawn-gradients__surface--step drawn-gradients__surface--arc drawn-gradients__surface--drawn"
+                    style="--drawn-gradients-step-row: 0; --drawn-gradients-base: #f3f2ef;">
+              <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+                   preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+                <path class="drawn-gradients__blob drawn-gradients__blob--cool"
+                      d="M-10 -10 L130 -10 L130 34 C98 22 76 46 46 34 C22 24 4 40 -10 32 Z" />
+                <path class="drawn-gradients__blob drawn-gradients__blob--hot"
+                      d="M-10 32 C4 40 22 24 46 34 C76 46 98 22 130 34 L130 76 C96 66 74 90 44 76 C20 65 4 82 -10 74 Z" />
+                <path class="drawn-gradients__blob drawn-gradients__blob--warm"
+                      d="M-10 74 C4 82 20 65 44 76 C74 90 96 66 130 76 L130 130 L-10 130 Z" />
+              </svg>
+              </span>
+            </div>
+            <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">03</span>
+
+            <div class="drawn-gradients__usage-row">
+              <span class="drawn-gradients__usage-line drawn-gradients__usage-line--label">Flat colour</span>
+              <span class="drawn-gradients__surface drawn-gradients__surface--step drawn-gradients__surface--arc drawn-gradients__surface--drawn"
+                    style="--drawn-gradients-step-row: 1; --drawn-gradients-base: #f3f2ef;">
+              <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+                   preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+                <path class="drawn-gradients__blob drawn-gradients__blob--cool"
+                      d="M-10 -10 L130 -10 L130 34 C98 22 76 46 46 34 C22 24 4 40 -10 32 Z" />
+                <path class="drawn-gradients__blob drawn-gradients__blob--hot"
+                      d="M-10 32 C4 40 22 24 46 34 C76 46 98 22 130 34 L130 76 C96 66 74 90 44 76 C20 65 4 82 -10 74 Z" />
+                <path class="drawn-gradients__blob drawn-gradients__blob--warm"
+                      d="M-10 74 C4 82 20 65 44 76 C74 90 96 66 130 76 L130 130 L-10 130 Z" />
+              </svg>
+              </span>
+            </div>
+            <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">0.85</span>
+
+            <div class="drawn-gradients__usage-row">
+              <span class="drawn-gradients__usage-line drawn-gradients__usage-line--label">Wash</span>
+              <span class="drawn-gradients__surface drawn-gradients__surface--step drawn-gradients__surface--arc drawn-gradients__surface--drawn"
+                    style="--drawn-gradients-step-row: 2; --drawn-gradients-base: #f3f2ef;">
+              <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+                   preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+                <path class="drawn-gradients__blob drawn-gradients__blob--cool"
+                      d="M-10 -10 L130 -10 L130 34 C98 22 76 46 46 34 C22 24 4 40 -10 32 Z" />
+                <path class="drawn-gradients__blob drawn-gradients__blob--hot"
+                      d="M-10 32 C4 40 22 24 46 34 C76 46 98 22 130 34 L130 76 C96 66 74 90 44 76 C20 65 4 82 -10 74 Z" />
+                <path class="drawn-gradients__blob drawn-gradients__blob--warm"
+                      d="M-10 74 C4 82 20 65 44 76 C74 90 96 66 130 76 L130 130 L-10 130 Z" />
+              </svg>
+              </span>
+            </div>
+            <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">82%</span>
+          </div>
         </div>
       </section>
 
@@ -890,7 +1248,16 @@
           + 'få overlappende former i flad farve, og slør dem til ukendelighed — '
           + 'overlappene bliver de mellemtoner, som en stopliste ellers skal '
           + 'håndjusteres for at ramme. Hvert par herunder er den samme SVG: '
-          + 'som tegnet, og derefter sløret.',
+          + 'som tegnet, og derefter sløret. De er grupperet efter farve, tre i '
+          + 'hver familie — temaet er en anden akse end tegningen, så enhver af '
+          + 'formerne kan bære enhver af farverne.',
+        'band.orange': 'Orange',
+        'band.blue': 'Blå',
+        'band.mint': 'Mint',
+        'band.night': 'Nat',
+        'drawn.ripples': 'Ringe — koncentriske cirkler',
+        'drawn.prism': 'Prisme — krydsede diagonaler',
+        'drawn.nebula': 'Stjernetåge — drivende skyer',
         'drawn.a': 'Firkløver, bånd, stjerne',
         'drawn.ocean': 'Hav — stablede dønninger',
         'drawn.desert': 'Ørken — klitter og en lav sol',
@@ -916,8 +1283,9 @@
           + 'helt uigennemsigtigt. Tre former ved 85% giver flere tydelige '
           + 'mellemtoner, end en håndskrevet stopliste normalt bærer.',
         'tech.4t': 'Genbrug én kurve.',
-        'tech.4b': 'Det tredje par er ét blad, drejet to gange. At gentage én '
-          + 'kurve læses som et bevidst sæt, og formerne holder proportionerne '
+        'tech.4b': 'Bladparret i det orange bånd er én kurve, drejet to gange, '
+          + 'og prismet i det blå bånd er ét bånd lagt i to vinkler. At gentage '
+          + 'én form læses som et bevidst sæt, og delene holder proportionerne '
           + 'i forhold til hinanden helt gratis.',
         'tech.5t': 'Vid, hvilken der skal i produktion.',
         'tech.5b': 'En stor sløring koster reelt at komponere, og den gentegnes '
@@ -928,7 +1296,8 @@
         'group.inUse': 'I brug',
         'group.inUseNote': 'Indhold sidder i den nederste halvdel, hvor '
           + 'opskriften er faldet til bundfarven, og hvor intet behøver et '
-          + 'slør for at forblive læsbart.',
+          + 'slør for at forblive læsbart. `--step` er det omvendte: fladen '
+          + 'placeres inde i en tekstblok, med trinnene på de samme linjer.',
         'group.themes': 'Temaer',
         'group.themesNote': 'Et tema sætter tre farvestop og intet andet, så det '
           + 'kan kombineres med enhver form og begge opskrifter. `--night` er '
@@ -939,8 +1308,11 @@
         'state.arch': 'Bue',
         'state.pill': 'Pille',
         'state.card': 'Kortbund',
+        'state.stepDown': 'Lang til kort — trinnet vandrer mod venstre',
+        'state.stepUp': 'Kort til lang — trinnet vandrer mod højre',
+        'state.stepDrawn': 'Lang til kort, tegnet i stedet for stoppet',
         'state.band': 'Sektionsbånd',
-        'state.four': 'Fire temaer',
+        'state.five': 'Fem temaer',
         'state.night': 'Falder til blæk',
         'state.retuned': 'Puljer flyttet',
         'sample.label': 'Etiket',
