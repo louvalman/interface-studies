@@ -39,8 +39,8 @@
       'head.ledeHintTouch': 'Tryk på hurtigt kig for at afspille et kort, eller '
         + 'åbn det i fuld størrelse.',
       'meta.references': 'Referencer',
-      'meta.builtWith': 'Bygget med',
-      'meta.htmlCss': 'HTML & CSS',
+      'meta.portable': 'Portabel',
+      'meta.anyStack': 'Enhver stak',
       'meta.eachRef': 'Hver reference',
       'meta.standsAlone': 'Står alene',
       'rail.reference': 'Reference',
