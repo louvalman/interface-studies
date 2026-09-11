@@ -556,6 +556,10 @@
     number();
     track.scrollLeft = 0;
     rebuildRing();
+
+    // Not restarted here: the chip handler stops the drift on purpose, and a
+    // row that becomes loopable again on the way back to "All" is not a reason
+    // to override that. The control is what offers it back.
     syncDriftBtn();
     sync();
   }
