@@ -352,7 +352,7 @@ rather than page prose.
 The card shows all five materials stacked, which is a deliberate departure from
 this repo's rule that a thumbnail holds one instance and no second copy. The rule
 is there to stop a thumbnail turning into a small demo page, and it is the right
-rule — but what this reference offers is a construction that comes in four
+rule — but what this reference offers is a construction that comes in five
 materials, and one bar cannot advertise that. So the card is the set, with no
 captions and no state labels, and the variant dots step into a single bar where
 a panel has somewhere to open. The stagger down the stack costs nothing to add
@@ -361,6 +361,20 @@ shorthand: a delay goes on the end of it without the component knowing. The
 sheets are added and removed rather than hidden — `component.css` gives the root
 a `display`, and an author rule beats the user-agent `[hidden]` one, which would
 have left all five on screen.
+
+They run lightest to darkest — alabaster, crystal, slate, moss, basalt — and
+that order had to be measured rather than reasoned. Brightness and tint pull
+opposite ways: alabaster's `brightness: 1.02` makes it lighter than the page it
+sits on, while crystal's 7% tint leaves it near enough the page itself. Sampled
+off a render, moss and slate come out identical to four decimal places, so which
+of the two goes first is a coin flip settled on hue, not a measurement.
+
+Reordering broke two index assumptions that had been silently correct only
+because the default happened to sit first: the single-bar variants took
+`sheets[0]`, and the collapse kept `i === 0`. Together they left the behaviour
+variants running on alabaster while moss was dressed and then removed from the
+document. Both now ask which sheet carries no material modifier — the variants
+are about behaviour, so they belong on the material the component ships with.
 
 Which of the two morphs the card plays on hover is a thumbnail decision, not a
 component one, and it went the other way at first. The panel is the headline
