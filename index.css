@@ -1361,11 +1361,31 @@ body.is-locked {
     --preview-scale: 0.55;     /* 264 / 480 */
   }
 
+  /* Four rows of furniture before the first card — count, hint, buttons,
+     chips — is most of a phone's first screen spent on the controls for a rail
+     you cannot see yet. The bar stacked whole; it becomes a small grid instead,
+     so the count keeps the buttons company on one line and only the hint drops
+     below them. Three rows, and the rail starts about fifty pixels higher.
+
+     display: contents on the wrapper lifts the count and the hint into this
+     grid without touching the markup — it is a layout div with nothing to say,
+     so it loses nothing by not generating a box. */
   .rail__bar {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 1rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "count nav"
+      "hint  hint";
+    align-items: center;
+    gap: 0.5rem 1rem;
   }
+
+  .rail__meta { display: contents; }
+  .rail__count { grid-area: count; }
+  .rail__hint { grid-area: hint; }
+  .rail__nav { grid-area: nav; }
+
+  .rail__filter { padding-bottom: 1rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
