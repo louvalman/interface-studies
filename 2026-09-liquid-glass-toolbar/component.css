@@ -134,6 +134,12 @@
      read as clunky, the weight is what keeps the word on the surface. */
   --liquid-glass-toolbar-label-weight: 600;
   --liquid-glass-toolbar-label-track: 0.005em;
+  /* Room handed back to ascenders and descenders after the line box is trimmed
+     to the cap block — see __label. Symmetric, so it does not move the centre;
+     it only keeps the 'y' in "Activity" inside the reveal's `overflow: hidden`.
+     It has to clear the taller of the two: 0.26em of ascender above the cap, and
+     0.23em of descent below the baseline. */
+  --liquid-glass-toolbar-label-leading: calc(var(--liquid-glass-toolbar-label-size) * 0.4);
   /* The feed is prose, and it is not chained to the label above it. One token
      served both until the label came down, and dragging a sentence to 13px to
      keep them equal would have been the tail wagging: a notification row is
@@ -416,7 +422,39 @@
   font-size: var(--liquid-glass-toolbar-label-size);
   font-weight: var(--liquid-glass-toolbar-label-weight);
   letter-spacing: var(--liquid-glass-toolbar-label-track);
+  /* The fallback centring, and it is a near miss by construction: a line box is
+     centred on the em box, and an em box is not symmetric about the letters.
+     Plus Jakarta Sans is 1.0em up and 0.23em down, so its midpoint sits above
+     the middle of a cap block — and a word with no descenders, which is all four
+     of these, ends up half a pixel below the centre it was aimed at. The icon is
+     exactly centred in its own box (measured: all five land on 12.00 of 24), so
+     the label was the one out of step. */
   line-height: var(--liquid-glass-toolbar-hit);
+}
+
+/*
+  The fix, where the platform has it. `trim-both cap alphabetic` cuts the line
+  box down to the cap block itself — cap height at the top, baseline at the
+  bottom — so the flex centring the action already does lands the letters on the
+  icon's centre rather than the em box's. The padding is that trim's own cost:
+  trimmed to the baseline, a descender hangs outside the box and the reveal's
+  `overflow: hidden` would take it off. It goes on the label rather than on the
+  reveal because the reveal also holds the search input at full --hit, and it is
+  padding-block, which the label can carry safely where padding-inline would
+  floor its collapsed width at something other than zero.
+
+  What is left is 0.34px, and it is rounding rather than error: the face declares
+  a cap height of 0.744em and the rasteriser puts 'H' on a whole pixel, 9 instead
+  of 9.67, at 13px. The trim is aligned to the metric the font states; the
+  remainder moves with size and device ratio and is gone by the second pixel.
+  Without `text-box` the label keeps the line-height above and sits 0.5px low,
+  which is what it did before and is not visible at 1x.
+*/
+@supports (text-box: trim-both cap alphabetic) {
+  .liquid-glass-toolbar__label {
+    text-box: trim-both cap alphabetic;
+    padding-block: var(--liquid-glass-toolbar-label-leading);
+  }
 }
 
 .liquid-glass-toolbar__input {

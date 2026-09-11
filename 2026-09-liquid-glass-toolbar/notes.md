@@ -98,11 +98,30 @@ on each side, which is what the eye reads and what `getBBox()` leaves out.
   way past that is to normalise the icons to one bearing rather than average
   over four.
 
-  Vertically the label is centred by `line-height: var(--hit)`, which centres the
-  em box rather than the glyphs. "Home" has no descenders, so its ink sits 0.5px
-  below the pill's centre — measured, and left alone, because correcting it means
-  either a magic number tied to one face's metrics or script the component does
-  not otherwise need.
+  Vertically it was the label that was out of step, not the icons: all five are
+  centred in their own boxes to the hundredth (12.00 of 24, measured). The label
+  was centred by `line-height: var(--hit)`, and a line box is centred on the em
+  box — which is not symmetric about the letters. Plus Jakarta Sans runs 1.0em up
+  and 0.23em down, so the em midpoint sits above the middle of a cap block, and
+  a word with no descenders — which all four of these are — lands half a pixel
+  below the centre it was aimed at.
+
+  `text-box: trim-both cap alphabetic` is the fix, and it is the one primitive
+  that addresses this directly: it cuts the line box down to the cap block, so
+  the flex centring the action already does lands the letters rather than the em
+  box. It costs a `padding-block`, because trimmed to the baseline a descender
+  hangs outside the box and the reveal's `overflow: hidden` would take the 'y'
+  off "Activity". That padding goes on the label, not the reveal — the reveal
+  also holds the search input at full `--hit` — and it is padding-block, which
+  the label can carry where padding-inline would floor its collapsed width above
+  zero.
+
+  What is left is 0.33px, and it is rounding rather than error. The face declares
+  a cap height of 0.744em; at 13px the rasteriser puts 'H' on a whole pixel, 9
+  instead of 9.67. The trim aligns to the metric the font states, and the
+  remainder moves with size and device ratio. It is behind `@supports`, so a
+  browser without `text-box` keeps the line-height and the old half pixel, which
+  was never visible at 1x anyway.
 
   The same rule caught the panel, in the other axis and much less visibly. Its
   row collapses to `0fr` when closed, but the feed inside carried a
