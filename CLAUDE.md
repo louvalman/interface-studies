@@ -330,6 +330,14 @@ and iMessage resolve those against the page they fetched. Facebook and LinkedIn
 want absolute ones, so when this gets a host, prefix them with it and add a
 matching `og:url` and `<link rel="canonical">`.
 
+`og.html` is what that PNG is a photograph of. It is not a page anyone visits
+and nothing links to it; it exists so that changing the card is an edit rather
+than a rebuild-by-eye, which is what the first two versions were. Its head
+carries the render command. The masthead's copy is in it by hand — the h1, the
+lede and the meta row — so a headline change means editing `index.html`, then
+`og.html`, then re-rendering, and skipping the last two leaves a link that
+pastes as one page and opens as another.
+
 The rail ends on its own rule: `.rail__progress` is both the scroll position
 and the line under the cards, so its track is always drawn and only the fill is
 conditional. The footer has no `border-top` of its own — it used to, 98px below
