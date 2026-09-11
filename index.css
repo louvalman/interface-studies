@@ -960,6 +960,16 @@ body.is-locked {
   color: var(--ink-soft);
 }
 
+/* The provenance line, a step quieter than the blurb above it: it is there
+   to be found by someone looking for it, not read on the way past. */
+.foot__note {
+  margin: 1.25rem 0 0;
+  max-width: 42ch;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
 .foot__social {
   margin-top: 1.5rem;
   display: flex;
