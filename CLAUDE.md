@@ -181,6 +181,7 @@ position:
 // index -> preview
 { source: 'ui-reference-base', type: 'preview', active: true | false }
 { source: 'ui-reference-base', type: 'preview:variant', index: n }
+{ source: 'ui-reference-base', type: 'preview:scale', scale: n }
 
 // preview -> index, once its listener is live
 { source: 'ui-reference-base', type: 'preview:ready',
@@ -203,8 +204,23 @@ itself. Beware toggling a variant's element with the `hidden` attribute — if
 `component.css` gives that element a `display`, the author rule beats the UA
 `[hidden]` rule and it will not hide. Add and remove the node instead.
 
-The block is optional. A preview that ignores the message still renders; it just
-sits still, and quick look shows it without dots. A preview opened on its own does nothing, because the script only
+`preview:scale` is the third message and the only one about pixels rather than
+state: how much the preview's own pixels are being shrunk on screen. A card
+lays the preview out at `--preview-w` and shows it at `--preview-scale`, and
+quick look measures its own factor against the viewport, so a preview laying
+out at 480px inside a 336px card is rasterised at 0.7 of the device ratio it
+can read for itself. Anything a component sizes in device pixels — a hairline,
+a mask's antialiasing ramp — is that much narrower than it asked for, and below
+one device pixel it stops being antialiased at all. The factor cannot be
+measured from inside the frame: over `file://` the parent is behind an opaque
+origin. It arrives with `preview:ready` and again whenever it changes, and what
+a preview does with it is the folder's business — usually restating one tunable
+against it, inline, so it beats the stylesheet's own media queries. That is a
+custom property being set from outside, which is what the property block is
+for; it is still not a rule written against a component class.
+
+The block is optional. A preview that ignores the messages still renders; it
+just sits still, and quick look shows it without dots. A preview opened on its own does nothing, because the script only
 posts back when it is framed. This is the one place a reference folder may carry
 script without meeting the JavaScript bar below — it is thumbnail scaffolding,
 not component behaviour, and it never goes in `component.js`.

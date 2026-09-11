@@ -13,8 +13,20 @@
 //                         active: true | false }
 //   parent -> preview   { source: 'ui-reference-base', type: 'preview:variant',
 //                         index: n }
+//   parent -> preview   { source: 'ui-reference-base', type: 'preview:scale',
+//                         scale: n }
 //   preview -> parent   { source: 'ui-reference-base', type: 'preview:ready',
 //                         variants?: [{ id, label }] }
+//
+// `preview:scale` is how much the preview's own pixels are being shrunk on
+// screen: the card rail runs the preview at --preview-w and scales it to
+// --preview-scale, and quick look measures its own factor against the
+// viewport. A preview laying out at 480px and shown at 336 is being
+// rasterised at 0.7 of the device ratio it can read for itself, which
+// matters to anything sized in device pixels — a hairline, a mask's
+// antialiasing ramp — and cannot be measured from inside the frame, since
+// over file:// the parent is behind an opaque origin. Sent on ready and
+// again whenever the factor changes.
 //
 // A preview that ignores all of it still renders correctly; it just doesn't
 // move, and quick look shows it without dots.
@@ -303,14 +315,49 @@
       return frame && frame.contentWindow === event.source;
     });
     if (!piece) return;
+    // Always, not only on the first pass: markReady is a one-shot, and the
+    // ready message is the one moment a preview is known to be listening.
+    tellScale(piece.querySelector('[data-preview]'), cardScale());
     markReady(piece);
   });
+
+  // What a card multiplies its preview by. Breakpoint-driven, so it is read
+  // fresh rather than cached.
+  function cardScale() {
+    const v = parseFloat(
+      getComputedStyle(document.documentElement).getPropertyValue('--preview-scale')
+    );
+    return v > 0 ? v : 1;
+  }
+
+  function tellScale(frame, scale) {
+    if (!frame || !frame.contentWindow || !(scale > 0)) return;
+    frame.contentWindow.postMessage(
+      { source: CHANNEL, type: 'preview:scale', scale: scale },
+      '*'
+    );
+  }
 
   function markReady(piece) {
     if (piece.classList.contains('is-ready')) return;
     piece.classList.add('is-ready');
+    tellScale(piece.querySelector('[data-preview]'), cardScale());
     if (piece.dataset.active === 'true') tell(piece, true);
   }
+
+  // --preview-scale changes at the breakpoint, so every card that already
+  // took a factor has to be told the new one.
+  let scaleSent = cardScale();
+  window.addEventListener('resize', () => {
+    const now = cardScale();
+    if (now === scaleSent) return;
+    scaleSent = now;
+    real().forEach((piece) => {
+      if (piece.classList.contains('is-ready')) {
+        tellScale(piece.querySelector('[data-preview]'), now);
+      }
+    });
+  });
 
   // Readiness has to survive a missed event. This script runs after the
   // iframes in document order, so a preview that loaded fast has already
@@ -592,6 +639,8 @@
     // scale is one measurement of it — no arithmetic over the bar and footer,
     // and no feedback loop, because the frame is out of flow and the panel's
     // width no longer depends on the result.
+    let lightboxScale = 1;
+
     function fitStage() {
       if (box.hidden) return;
 
@@ -622,7 +671,9 @@
         box.style.setProperty('--lightbox-scale', Math.max(0, scale).toFixed(4));
         panel.style.width =
           Math.max(Math.round(previewW * scale), floor) + 'px';
+        lightboxScale = Math.max(0, scale);
       }
+      tellScale(frame, lightboxScale);
     }
 
     // Parks the marker on a dot. `ms` is how long the trip takes: the full
@@ -722,6 +773,7 @@
       const data = event.data;
       if (!data || data.source !== CHANNEL || data.type !== 'preview:ready') return;
       if (box.hidden || event.source !== frame.contentWindow) return;
+      tellScale(frame, lightboxScale);
       buildDots(data.variants);
       playForTouch();
     });

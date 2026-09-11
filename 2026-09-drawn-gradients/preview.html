@@ -192,6 +192,7 @@
       // applying either one on its own would drop the other.
       var variant = VARIANTS[0];
       var active = false;
+      var root = document.querySelector('.drawn-gradients');
 
       function render() {
         surfaces.forEach(function (el, i) {
@@ -233,14 +234,39 @@
           var next = VARIANTS[data.index];
           if (next) { variant = next; render(); }
         }
+
+        if (data.type === 'preview:scale') {
+          setScale(data.scale);
+        }
       });
+
+      // The mask's antialiasing ramp is authored as one DEVICE pixel, and
+      // component.css picks it with resolution media queries — which can only
+      // see this frame's own ratio. A card lays the preview out at
+      // --preview-w and shows it at --preview-scale, so the ramp is rasterised
+      // at a fraction of the pixel it asked for: at 0.55 it lands at half a
+      // device pixel, gets point-sampled, and every curve in the thumbnail
+      // stair-steps. The index reports the factor; the ramp is restated
+      // against it here, inline, so it beats the media queries.
+      //
+      // A tunable set from outside, which is the whole point of the custom
+      // property block — this file still never writes a rule against a
+      // component class. Standalone, no message arrives and the media queries
+      // stand as authored.
+      function setScale(scale) {
+        if (!(scale > 0) || !root) return;
+        var dpr = window.devicePixelRatio || 1;
+        root.style.setProperty(
+          '--drawn-gradients-step-feather',
+          (1 / (dpr * scale)).toFixed(4) + 'px'
+        );
+      }
 
       // The quick-look route. Inert in a card, whose iframe has pointer events
       // off, and inert on a coarse pointer, where the index sends the message
       // for the card in the read position instead — so a touch device reaches
       // the same state without a pointer, which is the whole reason the
       // contract exists.
-      var root = document.querySelector('.drawn-gradients');
       if (root) {
         root.addEventListener('pointerenter', function () { setActive(true); });
         root.addEventListener('pointerleave', function () { setActive(false); });
