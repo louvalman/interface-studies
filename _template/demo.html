@@ -1,0 +1,267 @@
+<!doctype html>
+<!--
+  The demo page. Everything page-level lives here and only here: background,
+  centering, font loading, and 2-3 states of the component.
+
+  This page links component.css. It never redefines it — no rule below may
+  target a component class. Demo styles are scoped to .demo* only.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>YYYY-MM-slug</title>
+
+  <!-- Font loading is the demo's job, never the component's. -->
+  <!-- <link rel="preconnect" href="https://fonts.googleapis.com"> -->
+  <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=..."> -->
+
+  <!-- Page chrome, like the back link: goes stale if this folder is copied
+       out on its own, and nothing else breaks when it does. -->
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+
+  <link rel="stylesheet" href="component.css">
+
+  <style>
+    /* Page scaffolding only. Nothing here may name a component class. */
+    /* Matches the index's --gutter exactly. The pages are separate documents
+       with no shared stylesheet, so the value is repeated rather than shared —
+       but it has to be the same number, or the language control and the
+       content edge shift on every trip between them. */
+    :root { --demo-gutter: clamp(1.5rem, 6vw, 6rem); }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 4rem var(--demo-gutter);
+      box-sizing: border-box;
+      background: #ddd9d0;
+      font-family: system-ui, sans-serif;
+    }
+
+    .demo {
+      display: grid;
+      gap: 3rem;
+      width: min(100%, 30rem);
+    }
+
+    /* Back to the index. Page chrome — the component never depends on it. */
+    /* Aligned to the page's own padding, so it sits on the same edge as the
+       content rather than floating inside the margin. */
+    .demo__lang {
+      position: fixed;
+      top: clamp(1.25rem, 3vw, 2.25rem);
+      right: var(--demo-gutter);
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: 0.1rem;
+      padding: 0.2rem 0.35rem;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.72);
+      backdrop-filter: blur(8px);
+    }
+
+    .demo__lang-btn {
+      padding: 0.35em 0.5em;
+      border: 0;
+      background: transparent;
+      color: #8a919c;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.625rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: color 240ms ease;
+    }
+
+    .demo__lang-btn:hover { color: #14171c; }
+
+    .demo__lang-btn[aria-pressed="true"] {
+      color: #14171c;
+      text-decoration: underline;
+      text-decoration-color: #b4552f;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 0.4em;
+    }
+
+    .demo__lang-btn:focus-visible {
+      outline: 2px solid #14171c;
+      outline-offset: 2px;
+      border-radius: 0.25rem;
+    }
+
+    .demo__lang-sep {
+      width: 1px;
+      height: 0.7rem;
+      background: rgba(20, 23, 28, 0.12);
+    }
+
+    .demo__back {
+      justify-self: start;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.9rem 0.5rem 0.75rem;
+      border: 1px solid rgba(20, 18, 15, 0.14);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.6);
+      font-size: 0.6875rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #4a453d;
+      text-decoration: none;
+    }
+
+    .demo__back:hover { background: #fff; }
+
+    .demo__back svg { width: 0.85rem; height: 0.85rem; }
+
+    /* Capped at whatever column it lands in, so a component sized in rem
+       shrinks with the page instead of pushing a scrollbar across it. Worth
+       keeping when you copy this: it is the one line that decides whether the
+       demo survives a phone. */
+    .demo__state {
+      display: grid;
+      /* The pair that keeps a demo off a phone's horizontal scrollbar: the
+         cell is capped at its column, and the column is told it may shrink
+         below its content. Without the second line an implicit `auto` track
+         takes its max-content width and overflows anyway. */
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.75rem;
+      max-width: 100%;
+    }
+
+    .demo__caption {
+      margin: 0;
+      font-size: 0.6875rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #6b655a;
+    }
+
+    /* --- touch targets --- */
+
+    /* No hover means a finger, and a finger cannot aim at a 10px label. The
+       page's own controls grow; the component is not touched. Duplicated in
+       every demo page on purpose — no shared stylesheet, so a folder copied
+       out on its own takes this with it. */
+    @media (hover: none) {
+      .demo__lang-btn {
+        display: grid;
+        place-items: center;
+        min-width: 2.25rem;
+        min-height: 2.25rem;
+      }
+
+      .demo__back { min-height: 2.75rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="demo">
+
+    <!-- Delete alongside the language script below if this reference is
+         single-language. -->
+    <div class="demo__lang" role="group" aria-label="Language">
+      <button class="demo__lang-btn" type="button" data-lang="en" aria-pressed="true">EN</button>
+      <span class="demo__lang-sep" aria-hidden="true"></span>
+      <button class="demo__lang-btn" type="button" data-lang="da" aria-pressed="false">DA</button>
+    </div>
+
+    <a class="demo__back" href="../index.html">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <path d="M10 2 4 8l6 6" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+      <span data-i18n="back">All references</span>
+    </a>
+
+    <section class="demo__state">
+      <p class="demo__caption">Default</p>
+      <!-- paste component.html markup here -->
+      <article class="slug">
+        <p class="slug__label">Label</p>
+        <h2 class="slug__title">Title</h2>
+        <p class="slug__body">Body copy that carries no branding from the reference.</p>
+      </article>
+    </section>
+
+    <section class="demo__state">
+      <p class="demo__caption">Hover (hover it)</p>
+      <article class="slug">
+        <p class="slug__label">Label</p>
+        <h2 class="slug__title">Title</h2>
+        <p class="slug__body">Body copy that carries no branding from the reference.</p>
+      </article>
+    </section>
+
+    <section class="demo__state">
+      <p class="demo__caption">Content variant</p>
+      <article class="slug slug--featured">
+        <p class="slug__label">Longer label than the first</p>
+        <h2 class="slug__title">A title long enough to wrap onto a second line</h2>
+        <p class="slug__body">A shorter body, to check the spacing holds either way.</p>
+      </article>
+    </section>
+
+  </div>
+  <!--
+    Language, if this reference needs it. Self-contained on purpose: the folder
+    has to survive being copied out, so it carries its own strings rather than
+    sharing a table with the index. The index appends ?lang= to the link that
+    opens this page, and the back link hands the choice back — over file:// each
+    document gets its own opaque origin, so localStorage alone will not carry it.
+
+    Give every translatable node a data-i18n key. Leave component sample copy
+    and class-name hints alone: those are content and code, not page language.
+    Delete the whole block for a single-language reference.
+  -->
+  <script>
+    (function () {
+      var STORE_KEY = 'ui-reference-base:lang';
+
+      var DA = {
+        'back': 'Alle referencer'
+        // one entry per data-i18n key on this page
+      };
+
+      var nodes = Array.prototype.slice.call(document.querySelectorAll('[data-i18n]'));
+      var buttons = Array.prototype.slice.call(document.querySelectorAll('[data-lang]'));
+      var back = document.querySelector('.demo__back');
+      var english = nodes.map(function (el) { return el.textContent; });
+
+      function apply(lang) {
+        var table = lang === 'da' ? DA : null;
+
+        nodes.forEach(function (el, i) {
+          var key = el.getAttribute('data-i18n');
+          el.textContent = table && table[key] ? table[key] : english[i];
+        });
+
+        document.documentElement.lang = lang;
+        buttons.forEach(function (b) {
+          b.setAttribute('aria-pressed', b.dataset.lang === lang ? 'true' : 'false');
+        });
+        if (back) {
+          back.setAttribute('href', lang === 'en' ? '../index.html' : '../index.html?lang=' + lang);
+        }
+
+        try { localStorage.setItem(STORE_KEY, lang); } catch (err) { /* private mode */ }
+      }
+
+      buttons.forEach(function (b) {
+        b.addEventListener('click', function () { apply(b.dataset.lang); });
+      });
+
+      var fromQuery = new URLSearchParams(location.search).get('lang');
+      var stored = null;
+      try { stored = localStorage.getItem(STORE_KEY); } catch (err) { /* private mode */ }
+
+      apply(fromQuery || stored || 'en');
+    })();
+  </script>
+
+</body>
+</html>

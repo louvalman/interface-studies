@@ -1,0 +1,1259 @@
+/* Landing page chrome. Not a reference — this styles the index only, and
+   never reaches into any reference folder. Nothing here names a component
+   class; the previews are iframes, and they own their own styling. */
+
+:root {
+  --paper: #f5f4f1;
+  --surface: #fbfaf8;
+  --ink: #17181a;
+  --ink-soft: #55565a;
+  --muted: #8b8a84;
+  --hairline: rgba(23, 24, 26, 0.1);
+  --hairline-strong: rgba(23, 24, 26, 0.22);
+  --accent: #b4552f;
+
+  --sans: "Plus Jakarta Sans", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --gutter: clamp(1.5rem, 6vw, 6rem);
+  --card-w: 21rem;
+  --rail-gap: clamp(1rem, 2vw, 1.75rem);
+
+  /* The preview iframe renders at a fixed logical viewport, then scales to
+     the card. Keep --preview-scale == --card-w / --preview-w exactly, or the
+     thumbnail will not fill its frame. */
+  --preview-w: 480px;
+  --preview-h: 600px;
+  --preview-scale: 0.7;      /* 336 / 480 */
+
+  /* Quick look runs the preview at 1:1 where it fits, so the component's
+     hover states behave exactly as they do on its demo page. index.js
+     measures the space on open and lowers this when it doesn't. */
+  --lightbox-scale: 1;
+
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+* { box-sizing: border-box; }
+
+/* For the footer's back-to-top link. The reduced-motion block below turns
+   it off again. */
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(58% 46% at 12% 0%, rgba(180, 85, 47, 0.07), transparent 68%),
+    radial-gradient(46% 38% at 92% 4%, rgba(78, 110, 190, 0.06), transparent 70%),
+    var(--paper);
+  background-attachment: fixed;
+  color: var(--ink);
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scroll lock behind the quick-look overlay. `overflow: hidden` alone is
+   ignored by iOS Safari, which keeps scrolling the document under a fixed
+   overlay, so the body is taken out of flow as well and index.js holds the
+   offset it was at in `top`. Nothing else here may set `top` on the body. */
+body.is-locked {
+  position: fixed;
+  left: 0;
+  right: 0;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* --- language selector -------------------------------------------------- */
+
+/* Aligned to the page gutter, not to an inset of its own — everything else
+   on the page hangs off --gutter, and a control floating inside that margin
+   reads as a browser extension rather than part of the layout. */
+.lang {
+  position: fixed;
+  top: clamp(1.25rem, 3vw, 2.25rem);
+  right: var(--gutter);
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 0.1rem;
+  padding: 0.2rem 0.35rem;
+  border-radius: 999px;
+  /* Same translucent chip the card badges use, so it belongs to the same
+     family rather than introducing a third surface treatment. */
+  background: rgba(251, 250, 248, 0.72);
+  backdrop-filter: blur(8px);
+}
+
+.lang__btn {
+  padding: 0.35em 0.5em;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 240ms var(--ease);
+}
+
+.lang__btn:hover { color: var(--ink); }
+
+/* Marked with the accent rule the CTAs use, not a filled chip — the page has
+   no other solid black element, and one here would outweigh the masthead. */
+.lang__btn[aria-pressed="true"] {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.4em;
+}
+
+.lang__btn:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+  border-radius: 0.25rem;
+}
+
+.lang__sep {
+  width: 1px;
+  height: 0.7rem;
+  background: var(--hairline);
+}
+
+/* --- the site mark ----------------------------------------------------- */
+
+/* The same construction favicon.svg draws: the raster-pulse field cut down to
+   the smallest grid that still states its rule — an odd field, so one cell is
+   the true centre, and dots on a pitch they never fill. The favicon wraps it
+   in a paper tile because a tab strip needs a chip to sit on; the page is
+   already that ground, so here the mark is the field alone and the viewBox is
+   cropped to it.
+
+   It replaced a single accent dot with a halo. That dot said nothing the page
+   did not already say, and its halo was standing in for a pulse it could not
+   perform — this mark performs it once and then holds the still frame. */
+.logo {
+  --logo-size: 1.3rem;
+  --logo-pulse: 1100ms;
+
+  flex: none;
+  width: var(--logo-size);
+  height: var(--logo-size);
+}
+
+/* Sized against the type it sits beside, so the lockup holds at both ends of
+   the page: a touch over the cap height in the masthead, level with it in the
+   footer, where the mark is a sign-off rather than a title. */
+.foot__mark .logo { --logo-size: 0.95rem; }
+
+.logo__dot,
+.logo__core {
+  fill: var(--ink);
+  /* fill-box, so each dot scales about its own centre rather than the
+     viewBox's — nine dots pulling toward the middle is a different animation,
+     and not the one the field describes. */
+  transform-box: fill-box;
+  transform-origin: center;
+  /* One pass on load, not an ambient loop. The mark comes from a component
+     whose whole identity is a wave leaving the centre, and a still 3x3 is
+     just a dot grid — so it says it once and then sits still. The ring's
+     delay is the reference's `phase * duration` with two rings to spend it
+     on. */
+  animation: logo-settle calc(var(--logo-pulse) * 0.55) var(--ease) both;
+  animation-delay: 190ms;
+}
+
+.logo__core {
+  fill: var(--accent);
+  animation-delay: 0s;
+}
+
+/* The pulse: one ring of accent leaving the centre and crossing the eight
+   around it, which is what the ring's delay above is timed against. A ring
+   and not a disc — a filled circle expanding under the dots floods the mark
+   with accent and reads as a highlight, where the reference's wave is a band
+   passing through. non-scaling-stroke keeps it a hairline as it grows, and
+   scale 3 is as far as it can travel and still land inside the viewBox, so
+   the mark needs no overflow of its own. It has no resting state: at rest
+   this is exactly the favicon. */
+.logo__wave {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1.6;
+  vector-effect: non-scaling-stroke;
+  transform-box: fill-box;
+  transform-origin: center;
+  opacity: 0;
+  animation: logo-wave var(--logo-pulse) var(--ease) both;
+}
+
+@keyframes logo-settle {
+  from { transform: scale(0.2); }
+  62% { transform: scale(1.14); }
+  to { transform: scale(1); }
+}
+
+@keyframes logo-wave {
+  from { opacity: 0.55; transform: scale(1); }
+  to { opacity: 0; transform: scale(3); }
+}
+
+/* --- masthead --------------------------------------------------------- */
+
+.head {
+  padding: clamp(3.5rem, 9vw, 7rem) var(--gutter) clamp(2rem, 4vw, 3rem);
+  max-width: 64rem;
+}
+
+.head__eyebrow {
+  margin: 0 0 clamp(1.5rem, 4vw, 2.75rem);
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.head__title {
+  margin: 0;
+  font-size: clamp(2.25rem, 6vw, 4rem);
+  font-weight: 600;
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+  max-width: 18ch;
+  text-wrap: balance;
+}
+
+.head__lede {
+  margin: 1.5rem 0 0;
+  max-width: 46ch;
+  font-size: clamp(1rem, 1.4vw, 1.125rem);
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+/* Small stat row under the lede. */
+.head__meta {
+  margin: clamp(2rem, 4vw, 3rem) 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 2.5rem;
+}
+
+.head__meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding-left: 0.9rem;
+  border-left: 1px solid var(--hairline);
+}
+
+.head__meta-key {
+  font-family: var(--mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.head__meta-val {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 0.8125rem;
+  color: var(--ink);
+}
+
+/* --- rail ------------------------------------------------------------- */
+
+.rail {
+  padding-bottom: clamp(3rem, 7vw, 6rem);
+}
+
+.rail__bar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 0 var(--gutter) 1.25rem;
+}
+
+.rail__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.rail__count,
+.rail__hint {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.rail__count { color: var(--ink); }
+
+.rail__hint {
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+}
+
+.rail__nav {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.rail__btn {
+  width: 2.75rem;
+  height: 2.75rem;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid var(--hairline);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  transition:
+    background 240ms var(--ease),
+    border-color 240ms var(--ease),
+    transform 240ms var(--ease),
+    opacity 240ms var(--ease);
+}
+
+.rail__btn:hover:not(:disabled) {
+  background: var(--surface);
+  border-color: var(--hairline-strong);
+}
+
+.rail__btn:active:not(:disabled) { transform: scale(0.94); }
+
+.rail__btn:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+.rail__btn:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+
+.rail__btn svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.rail__track {
+  display: flex;
+  gap: var(--rail-gap);
+  padding: 0.5rem var(--gutter) 2rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding-left: var(--gutter);
+  scrollbar-width: none;
+  cursor: grab;
+  /* A horizontal swipe that reaches either end stays in the rail. Without
+     this the leftover movement chains to the browser and reads as a
+     back-navigation gesture. `touch-action` is deliberately left alone: the
+     browser scrolls this natively now that the drag handler is mouse-only,
+     and naming the axes here would cost pinch-to-zoom over the rail. */
+  overscroll-behavior-x: contain;
+}
+
+.rail__track::-webkit-scrollbar { display: none; }
+
+.rail__track:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: -2px;
+  border-radius: 0.5rem;
+}
+
+/* Dragging suspends snap, or the track fights the pointer on release. */
+.rail__track.is-dragging {
+  cursor: grabbing;
+  scroll-snap-type: none;
+  scroll-behavior: auto;
+  user-select: none;
+}
+
+.rail__progress {
+  margin: 0 var(--gutter);
+  height: 2px;
+  border-radius: 2px;
+  background: var(--hairline);
+  position: relative;
+  overflow: hidden;
+}
+
+.rail__progress::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: var(--rail-progress, 30%);
+  border-radius: 2px;
+  background: var(--ink);
+  transition: width 200ms linear;
+}
+
+/* --- piece ------------------------------------------------------------ */
+
+.piece {
+  position: relative;
+  flex: 0 0 var(--card-w);
+  min-width: 0;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  color: inherit;
+  transform: translateY(0);
+  transition: transform 520ms var(--ease);
+}
+
+.piece:hover,
+.piece:focus-within { transform: translateY(-6px); }
+
+/* .is-active marks the card in the read position. It drives the counter and,
+   on touch, which preview plays — but it is deliberately not painted: lifting
+   or outlining one card made the rail look misaligned rather than focused. */
+.piece__frame {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  border-radius: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  box-shadow: 0 1px 2px rgba(23, 24, 26, 0.04);
+  transition:
+    box-shadow 520ms var(--ease),
+    border-color 520ms var(--ease);
+}
+
+.piece:hover .piece__frame,
+.piece:focus-within .piece__frame {
+  border-color: var(--hairline-strong);
+  box-shadow: 0 22px 46px -20px rgba(23, 24, 26, 0.32);
+}
+
+.piece__preview {
+  display: block;
+  width: var(--preview-w);
+  height: var(--preview-h);
+  border: 0;
+  transform: scale(var(--preview-scale));
+  transform-origin: top left;
+  /* The card is the link — the thumbnail must not swallow hover or clicks.
+     Its component is driven by the message contract in index.js instead. */
+  pointer-events: none;
+  transition: opacity 420ms var(--ease);
+}
+
+/* Hidden-until-ready and the skeleton over it are both behind .js: only the
+   script can clear them, so without it the preview must render plainly
+   rather than sit under a box nothing will ever lift. */
+.js .piece__preview { opacity: 0; }
+.js .piece.is-ready .piece__preview { opacity: 1; }
+
+/* Skeleton, until the preview document reports itself loaded. */
+.js .piece__frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(100deg, transparent 20%, rgba(23, 24, 26, 0.05) 50%, transparent 80%)
+    var(--surface);
+  background-size: 220% 100%;
+  animation: piece-shimmer 1.5s linear infinite;
+  transition: opacity 420ms var(--ease);
+  pointer-events: none;
+}
+
+.js .piece.is-ready .piece__frame::after {
+  opacity: 0;
+  animation: none;
+}
+
+.js .piece--ghost .piece__frame::after { content: none; }
+
+@keyframes piece-shimmer {
+  from { background-position: 140% 0; }
+  to   { background-position: -40% 0; }
+}
+
+.piece__type,
+.piece__no {
+  position: absolute;
+  top: 0.875rem;
+  z-index: 2;
+  padding: 0.35em 0.75em;
+  border-radius: 999px;
+  background: rgba(251, 250, 248, 0.88);
+  backdrop-filter: blur(6px);
+  font-family: var(--mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #3a3b3e;
+}
+
+.piece__type { left: 0.875rem; }
+
+.piece__no {
+  right: 0.875rem;
+  color: var(--muted);
+}
+
+/* Sits above the stretched link so it can take its own click. */
+.piece__expand {
+  position: absolute;
+  right: 0.875rem;
+  bottom: 0.875rem;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5em 0.85em;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  background: rgba(251, 250, 248, 0.92);
+  backdrop-filter: blur(6px);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(0.4rem);
+  transition:
+    opacity 320ms var(--ease),
+    transform 320ms var(--ease),
+    border-color 320ms var(--ease);
+}
+
+.piece:hover .piece__expand,
+.piece:focus-within .piece__expand,
+.piece__expand:focus-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.piece__expand:hover { border-color: var(--hairline-strong); }
+
+.piece__expand:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.piece__expand svg {
+  width: 0.7rem;
+  height: 0.7rem;
+}
+
+/* Coarse pointers get no hover, so the affordance stays put — and it has to
+   be big enough to hit with a thumb. */
+@media (hover: none) {
+  .piece__expand {
+    opacity: 1;
+    transform: none;
+    min-height: 2.25rem;
+    padding-inline: 1rem;
+  }
+}
+
+.piece__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.25rem 0.125rem 0;
+}
+
+.piece__slug {
+  font-family: var(--mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.piece__title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+}
+
+/* Stretched link: the whole card is the target, but the markup keeps a real
+   anchor, so the quick-look button can live inside the card legally. */
+.piece__link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.piece__link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: 1rem;
+}
+
+.piece__link:focus-visible::after {
+  outline: 2px solid var(--ink);
+  outline-offset: 6px;
+}
+
+.piece__note {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: #61625f;
+}
+
+.piece__cta {
+  margin-top: 0.6rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* The underline draws in on hover rather than sitting there at rest. */
+.piece__cta-text {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: left bottom;
+  background-size: 0% 1px;
+  padding-bottom: 2px;
+  transition: background-size 420ms var(--ease);
+}
+
+.piece:hover .piece__cta-text,
+.piece:focus-within .piece__cta-text { background-size: 100% 1px; }
+
+.piece__cta svg {
+  width: 0.8rem;
+  height: 0.8rem;
+  transform: translate(0, 0);
+  transition: transform 420ms var(--ease);
+}
+
+.piece:hover .piece__cta svg,
+.piece:focus-within .piece__cta svg { transform: translate(2px, -2px); }
+
+/* --- the empty slot at the end ---------------------------------------- */
+
+.piece--ghost .piece__frame {
+  display: grid;
+  place-items: center;
+  background: transparent;
+  border-style: dashed;
+  box-shadow: none;
+}
+
+.piece--ghost:hover { transform: none; }
+
+.piece--ghost:hover .piece__frame {
+  border-color: var(--hairline);
+  box-shadow: none;
+}
+
+.piece__ghost-text {
+  max-width: 14rem;
+  padding: 1.5rem;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  line-height: 1.9;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* --- quick look -------------------------------------------------------- */
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: clamp(1rem, 4vw, 2.5rem);
+  /* A phone's viewport is two sizes: the tall one behind the collapsed
+     toolbars, and the short one with them showing. `inset` resolves against
+     the tall one, which puts the panel's footer under the address bar. The
+     dynamic unit is the one that tracks what is actually visible; browsers
+     without it drop the line and keep the inset. Over-constrained on purpose
+     — height wins and `bottom` is ignored. */
+  height: 100dvh;
+  /* A drag that runs past the end of the overlay must not hand the rest of
+     the gesture to the page underneath. */
+  overscroll-behavior: contain;
+}
+
+/* `display: grid` above is an author rule and `[hidden] { display: none }` is
+   only a UA rule, so author wins and the closed overlay would stay laid out —
+   an invisible scrim across the viewport eating every hover and click on the
+   page behind it. This puts it back. */
+.lightbox[hidden] { display: none; }
+
+.lightbox__scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(23, 24, 26, 0.42);
+  backdrop-filter: blur(3px);
+  opacity: 0;
+  transition: opacity 320ms var(--ease);
+}
+
+.lightbox.is-open .lightbox__scrim { opacity: 1; }
+
+.lightbox__panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  /* Sized to the preview, or the footer's copy sets the width and the
+     preview sits against a bare strip on the right. The width no longer
+     depends on the scale, which is what lets the scale be measured from the
+     laid-out stage in one pass instead of converging on itself. */
+  width: min(var(--preview-w), 100%);
+  max-height: 100%;
+  /* Vertical scroll, for the viewport that cannot hold the panel at all — a
+     phone on its side, where the bar and the footer are most of the height.
+     Horizontal stays clipped: that axis carries the scaled frame, which is
+     out of flow and overhangs by design. */
+  overflow: hidden auto;
+  overscroll-behavior: contain;
+  border-radius: 1.25rem;
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  box-shadow: 0 40px 80px -32px rgba(23, 24, 26, 0.5);
+  opacity: 0;
+  transform: translateY(0.75rem) scale(0.985);
+  transition:
+    opacity 320ms var(--ease),
+    transform 420ms var(--ease);
+}
+
+.lightbox.is-open .lightbox__panel {
+  opacity: 1;
+  transform: none;
+}
+
+.lightbox__bar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 1.25rem 1.25rem 1rem;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.lightbox__heading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.lightbox__eyebrow {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.lightbox__title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.lightbox__close {
+  flex: none;
+  width: 2.25rem;
+  height: 2.25rem;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid var(--hairline);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background 240ms var(--ease), border-color 240ms var(--ease);
+}
+
+.lightbox__close:hover {
+  background: var(--paper);
+  border-color: var(--hairline-strong);
+}
+
+.lightbox__close:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.lightbox__close svg {
+  width: 0.85rem;
+  height: 0.85rem;
+}
+
+/* The bar and the footer keep their natural height; the stage takes what is
+   left and never less than nothing, so a short viewport shrinks the preview
+   rather than pushing the panel off screen. `height` is the preferred size,
+   which `max-height` on the panel is free to shrink. */
+.lightbox__bar,
+.lightbox__foot { flex: 0 0 auto; }
+
+.lightbox__stage {
+  position: relative;
+  flex: 1 1 auto;
+  height: var(--preview-h);
+  /* The stage is the only child of the panel that may shrink, so on a short
+     viewport it is the one that reaches zero — and a stage of no height
+     measures to a scale of zero, which collapsed the whole panel to a
+     sliver. It keeps a floor instead and the panel scrolls past whatever
+     chrome no longer fits. */
+  min-height: min(var(--preview-h), 16rem);
+  overflow: hidden;
+}
+
+/* Taken out of flow and centred, so scaling it can never feed back into the
+   size of the box being measured. The iframe stays at --preview-w, so the
+   component inside is never asked to reflow for the overlay. */
+.lightbox__frame {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--preview-w);
+  height: var(--preview-h);
+  border: 0;
+  transform: translate(-50%, -50%) scale(var(--lightbox-scale));
+}
+
+/* --- variant dots ------------------------------------------------------ */
+
+.lightbox__variants {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.85rem 1.25rem;
+  border-top: 1px solid var(--hairline);
+}
+
+/* Same trap as the panel: `display: flex` above is an author rule and
+   `[hidden]` is only a UA rule, so it has to be said explicitly. */
+.lightbox__variants[hidden] { display: none; }
+
+.lightbox__dots {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+/* The accent dot is a single element that travels the row rather than the
+   colour jumping from one dot to the next. Its transition duration is set in
+   index.js to the autoplay interval, so it arrives exactly as the variant
+   swaps — the movement is the countdown. */
+.lightbox__dots-marker {
+  position: absolute;
+  /* Parked at the container's origin and moved to the dot's centre on both
+     axes — the row wraps once the dots are finger-sized, and a marker pinned
+     to a single line would sit off the row it is meant to be on. */
+  top: 0;
+  left: 0;
+  width: 0.5rem;
+  height: 0.5rem;
+  margin: -0.25rem 0 0 -0.25rem;
+  border-radius: 50%;
+  background: var(--accent);
+  pointer-events: none;
+  transform: translate(var(--marker-x, 0), var(--marker-y, 0));
+  /* Linear on purpose: the travel reads as a countdown, and easing would
+     make it look like it stalls before each swap. Duration is set in JS. */
+  transition-property: transform;
+  transition-timing-function: linear;
+  transition-duration: 0ms;
+}
+
+.lightbox__dot {
+  width: 1.5rem;
+  height: 1.5rem;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* The button is a comfortable target; the dot inside it is the mark. */
+.lightbox__dot::after {
+  content: "";
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  background: var(--hairline-strong);
+  transition:
+    background 240ms var(--ease),
+    transform 240ms var(--ease);
+}
+
+.lightbox__dot:hover::after { background: var(--ink-soft); }
+
+/* No accent here — the marker above supplies it as it passes over. */
+.lightbox__dot[aria-current="true"]::after { background: var(--hairline-strong); }
+
+.lightbox__dot:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 1px;
+}
+
+.lightbox__variant-label {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Stacked at every size: the panel is only as wide as the preview, which is
+   too narrow to sit the note and the link side by side. */
+.lightbox__foot {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.85rem;
+  padding: 1rem 1.25rem 1.25rem;
+  border-top: 1px solid var(--hairline);
+}
+
+.lightbox__note {
+  margin: 0;
+  max-width: 40ch;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+
+.lightbox__link {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  text-decoration: none;
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.lightbox__link:hover { text-decoration: underline; }
+
+.lightbox__link:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 4px;
+  border-radius: 0.25rem;
+}
+
+.lightbox__link svg {
+  width: 0.8rem;
+  height: 0.8rem;
+}
+
+/* --- foot -------------------------------------------------------------- */
+
+/* Inset by the gutter so the rule lines up with the rail above it. */
+.foot {
+  margin: 0 var(--gutter);
+  padding: clamp(2.5rem, 5vw, 4rem) 0 clamp(2rem, 4vw, 3rem);
+  border-top: 1px solid var(--hairline);
+}
+
+/* Statement left, specifics right — the same split the masthead makes, so
+   the page closes on the shape it opened with. */
+.foot__main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 26rem);
+  gap: clamp(2rem, 5vw, 5rem);
+  align-items: start;
+}
+
+.foot__mark {
+  margin: 0 0 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.foot__blurb {
+  margin: 0;
+  max-width: 38ch;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+
+/* The provenance line, a step quieter than the blurb above it: it is there
+   to be found by someone looking for it, not read on the way past. */
+.foot__note {
+  margin: 1.25rem 0 0;
+  max-width: 42ch;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.foot__social {
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.foot__icon {
+  width: 2.25rem;
+  height: 2.25rem;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--hairline);
+  border-radius: 50%;
+  color: var(--ink-soft);
+  transition:
+    color 240ms var(--ease),
+    border-color 240ms var(--ease),
+    transform 240ms var(--ease);
+}
+
+.foot__icon:hover {
+  color: var(--ink);
+  border-color: var(--hairline-strong);
+  transform: translateY(-2px);
+}
+
+.foot__icon:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+.foot__icon svg {
+  width: 0.95rem;
+  height: 0.95rem;
+}
+
+/* Key/value pairs on hairlines, echoing the masthead's stat row. */
+.foot__meta {
+  margin: 0;
+  padding: 0;
+}
+
+.foot__row {
+  display: grid;
+  grid-template-columns: minmax(6.5rem, 32%) 1fr;
+  gap: 1rem;
+  padding: 0.75rem 0;
+}
+
+.foot__row + .foot__row { border-top: 1px solid var(--hairline); }
+
+.foot__key {
+  font-family: var(--mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding-top: 0.15em;
+}
+
+.foot__val {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+.foot__bar {
+  margin-top: clamp(2rem, 4vw, 3rem);
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--hairline);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.foot__line {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* The one link in the footer bar that is a name rather than a control, so
+   it is underlined rather than left to hover to announce itself. */
+.foot__author {
+  color: var(--ink);
+  text-decoration: none;
+  border-bottom: 1px solid var(--hairline);
+  transition: color 240ms var(--ease), border-color 240ms var(--ease);
+}
+
+.foot__author:hover,
+.foot__author:active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.foot__author:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+  border-radius: 0.2rem;
+}
+
+.foot__top {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  text-decoration: none;
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  transition: color 240ms var(--ease);
+}
+
+.foot__top:hover { color: var(--accent); }
+
+.foot__top:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 4px;
+  border-radius: 0.25rem;
+}
+
+.foot__top svg {
+  width: 0.8rem;
+  height: 0.8rem;
+  transition: transform 320ms var(--ease);
+}
+
+.foot__top:hover svg { transform: translateY(-3px); }
+
+/* --- short viewports ---------------------------------------------------- */
+
+/* A phone held sideways is about 375px tall, and the quick-look chrome was
+   written for a viewport with height to spare. It hands some back rather than
+   squeezing the preview out of existence; what still does not fit scrolls,
+   because the panel now may. */
+@media (max-height: 34rem) {
+  .lightbox { padding-block: 0.5rem; }
+
+  .lightbox__bar { padding: 0.85rem 1rem 0.7rem; }
+
+  .lightbox__variants { padding: 0.55rem 1rem; }
+
+  .lightbox__foot { padding: 0.7rem 1rem 0.9rem; }
+}
+
+/* --- touch targets ------------------------------------------------------ */
+
+/* A pointer that cannot hover is a finger, and a finger has no pixel to aim
+   with. Every control it can hit is grown here — well past the 24px WCAG
+   2.5.8 floor — without moving anything on a mouse, where these sizes are set
+   by the type they sit next to rather than by the hand. The dots stop short
+   of the rest: a preview may report seven variants, and a row of 44px targets
+   would not fit across a phone even after wrapping. */
+@media (hover: none) {
+  .lang__btn {
+    display: grid;
+    place-items: center;
+    min-width: 2.25rem;
+    min-height: 2.25rem;
+  }
+
+  .lightbox__close {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+
+  .foot__icon {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+
+  .lightbox__dot {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  /* The dots grew, so a preview reporting six or seven variants no longer
+     fits beside its label on a phone. The label drops to its own line rather
+     than the row scrolling sideways. */
+  .lightbox__variants { flex-wrap: wrap; }
+}
+
+@media (max-width: 52rem) {
+  .foot__main {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2.5rem;
+  }
+}
+
+@media (max-width: 40rem) {
+  .foot__bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  :root {
+    --card-w: 16.5rem;         /* 264px */
+    --preview-scale: 0.55;     /* 264 / 480 */
+  }
+
+  .rail__bar {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition-duration: 1ms !important; scroll-behavior: auto !important; }
+  .piece__frame::after { animation: none; }
+  /* The mark's resting state is the whole mark, so dropping the animation
+     leaves it correct rather than half-drawn. */
+  .logo__dot,
+  .logo__core,
+  .logo__wave { animation: none; }
+}

@@ -1,0 +1,102 @@
+<!doctype html>
+<!--
+  The thumbnail the landing page iframes: ONE instance of the component,
+  centred on the demo's background, with no captions and no other states.
+
+  Keep it minimal — it is rendered small. It links component.css and never
+  redefines it, exactly like demo.html. If you change the component's markup,
+  change it here too; this file and component.html should stay in step.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>YYYY-MM-slug — preview</title>
+
+  <!-- Same font loading as demo.html. -->
+  <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=..."> -->
+
+  <link rel="stylesheet" href="component.css">
+
+  <style>
+    /* Thumbnail scaffolding only. Nothing here may name a component class. */
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: #ddd9d0;
+      font-family: system-ui, sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <!-- paste component.html markup here -->
+  <article class="slug">
+    <p class="slug__label">Label</p>
+    <h2 class="slug__title">Title</h2>
+    <p class="slug__body">Body copy that carries no branding from the reference.</p>
+  </article>
+
+  <!--
+    Optional, and thumbnail scaffolding only. Two jobs, both driven by the
+    index, both inert when this file is opened on its own. Delete whichever
+    the component has no use for.
+
+      1. A card's iframe has pointer events off, so the component's :hover can
+         never fire there. The index says when a card is being looked at; this
+         file decides what that means — usually the modifier the component
+         already has for its open state.
+      2. Quick look steps through the variants listed here. The list lives in
+         this file because the index must never name a component class: it is
+         handed labels and draws dots.
+
+    Note that toggling a variant element with the `hidden` attribute fails if
+    component.css gives it a `display` — an author rule beats the UA one. Add
+    and remove the node instead.
+  -->
+  <script>
+    (function () {
+      var CHANNEL = 'ui-reference-base';
+      var root = document.querySelector('.slug');
+      if (!root) return;
+
+      // One entry per variant, first is the resting state the card shows.
+      var VARIANTS = [
+        { id: 'default', label: 'Default', classes: [] },
+        { id: 'dark', label: 'Dark', classes: ['slug--dark'] }
+      ];
+
+      function apply(variant) {
+        VARIANTS.forEach(function (v) {
+          v.classes.forEach(function (c) { root.classList.remove(c); });
+        });
+        variant.classes.forEach(function (c) { root.classList.add(c); });
+      }
+
+      window.addEventListener('message', function (event) {
+        var data = event.data;
+        if (!data || data.source !== CHANNEL) return;
+
+        if (data.type === 'preview') {
+          root.classList.toggle('slug--open', data.active === true);
+        }
+
+        if (data.type === 'preview:variant') {
+          var variant = VARIANTS[data.index];
+          if (variant) apply(variant);
+        }
+      });
+
+      if (window.parent !== window) {
+        window.parent.postMessage({
+          source: CHANNEL,
+          type: 'preview:ready',
+          variants: VARIANTS.map(function (v) { return { id: v.id, label: v.label }; })
+        }, '*');
+      }
+    })();
+  </script>
+
+</body>
+</html>
