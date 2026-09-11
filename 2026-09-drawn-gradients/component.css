@@ -126,7 +126,9 @@
 
   /* Where the colour gathers, and how far it reaches before it is gone.
      Both origins are percentages, so every shape gets the same light from
-     the same relative direction whatever its proportions. */
+     the same relative direction whatever its proportions. The two y values
+     are distances from the gathering edge rather than absolute positions —
+     which is what lets --rise flip the whole recipe with one sign. */
   --drawn-gradients-pool-x: 80%;
   --drawn-gradients-pool-y: 2%;
   --drawn-gradients-pool-reach: 72%;
@@ -134,6 +136,14 @@
   --drawn-gradients-wash-y: 0%;
   --drawn-gradients-wash-reach: 82%;
   --drawn-gradients-settle: 84%;
+
+  /* Which edge the colour gathers at, and which way it settles away from it.
+     The three move together and --rise below is what moves them; a caller
+     setting one of the three on its own gets pools at one edge settling
+     toward the other. */
+  --drawn-gradients-settle-edge: 0%;
+  --drawn-gradients-settle-sign: 1;
+  --drawn-gradients-settle-angle: 180deg;
 
   --drawn-gradients-base: #ffffff;
   --drawn-gradients-hot: #ee7b39;
@@ -157,6 +167,13 @@
      point of the drawing — read as the darker patches a stroke would fence
      off. Set this to a colour to put an outline back. */
   --drawn-gradients-raw-stroke: none;
+
+  /* The base is the one part of the recipe that can animate: gradient stops do
+     not interpolate, so a theme swap is a cut whatever this says — but --night
+     moves the base, the border and the shadow and nothing else, which means
+     the settle can be a state a surface eases into rather than only a static
+     theme. That is what the thumbnail's hover spends. */
+  --drawn-gradients-ease: 280ms cubic-bezier(0.4, 0, 0.2, 1);
 
   --drawn-gradients-ink: #1b1c1f;
   --drawn-gradients-ink-soft: #55565a;
@@ -221,11 +238,15 @@
      *declared*, so a recipe declared on the parent would bake in the parent's
      colour stops and every theme modifier below would do nothing. */
   --drawn-gradients-art:
-    radial-gradient(140% 108% at var(--drawn-gradients-pool-x) var(--drawn-gradients-pool-y),
+    radial-gradient(140% 108% at var(--drawn-gradients-pool-x)
+      calc(var(--drawn-gradients-settle-edge) +
+           var(--drawn-gradients-settle-sign) * var(--drawn-gradients-pool-y)),
       var(--drawn-gradients-hot), transparent var(--drawn-gradients-pool-reach)),
-    radial-gradient(132% 100% at var(--drawn-gradients-wash-x) var(--drawn-gradients-wash-y),
+    radial-gradient(132% 100% at var(--drawn-gradients-wash-x)
+      calc(var(--drawn-gradients-settle-edge) +
+           var(--drawn-gradients-settle-sign) * var(--drawn-gradients-wash-y)),
       var(--drawn-gradients-warm), transparent var(--drawn-gradients-wash-reach)),
-    linear-gradient(180deg,
+    linear-gradient(var(--drawn-gradients-settle-angle),
       var(--drawn-gradients-warm) 0%,
       transparent var(--drawn-gradients-settle));
 
@@ -248,6 +269,13 @@
   background-origin: border-box;
   background-repeat: no-repeat;
   box-shadow: var(--drawn-gradients-shadow);
+  /* Only the three properties --night actually moves. The gradient itself is
+     not in the list because a background-image of stops cannot interpolate —
+     asking for it would cost a repaint and change nothing. */
+  transition:
+    background-color var(--drawn-gradients-ease),
+    border-color var(--drawn-gradients-ease),
+    box-shadow var(--drawn-gradients-ease);
 }
 
 /* --- shapes ------------------------------------------------------------ */
@@ -1112,4 +1140,51 @@
   --drawn-gradients-ink-soft: #a7a9b0;
   --drawn-gradients-border: 1px solid rgba(255, 255, 255, 0.08);
   --drawn-gradients-shadow: 0 18px 40px -24px rgba(0, 0, 0, 0.7);
+}
+
+/* --- the settle, run the other way ------------------------------------- */
+/* The colour gathers at the bottom edge and dissolves upward instead. Not a
+   theme and not a shape: it moves the one axis the recipe has, and composes
+   with both.
+
+   It exists because two --step blocks stacked into a mirrored pair — the rag
+   walking out from the middle in both directions — settle the same way if
+   both run the default recipe, so the field reads as two objects: hot, faded,
+   hot again, faded. Flip the upper one and the colour gathers where the two
+   widest bands meet and dissolves outward to the page at both narrow ends,
+   which is one field with the type cut out of it.
+
+   All three properties move together, and the two pool y values are already
+   distances from the gathering edge, so nothing else is restated. The
+   radial extents are symmetric about their own origin, so moving the origin
+   is the whole change.
+
+   One thing it does not carry: content. .drawn-gradients__value and the rest
+   sit in the *lower* half, because that is where the default recipe has
+   settled — under --rise the settled half is the top and content would sit on
+   the hot end without a scrim. So this is for the surfaces that carry none,
+   which is every --step band and any bare shape. */
+.drawn-gradients__surface--rise {
+  --drawn-gradients-settle-edge: 100%;
+  --drawn-gradients-settle-sign: -1;
+  --drawn-gradients-settle-angle: 0deg;
+}
+
+/* --drawn paints no stop list at all, so the flip has to reach the drawing or
+   --rise would be a silent no-op on that recipe. Mirroring the artwork is the
+   same statement: whatever gathered at the top of it now gathers at the
+   bottom. In a --step block every band renders its own copy of the drawing,
+   sized to the whole block and offset so the copies coincide — mirroring each
+   about its own centre therefore lands them all in the same place, and the
+   field still spans the bands. */
+.drawn-gradients__surface--rise .drawn-gradients__draw {
+  transform: scaleY(-1);
+}
+
+/* --- reduced motion ---------------------------------------------------- */
+/* The base still moves, it just stops easing there. */
+@media (prefers-reduced-motion: reduce) {
+  .drawn-gradients__surface {
+    transition-duration: 1ms;
+  }
 }

@@ -1209,6 +1209,71 @@
       </section>
 
       <section class="demo__state">
+        <p class="demo__caption" data-i18n="state.stepMirror">Two blocks, one field &mdash; the upper settle flipped</p>
+        <p class="demo__hint">--step --rise / --step</p>
+        <!-- The composition the card shows. Both rags walk out from the middle,
+             so the two widest bands meet there and the two narrowest sit at the
+             outer ends. Left alone, both blocks gather their colour at their own
+             top edge and the pair reads hot, faded, hot, faded — two objects.
+             --rise on the upper one turns its settle around, so the colour
+             gathers where the blocks meet and dissolves outward into the page at
+             both narrow ends: one field with the type cut out of it.
+
+             The base is the page's own ground rather than white here, for the
+             same reason as the states above — the recipe settles to the surface
+             colour it sits on, and only the page knows what that is. -->
+        <div class="drawn-gradients"
+             style="width: 26rem; max-width: 100%; --drawn-gradients-size: 8rem;
+                    --drawn-gradients-row-gap: 1.75rem;">
+          <div class="drawn-gradients__usage drawn-gradients__usage--down">
+            <div class="drawn-gradients__usage-row">
+              <span class="drawn-gradients__usage-line drawn-gradients__usage-line--label">Overlapping art</span>
+              <span class="drawn-gradients__surface drawn-gradients__surface--step drawn-gradients__surface--ice drawn-gradients__surface--rise"
+                    style="--drawn-gradients-step-row: 0; --drawn-gradients-base: #f3f2ef;"></span>
+            </div>
+            <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">03</span>
+
+            <div class="drawn-gradients__usage-row">
+              <span class="drawn-gradients__usage-line drawn-gradients__usage-line--label">Flat colour</span>
+              <span class="drawn-gradients__surface drawn-gradients__surface--step drawn-gradients__surface--ice drawn-gradients__surface--rise"
+                    style="--drawn-gradients-step-row: 1; --drawn-gradients-base: #f3f2ef;"></span>
+            </div>
+            <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">0.85</span>
+
+            <div class="drawn-gradients__usage-row">
+              <span class="drawn-gradients__usage-line drawn-gradients__usage-line--label">Wash</span>
+              <span class="drawn-gradients__surface drawn-gradients__surface--step drawn-gradients__surface--ice drawn-gradients__surface--rise"
+                    style="--drawn-gradients-step-row: 2; --drawn-gradients-base: #f3f2ef;"></span>
+            </div>
+            <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">82%</span>
+          </div>
+
+          <div class="drawn-gradients__usage drawn-gradients__usage--up">
+            <div class="drawn-gradients__usage-row">
+              <span class="drawn-gradients__usage-line drawn-gradients__usage-line--label">Wash</span>
+              <span class="drawn-gradients__surface drawn-gradients__surface--step drawn-gradients__surface--arc"
+                    style="--drawn-gradients-step-row: 0; --drawn-gradients-base: #f3f2ef;"></span>
+            </div>
+            <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">82%</span>
+
+            <div class="drawn-gradients__usage-row">
+              <span class="drawn-gradients__usage-line drawn-gradients__usage-line--label">Flat colour</span>
+              <span class="drawn-gradients__surface drawn-gradients__surface--step drawn-gradients__surface--arc"
+                    style="--drawn-gradients-step-row: 1; --drawn-gradients-base: #f3f2ef;"></span>
+            </div>
+            <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">0.85</span>
+
+            <div class="drawn-gradients__usage-row">
+              <span class="drawn-gradients__usage-line drawn-gradients__usage-line--label">Overlapping art</span>
+              <span class="drawn-gradients__surface drawn-gradients__surface--step drawn-gradients__surface--arc"
+                    style="--drawn-gradients-step-row: 2; --drawn-gradients-base: #f3f2ef;"></span>
+            </div>
+            <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">03</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="demo__state">
         <p class="demo__caption" data-i18n="state.band">Section band</p>
         <p class="demo__hint">--band</p>
         <div class="drawn-gradients" style="width: 26rem; max-width: 100%; --drawn-gradients-size: 8rem;">
@@ -1311,6 +1376,7 @@
         'state.stepDown': 'Lang til kort — trinnet vandrer mod venstre',
         'state.stepUp': 'Kort til lang — trinnet vandrer mod højre',
         'state.stepDrawn': 'Lang til kort, tegnet i stedet for stoppet',
+        'state.stepMirror': 'To blokke, ét felt — den øverste falder omvendt',
         'state.band': 'Sektionsbånd',
         'state.five': 'Fem temaer',
         'state.night': 'Falder til blæk',

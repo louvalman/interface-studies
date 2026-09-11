@@ -256,6 +256,14 @@
   Themes:  --dawn  --dusk  --mint  --ice  --arc   (+ --night, which moves
            the base the colour settles to, and composes with any of them)
 
+  Settle:  the colour gathers at the top edge and dissolves down. --rise turns
+           that around — it gathers at the bottom and dissolves up — which is
+           what lets two blocks stacked into a mirrored pair fade away from
+           each other instead of both starting hot at their own top edge. It
+           composes with either recipe, and it is for surfaces that carry no
+           content: .drawn-gradients__value and the rest sit in the lower half
+           because that is where the default recipe has settled.
+
   Recipes: the stop list is the default; --drawn swaps it for an SVG that is
            blurred into the same kind of field, and --raw shows that drawing
            before the blur, with no outline on it. --…-bleed and --…-blur tune

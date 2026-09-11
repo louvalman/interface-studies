@@ -75,7 +75,8 @@ for the static ones.
 Themes (`--dawn`, `--dusk`, `--mint`, `--ice`) set only the three colour stops;
 shapes (`--tile`, `--circle`, `--arch`, `--pill`, `--card`, `--band`) set only
 geometry; `--drawn` / `--raw` pick the recipe; `--night` moves the base the
-colour settles to. The axes compose freely, and the set is laid out along the
+colour settles to, and `--rise` turns the settle around. The axes compose
+freely, and the set is laid out along the
 colour one: the thumbnail reads orange, mint and night down its three rows, and
 the demo groups twelve drawings three to a family — so a drawing can be read
 across colours and a colour across drawings. Blue is the family that carries
@@ -568,14 +569,94 @@ still the same shape, only smaller.
   that is electric rather than atmospheric, and it is what the thumbnail leads
   with.
 
+- **`--rise`: the settle run the other way, so a pair can fade away from
+  itself.** The recipe has one axis — the colour gathers at the top edge and
+  dissolves toward the bottom — and this modifier moves it to the bottom
+  edge instead. It is what the thumbnail's composition is built on, and it
+  came out of that composition rather than being invented for the set.
+
+  Two `--step` blocks stacked with their rags walking out from the middle put
+  the two widest bands next to each other and the two narrowest at the outer
+  ends. Left alone both blocks settle the same way, so the pair reads hot,
+  faded, hot, faded — two objects that happen to be stacked, and each one's
+  faded end butting against the other's hot end at the middle. Flip the upper
+  one and the colour gathers where the blocks meet and dissolves outward into
+  the page at both narrow ends: one field with the type cut out of it, fading
+  away from itself in both directions.
+
+  It costs three custom properties and no new geometry, because the two pool
+  `y` values are authored as **distances from the gathering edge** rather than
+  as absolute positions — `--…-settle-edge` says which edge that is,
+  `--…-settle-sign` which way to count from it, and `--…-settle-angle` turns
+  the linear settle underneath. The radial extents are symmetric about their
+  own origin, so moving the origin is the whole change; the existing state
+  that retunes the pools by hand reads the same, since at the default edge and
+  sign a distance and a position are the same number.
+
+  `--drawn` paints no stop list at all, so the flip has to reach the drawing
+  or it would be a silent no-op on that recipe. The artwork is mirrored
+  instead, which is the same statement — whatever gathered at the top of it
+  now gathers at the bottom. In a `--step` block each band renders its own
+  copy of the drawing, sized to the whole block and offset so the copies
+  coincide, so mirroring each about its own centre lands them all in the same
+  place and the field still spans the bands.
+
+  What it does not carry is content. `.drawn-gradients__value` and the rest
+  sit in the *lower* half of a surface because that is where the default
+  recipe has settled and nothing needs a scrim; under `--rise` the settled
+  half is the top, and content would sit on the hot end. So it is for the
+  surfaces that carry none — every `--step` band, and any bare shape.
+
 The thumbnail no longer shows the twelve-tile set. Two reasons, and they are
 about the index rather than about the component. At thumbnail size twelve
 surfaces read as a colour picker instead of as a piece, where every other card
 in the rail shows one object. And the set is laid out along the colour axis, so
 the card led with the warmest, lightest themes in the folder. It now shows the
-one composition — `--step` used twice, settling to ink in the upper block and
-into the page in the lower — and quick look steps the colour axis through it.
-The page ground stayed a constant `#f3f2ef` in the same pass, for both halves
-of that: the rail only reads as one set of cards if the ground behind them
-never moves, so the darkness belongs to the surface and not to the page.
+one composition — `--step` used twice, mirrored, with `--rise` on the upper
+block so the colour gathers where the two blocks meet and dissolves out to the
+page at both ends — and quick look steps the colour axis through it.
+The page ground stayed a constant `#f3f2ef` in the same pass: the rail only
+reads as one set of cards if the ground behind them never moves, so a dark
+surface is the surface's business and not the page's.
+
+What that cost is the one dark surface in the rail. The upper block used to
+settle to ink, which anchored the card and advertised `--night` from the index;
+the mirrored pair settles into the page at both ends instead, and a base that
+is ink at one end and paper at the other is not a pair fading away from
+itself — it is two objects again.
+
+**So ink became what being looked at means.** The card's hover — and, on a
+touch device, the card in the read position, which is the same message —
+moves what the field settles *to*, from the page's ground to ink. The hues,
+the shape and the direction all stay put; one axis moves. It is the better
+home for `--night` than a quick-look dot was, for the same reason the ground
+is a constant: the rail reads as one set of cards only if nothing behind them
+moves, so the resting card settles into the page, and the dark version is
+something the card does when you look at it rather than a state to pick out
+of a list. The resting card is lighter than it was, and that is the trade.
+
+The surface eases into it rather than cutting, because the base is the only
+part of the recipe that *can* ease: a `background-image` of gradient stops
+does not interpolate, so a theme swap is a cut whatever you ask for — but
+`--night` moves the base, the border and the shadow and nothing else, which
+are all animatable. `--…-ease` is the one duration in the file, and the
+transition lists those three properties only; naming the gradient would cost
+a repaint and change nothing.
+
+The other thing hover could have moved is the settle *direction* — swapping
+`--rise` onto the lower block, so the pair fades inward instead of outward.
+Built, looked at, dropped. The widest bands carry most of the field's area and
+they are precisely the ones that wash out, so the staircase stops reading at
+the exact moment the card is being looked at: two saturated tips with a pale
+gap where the shape used to be. Ink does the opposite — it keeps the
+silhouette and sharpens it against the page — which is the test for a hover
+state on a thumbnail. It has to make the component *more* legible, not less.
+
+Neither route is the component's own `:hover`, and that is deliberate. A card
+thumbnail has pointer events off, so the index sends the message; quick look
+runs the same file with pointer events on, where a `pointerenter` listener in
+`preview.html` fires instead and no message arrives. Both call one function.
+A `:hover` rule in `component.css` would have been wrong anyway: settling to
+ink is a thumbnail's editorial decision about its own resting state, not
+something a gradient field does when a pointer crosses it.
 
