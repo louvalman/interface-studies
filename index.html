@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>UI Reference Base</title>
+    <title>Interface Studies</title>
     <meta
       name="description"
-      content="Interface components built in code and kept as self-contained references." />
+      content="A showcase of small interface studies, each built in plain HTML and CSS and kept self-contained." />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -16,11 +16,38 @@
 
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
 
+    <!-- What a link to this page looks like when it is pasted somewhere: a
+       title, a sentence and a card image, rather than a bare URL. og.png is a
+       1200x630 render of the masthead, kept as a file because no scraper runs
+       the page — Slack, Discord, iMessage and LinkedIn read these tags off the
+       raw HTML and fetch the image, and none of them will rasterise an SVG.
+
+       The paths are relative, which Slack, Discord and iMessage resolve
+       against the page they fetched. Facebook and LinkedIn want absolute ones:
+       when this gets a host, prefix both with it and add a matching og:url and
+       <link rel="canonical">. Nothing else here changes. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Interface Studies" />
+    <meta
+      property="og:title"
+      content="Interface Studies — small studies in interface design" />
+    <meta
+      property="og:description"
+      content="Each study takes a different approach to one interface detail — a type pair, a spacing rhythm, a hover behaviour — and builds just that, in plain HTML and CSS." />
+    <meta property="og:image" content="og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Interface Studies: small studies in interface design." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:creator" content="@LouisDyrhauge" />
+
     <link rel="stylesheet" href="index.css" />
   </head>
   <body>
     <!-- Language selector. Every translatable string in this file carries a
-       data-i18n key; index.js swaps them. Reference folders are not touched —
+       data-i18n key; index.js swaps them. Study folders are not touched —
        a demo page is its own document and keeps its own copy. -->
     <div class="lang" role="group" aria-label="Language">
       <button
@@ -56,10 +83,10 @@
           <circle class="logo__dot" cx="3.5" cy="12" r="2.95" /><circle class="logo__core" cx="12" cy="12" r="3.7" /><circle class="logo__dot" cx="20.5" cy="12" r="2.95" />
           <circle class="logo__dot" cx="3.5" cy="20.5" r="2.15" /><circle class="logo__dot" cx="12" cy="20.5" r="2.95" /><circle class="logo__dot" cx="20.5" cy="20.5" r="2.15" />
         </svg>
-        UI Reference Base
+        Interface Studies
       </p>
       <h1 class="head__title" data-i18n="head.title">
-        Interface details, built as reusable parts.
+        Small studies in interface design.
       </h1>
       <!-- The closing sentence tells you how to work the rail, and that is
          not the same instruction on a phone as on a laptop — so it is written
@@ -67,52 +94,74 @@
          only the part that holds true either way is markup. -->
       <p class="head__lede">
         <span data-i18n="head.lede">
-          Components built in plain HTML and CSS, tied to no framework — kept
-          so the type, the spacing and the motion survive being lifted into
-          one.
+          Each study takes a different approach to one interface detail — a
+          type pair, a spacing rhythm, a hover behaviour — and builds just
+          that, in plain HTML and CSS with no framework.
         </span>
         <span data-lede-hint>
-          Hover a card to run it in place, or open one at full size.
+          Hover a card to run it in place, or open it at full size.
         </span>
       </p>
 
+      <!-- Both halves are facts the page can count, and neither is in the
+         lede. "Scope — a few decisions" and "Each study — stands alone" used
+         to sit here: the lede says the first in its own first sentence and the
+         footer says the second in full, so the row spent ninety pixels
+         repeating what was already on the page twice. A count and a date say
+         how much is here and whether it is still moving, which is what a
+         masthead is for and what nothing else on the page states. Both are
+         written by index.js from the cards. -->
       <dl class="head__meta">
         <div class="head__meta-item">
-          <dt class="head__meta-key" data-i18n="meta.references">References</dt>
-          <dd class="head__meta-val" id="meta-count">—</dd>
-        </div>
-        <div class="head__meta-item">
-          <dt class="head__meta-key" data-i18n="meta.portable">Portable</dt>
-          <dd class="head__meta-val" data-i18n="meta.anyStack">
-            Any stack
-          </dd>
-        </div>
-        <div class="head__meta-item">
-          <dt class="head__meta-key" data-i18n="meta.eachRef">Each reference</dt>
-          <dd class="head__meta-val" data-i18n="meta.standsAlone">
-            Stands alone
-          </dd>
+          <dt class="head__meta-key" data-i18n="meta.latest">Latest</dt>
+          <dd class="head__meta-val" id="meta-latest">&mdash;</dd>
         </div>
       </dl>
     </header>
 
     <section class="rail">
       <div class="rail__bar">
-        <div class="rail__meta">
-          <p class="rail__count">
-            <span data-i18n="rail.reference">Reference</span>
-            <span id="rail-index">01</span>
-            /
-            <span id="rail-total">01</span>
-          </p>
-          <p class="rail__hint" data-rail-hint>
-            Hover to play &middot; drag to scroll &middot; &larr; &rarr;
-          </p>
-        </div>
+        <p class="rail__count">
+          <span data-i18n="rail.study">Study</span>
+          <span id="rail-index">01</span>
+          /
+          <span id="rail-total">01</span>
+        </p>
         <nav
           class="rail__nav"
           data-i18n-aria="a11y.carousel"
           aria-label="Carousel">
+          <!-- The rail drifts on its own, so it needs a way to be stopped:
+             anything moving by itself for more than five seconds owes the
+             reader a pause (WCAG 2.2.2), and prefers-reduced-motion is a
+             separate mechanism rather than a substitute for one. index.js
+             hides this button outright when there is no drift to pause —
+             reduced motion, or a viewport wide enough to hold every card.
+             Its label is state, so it lives in index.js with the wrap
+             labels rather than carrying a data-i18n-aria key here. -->
+          <button
+            class="rail__btn rail__btn--drift"
+            type="button"
+            hidden
+            data-rail-drift
+            data-drift="on"
+            aria-label="Pause the carousel">
+            <svg
+              class="rail__btn-icon rail__btn-icon--pause"
+              viewBox="0 0 16 16"
+              fill="currentColor"
+              aria-hidden="true">
+              <rect x="5" y="4" width="2" height="8" rx="0.6" />
+              <rect x="9" y="4" width="2" height="8" rx="0.6" />
+            </svg>
+            <svg
+              class="rail__btn-icon rail__btn-icon--play"
+              viewBox="0 0 16 16"
+              fill="currentColor"
+              aria-hidden="true">
+              <path d="M5.4 3.6a.6.6 0 0 1 .92-.5l6 4.4a.6.6 0 0 1 0 1l-6 4.4a.6.6 0 0 1-.92-.5z" />
+            </svg>
+          </button>
           <button
             class="rail__btn"
             type="button"
@@ -152,7 +201,20 @@
         </nav>
       </div>
 
-      <!-- Add a reference: copy one <article class="piece"> block and point the
+      <!-- Type filter. The buttons are written by index.js from the types the
+         cards actually declare, so this row is empty markup until it runs and
+         a study of a new type needs nothing added here. It reads the same
+         `type.*` key the card's badge carries — the type is stated once per
+         card and this is not a second place to state it. -->
+      <div
+        class="rail__filter"
+        data-rail-filter
+        role="group"
+        data-i18n-aria="a11y.filter"
+        aria-label="Filter by type"
+        hidden></div>
+
+      <!-- Add a study: copy one <article class="piece"> block and point the
          iframe at the new folder's preview.html and the title link at its
          demo.html. Keep the newest first. Everything the quick-look overlay
          shows is read back out of this block, so nothing is declared twice.
@@ -168,12 +230,12 @@
         tabindex="0"
         role="region"
         data-i18n-aria="a11y.railRegion"
-        aria-label="Reference carousel">
+        aria-label="Study carousel">
         <article class="piece" data-piece data-date="2026-09-10T12:00">
           <div class="piece__frame">
             <iframe
               class="piece__preview"
-              src="2026-09-liquid-glass-toolbar/preview.html"
+              data-src="2026-09-liquid-glass-toolbar/preview.html"
               loading="lazy"
               scrolling="no"
               tabindex="-1"
@@ -247,7 +309,7 @@
           <div class="piece__frame">
             <iframe
               class="piece__preview"
-              src="2026-09-inked-plate-card/preview.html"
+              data-src="2026-09-inked-plate-card/preview.html"
               loading="lazy"
               scrolling="no"
               tabindex="-1"
@@ -320,7 +382,7 @@
           <div class="piece__frame">
             <iframe
               class="piece__preview"
-              src="2026-09-raster-pulse/preview.html"
+              data-src="2026-09-raster-pulse/preview.html"
               loading="lazy"
               scrolling="no"
               tabindex="-1"
@@ -393,7 +455,7 @@
           <div class="piece__frame">
             <iframe
               class="piece__preview"
-              src="2026-09-drawn-gradients/preview.html"
+              data-src="2026-09-drawn-gradients/preview.html"
               loading="lazy"
               scrolling="no"
               tabindex="-1"
@@ -468,7 +530,7 @@
           <div class="piece__frame">
             <iframe
               class="piece__preview"
-              src="2026-09-detail-reveal-card/preview.html"
+              data-src="2026-09-detail-reveal-card/preview.html"
               loading="lazy"
               scrolling="no"
               tabindex="-1"
@@ -566,20 +628,20 @@
               <circle class="logo__dot" cx="3.5" cy="12" r="2.95" /><circle class="logo__core" cx="12" cy="12" r="3.7" /><circle class="logo__dot" cx="20.5" cy="12" r="2.95" />
               <circle class="logo__dot" cx="3.5" cy="20.5" r="2.15" /><circle class="logo__dot" cx="12" cy="20.5" r="2.95" /><circle class="logo__dot" cx="20.5" cy="20.5" r="2.15" />
             </svg>
-            UI Reference Base
+            Interface Studies
           </p>
           <p class="foot__blurb" data-i18n="foot.blurb">
-            Every reference is self-contained. Copy a folder out and it works
+            Every study is self-contained. Copy a folder out and it works
             with nothing else from here — no shared stylesheet, no build step,
             no dependency on this page.
           </p>
 
-          <!-- Where the references came from. It sits down here rather than
+          <!-- Where the studies came from. It sits down here rather than
              in the masthead because it is provenance, not a pitch: the
              sources are credited in the folders, and the folders are where
              someone checking would look. -->
           <p class="foot__note" data-i18n="foot.sources">
-            Some references start from an interface found elsewhere; none is a
+            Some studies start from an interface found elsewhere; none is a
             copy of one. Each folder's notes.md names its source and the
             decisions the build keeps.
           </p>
@@ -626,7 +688,7 @@
             </dd>
           </div>
           <div class="foot__row">
-            <dt class="foot__key" data-i18n="foot.references">References</dt>
+            <dt class="foot__key" data-i18n="foot.studies">Studies</dt>
             <dd class="foot__val" id="foot-count">&mdash;</dd>
           </div>
         </dl>

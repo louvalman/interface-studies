@@ -57,7 +57,7 @@
   -->
   <script>
     (function () {
-      var CHANNEL = 'ui-reference-base';
+      var CHANNEL = 'interface-studies';
       var root = document.querySelector('.slug');
       if (!root) return;
 
@@ -87,6 +87,20 @@
           if (variant) apply(variant);
         }
       });
+
+      // Quick look runs this file with pointer events live, so the pointer —
+      // and with it the focus — ends up inside this document. Keys pressed
+      // here fire against *this* document and never reach the index, which is
+      // where the overlay's Escape handler lives: click the component, press
+      // Escape, and nothing happens. So the one key the overlay owns is handed
+      // back across the channel. Only Escape. Anything else is the component's
+      // to interpret — arrows move a caret in a field the component may have.
+      if (window.parent !== window) {
+        document.addEventListener('keydown', function (event) {
+          if (event.key !== 'Escape') return;
+          window.parent.postMessage({ source: CHANNEL, type: 'preview:key', key: 'Escape' }, '*');
+        });
+      }
 
       if (window.parent !== window) {
         window.parent.postMessage({

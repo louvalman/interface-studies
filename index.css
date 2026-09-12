@@ -1,5 +1,5 @@
-/* Landing page chrome. Not a reference — this styles the index only, and
-   never reaches into any reference folder. Nothing here names a component
+/* Landing page chrome. Not a study — this styles the index only, and
+   never reaches into any study folder. Nothing here names a component
    class; the previews are iframes, and they own their own styling. */
 
 :root {
@@ -7,10 +7,10 @@
   --surface: #fbfaf8;
   --ink: #17181a;
   --ink-soft: #55565a;
-  --muted: #8b8a84;
+  --muted: #6c6b67;
   --hairline: rgba(23, 24, 26, 0.1);
   --hairline-strong: rgba(23, 24, 26, 0.22);
-  --accent: #b4552f;
+  --accent: #ac512d;
 
   --sans: "Plus Jakarta Sans", system-ui, sans-serif;
   --mono: "JetBrains Mono", ui-monospace, monospace;
@@ -69,9 +69,18 @@ body.is-locked {
 
 /* Aligned to the page gutter, not to an inset of its own — everything else
    on the page hangs off --gutter, and a control floating inside that margin
-   reads as a browser extension rather than part of the layout. */
+   reads as a browser extension rather than part of the layout.
+
+   Absolute, not fixed. Language is picked once on arrival and never again, so
+   the chip has no business riding the viewport for the rest of the page — and
+   while it did, it sat on top of the rail's next button: both are pinned to
+   the gutter's right edge, and at the scroll offset that puts the rail bar
+   near the top of the window the chip covered it. Positioned against the
+   initial containing block rather than a wrapper, so it still hangs off the
+   page's top-right corner; the masthead's own top padding is deeper than the
+   chip, which is what keeps it clear of the eyebrow at every width. */
 .lang {
-  position: fixed;
+  position: absolute;
   top: clamp(1.25rem, 3vw, 2.25rem);
   right: var(--gutter);
   z-index: 40;
@@ -80,10 +89,10 @@ body.is-locked {
   gap: 0.1rem;
   padding: 0.2rem 0.35rem;
   border-radius: 999px;
-  /* Same translucent chip the card badges use, so it belongs to the same
-     family rather than introducing a third surface treatment. */
+  /* Same chip the card badges use, so it belongs to the same family rather
+     than introducing a third surface treatment. No backdrop-filter: it scrolls
+     with the page now and the only thing ever behind it is the paper. */
   background: rgba(251, 250, 248, 0.72);
-  backdrop-filter: blur(8px);
 }
 
 .lang__btn {
@@ -222,6 +231,11 @@ body.is-locked {
 
 .head__title {
   margin: 0;
+  /* The backstop under the soft hyphens in index.js's Danish table: a compound
+     that arrives without one breaks rather than pushing the page sideways.
+     It only fires where a word cannot fit a line on its own, so a title that
+     hyphenates or fits is untouched. */
+  overflow-wrap: break-word;
   font-size: clamp(2.25rem, 6vw, 4rem);
   font-weight: 600;
   line-height: 1.04;
@@ -239,8 +253,11 @@ body.is-locked {
 }
 
 /* Small stat row under the lede. */
+/* One item now that the count has gone to the rail, where "Study 01 / 05"
+   already carries it — so a little less air above it than a row of three
+   wanted. */
 .head__meta {
-  margin: clamp(2rem, 4vw, 3rem) 0 0;
+  margin: clamp(1.5rem, 3vw, 2.25rem) 0 0;
   padding: 0;
   display: flex;
   flex-wrap: wrap;
@@ -272,8 +289,13 @@ body.is-locked {
 
 /* --- rail ------------------------------------------------------------- */
 
+/* The rail closes on its own rule — the progress track below the cards — and
+   the footer opens straight after it. This used to be 96px of padding, then a
+   98px void, then a second hairline at the top of the footer: two rules doing
+   one job with nothing between them, which read as the page having run out
+   rather than having ended. */
 .rail {
-  padding-bottom: clamp(3rem, 7vw, 6rem);
+  padding-bottom: clamp(1.5rem, 3vw, 2rem);
 }
 
 .rail__bar {
@@ -284,27 +306,16 @@ body.is-locked {
   padding: 0 var(--gutter) 1.25rem;
 }
 
-.rail__meta {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-}
-
-.rail__count,
-.rail__hint {
+.rail__count {
   margin: 0;
+  /* "Study 01 / 05" is one thing to read; a narrow bar may drop the buttons to
+     their own line, but it may never break the label across two. */
+  white-space: nowrap;
   font-family: var(--mono);
   font-size: 0.6875rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-}
-
-.rail__count { color: var(--ink); }
-
-.rail__hint {
-  font-size: 0.625rem;
-  letter-spacing: 0.14em;
-  color: var(--muted);
+  color: var(--ink);
 }
 
 .rail__nav {
@@ -352,6 +363,81 @@ body.is-locked {
   height: 1rem;
 }
 
+/* .rail__btn sets a display, and an author rule beats the UA [hidden] rule —
+   so the drift control needs this to hide at all. */
+.rail__btn[hidden] { display: none; }
+
+/* One button, two glyphs: it offers the state it would move to. */
+.rail__btn--drift .rail__btn-icon { grid-area: 1 / 1; }
+.rail__btn--drift[data-drift="on"] .rail__btn-icon--play,
+.rail__btn--drift[data-drift="off"] .rail__btn-icon--pause { display: none; }
+
+/* A card the filter has taken out. A class rather than the hidden attribute,
+   because .piece sets its own display and an author rule beats the UA rule
+   that [hidden] leans on. */
+.piece.is-filtered,
+.piece--ghost.is-filtered {
+  display: none;
+}
+
+/* --- type filter -------------------------------------------------------- */
+
+/* Written by index.js from the types the cards declare, so it is empty until
+   it runs and hidden when there is only one type to choose between — a filter
+   with a single option is a label pretending to be a control. */
+.rail__filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0 var(--gutter) 1.25rem;
+}
+
+.rail__filter-btn {
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    color 200ms var(--ease),
+    border-color 200ms var(--ease),
+    background-color 200ms var(--ease);
+}
+
+.rail__filter-btn:hover {
+  color: var(--ink);
+  border-color: var(--hairline-strong);
+}
+
+/* Filled, not underlined: this one is a state the rest of the rail is in, and
+   it has to read as pressed from across the page rather than as a link. */
+.rail__filter-btn[aria-pressed="true"] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--paper);
+}
+
+.rail__filter-btn:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+/* The count in each chip: the same type, a step quieter, so the row states
+   how much is behind each option without becoming two columns of text. */
+.rail__filter-count {
+  opacity: 0.55;
+  white-space: pre;   /* the space the label reads with, kept in the render */
+}
+
+@media (hover: none) {
+  .rail__filter-btn { min-height: 2.25rem; }
+}
+
 .rail__track {
   display: flex;
   gap: var(--rail-gap);
@@ -377,6 +463,18 @@ body.is-locked {
   border-radius: 0.5rem;
 }
 
+/* The drift and a step both write scrollLeft every frame, so snap has to come
+   off for the same reason dragging takes it off — mandatory snap yanks the
+   scroll back to a card on every write — and scroll-behavior with it, or each
+   write would queue a smooth animation against the last. Snap returns when
+   they stop, and lands the rail on a card for free. */
+.rail__track.is-drifting,
+.rail__track.is-stepping,
+.rail__track.is-recycling {
+  scroll-snap-type: none;
+  scroll-behavior: auto;
+}
+
 /* Dragging suspends snap, or the track fights the pointer on release. */
 .rail__track.is-dragging {
   cursor: grabbing;
@@ -385,6 +483,9 @@ body.is-locked {
   user-select: none;
 }
 
+/* Two things at once, and deliberately: where you are in the rail, and the
+   line that ends it. The track is always drawn — it is the page's rule at this
+   point — and only the fill comes and goes. */
 .rail__progress {
   margin: 0 var(--gutter);
   height: 2px;
@@ -570,7 +671,12 @@ body.is-locked {
   }
 }
 
+/* Grows to fill the card so the call to action can sit at the bottom of it.
+   The track stretches every card to the tallest, so a body that fills its card
+   puts every "Open demo" on one line across the rail — notes run four lines or
+   five, and the links used to land wherever each note happened to stop. */
 .piece__body {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -621,7 +727,11 @@ body.is-locked {
 }
 
 .piece__cta {
-  margin-top: 0.6rem;
+  /* auto, not a fixed step: it takes up whatever the shorter note left over,
+     which is what lines the row up. The 0.6rem is the floor, for the card that
+     happens to be the tallest and has nothing spare. */
+  margin-top: auto;
+  padding-top: 0.6rem;
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
@@ -987,10 +1097,12 @@ body.is-locked {
 /* --- foot -------------------------------------------------------------- */
 
 /* Inset by the gutter so the rule lines up with the rail above it. */
+/* No border-top: the rail's progress track is the rule above this, and a
+   second hairline 98px under the first was the page drawing the same line
+   twice. */
 .foot {
   margin: 0 var(--gutter);
-  padding: clamp(2.5rem, 5vw, 4rem) 0 clamp(2rem, 4vw, 3rem);
-  border-top: 1px solid var(--hairline);
+  padding: clamp(1.75rem, 3.5vw, 2.75rem) 0 clamp(2rem, 4vw, 3rem);
 }
 
 /* Statement left, specifics right — the same split the masthead makes, so
@@ -1241,11 +1353,16 @@ body.is-locked {
     --preview-scale: 0.55;     /* 264 / 480 */
   }
 
+  /* The bar is a count and three buttons now, so it stays one row all the way
+     down — it used to stack, and then to be a small grid, only because a hint
+     line needed somewhere to go. */
   .rail__bar {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
   }
+
+  .rail__filter { padding-bottom: 1rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {

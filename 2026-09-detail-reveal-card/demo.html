@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>2026-09-detail-reveal-card</title>
+  <title>Detail reveal card &mdash; Interface Studies</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,6 +12,20 @@
   <!-- Page chrome, like the back link: goes stale if this folder is copied
        out on its own, and nothing else breaks when it does. -->
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+
+  <!-- What a link to this page looks like when it is pasted somewhere. The
+     card image is the index's, one level up — the same place this page
+     already takes its favicon and its back link from, so it goes stale in
+     exactly the same way and no worse. A copied-out folder loses the
+     picture and keeps the title and the sentence. -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Interface Studies" />
+  <meta property="og:title" content="Detail reveal card &mdash; Interface Studies" />
+  <meta property="og:description" content="A bottom panel that grows upward on hover, pushing the resting label up ahead of it. The base card is content-agnostic; everything below is the same component, differing only by custom properties and modifiers." />
+  <meta property="og:image" content="../og.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
 
   <link rel="stylesheet" href="component.css">
 
@@ -44,8 +58,10 @@
 
     /* Aligned to the page's own padding, so it sits on the same edge as the
        content rather than floating inside the margin. */
+    /* Absolute, not fixed: the language is picked once and the chip has no
+       reason to ride the viewport down the page. */
     .demo__lang {
-      position: fixed;
+      position: absolute;
       top: clamp(1.25rem, 3vw, 2.25rem);
       right: var(--demo-gutter);
       z-index: 20;
@@ -55,14 +71,13 @@
       padding: 0.2rem 0.35rem;
       border-radius: 999px;
       background: rgba(255, 255, 255, 0.72);
-      backdrop-filter: blur(8px);
     }
 
     .demo__lang-btn {
       padding: 0.35em 0.5em;
       border: 0;
       background: transparent;
-      color: #8a919c;
+      color: #656b73;
       font-family: "JetBrains Mono", ui-monospace, monospace;
       font-size: 0.625rem;
       letter-spacing: 0.16em;
@@ -76,7 +91,7 @@
     .demo__lang-btn[aria-pressed="true"] {
       color: #14171c;
       text-decoration: underline;
-      text-decoration-color: #b4552f;
+      text-decoration-color: #ac512d;
       text-decoration-thickness: 1px;
       text-underline-offset: 0.4em;
     }
@@ -144,7 +159,7 @@
       font-size: 0.6875rem;
       letter-spacing: 0.18em;
       text-transform: uppercase;
-      color: #9c9aa6;
+      color: #6b6972;
     }
 
     .demo__heading {
@@ -196,7 +211,7 @@
       max-width: 52ch;
       font-size: 0.875rem;
       line-height: 1.5;
-      color: #7b7f88;
+      color: #676a72;
     }
 
     /* --- card cells --- */
@@ -290,6 +305,186 @@
 
       .demo__back { min-height: 2.75rem; }
     }
+
+    /* --- decisions ------------------------------------------------------
+
+       notes.md, rendered. The file stays the record; this is the shape the
+       contract asks every study to state — the type, the origin, and the
+       decisions the build captures — so the page that shows the component also
+       says what was extracted and why. It used to live only in the repo, which
+       meant the one artefact worth lifting was the one thing the site never
+       showed.
+
+       Kept in step with notes.md by hand, like the language table above it and
+       preview.html's markup: there is no build step to read the file, and
+       fetching it fails over file://, where each document gets an opaque
+       origin. The prose is left in the language it was written in — it is a
+       record of decisions, not page copy, and the same reasoning that leaves
+       component sample copy alone applies. Only the labels around it switch. */
+    .demo__notes {
+      margin-top: clamp(3.5rem, 8vw, 6rem);
+      padding-top: clamp(2rem, 4vw, 3rem);
+      border-top: 1px solid rgba(20, 23, 28, 0.12);
+      /* Prose measure, not the page's. The states above lay out as wide as
+         they need; a paragraph does not. */
+      max-width: 42rem;
+    }
+
+    .demo__notes-title {
+      margin: 0;
+      font-size: 1.125rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: #14171c;
+    }
+
+    /* The disclosure row. `list-style: none` kills the marker in Firefox and
+       Chrome; the ::-webkit- rule is still needed for Safari. */
+    .demo__notes-summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.25rem 0 0.75rem;
+      cursor: pointer;
+      list-style: none;
+    }
+
+    .demo__notes-summary::-webkit-details-marker { display: none; }
+
+    .demo__notes-summary:focus-visible {
+      outline: 2px solid #14171c;
+      outline-offset: 4px;
+      border-radius: 0.25rem;
+    }
+
+    .demo__notes-chevron {
+      flex: none;
+      width: 1rem;
+      height: 1rem;
+      color: #676a72;
+      transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .demo__notes-summary:hover .demo__notes-chevron { color: #14171c; }
+
+    .demo__notes[open] .demo__notes-chevron { transform: rotate(180deg); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .demo__notes-chevron { transition: none; }
+    }
+
+    /* Touch: the row is the target, and it has to be one you can hit. */
+    @media (hover: none) {
+      .demo__notes-summary { min-height: 2.75rem; }
+    }
+
+    .demo__notes-body { padding-bottom: 0.5rem; }
+
+    .demo__notes-meta {
+      margin: 0.75rem 0 0;
+      display: grid;
+      gap: 0.6rem;
+    }
+
+    .demo__notes-row {
+      display: grid;
+      grid-template-columns: 4.5rem minmax(0, 1fr);
+      gap: 0.9rem;
+      align-items: baseline;
+    }
+
+    .demo__notes-row dt {
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.625rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #676a72;
+    }
+
+    .demo__notes-row dd {
+      margin: 0;
+      font-size: 0.875rem;
+      line-height: 1.5;
+      color: #5b5f68;
+      /* A source URL is one unbroken word and the page is 320px wide on a
+         phone: without this it sets the whole column's minimum. */
+      overflow-wrap: anywhere;
+    }
+
+    .demo__notes-lede {
+      margin: 1.75rem 0 0;
+      font-size: 0.9375rem;
+      line-height: 1.7;
+      color: #5b5f68;
+    }
+
+    .demo__notes-list {
+      margin: 2.25rem 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 1.75rem;
+    }
+
+    .demo__notes-list > li {
+      display: grid;
+      gap: 0.45rem;
+    }
+
+    .demo__notes-head {
+      margin: 0;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      line-height: 1.45;
+      color: #14171c;
+    }
+
+    .demo__notes-list p {
+      margin: 0;
+      font-size: 0.9375rem;
+      line-height: 1.7;
+      color: #5b5f68;
+    }
+
+    .demo__notes code {
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.85em;
+      padding: 0.12em 0.32em;
+      border-radius: 0.25rem;
+      background: rgba(20, 23, 28, 0.06);
+      /* Declarations run long and a code span may not push the page sideways. */
+      overflow-wrap: anywhere;
+    }
+
+    .demo__notes a {
+      color: inherit;
+      text-decoration-color: #ac512d;
+      text-underline-offset: 0.2em;
+    }
+
+    .demo__notes a:focus-visible {
+      outline: 2px solid #14171c;
+      outline-offset: 2px;
+      border-radius: 0.15rem;
+    }
+
+    /* The inspiration row, below the decisions rather than above them. */
+    .demo__notes-meta--foot { margin-top: 2.5rem; }
+    .demo__notes-meta--foot + .demo__notes-foot { margin-top: 1.1rem; }
+    /* 'Inspiration' is longer than 'Type' and sets its own column. */
+    .demo__notes-meta--foot .demo__notes-row {
+      grid-template-columns: 6.25rem minmax(0, 1fr);
+    }
+
+    .demo__notes-foot {
+      margin: 2.5rem 0 0;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.6875rem;
+      line-height: 1.7;
+      letter-spacing: 0.08em;
+      color: #676a72;
+    }
   </style>
 </head>
 <body>
@@ -313,7 +508,7 @@
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
         <path d="M10 2 4 8l6 6" stroke-linecap="round" stroke-linejoin="round" />
       </svg>
-      <span data-i18n="back">All references</span>
+      <span data-i18n="back">All studies</span>
     </a>
 
     <header class="demo__intro">
@@ -649,14 +844,82 @@
     </section>
 
   </div>
+  <!-- notes.md, rendered. Closed by default: the states are what the page is
+       for, and the decisions are what you open when you want to know why. A
+       <details> rather than a scripted panel — disclosure is the one thing the
+       element already is, keyboard and screen reader included, and this page
+       has no other reason to carry script. -->
+  <details class="demo__notes">
+    <summary class="demo__notes-summary">
+      <h2 class="demo__notes-title" data-i18n="notes.title">Decisions</h2>
+      <svg class="demo__notes-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+        <path d="M4 6l4 4 4-4" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </summary>
+
+    <div class="demo__notes-body">
+
+      <dl class="demo__notes-meta">
+        <div class="demo__notes-row">
+          <dt data-i18n="notes.type">Type</dt>
+          <dd data-i18n="type">Card</dd>
+        </div>
+      </dl>
+
+      <p class="demo__notes-lede">A card that is a label at rest and a panel when looked at. The label sits on the bottom edge; on hover the whole bottom region grows upward, so the label rises and the details arrive underneath it in the space it vacated. One translation, not four things fading in — the layout itself moves.</p>
+      <p class="demo__notes-lede">The base card is content-agnostic: an article, a plan, a changelog. The location treatment is a <code>--map</code> modifier layered on top — an abstract duotone mesh with contour rings and a pulsing pin, so the map is drawn rather than photographed.</p>
+
+      <ol class="demo__notes-list">
+        <li>
+          <h3 class="demo__notes-head">The reveal is one translation, not a height animation of many parts.</h3>
+          <p>The label is the only thing visible at rest, sitting at the bottom edge. On hover the whole bottom panel grows upward (<code>grid-template-rows: 0fr -&gt; 1fr</code> on a clipped region), so the label <em>rises</em> and the details arrive underneath it in the space it vacated. Nothing fades in on top of anything — the layout itself moves, which is why it reads as one motion instead of four.</p>
+        </li>
+        <li>
+          <h3 class="demo__notes-head">Easing and stagger.</h3>
+          <p><code>cubic-bezier(0.16, 1, 0.3, 1)</code> over ~420ms: a fast launch and a quick settle, so the panel appears to decelerate into place. Disclosed rows follow at 55ms intervals. The delays are declared <em>only</em> in the hover/open state, so leaving snaps back immediately — an exit that staggers feels broken.</p>
+        </li>
+        <li>
+          <h3 class="demo__notes-head">The corner arrow hints, then gets out of the way.</h3>
+          <p>The accent ↗ fades and drifts up-right as the details arrive, while a <code>→</code> grows in from zero width to the left of the label, pushing it right. One saturated colour, moved around the card rather than repeated.</p>
+        </li>
+        <li>
+          <h3 class="demo__notes-head">Two typefaces doing two jobs.</h3>
+          <p>Geometric sans at 28px/600 for the title; monospace, uppercase, 0.18em tracking for every label, badge, kicker and meta line. The tracking is what sells it — at 12px with normal spacing the same text reads as small body copy, not as a label.</p>
+        </li>
+        <li>
+          <h3 class="demo__notes-head">Hairline rules that fade out to the right.</h3>
+          <p>Separators are a 1px <code>linear-gradient(to right, rule, transparent)</code> used as a background, not a border. A full-width border would draw a hard box edge; the fade keeps the detail rows feeling like they float on the artwork.</p>
+        </li>
+      </ol>
+
+      <!-- Where it started, last: the block opens on the component, and the
+           lineage is a footnote to it. Same order notes.md has. -->
+      <dl class="demo__notes-meta demo__notes-meta--foot">
+        <div class="demo__notes-row">
+          <dt data-i18n="notes.inspiration">Inspiration</dt>
+          <dd><a href="https://x.com/BThreeAgency/status/2084664063272055264" target="_blank" rel="noopener noreferrer">x.com/BThreeAgency</a></dd>
+        </div>
+      </dl>
+
+      <p class="demo__notes-foot">
+        <a href="notes.md">notes.md</a>
+        <span data-i18n="notes.full">&mdash; the full record, including what was tried and dropped</span>
+      </p>
+    </div>
+  </details>
+
   <script>
     // Language for this page only. No shared module: the folder has to survive
     // being copied out on its own.
     (function () {
-      var STORE_KEY = 'ui-reference-base:lang';
+      var STORE_KEY = 'interface-studies:lang';
 
       var DA = {
-        'back': 'Alle referencer',
+        'notes.title': 'Beslutninger',
+        'notes.type': 'Type',
+        'notes.inspiration': 'Inspiration',
+        'notes.full': '\u2014 hele optegnelsen, ogs\u00e5 det der blev pr\u00f8vet og forkastet',
+        'back': 'Alle studier',
         'type': 'Kort',
         'heading': 'Kort med detaljeafsløring',
         'lede': 'Et bundpanel der vokser opad ved hover og skubber den hvilende '
@@ -688,7 +951,6 @@
       var back = document.querySelector('.demo__back');
 
       var english = nodes.map(function (el) { return el.textContent; });
-      var titleEn = document.title;
 
       function apply(lang) {
         var table = lang === 'da' ? DA : null;
@@ -698,8 +960,13 @@
           el.textContent = table && table[key] ? table[key] : english[i];
         });
 
+        // The tab follows the heading rather than keeping its own copy of it,
+        // so the study's name is the same string in both places and in both
+        // languages. The <title> in the markup is the no-script fallback.
+        var head = document.querySelector('.demo__heading');
+        if (head) document.title = head.textContent.trim() + ' \u2014 Interface Studies';
+
         document.documentElement.lang = lang;
-        document.title = titleEn;   // the folder slug, not prose
 
         buttons.forEach(function (b) {
           b.setAttribute('aria-pressed', b.dataset.lang === lang ? 'true' : 'false');

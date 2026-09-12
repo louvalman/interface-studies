@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Interface Studies — social card source</title>
+
+    <!-- The source for og.png. Not a page anyone visits: it is the thing that
+       gets photographed, and the photograph is what ships.
+
+       Render it:
+
+         "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
+           --headless --disable-gpu --hide-scrollbars \
+           --virtual-time-budget=6000 --window-size=1200,630 \
+           --screenshot=og.png og.html
+
+       --virtual-time-budget is not optional: the fonts come off Google Fonts
+       over the network, and a screenshot taken before they land is rendered in
+       system-ui. --window-size must stay 1200x630, which is the card size the
+       og:image:width and og:image:height tags in index.html declare.
+
+       This existed twice as a throwaway before it was a file — once when the
+       card was first made and once when the masthead copy changed — and both
+       times it was rebuilt from scratch off index.css by eye. It is checked in
+       so the third time is an edit.
+
+       Keep it in step with the masthead by hand, the way preview.html is kept
+       in step with component.html. Nothing reads index.html to build this, and
+       nothing checks that the two agree: if the h1 changes, this file and then
+       og.png both follow, or a link pastes as one page and opens as another. -->
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- display=block, not swap. A swap renders the fallback first and repaints
+       when the webfont lands, and a screenshot can be taken in between; block
+       holds the text invisible instead, so an early capture is blank rather
+       than quietly wrong. -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&family=Plus+Jakarta+Sans:wght@400;500;600&display=block" />
+
+    <style>
+      /* The masthead's tokens, copied rather than linked. index.css is the
+         page's stylesheet and carries its layout with it — the rail, the
+         gutters, the responsive clamps — and none of that applies to a fixed
+         1200x630 frame. Copying the eight values this needs is the same trade
+         a study folder makes: a second copy, and no coupling to something that
+         is free to change for its own reasons. */
+      :root {
+        --paper: #f5f4f1;
+        --ink: #17181a;
+        --ink-soft: #55565a;
+        --muted: #6c6b67;
+        --hairline: rgba(23, 24, 26, 0.1);
+        --accent: #ac512d;
+
+        --sans: "Plus Jakarta Sans", system-ui, sans-serif;
+        --mono: "JetBrains Mono", ui-monospace, monospace;
+      }
+
+      * { box-sizing: border-box; }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+        font-family: var(--sans);
+        color: var(--ink);
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* The masthead's own ground: the same two radials over paper, with their
+         vertical extents re-cast against 630px rather than a viewport. The
+         percentages differ from index.css for that reason — the same ellipse
+         on a much shorter box is a different ellipse. */
+      .card {
+        width: 1200px;
+        height: 630px;
+        padding: 80px;
+        display: flex;
+        flex-direction: column;
+        background:
+          radial-gradient(58% 76% at 12% 0%, rgba(180, 85, 47, 0.07), transparent 68%),
+          radial-gradient(46% 63% at 92% 4%, rgba(78, 110, 190, 0.06), transparent 70%),
+          var(--paper);
+      }
+
+      .eyebrow {
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 13px;
+        font-family: var(--mono);
+        font-size: 15px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .logo {
+        width: 28px;
+        height: 28px;
+        flex: none;
+      }
+
+      .logo__dot { fill: var(--ink); }
+      .logo__core { fill: var(--accent); }
+
+      /* The title takes the slack, so the rule and the row beneath it sit at
+         the same height whatever the headline runs to. A card is cropped by
+         whoever is showing it; the bottom row staying put matters more than
+         the title starting at a fixed y. */
+      .title {
+        flex: 1;
+        margin: 0;
+        padding: 24px 0;
+        display: flex;
+        align-items: center;
+        font-size: 76px;
+        font-weight: 600;
+        line-height: 1.04;
+        letter-spacing: -0.03em;
+        max-width: 18ch;
+        text-wrap: balance;
+      }
+
+      .rule {
+        height: 1px;
+        background: var(--hairline);
+        margin-bottom: 38px;
+      }
+
+      .foot {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 48px;
+      }
+
+      /* Measured to break in three even lines, not to a reading measure. This
+         is a caption under a headline at card size, and a fourth line carrying
+         two words reads as an accident. Re-check it when the lede changes. */
+      .lede {
+        margin: 0;
+        max-width: 42ch;
+        font-size: 19px;
+        line-height: 1.55;
+        color: var(--ink-soft);
+      }
+
+      .meta {
+        margin: 0;
+        display: flex;
+        gap: 48px;
+      }
+
+      .meta__item {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .meta__key {
+        font-family: var(--mono);
+        font-size: 12px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      .meta__val {
+        margin: 0;
+        font-family: var(--mono);
+        font-size: 16px;
+        color: var(--ink);
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="card">
+      <p class="eyebrow">
+        <!-- The mark at rest, which is exactly what favicon.svg draws: the nine
+           dots with the accent core, and no logo__wave ring. On the page that
+           ring is a single pass on load; a scraper only ever sees a still
+           frame, so drawing it frozen part-way through its travel would show a
+           state the page never holds. -->
+        <svg class="logo" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <circle class="logo__dot" cx="3.5" cy="3.5" r="2.15" /><circle class="logo__dot" cx="12" cy="3.5" r="2.95" /><circle class="logo__dot" cx="20.5" cy="3.5" r="2.15" />
+          <circle class="logo__dot" cx="3.5" cy="12" r="2.95" /><circle class="logo__core" cx="12" cy="12" r="3.7" /><circle class="logo__dot" cx="20.5" cy="12" r="2.95" />
+          <circle class="logo__dot" cx="3.5" cy="20.5" r="2.15" /><circle class="logo__dot" cx="12" cy="20.5" r="2.95" /><circle class="logo__dot" cx="20.5" cy="20.5" r="2.15" />
+        </svg>
+        Interface Studies
+      </p>
+
+      <!-- Word for word the index's h1. -->
+      <h1 class="title">Small studies in interface design.</h1>
+
+      <div class="rule"></div>
+
+      <div class="foot">
+        <!-- The index's lede, less "with no framework" — the sentence has to
+           hold three lines at this size, and the stack row already says it. -->
+        <p class="lede">
+          Each study takes a different approach to one interface detail — a
+          type pair, a spacing rhythm, a hover behaviour — and builds just
+          that, in plain HTML and CSS.
+        </p>
+
+        <!-- Not the masthead's meta row any more, and it cannot be. The page
+           now states a count and the newest study's date, both of which it
+           reads off the cards at runtime — bake either into a PNG and it is
+           wrong from the next study onward, which is why Studies was left off
+           here to begin with. So this row states the three things about the
+           set that do not move. It is the one place og.html and index.html
+           are allowed to differ; the h1 and the lede above still have to
+           match word for word. -->
+        <dl class="meta">
+          <div class="meta__item">
+            <dt class="meta__key">Scope</dt>
+            <dd class="meta__val">One detail</dd>
+          </div>
+          <div class="meta__item">
+            <dt class="meta__key">Stack</dt>
+            <dd class="meta__val">HTML &amp; CSS</dd>
+          </div>
+          <div class="meta__item">
+            <dt class="meta__key">Each study</dt>
+            <dd class="meta__val">Stands alone</dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+  </body>
+</html>

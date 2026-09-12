@@ -8,7 +8,7 @@
   Two things here differ from demo.html on purpose, and both are about being
   read at thumbnail size.
 
-  The ground: this page uses the light #f3f2ef every reference in this repo
+  The ground: this page uses the light #f3f2ef every study in this repo
   sits on, so the rail reads as one set of cards rather than one dark frame
   among light ones. The plotter grid runs in ink rather than chalk behind it.
   The dark ground the aesthetic is built for is demo.html's, and it keeps it.
@@ -41,7 +41,7 @@
 
   <style>
     /* Thumbnail scaffolding only. Nothing here names a component class. */
-    /* The same ground every reference in this repo sits on. Repeated as a
+    /* The same ground every study in this repo sits on. Repeated as a
        literal rather than shared, because the folder has to survive being
        copied out — but it has to be the same number in all of them, or the
        rail stops reading as one set of cards. <html> carries it too, so
@@ -86,7 +86,6 @@
     <span class="inked-plate-card__plate">
       <span class="inked-plate-card__head">
         <span class="inked-plate-card__title">Bølgelængder</span>
-        <span class="inked-plate-card__no">002</span>
       </span>
 
       <span class="inked-plate-card__art">
@@ -116,8 +115,8 @@
     </span>
 
     <span class="inked-plate-card__caption">
-      <span class="inked-plate-card__note">Deler sagerne på tværs af teamet, så ingen står alene med dem.</span>
-      <span class="inked-plate-card__grip" aria-hidden="true"></span>
+      <span class="inked-plate-card__note">Samdrift på tværs af teams.</span>
+      <span class="inked-plate-card__count">9 paths</span>
     </span>
   </a>
 
@@ -256,7 +255,7 @@
   </template>
 
   <!--
-    Thumbnail scaffolding, and the one place a reference folder may carry
+    Thumbnail scaffolding, and the one place a study folder may carry
     script. Two jobs, both driven by the index, both inert when this file is
     opened on its own:
 
@@ -274,14 +273,14 @@
   -->
   <script>
     (function () {
-      var CHANNEL = 'ui-reference-base';
+      var CHANNEL = 'interface-studies';
       var BASE = 'inked-plate-card';
       var root = document.querySelector('.' + BASE);
       if (!root) return;
 
       var art = root.querySelector('.' + BASE + '__art');
       var title = root.querySelector('.' + BASE + '__title');
-      var no = root.querySelector('.' + BASE + '__no');
+      var count = root.querySelector('.' + BASE + '__count');
       var note = root.querySelector('.' + BASE + '__note');
 
       // The resting drawing is the one in the markup; the other two come out
@@ -301,18 +300,33 @@
       var VARIANTS = [
         {
           id: 'acid', label: 'Lime', classes: ['--acid'], drawing: 0,
-          title: 'Bølgelængder', no: '002',
-          note: 'Deler sagerne på tværs af teamet, så ingen står alene med dem.'
+          title: 'Bølgelængder', count: '9 paths',
+          note: 'Samdrift på tværs af teams.'
         },
         {
           id: 'porcelain', label: 'Porcelæn', classes: [], drawing: 1,
-          title: 'Rammesætning', no: '001',
-          note: 'Fastlægger sagens rammer: omfang, frister og parter.'
+          title: 'Rammesætning', count: '13 paths',
+          note: 'Rammer for sagen: omfang og frister.'
         },
         {
           id: 'graphite', label: 'Grafit', classes: ['--graphite'], drawing: 2,
-          title: 'Netværk', no: '003',
-          note: 'Viser relationer mellem parter, sager og forløb.'
+          title: 'Netværk', count: '48 paths',
+          note: 'Relationer mellem parter og sager.'
+        },
+        {
+          id: 'ochre', label: 'Okker', classes: ['--ochre'], drawing: 1,
+          title: 'Rammesætning', count: '13 paths',
+          note: 'Rammer for sagen: omfang og frister.'
+        },
+        {
+          id: 'indigo', label: 'Indigo', classes: ['--indigo'], drawing: 0,
+          title: 'Bølgelængder', count: '9 paths',
+          note: 'Samdrift på tværs af teams.'
+        },
+        {
+          id: 'chalk', label: 'Kridt', classes: ['--chalk'], drawing: 2,
+          title: 'Netværk', count: '48 paths',
+          note: 'Relationer mellem parter og sager.'
         }
       ];
 
@@ -323,7 +337,7 @@
         variant.classes.forEach(function (c) { root.classList.add(BASE + c); });
 
         title.textContent = variant.title;
-        no.textContent = variant.no;
+        count.textContent = variant.count;
         note.textContent = variant.note;
 
         var current = art.querySelector('.' + BASE + '__ink');
@@ -349,6 +363,20 @@
       // Announces the listener is live, so a hover that landed before this
       // file parsed is re-sent rather than lost — and hands the index the
       // labels it needs for the quick-look dots.
+      // Quick look runs this file with pointer events live, so the pointer —
+      // and with it the focus — ends up inside this document. Keys pressed
+      // here fire against *this* document and never reach the index, which is
+      // where the overlay's Escape handler lives: click the component, press
+      // Escape, and nothing happens. So the one key the overlay owns is handed
+      // back across the channel. Only Escape. Anything else is the component's
+      // to interpret — arrows move a caret in a field the component may have.
+      if (window.parent !== window) {
+        document.addEventListener('keydown', function (event) {
+          if (event.key !== 'Escape') return;
+          window.parent.postMessage({ source: CHANNEL, type: 'preview:key', key: 'Escape' }, '*');
+        });
+      }
+
       if (window.parent !== window) {
         window.parent.postMessage({
           source: CHANNEL,
