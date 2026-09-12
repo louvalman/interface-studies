@@ -15,6 +15,8 @@
 //                         index: n }
 //   parent -> preview   { source: 'interface-studies', type: 'preview:scale',
 //                         scale: n }
+//   parent -> preview   { source: 'interface-studies', type: 'preview:theme',
+//                         theme: 'light' | 'dark' }
 //   preview -> parent   { source: 'interface-studies', type: 'preview:ready',
 //                         variants?: [{ id, label }] }
 //
@@ -118,7 +120,8 @@
       'a11y.filter': 'Filtrér efter type',
       'a11y.variants': 'Varianter',
       'a11y.closeQuickLook': 'Luk hurtigt kig',
-      'a11y.livePreview': 'Live forhåndsvisning af komponent'
+      'a11y.livePreview': 'Live forhåndsvisning af komponent',
+      'a11y.theme': 'Mørk tilstand'
     }
   };
 
@@ -141,6 +144,32 @@
   });
 
   let current = 'en';
+
+  // The theme the visitor actually chose, if they chose one. It arrives on the
+  // theme:change event below rather than being read off <html>, because the
+  // attribute there is the resolved answer — a dark page on a dark machine is
+  // not a choice, and handing it on as one would store it at the other end.
+  let themeChoice = null;
+
+  // Demo pages are separate documents that carry their own copy of both
+  // switches, so the choices travel in the link. Over file:// each document
+  // gets its own opaque origin and localStorage does not carry across, which
+  // is why the query string is the primary channel rather than a fallback.
+  function syncLinks() {
+    const query = [];
+    if (current !== 'en') query.push('lang=' + current);
+    if (themeChoice) query.push('theme=' + themeChoice);
+
+    document.querySelectorAll('[data-lang-link]').forEach((link) => {
+      const base = link.getAttribute('data-lang-link');
+      link.setAttribute('href', base + (query.length ? '?' + query.join('&') : ''));
+    });
+  }
+
+  document.addEventListener('theme:change', (event) => {
+    themeChoice = event.detail ? event.detail.chosen : null;
+    syncLinks();
+  });
 
   function apply(lang) {
     const table = COPY[lang];
@@ -168,14 +197,7 @@
       b.setAttribute('aria-pressed', b.dataset.lang === lang ? 'true' : 'false');
     });
 
-    // Demo pages are separate documents that carry their own copy, so the
-    // choice travels in the link. Over file:// each document gets its own
-    // opaque origin and localStorage does not carry across, which is why the
-    // query string is the primary channel rather than a fallback.
-    document.querySelectorAll('[data-lang-link]').forEach((link) => {
-      const base = link.getAttribute('data-lang-link');
-      link.setAttribute('href', lang === 'en' ? base : base + '?lang=' + lang);
-    });
+    syncLinks();
 
     // The lede's closing sentence is written by index.js, not by the markup,
     // so it is handed the table rather than reading a data-i18n key.
@@ -216,6 +238,131 @@
   // apply() also rewrites the outgoing links, so English runs too — it has to
   // strip a ?lang= that an earlier switch left on them.
   queueMicrotask(() => apply(initial === 'da' ? 'da' : 'en'));
+})();
+
+
+// --- theme ---------------------------------------------------------------
+//
+// Site chrome only, like the language switch above, and for the same reason:
+// a preview is its own document with its own ground, so the cards stay lit
+// plates under a dark page rather than inverting with it.
+//
+// The answer is already on <html> by the time this runs — the head carries a
+// six-line copy of the same resolution, so the first paint is not a frame of
+// the wrong theme. What is left here is the toggle, the state it reports, and
+// the crossfade.
+//
+// index.css reads the attribute and nothing else, which is what keeps the dark
+// palette to one block. The system preference is resolved here rather than in
+// a media query, so it is still live: until someone picks a theme, an OS
+// switch made while the page is open moves the page and relabels the button.
+
+(function () {
+  const STORE_KEY = 'interface-studies:theme';
+  const SWITCH_MS = 420;   // matches .is-theming in index.css
+
+  const root = document.documentElement;
+  const toggle = document.querySelector('[data-theme-toggle]');
+  if (!toggle) return;
+
+  const media = window.matchMedia
+    ? window.matchMedia('(prefers-color-scheme: dark)')
+    : null;
+
+  // What the head script read, read again — not what it wrote: the attribute
+  // is by then the resolved answer, and a system dark theme is not a choice
+  // to keep once the OS changes.
+  //
+  // A demo page hands the choice back the way it received it, so the query
+  // string comes first here for the same reason it does for the language.
+  let chosen = new URLSearchParams(location.search).get('theme');
+  if (chosen !== 'dark' && chosen !== 'light') {
+    chosen = null;
+    try { chosen = localStorage.getItem(STORE_KEY); } catch (err) { /* private mode */ }
+    if (chosen !== 'dark' && chosen !== 'light') chosen = null;
+  } else {
+    try { localStorage.setItem(STORE_KEY, chosen); } catch (err) { /* private mode */ }
+  }
+
+  function shown() {
+    return chosen || (media && media.matches ? 'dark' : 'light');
+  }
+
+  // The previews are separate documents as well, and a framed one is behind an
+  // opaque origin over file:// — so the theme rides on the src the way it rides
+  // on a demo link. Rewriting data-src rather than src is what keeps the two
+  // places that load a preview (the rail on approach, quick look on open) from
+  // having to know about any of this: they read data-src as they always did.
+  //
+  // A preview that is already loaded is told instead, over the same contract
+  // the rail uses for everything else — reloading a live thumbnail to change
+  // one colour would drop its animation and flash the skeleton back.
+  //
+  // What each preview does with it is the folder's business, and most do
+  // nothing: a thumbnail is a picture of the component, and the light ground
+  // four of them sit on is the component's own staging rather than the page's.
+  // The one that acts on it is the study whose authored page is ink.
+  function tellPreviews(theme) {
+    document.querySelectorAll('[data-preview]').forEach((frame) => {
+      const src = frame.getAttribute('data-src');
+      if (src) frame.setAttribute('data-src', src.split('?')[0] + '?theme=' + theme);
+    });
+
+    document.querySelectorAll('[data-preview], [data-lightbox-frame]').forEach((frame) => {
+      const live = frame.getAttribute('src');
+      if (!live || live === 'about:blank') return;
+      try {
+        frame.contentWindow.postMessage(
+          { source: 'interface-studies', type: 'preview:theme', theme: theme },
+          '*'
+        );
+      } catch (err) { /* not loaded yet: the src it loads with carries it */ }
+    });
+  }
+
+  function paint() {
+    const theme = shown();
+    root.setAttribute('data-theme', theme);
+    toggle.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
+    tellPreviews(theme);
+
+    // The language module owns the outgoing links; it needs the choice, not
+    // the resolved answer.
+    document.dispatchEvent(new CustomEvent('theme:change', {
+      detail: { theme: theme, chosen: chosen }
+    }));
+  }
+
+  let settle = 0;
+  toggle.addEventListener('click', () => {
+    chosen = shown() === 'dark' ? 'light' : 'dark';
+    try { localStorage.setItem(STORE_KEY, chosen); } catch (err) { /* private mode */ }
+
+    // Keep ?theme= in step with the choice, the way the language switch does:
+    // left stale, an older value would win over the stored one on the next
+    // reload and undo the switch.
+    try {
+      const url = new URL(location.href);
+      url.searchParams.set('theme', chosen);
+      history.replaceState({}, '', url);
+    } catch (err) { /* file:// can refuse replaceState */ }
+
+    // The crossfade is hung on <html> for its own length and taken off again,
+    // so the rule is not sitting on every element for the rest of the session.
+    root.classList.add('is-theming');
+    clearTimeout(settle);
+    settle = setTimeout(() => root.classList.remove('is-theming'), SWITCH_MS);
+
+    paint();
+  });
+
+  if (media) {
+    const follow = () => { if (!chosen) paint(); };
+    if (media.addEventListener) media.addEventListener('change', follow);
+    else if (media.addListener) media.addListener(follow);
+  }
+
+  paint();
 })();
 
 
@@ -612,6 +759,36 @@
     });
 
     filterRow.hidden = false;
+    syncFilterFade();
+  }
+
+  // The row scrolls sideways on a narrow screen rather than wrapping, which
+  // means a chip can sit outside it — and Chromium does not bring a chip that
+  // Tab reaches back into view on its own here, so the last option is focused
+  // and invisible. One call, and a no-op at every width where the row fits.
+  if (filterRow) {
+    filterRow.addEventListener('focusin', (event) => {
+      const btn = event.target.closest('.rail__filter-btn');
+      if (btn) btn.scrollIntoView({ inline: 'nearest', block: 'nearest' });
+    });
+  }
+
+  // Which end of the row wears a fade. The mask is CSS; what it cannot know is
+  // whether there is anything past either edge, which is a scroll position and
+  // two widths. A whole pixel of slack, because a scrollLeft at the end is
+  // fractional on a fractional device ratio and a permanent fade at an end
+  // with nothing past it is the one thing this is meant not to say.
+  function syncFilterFade() {
+    if (!filterRow || filterRow.hidden) return;
+    const max = filterRow.scrollWidth - filterRow.clientWidth;
+    const at = filterRow.scrollLeft;
+    filterRow.classList.toggle('is-fade-start', at > 1);
+    filterRow.classList.toggle('is-fade-end', max > 1 && at < max - 1);
+  }
+
+  if (filterRow) {
+    filterRow.addEventListener('scroll', syncFilterFade, { passive: true });
+    window.addEventListener('resize', syncFilterFade);
   }
 
   // The chips carry card labels, so they are rewritten with everything else
@@ -624,6 +801,9 @@
       btn.firstChild.textContent =
         type === FILTER_ALL ? filterText('filter.all') : typeLabel(type);
     });
+    // Danish labels are not the width English ones were, so the row may have
+    // gained or lost the overflow the fade is reporting.
+    syncFilterFade();
   });
 
   // --- rail -------------------------------------------------------------

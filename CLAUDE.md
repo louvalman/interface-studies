@@ -179,6 +179,8 @@ is the exact markup `component.css` expects, and what gets copied out.
 All page-level context lives here, and only here:
 
 - background and centering
+- the page's own colour tokens, in a `:root` block and a second one for the
+  other theme — see **Two themes** below
 - font loading (`<link>` to a font service is fine *here*)
 - a link to `component.css`
 - an `<h1>` naming the study, with the type and a one-sentence lede
@@ -260,6 +262,7 @@ position:
 { source: 'interface-studies', type: 'preview', active: true | false }
 { source: 'interface-studies', type: 'preview:variant', index: n }
 { source: 'interface-studies', type: 'preview:scale', scale: n }
+{ source: 'interface-studies', type: 'preview:theme', theme: 'light' | 'dark' }
 
 // preview -> index, once its listener is live
 { source: 'interface-studies', type: 'preview:ready',
@@ -282,7 +285,31 @@ itself. Beware toggling a variant's element with the `hidden` attribute — if
 `component.css` gives that element a `display`, the author rule beats the UA
 `[hidden]` rule and it will not hide. Add and remove the node instead.
 
-`preview:key` is the fourth, and it goes the other way — preview to index. An
+`preview:theme` says which theme the index is in. It arrives twice over, and
+deliberately: as `?theme=` on the src the frame is loaded with, so a thumbnail
+is never painted on the wrong ground and then corrected, and as this message if
+the index is switched while the frame is already on screen — reloading a live
+thumbnail to change one colour would drop its animation and flash the skeleton
+back. The index rewrites `data-src` rather than `src`, so the two places that
+load a preview (the rail on approach, quick look on open) never learn about any
+of this.
+
+Every preview takes it, and takes it the same way: `--preview-ground` is
+`#f3f2ef` on a light rail and `#191b1e` on a dark one, two literals repeated in
+every folder. That ground is the rail's rather than the component's — it is
+repeated across the folders precisely so the rail reads as one set of cards,
+which is an argument about the index and not about any study — so it follows
+the index into dark rather than staying lit under it. A card that kept the
+paper while the others went dark would read as a different kind of thing rather
+than as that study's card.
+
+What sits on the ground is still the folder's own: `2026-09-inked-plate-card`
+brings its plotter grid along, in ink on the paper and in chalk on the dark.
+The component is never touched by any of it, and `demo.html`'s ground is a
+separate decision — that page may be ink in both themes while its thumbnail is
+neither.
+
+`preview:key` is the fifth, and it goes the other way — preview to index. An
 iframe is its own document: keys pressed inside it fire against that document
 and never reach the index. Quick look runs the preview with pointer events
 live, which is the whole point of it, so a click on the component moves focus
@@ -320,6 +347,66 @@ posts back when it is framed. This is the one place a study folder may carry
 script without meeting the JavaScript bar below — it is thumbnail scaffolding,
 not component behaviour, and it never goes in `component.js`.
 
+## Two themes, and every page carries its own copy
+
+`index.css` declares every colour it uses as a token in `:root`, and the dark
+theme is that same list re-declared under `:root[data-theme="dark"]`. There is
+no rule that exists in one theme and not the other, no second stylesheet, and
+no `prefers-color-scheme` query — a colour hardcoded past the token block is a
+colour that will be wrong in one of the two.
+
+The attribute is the only thing the stylesheet reads, which is what keeps the
+dark palette to one block: the two inputs are resolved in script instead, where
+they become one answer. The stored choice, or the system's when there is none.
+Six inline lines in `<head>` do it before the first paint — a theme that
+arrives with the stylesheet instead flashes a frame of the other one — and the
+page's own script does it again on load, then keeps listening while nothing is
+stored, so an OS switch made with the page open still moves it. Choosing
+stores; a stored choice then outranks the OS in both directions.
+
+Without JavaScript a page keeps whatever its bare `:root` holds. On the index
+that is the light theme, and the index already needs script for its previews,
+its rail order and its counts; on a demo page it is the ground the folder
+authored, which is the right thing to fall back to.
+
+A demo page does the same in its own `<style>`: its own tokens, its own two
+blocks, its own copy of the toggle and of the head script. No shared module and
+no shared stylesheet — the folder has to survive being copied out, which is the
+same reason its language table is its own. `_template/demo.html` holds the
+block to copy.
+
+Which theme a folder's bare `:root` holds is the folder's business.
+`2026-09-inked-plate-card` is ink by authorship — the plotter ground is that
+study's own staging, not a default it inherited — so its `:root` carries the
+dark theme and it declares `:root[data-theme="light"]` instead. The attribute
+selects either way.
+
+`component.css` is not in it, in any folder. A component owns its colours in
+both themes and no demo rule may reach into them, so on a dark page it sits as
+a lit plate — which is exactly what it does on the index cards. A study that
+wants a dark variant of the component declares one as a modifier, in its own
+file, as a decision of the study.
+
+`preview.html` is told, rather than left out. The index cannot reach into a
+framed document — over `file://` it is behind an opaque origin — so the theme
+rides on the src and over `preview:theme`. Every preview moves its shared
+ground with it and nothing else; see **The preview message contract**.
+
+The chips that sit *on* a thumbnail are the part of the index that has to know:
+the type badge, the number and quick look are painted against the preview
+rather than against the page, so they invert with the chrome rather than with
+the plate they cover.
+
+The choice travels in the link, the way the language does: the index appends
+`?theme=` to the link that opens a demo, the demo's back link hands it back,
+and `localStorage` is the secondary channel. Only an explicit choice travels —
+a theme resolved from the system is not a choice, and the other end would
+resolve it the same way anyway.
+
+The matte part is the grain: the dark ground is a wash across two thousand
+pixels, which 8-bit colour cannot draw without ringing. A fractal-noise tile at
+a low alpha dithers the banding out, and reads as paper rather than as texture.
+
 ## JavaScript
 
 Vanilla HTML and CSS by default. Add JavaScript only when the study
@@ -337,10 +424,17 @@ intentional, because each folder has to survive being copied out on its own.
 When asked to add a study, touch that folder and nothing else — with the
 single exception below.
 
-The one thing that legitimately sweeps every folder is an identity change —
-the site was renamed, and each `demo.html` carries its own copy of the back
-link's strings. That is a rename, not a refactor: it touches the strings and
-nothing structural, and a folder still owns its own copy afterwards.
+Two things legitimately sweep every folder, and both are the same shape. One is
+an identity change — the site was renamed, and each `demo.html` carries its own
+copy of the back link's strings. The other is a page contract every demo has to
+meet, which is how the language switch arrived and how the theme switch did:
+each folder gets its own copy, written into its own file, in its own palette.
+
+Neither is a refactor. The test is what the folder owns afterwards: a sweep
+that leaves every folder holding its own copy is a sweep; one that leaves them
+sharing a file is the thing this rule forbids. Adding a contract like that is a
+decision about the whole repo — make it deliberately, write it down here, and
+put it in `_template/` so the next study is born with it.
 
 ## The landing page
 
@@ -439,7 +533,17 @@ The type filter above the rail is built by `index.js` from the `type.*` key on
 each card's badge, so a study of a new type needs nothing added to it. Filtering
 hides cards with a class rather than the `hidden` attribute — `.piece` sets its
 own `display`, and the warning about `[hidden]` in the preview contract applies
-here for the same reason. The rail counts what it is showing and the footer
+here for the same reason. The chips are one row that scrolls sideways, never
+two rows that wrap: a second line pushed the first card off the fold on a
+phone, and the rail below already answers a narrow screen the same way. That
+costs the focus ring two things — `overflow-x: auto` computes overflow-y to
+`auto`, so the row carries top padding or the outline is clipped, and Chromium
+does not scroll a chip that Tab reaches back into view, so `index.js` does it
+on `focusin`. A mask fades whichever end has chips past it, so the row says it
+scrolls rather than looking cut off; the mask paints against the scroller's own
+border box and stays put while the chips move under it, and `index.js` sets
+each end from the scroll position, because whether there is anything past an
+edge is not something CSS can ask. The rail counts what it is showing and the footer
 counts what exists — the masthead states neither, because the rail's own
 "Study 01 / 05" is where a reader takes the total from.
 

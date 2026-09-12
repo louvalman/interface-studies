@@ -24,9 +24,35 @@
 
   <link rel="stylesheet" href="component.css">
 
+
+  <!-- The ground, before the first paint. The index loads this frame with
+     ?theme= on the src, so a thumbnail is never drawn on the wrong one and
+     then corrected. Opened on its own, with no query, it keeps the light
+     ground. -->
+  <script>
+    var theme = new URLSearchParams(location.search).get('theme');
+    if (theme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+  </script>
+
   <style>
     /* Thumbnail scaffolding only. Nothing here names a component class. */
-    html { height: 100%; }
+    /* The shared ground, and the only colour this page writes. Both values are
+       literals repeated in every folder rather than shared from anywhere — the
+       folder has to survive being copied out — but they have to be the same
+       two numbers in all of them, or the rail stops reading as one set of
+       cards. That is what this ground is for: it is the rail's, not the
+       component's, which is why it follows the index into dark rather than
+       staying lit under it. The index says which over ?theme= on the src and
+       the preview:theme message; the script at the foot of the file listens. */
+    :root { --preview-ground: #f3f2ef; }
+    :root[data-theme="dark"] { --preview-ground: #191b1e; }
+
+    html {
+      height: 100%;
+      /* Carried here as well as on <body>, so the background does not propagate
+         to the viewport canvas and leave a seam at the frame edge. */
+      background-color: var(--preview-ground);
+    }
 
     body {
       margin: 0;
@@ -41,7 +67,7 @@
 
       /* The flat paper every other study's preview sits on. The stage in
          demo.html keeps the cross-lit ground; this does not — see notes.md. */
-      background-color: #f3f2ef;
+      background-color: var(--preview-ground);
     }
 
     .preview__stack {
@@ -1207,6 +1233,17 @@
 
         if (data.type === 'preview') {
           apply(showing, data.active === true);
+        }
+
+        // The index was switched while this thumbnail was on screen. Only the
+        // ground moves: the component is not touched, and it is the same
+        // component in both themes.
+        if (data.type === 'preview:theme') {
+          if (data.theme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+          } else {
+            document.documentElement.removeAttribute('data-theme');
+          }
         }
 
         if (data.type === 'preview:scale') {
