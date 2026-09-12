@@ -75,15 +75,22 @@ brightness: porcelain, `--acid`, `--graphite`, `--ochre`, `--indigo` and
   corners and the mask square derived off the biggest radius both went with the
   hairline that needed them.
 
-  Two numbers are load-bearing. The frame's inset has to be a whole number of
-  pitches, because the tile paints its dot in the middle of every cell: on the
-  pitch the outermost column lands 2.5px inside the frame's edge and is drawn
-  whole, off it the column lands on the edge and every bracket loses half its
-  outer row. And the ink has to be the plate's, not the field's — at the
-  field's own weight a bracket is a slightly darker patch of grid and reads as
-  a smudge, where at full strength it is a mark. It is derived from
-  `--…-ink`, so a surface sets its ink and the frame follows; none of the six
-  carries a crop colour of its own any more.
+  The ink is the field's too. A version that printed the brackets in the
+  plate's full-strength ink was built first, on the grounds that a mark should
+  be legible, and it is the wrong instinct here: it makes the frame a different
+  mark that happens to share a lattice. Same dot, same weight, and what
+  separates the frame from the field is position alone — the grid continuing
+  past the edge of the field. It is quiet, and it survives the thumbnail's 0.7
+  and a phone, which is all it has to do. `--…-crop` stays its own property
+  rather than being `--…-dot` spelled twice, so a caller can re-ink the frame
+  without touching the field; none of the six surfaces carries a crop colour of
+  its own any more.
+
+  The one number that is load-bearing is the inset: it has to be a whole number
+  of pitches, because the tile paints its dot in the middle of every cell. On
+  the pitch the outermost column lands 2.5px inside the frame's edge and is
+  drawn whole; off it the column lands on the edge and every bracket loses half
+  its outer row, which is what -8px did.
 
   Hover reaches the brackets two dots further along the grid instead of pushing
   the whole frame outward, which is the move the hairline made. The frame has

@@ -32,12 +32,13 @@
   --inked-plate-card-dot: rgba(20, 24, 26, 0.24);
   --inked-plate-card-dot-pitch: 5px;
   --inked-plate-card-dot-size: 1px;
-  /* The frame's dot is the field's dot at full strength: same tile, same
-     pitch, printed in the plate's ink instead of the field's grey. At the
-     field's own weight a bracket is a slightly darker patch of grid and reads
-     as a smudge; at the ink's it is a mark. Derived, so a surface sets its ink
-     and the frame follows — none of them carries a crop colour of its own. */
-  --inked-plate-card-crop: var(--inked-plate-card-ink);
+  /* The frame's dot is the field's dot, full stop: same tile, same pitch, same
+     ink. What separates the two is position — the frame is the grid continuing
+     past the edge of the field — and nothing else, which is as far as "made of
+     the same dots" can be taken. It stays its own property rather than being
+     --dot spelled twice, so a caller can re-ink the frame without touching the
+     field. */
+  --inked-plate-card-crop: var(--inked-plate-card-dot);
 
   --inked-plate-card-font: "Plus Jakarta Sans", system-ui, sans-serif;
   --inked-plate-card-mono: "JetBrains Mono", ui-monospace, monospace;
