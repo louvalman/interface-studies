@@ -25,11 +25,10 @@
     /* Thumbnail scaffolding only — one instance, centred, no captions.
        Nothing here names a component class. */
     /* <html> carries a background purely so <body>'s stops propagating to the
-       viewport canvas. The tone colour is set inline by the script below and
-       is deliberately not transitioned: inside the framed document a
-       background-color transition stalls part-way and leaves the surround a
-       muddy grey between the two tones. The card's own motion is what this
-       page is showing; the backdrop can just cut. */
+       viewport canvas. The surround is deliberately not transitioned: inside
+       the framed document a background-color transition stalls part-way and
+       leaves it a muddy grey between the two tones. The card's own motion is
+       what this page is showing; the backdrop can just cut. */
     /* The shared ground, and the only colour this page writes. Both values are
        literals repeated in every folder rather than shared from anywhere — the
        folder has to survive being copied out — but they have to be the same
@@ -51,6 +50,14 @@
       background-color: var(--preview-ground);
       font-family: "Plus Jakarta Sans", system-ui, sans-serif;
     }
+
+    /* One variant here is a dark card, and it wants a surround of its own
+       rather than the rail's — that tone is the variant's, not the page's, so
+       it is the same colour in both themes. The script sets data-tone and the
+       rule does the rest; it used to write the colour inline, and an inline
+       style beat the ground token above, which is how this thumbnail stayed
+       lit while every other card went dark. */
+    body[data-tone="dark"] { background-color: #101216; }
   </style>
 </head>
 <body>
@@ -172,9 +179,10 @@
         });
         variant.classes.forEach(function (c) { root.classList.add(BASE + c); });
 
+        // The tone drives the surround from the stylesheet above. Written as
+        // an attribute rather than as an inline colour, so the ground token
+        // still applies to every tone that is not the dark one.
         document.body.setAttribute('data-tone', variant.tone);
-        document.body.style.backgroundColor =
-          variant.tone === 'dark' ? '#101216' : '#f3f2ef';
 
         title.textContent = variant.title;
         pill.textContent = variant.pill;
