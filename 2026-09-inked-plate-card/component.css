@@ -259,6 +259,9 @@
 .inked-plate-card__ink--vortex { --inked-plate-card-stagger: 34ms; }
 .inked-plate-card__ink--waterfall { --inked-plate-card-stagger: 44ms; }
 .inked-plate-card__ink--envelope { --inked-plate-card-stagger: 12ms; }
+.inked-plate-card__ink--orbit { --inked-plate-card-stagger: 32ms; }
+.inked-plate-card__ink--rosette { --inked-plate-card-stagger: 44ms; }
+.inked-plate-card__ink--lens { --inked-plate-card-stagger: 32ms; }
 
 .inked-plate-card__line {
   fill: none;
@@ -358,6 +361,48 @@
   --inked-plate-card-line: #c8ef4a;
   --inked-plate-card-dot: rgba(232, 235, 228, 0.16);
   --inked-plate-card-crop: rgba(232, 235, 228, 0.3);
+}
+
+/* Ochre on bark: the one warm pair. Its plate is the most saturated surface
+   in the set, so the ink goes brown rather than black — a true black on a
+   yellow plate reads as a warning sign, not as a drawing. */
+.inked-plate-card--ochre {
+  --inked-plate-card-plate: #e5bd5c;
+  --inked-plate-card-ink: #2b2114;
+  --inked-plate-card-muted: rgba(43, 33, 20, 0.6);
+  --inked-plate-card-line: #2b2114;
+  --inked-plate-card-dot: rgba(43, 33, 20, 0.24);
+  --inked-plate-card-crop: rgba(43, 33, 20, 0.46);
+  --inked-plate-card-accent: #14181a;
+}
+
+/* Periwinkle on indigo: the second dark pair, and the one that proves the
+   surface is a pair rather than a brightness. Graphite draws in lime on
+   near-black; this draws in a tint of its own plate, three steps lighter, so
+   the drawing sits *in* the surface instead of on top of it. */
+.inked-plate-card--indigo {
+  --inked-plate-card-plate: #1b1f3c;
+  --inked-plate-card-ink: #e4e7ff;
+  --inked-plate-card-muted: #8188b8;
+  --inked-plate-card-line: #a6b0ff;
+  --inked-plate-card-dot: rgba(166, 176, 255, 0.2);
+  --inked-plate-card-crop: rgba(166, 176, 255, 0.34);
+  --inked-plate-card-accent: #a6b0ff;
+}
+
+/* Deep teal on chalk: porcelain's cool counterpart, and the quietest pair in
+   the set. It is here because a set of surfaces with no near-neighbours is a
+   palette rather than a range — porcelain and chalk differ by hue alone, at
+   the same weight, which is the hardest pair to tell apart and the one worth
+   being able to. */
+.inked-plate-card--chalk {
+  --inked-plate-card-plate: #dae3e6;
+  --inked-plate-card-ink: #14323c;
+  --inked-plate-card-muted: #5d7480;
+  --inked-plate-card-line: #14323c;
+  --inked-plate-card-dot: rgba(20, 50, 60, 0.22);
+  --inked-plate-card-crop: rgba(20, 50, 60, 0.42);
+  --inked-plate-card-accent: #14181a;
 }
 
 /* --- reduced motion --------------------------------------------------- */

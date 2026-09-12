@@ -10,10 +10,13 @@ in an order the markup declares, with no script anywhere. The plates carry a
 title and a note, and the only other thing printed on them is the number of
 paths the drawing took.
 
-The drawings are three of my own: concentric squares rotating into a vortex, a
-waterfall of drifting ridgelines, and a nephroid drawn as 47 straight chords
-across a circle. Surfaces are porcelain, `--acid` (lime plate, ink lines) and
-`--graphite` (dark plate, lime lines).
+Six drawings, all of them constructions rather than pictures: concentric
+squares rotating into a vortex, a waterfall of drifting ridgelines, a nephroid
+drawn as 48 straight chords across a circle, 14 circles shrinking off-centre
+into an orbit, nine nested Lissajous figures at 3:2, and a 7×7 grid bulged
+around a point into a lens. Six surfaces, each a pair of colours rather than a
+brightness: porcelain, `--acid`, `--graphite`, `--ochre`, `--indigo` and
+`--chalk`.
 
 - **The card is two plates, and the seam is the point.** Not one box with a
   rule across it: a drawing plate and a caption plate, 6px apart, with the
@@ -74,6 +77,36 @@ across a circle. Surfaces are porcelain, `--acid` (lime plate, ink lines) and
   order is `--i` inline on each path — the one thing the markup carries that is
   not geometry — multiplied by the stagger to get the delay.
 
+- **Six constructions, and none of them is a picture.** A drawing here is a
+  rule applied n times — that is what makes it a plotter's subject rather than
+  an illustration, and what lets the ink animation mean something: you watch
+  the rule being carried out. Three were already here; the three added extend
+  the range rather than the count. *Orbit* is 14 circles whose radius shrinks
+  as their centre drifts, so a set of concentric rings becomes a funnel.
+  *Rosette* is nine nested Lissajous figures at 3:2, scaled 0.34 to 1 with a
+  0.06 phase drift — the drift is what keeps it from being one figure drawn
+  nine times. *Lens* is a 7×7 grid displaced radially from a point.
+
+  Lens took a second attempt, and the reason is worth keeping. The first
+  version pushed every point *away* from the centre by a Gaussian falloff,
+  which is singular at the origin: the two grid lines that pass within 4 units
+  of it get pushed in opposite directions along their length, and each came out
+  with a visible kink. Resampling did not fix it, because the kink is in the
+  field and not in the sampling. The profile is `u · e^(1−u²)` now, which is
+  zero at the centre and peaks at `σ/√2`, so the displacement is continuous
+  everywhere and the grid reads as a lens rather than as a hole with a fault in
+  it. The name followed the fix: it bulges, so it is a lens.
+
+- **A surface is a pair of colours, not a brightness.** Each of the six sets a
+  plate, an ink, a line and two alphas, and they are not a light-to-dark ramp:
+  `--graphite` draws lime on near-black, `--indigo` draws a tint of its own
+  plate three steps lighter, `--ochre` puts brown on the most saturated plate
+  in the set because a true black there reads as a warning sign rather than as
+  a drawing, and `--chalk` differs from the porcelain default by hue alone at
+  the same weight. That last pair is the one worth having: a set with no near
+  neighbours is a palette, and the interesting question about a surface is
+  whether it survives sitting next to the one it nearly is.
+
 - **The stagger is per drawing, not per component.** 34ms across the vortex's
   13 squares, 44ms across the waterfall's 9 ridgelines, 12ms across the
   envelope's 48 paths — so all three finish within about the same second. One
@@ -113,17 +146,24 @@ index's observer stands in for the one the CSS has not got. Off the index,
 finished lines, which is the honest reduction: the artwork is the component,
 the wipe is not.
 
-Surfaces are `--acid` (lime plate, ink lines) and `--graphite` (dark plate,
-lime lines); the default is porcelain. Each is three colour values and a dot
-opacity, nothing structural. `--live` is the index's hover.
+Surfaces are `--acid`, `--graphite`, `--ochre`, `--indigo` and `--chalk`; the
+default is porcelain. Each is a handful of colour values and two alphas,
+nothing structural. `--live` is the index's hover.
 
-The two pages disagree about the ground and about which surface leads, and
-both disagreements are the thumbnail's doing. `demo.html` keeps the dark ground
-the aesthetic is built for — ink plates over a chalk plotter grid, which is
-where the component lives, and where `--graphite` sits beside the default so
-the pair isolates the surface: one drawing, one wipe, two colours to read it
-against. It also leads with the porcelain default, which is the card to open
-on: it is what the component is with no modifier applied.
+`demo.html` is laid out one drawing to a row, three surfaces across. The axis
+matters: a page grouped by surface compares colours and says nothing about the
+constructions, where a row holding one drawing on three plates isolates exactly
+the thing the surface is supposed to be doing — one drawing, one wipe, three
+colours to read it against. The trio rotates down the page, so no two rows show
+the same three and the page covers eighteen of the thirty-six pairings without
+repeating one. A full matrix of all thirty-six would be a colour picker.
+
+It keeps the dark ground the aesthetic is built for — ink plates over a chalk
+plotter grid, which is where the component lives — and it opens on the
+porcelain default, which is the card to open on: it is what the component is
+with no modifier applied. The last row is the only one that is not about
+looking: it holds the two states that are about behaviour, the re-ink and a
+note longer than the caption plate's floor.
 
 `preview.html` takes the light `#f3f2ef` every study in this repo shares,
 because the rail has to read as one set of cards and a dark frame among light
