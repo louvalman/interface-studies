@@ -159,11 +159,16 @@ the same three and the page covers eighteen of the thirty-six pairings without
 repeating one. A full matrix of all thirty-six would be a colour picker.
 
 It keeps the dark ground the aesthetic is built for — ink plates over a chalk
-plotter grid, which is where the component lives — and it opens on the
-porcelain default, which is the card to open on: it is what the component is
-with no modifier applied. The last row is the only one that is not about
-looking: it holds the two states that are about behaviour, the re-ink and a
-note longer than the caption plate's floor.
+plotter grid, which is where the component lives — and it opens on the exact
+card the index shows: `--acid`, the waterfall, the same title and note. The
+porcelain default would be the tidier choice on paper, being the component with
+no modifier applied, and it is the wrong one. A thumbnail is a promise about
+what is behind it, and a page that opens on a different card than the one just
+clicked spends its first moment making the reader check they landed in the
+right place. The default is one row down, first in its own row, which is early
+enough. The last row is the only one that is not about looking: it holds the
+two states that are about behaviour, the re-ink and a note longer than the
+caption plate's floor.
 
 `preview.html` takes the light `#f3f2ef` every study in this repo shares,
 because the rail has to read as one set of cards and a dark frame among light
