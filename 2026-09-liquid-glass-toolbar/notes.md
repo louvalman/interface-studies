@@ -6,12 +6,13 @@ The search item opens into a field and the activity item opens the pane
 downward into a panel — neither is a second sheet sliding out from underneath,
 the one surface changes shape, and the corner it does that around never moves.
 
-The set is a desk rather than an operating system: Desk, search, Versions,
-Activity, Display. Each item is named for what its glyph can actually do — two
-sliders are display controls, not a settings screen; two drawers are versions
-of a thing, not a mailbox — so the bar says what it is for before a label
-opens. It is also why the labelled item is a place you can be rather than a
-home to return to: a toolbar over a working surface has no front door.
+The set is a working surface rather than an operating system: Base, search,
+Versions, Activity, Display. Each item is named for what its glyph can actually
+do — two sliders are display controls, not a settings screen; two drawers are
+versions of a thing, not a mailbox — so the bar says what it is for before a
+label opens. It is also why the labelled item is *Base* and not Home: a toolbar
+that floats over work has no front door to return to, it has a datum to measure
+from, and that is what its glyph draws — a benchmark standing on a rule.
 
 It is as dull as it can afford to be, and finding that floor is the point. Glass
 has no look of its own — a blur over one flat fill is indistinguishable from a
@@ -25,24 +26,34 @@ frame above and below it in the thumbnail — but a ground whose whole colour ma
 sat in the lower third read as bottom-heavy, and a thing centred in a
 bottom-heavy frame looks like it is floating high.
 
-The icons are drawn rather than borrowed: a doorway, a magnifier, two drawers,
-four bars, two sliders. The magnifier is the one glyph in a toolbar with no
-synonym — every other function has several ways to be drawn, so the set is a
-place to have an opinion; search is not.
+The icons are drawn rather than borrowed: a benchmark on a rule, a magnifier,
+two drawers, four bars, two sliders. The magnifier is the one glyph in a
+toolbar with no synonym — every other function has several ways to be drawn, so
+the set is a place to have an opinion; search is not.
+
+Base was an arched doorway first, and the doorway was drawing the word *home*
+rather than the word it sits under. Five were rendered at real size in the bar
+to replace it: a square on a baseline, three courses of a plinth, a diamond
+resting on a rule, a circle overshooting one, and a block on a ground plane in
+axonometric. The plinth read as an align-left control, the circle read as a
+second magnifier, and the axonometric block turned to mush at 24px. The
+benchmark won because it is the only triangle in the set — nothing else here
+has a diagonal — and because it says what Base means: the mark everything else
+is measured from.
 
 The panel item is called Activity, not Notifications, and the icon is four bars
-of uneven height. Notifications is a promise about delivery — it says
-these are things that were pushed at you. What the four rows actually are is a
-log: somebody commented, a build finished, a review was asked for, an invoice
-cleared. Naming it for the content rather than for the transport also stops the
-component being read as an alert centre, which is a different thing with
-different rules about badges and dismissal.
+of uneven height. Notifications is a promise about delivery — it says these are
+things that were pushed at you. What the four rows actually are is a log of
+what was decided: a type pair set, a tint thinned, a spacing rhythm fixed, a
+radius made proportional. Naming it for the content rather than for the
+transport also stops the component being read as an alert centre, which is a
+different thing with different rules about badges and dismissal.
 
 The bars were picked against four other drafts rendered at real size in the bar
 — broadcast rings, a clock, a bulleted timeline, a one-sided ripple. Two of them
-failed on the same thing: an arch, a magnifier, two drawers and two sliders are
-all rectilinear or horizontal, so a timeline read as more drawers and a clock
-read as a second magnifier. The bars are the only glyph in the set standing on
+failed on the same thing: a magnifier, two drawers and two sliders are all
+rectilinear or horizontal, so a timeline read as more drawers and a clock read
+as a second magnifier. The bars are the only glyph in the set standing on
 vertical strokes, which is most of why they are legible at 24px. The heights go
 up, up, up, then down — a monotonic rise would read as signal strength rather
 than as something recorded.
@@ -50,9 +61,25 @@ than as something recorded.
 Drawing a set by hand means centring it by hand. The pill centres the icon's
 *box*, so a glyph that does not centre in its own 24-unit box is off-centre in
 every pill it lands in, and it is invisible in the source — the numbers look
-tidy. Three of the five were out: the arch and the bars sat 0.70 units low, the
-magnifier 0.40 low and 0.40 right. Measured as the ink bounds plus half a stroke
+tidy. Three of the five were out: the benchmark and the bars sat 0.70 units
+low, the magnifier 0.40 low and 0.40 right. Measured as the ink bounds plus half a stroke
 on each side, which is what the eye reads and what `getBBox()` leaves out.
+
+- **Every row in the panel carries a specimen, not an avatar.** The four
+  entries are decisions that were taken — a type pair, a tint, a spacing
+  rhythm, a radius — so the thing at the head of each is a drawing of the
+  *kind* of decision: a three-step ramp whose bars lose weight as they lose
+  length, a disc filled to half, a gap measured between two rules, a corner
+  filleted over the square corner it replaced, left in at 0.42 behind it so
+  the chip shows what the radius did. A face or a bell says only who or what
+  delivered the row; a diagram says what it is about before the line beside it
+  is read, which is the one job something 19px wide can do.
+
+  The frame moved with the content. A round frame around a technical diagram
+  reads as an avatar with a picture in it, so the chip is a squircle — the
+  plate the specimen is printed on. The class is `__chip` and the bold lead is
+  `__topic`, because `__avatar` and `__who` in the contract file would be
+  describing a component that no longer exists.
 
 - **The unread mark is a rule under the glyph, not a dot on its corner.** A
   corner dot is the platform idiom and it is the wrong object on this bar: it
@@ -319,7 +346,7 @@ and this bar is never collapsed: one action always carries its label, and the
 label is the widest thing in the component. Five squares, the split and an open
 "Activity" come to about 390px, so every phone held upright sat in the band
 between the two numbers — wide enough to stay at full scale, too narrow to show
-the word. The surface clipped "Desk" to its first letter rather than the
+the word. The surface clipped "Base" to its first letter rather than the
 component standing down to the scale that fits, which is the same failure as the
 missing trailing action, one step further in. A breakpoint has to be measured
 against the state the component is actually in, not against the state its parts
