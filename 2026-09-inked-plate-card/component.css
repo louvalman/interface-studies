@@ -7,12 +7,20 @@
   --inked-plate-card-radius: 0.875rem;
   --inked-plate-card-plate-gap: 0.875rem;
 
-  /* The card is two plates facing each other across this gap. Both corners
-     that face the gap are cut at 45deg rather than rounded, so the seam reads
-     as two cut edges instead of one rounded box split in half. */
+  /* The card is a drawing plate and a caption plate facing each other across
+     this gap, and a corner is cut at 45deg when there is a plate directly
+     across the gap from it — so the seam reads as two cut edges rather than
+     as one rounded box split in half.
+
+     The caption is the narrower of the two and starts at the same left edge,
+     which is what keeps the pair reading as a plate and its label instead of
+     as a box with a line through it. It also decides which corners are cut:
+     three of the four are across from something, and the drawing plate's
+     bottom right — with nothing under it — keeps its radius. */
   --inked-plate-card-seam: 0.375rem;
   --inked-plate-card-seam-open: 0.8125rem;
   --inked-plate-card-chamfer: 0.5rem;
+  --inked-plate-card-caption-w: 72%;
 
   --inked-plate-card-plate: #e8ebe4;
   --inked-plate-card-ink: #14181a;
@@ -33,10 +41,13 @@
   --inked-plate-card-count-size: 0.625rem;
   --inked-plate-card-count-tracking: 0.14em;
 
-  /* The caption plate has a floor, so a two-line and a three-line note leave
-     the card the same height. Without it a row of these has a ragged bottom
-     edge: they look like a set until you look at where they end. */
-  --inked-plate-card-caption-min: 4.25rem;
+  /* The caption plate has a floor of three lines plus its padding, so a one,
+     two or three line note leaves the card exactly the same height. Without it
+     a row of these has a ragged bottom edge: they look like a set until you
+     look at where they end. The floor moved up with the narrowing — a plate at
+     72% fits fewer words per line, so the note that used to run to two lines
+     now runs to three, and a floor set for the old measure levels nothing. */
+  --inked-plate-card-caption-min: 5.8125rem;
 
   --inked-plate-card-art-ratio: 1;
   --inked-plate-card-crop-len: 0.6875rem;
@@ -56,12 +67,16 @@
 
   --inked-plate-card-transition: 280ms cubic-bezier(0.16, 1, 0.3, 1);
 
-  /* Two mask layers, each removing one corner. They are intersected, not
-     added: mask layers union by default, and the union of two corner cuts
-     removes nothing at all. */
+  /* Mask layers, each removing one corner. Where there are two they are
+     intersected, not added: mask layers union by default, and the union of
+     two corner cuts removes nothing at all.
+
+     The drawing plate cuts one corner, not two. Its bottom left is across
+     from the caption; its bottom right is across from the page, and a chamfer
+     there is a cut with nothing to explain it — it reads as a mistake in the
+     silhouette rather than as the seam it belongs to. */
   --inked-plate-card-cut-down:
-    linear-gradient(45deg, #0000 var(--inked-plate-card-chamfer), #000 0),
-    linear-gradient(-45deg, #0000 var(--inked-plate-card-chamfer), #000 0);
+    linear-gradient(45deg, #0000 var(--inked-plate-card-chamfer), #000 0);
   --inked-plate-card-cut-up:
     linear-gradient(135deg, #0000 var(--inked-plate-card-chamfer), #000 0),
     linear-gradient(225deg, #0000 var(--inked-plate-card-chamfer), #000 0);
@@ -116,14 +131,26 @@
 }
 
 .inked-plate-card__caption {
-  display: flex;
-  /* The count sits on the note's first baseline rather than on its box top:
-     10px mono against 13px text, and flex-start puts the two on visibly
-     different lines. A multi-line flex item aligns on its first baseline,
-     which is the one the count belongs beside. */
+  /* Narrower than the plate above it, and starting at the same left edge, so
+     the title and the note stay in one type column and the step is all on the
+     right. Aligned the other way the two blocks of type start at different
+     places, which is the one thing that made this read as broken rather than
+     as deliberate. */
+  width: var(--inked-plate-card-caption-w);
+  justify-self: start;
+
+  /* Grid rather than flex, for the one thing flex cannot do here: the plate
+     has a floor and most notes do not reach it, so the text has to sit in the
+     middle of the plate rather than at the top of it. `align-content` centres
+     the row in a grid and does nothing at all in a single-line flex box. The
+     count still sits on the note's *first* baseline — 10px mono against 13px
+     text, aligned flush at the top, reads as two lines that missed each
+     other. */
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-content: center;
   align-items: baseline;
-  justify-content: space-between;
-  gap: 1.25rem;
+  column-gap: 1.25rem;
   min-height: var(--inked-plate-card-caption-min);
   -webkit-mask-image: var(--inked-plate-card-cut-up);
   -webkit-mask-composite: source-in;
@@ -232,6 +259,9 @@
 .inked-plate-card__ink--vortex { --inked-plate-card-stagger: 34ms; }
 .inked-plate-card__ink--waterfall { --inked-plate-card-stagger: 44ms; }
 .inked-plate-card__ink--envelope { --inked-plate-card-stagger: 12ms; }
+.inked-plate-card__ink--orbit { --inked-plate-card-stagger: 32ms; }
+.inked-plate-card__ink--rosette { --inked-plate-card-stagger: 44ms; }
+.inked-plate-card__ink--lens { --inked-plate-card-stagger: 32ms; }
 
 .inked-plate-card__line {
   fill: none;
@@ -331,6 +361,48 @@
   --inked-plate-card-line: #c8ef4a;
   --inked-plate-card-dot: rgba(232, 235, 228, 0.16);
   --inked-plate-card-crop: rgba(232, 235, 228, 0.3);
+}
+
+/* Ochre on bark: the one warm pair. Its plate is the most saturated surface
+   in the set, so the ink goes brown rather than black — a true black on a
+   yellow plate reads as a warning sign, not as a drawing. */
+.inked-plate-card--ochre {
+  --inked-plate-card-plate: #e5bd5c;
+  --inked-plate-card-ink: #2b2114;
+  --inked-plate-card-muted: rgba(43, 33, 20, 0.6);
+  --inked-plate-card-line: #2b2114;
+  --inked-plate-card-dot: rgba(43, 33, 20, 0.24);
+  --inked-plate-card-crop: rgba(43, 33, 20, 0.46);
+  --inked-plate-card-accent: #14181a;
+}
+
+/* Periwinkle on indigo: the second dark pair, and the one that proves the
+   surface is a pair rather than a brightness. Graphite draws in lime on
+   near-black; this draws in a tint of its own plate, three steps lighter, so
+   the drawing sits *in* the surface instead of on top of it. */
+.inked-plate-card--indigo {
+  --inked-plate-card-plate: #1b1f3c;
+  --inked-plate-card-ink: #e4e7ff;
+  --inked-plate-card-muted: #8188b8;
+  --inked-plate-card-line: #a6b0ff;
+  --inked-plate-card-dot: rgba(166, 176, 255, 0.2);
+  --inked-plate-card-crop: rgba(166, 176, 255, 0.34);
+  --inked-plate-card-accent: #a6b0ff;
+}
+
+/* Deep teal on chalk: porcelain's cool counterpart, and the quietest pair in
+   the set. It is here because a set of surfaces with no near-neighbours is a
+   palette rather than a range — porcelain and chalk differ by hue alone, at
+   the same weight, which is the hardest pair to tell apart and the one worth
+   being able to. */
+.inked-plate-card--chalk {
+  --inked-plate-card-plate: #dae3e6;
+  --inked-plate-card-ink: #14323c;
+  --inked-plate-card-muted: #5d7480;
+  --inked-plate-card-line: #14323c;
+  --inked-plate-card-dot: rgba(20, 50, 60, 0.22);
+  --inked-plate-card-crop: rgba(20, 50, 60, 0.42);
+  --inked-plate-card-accent: #14181a;
 }
 
 /* --- reduced motion --------------------------------------------------- */
