@@ -23,8 +23,9 @@ brightness: porcelain, `--acid`, `--graphite`, `--ochre`, `--indigo` and
   rule across it: a drawing plate and a caption plate, 6px apart, and the
   four corners facing that gap are rounded to 30px while the rest stay at 14px,
   so each plate turns towards the other at the seam and away from it everywhere
-  else. Hover widens the seam to 13px and pushes the bracket frame 3px
-  outward, so the two plates separate a little rather than the card lifting.
+  else. Hover widens the seam to 13px and reaches the bracket frame two dots
+  further along the grid, so the two plates separate a little rather than the
+  card lifting.
 
   Those corners were a 45° chamfer first, cut out of each plate with a
   `mask-image` per corner and `mask-composite: intersect` — intersect being
@@ -53,40 +54,62 @@ brightness: porcelain, `--acid`, `--graphite`, `--ochre`, `--indigo` and
   wants the card's own radius back — a seam corner answering something that is
   not there is the one thing this rule is for.
 
-- **The frame around the drawing is a bracket, not a crop mark.** Four corner
-  ticks around a field is a printer's registration device, and it was the most
-  borrowed thing left on this card — a piece of furniture that arrives with
-  the construction and stays because nobody asks what it is for. The brackets
-  have a rounded elbow now, which is the same frame in this card's own
-  language rather than in a plate-maker's.
+- **The frame around the drawing is made of the field's own dots.** Four
+  corner ticks around a field is a printer's registration device, and it was
+  the most borrowed thing left on this card — furniture that arrives with a
+  construction and stays because nobody asks what it is for. It was a hairline
+  first, then a hairline with a rounded elbow, and the elbow was the tell: a
+  drawn line needs a corner treatment because it is a foreign object on the
+  plate. Painted with the tile the drawing field already uses — same pitch,
+  same dot, printed in the plate's ink rather than the field's grey — the card
+  is down to two kinds of mark, the plotted line and the grid, and the frame is
+  made of the second one. It reads as the grid saying where the field ends
+  rather than as a rule drawn around it.
 
-  It is one bordered box masked down to a square at each corner, not eight
-  background bars: eight straight bars cannot turn a corner, and that
-  construction is exactly why they were sharp in the first place. Draw the
-  whole rounded rectangle, then let four mask squares decide how much of it
-  shows. Each mask square is wider than the radius, so a bracket is the arc
-  plus a short straight run on both arms. It still moves: hover pushes the
-  whole box 3px outward, which is one `inset` rather than eight positions.
+  Everything about it is a count of dots. An arm is five of them, the band that
+  catches them is one tile, and the eight mask bars — two per corner — union,
+  which is what mask layers do by default, so the corner dot is shared by both
+  arms of its bracket and no compositing is involved. There is no radius left
+  anywhere in it: a dotted run has no corner to round, which is the part of
+  this that deleted a problem rather than solving it. The concentric bottom
+  corners and the mask square derived off the biggest radius both went with the
+  hairline that needed them.
 
-  And it sits 8px *outside* the dot field rather than flush with it. Flush,
-  the arc runs straight over the outermost row of dots and both lose: the line
-  picks up the dots' rhythm and reads as broken, the dots pick up the line and
-  read as a smudge, and at a rounded corner the two cross at every angle at
-  once. Clear of the field the frame is a frame and the field keeps its own
-  edge. Further out again — past about 11px — it starts to parallel the
-  plate's own rounded corner and reads as a second outline of the plate, which
-  is the other way to get this wrong.
+  The ink is the field's too. A version that printed the brackets in the
+  plate's full-strength ink was built first, on the grounds that a mark should
+  be legible, and it is the wrong instinct here: it makes the frame a different
+  mark that happens to share a lattice. Same dot, same weight, and what
+  separates the frame from the field is position alone — the grid continuing
+  past the edge of the field. It is quiet, and it survives the thumbnail's 0.7
+  and a phone, which is all it has to do. `--…-crop` stays its own property
+  rather than being `--…-dot` spelled twice, so a caller can re-ink the frame
+  without touching the field; none of the six surfaces carries a crop colour of
+  its own any more.
 
-  Two things had to follow the plate once the frame moved out. Its bottom pair
-  of corners sits inside the plate's seam corners, so it has to be *concentric*
-  with them — the plate's radius less the gap, 30 less 10 — or the clearance
-  pinches exactly where the bracket's own arc is: 10px along the straight run
-  and 7.7px at the corner. That is the amount that reads as wrong without
-  announcing what it is. And the masked square at each corner is derived from
-  the largest of the frame's radii rather than set by hand, because the first
-  version of this had a 20px bottom corner inside an 18.4px square: the whole
-  square went on the curve and the bracket came out as a bare smile with no
-  arms on it.
+  The tile repeats with `round` rather than `repeat`, and that is what stops a
+  frame made of dots from having a defect built into it. A tiled background is
+  cut off wherever its box ends, so unless the field is a whole number of cells
+  wide the last column and the bottom row come out as half a dot — flat-sided
+  against round ones, which is invisible in a mock-up and obvious on a screen.
+  The card is 300px of field at its own width and lands clean; at the 348 the
+  thumbnail asks for it is 3px over and every edge dot is shaved. `round`
+  scales the tile a hair so a whole number fits — 4.971px instead of 5 at that
+  width. A pitch nobody can see moving, against a clipped dot anybody can. It
+  is on the field and the frame alike, and the two stay in step because both
+  tiles start at their own left edge and the frame's box is a whole number of
+  pitches wider, so the rounding lands them within a tenth of a pixel.
+
+  The one number that is load-bearing is the inset: it has to be a whole number
+  of pitches, because the tile paints its dot in the middle of every cell. On
+  the pitch the outermost column lands 2.5px inside the frame's edge and is
+  drawn whole; off it the column lands on the edge and every bracket loses half
+  its outer row, which is what -8px did.
+
+  Hover reaches the brackets two dots further along the grid instead of pushing
+  the whole frame outward, which is the move the hairline made. The frame has
+  to stay on a whole pitch to keep its dots whole, and the next pitch out is
+  3px from the plate's edge; growing the arms says the same thing and never
+  leaves the lattice.
 
 - **The plate is annotated with what the drawing is made of.** The caption
   plate's right-hand slot says `13 paths`, `9 paths`, `48 paths` — a fact about

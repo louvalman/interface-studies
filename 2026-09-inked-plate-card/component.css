@@ -21,6 +21,16 @@
   --inked-plate-card-seam: 0.375rem;
   --inked-plate-card-seam-open: 0.8125rem;
   --inked-plate-card-seam-radius: 1.875rem;
+  /* The drawing plate's foot: the extra margin under the field, and derived
+     rather than chosen. The plate's bottom corners carry the seam radius, so
+     their curve starts further in from the corner than the top pair's does and
+     eats into exactly the margin the frame's bottom brackets sit in. Giving
+     the foot back the difference between the two radii restores the clearance
+     the brackets have everywhere else — and a field matted deeper at the
+     bottom than at the sides is what framing has always done, because a field
+     centred by measurement sits low by eye. */
+  --inked-plate-card-plate-foot:
+    calc(var(--inked-plate-card-seam-radius) - var(--inked-plate-card-radius));
   --inked-plate-card-caption-w: 100%;
 
   --inked-plate-card-plate: #e8ebe4;
@@ -32,7 +42,13 @@
   --inked-plate-card-dot: rgba(20, 24, 26, 0.24);
   --inked-plate-card-dot-pitch: 5px;
   --inked-plate-card-dot-size: 1px;
-  --inked-plate-card-crop: rgba(20, 24, 26, 0.42);
+  /* The frame's dot is the field's dot, full stop: same tile, same pitch, same
+     ink. What separates the two is position — the frame is the grid continuing
+     past the edge of the field — and nothing else, which is as far as "made of
+     the same dots" can be taken. It stays its own property rather than being
+     --dot spelled twice, so a caller can re-ink the frame without touching the
+     field. */
+  --inked-plate-card-crop: var(--inked-plate-card-dot);
 
   --inked-plate-card-font: "Plus Jakarta Sans", system-ui, sans-serif;
   --inked-plate-card-mono: "JetBrains Mono", ui-monospace, monospace;
@@ -52,31 +68,19 @@
   --inked-plate-card-caption-min: 4.625rem;
 
   --inked-plate-card-art-ratio: 1;
-  --inked-plate-card-crop-radius: 0.9rem;
-  --inked-plate-card-crop-run: 0.5rem;    /* straight arm past the arc */
-  /* How far the frame sits inside the plate: the plate's padding, less however
-     far the frame is pushed out past the drawing field. Its bottom corners are
-     concentric with the plate's at that distance — see the frame rule. */
-  --inked-plate-card-crop-gap:
-    calc(var(--inked-plate-card-pad) + var(--inked-plate-card-crop-inset));
-  /* The masked square at each corner, derived rather than set: it has to clear
-     the *largest* of the frame's radii, or the corner with the biggest arc has
-     its whole square spent on the curve and comes out as a bare smile with no
-     arms on it. Whichever corner is roundest, every bracket is its arc plus
-     the same straight run. */
-  --inked-plate-card-crop-len:
-    calc(max(
-      var(--inked-plate-card-crop-radius),
-      var(--inked-plate-card-seam-radius) - var(--inked-plate-card-crop-gap)
-    ) + var(--inked-plate-card-crop-run));
-  --inked-plate-card-crop-w: 1px;
-  /* Negative: the frame sits outside the dot field, in the plate's own margin.
-     Flush with the field, a 1px line runs straight over the outermost row of
-     dots and both get muddy — the line picks up the dots' rhythm and the dots
-     lose theirs. Clear of it by 8px, the field keeps its edge and the frame is
-     a frame. */
-  --inked-plate-card-crop-inset: -8px;
-  --inked-plate-card-crop-inset-open: -11px;
+  /* The frame is made of the field's own dots, so its measurements are the
+     field's too: an arm is a number of dots, and the band that catches them is
+     one tile. */
+  --inked-plate-card-crop-arm: 5;         /* dots per arm */
+  --inked-plate-card-crop-arm-open: 7;
+  /* Whole pitches, and it has to be: the tile paints a dot in the middle of
+     every cell, so at a multiple of the pitch the outermost dot column lands
+     2.5px inside the frame's edge and is drawn whole. Off the pitch it lands
+     on the edge and every bracket loses half its outer row. It is far enough
+     out that the frame clears the field — flush, the two sets of dots read as
+     one smudged field — and near enough that it does not start parallelling
+     the plate's own rounded corner. */
+  --inked-plate-card-crop-inset: -10px;
 
   /* Stroke width is in viewBox units, not px, so the line weight scales with
      the drawing instead of getting heavier as the card gets smaller. */
@@ -90,7 +94,7 @@
 
   --inked-plate-card-transition: 280ms cubic-bezier(0.16, 1, 0.3, 1);
 
-  --inked-plate-card-crop-corner: linear-gradient(#000 0 0);
+  --inked-plate-card-crop-bar: linear-gradient(#000 0 0);
   /* -------------------------------------------------------------------- */
 
   display: grid;
@@ -135,6 +139,7 @@
 .inked-plate-card__plate {
   display: grid;
   gap: var(--inked-plate-card-plate-gap);
+  padding-bottom: calc(var(--inked-plate-card-pad) + var(--inked-plate-card-plate-foot));
   border-radius:
     var(--inked-plate-card-radius) var(--inked-plate-card-radius)
     var(--inked-plate-card-seam-radius) var(--inked-plate-card-seam-radius);
@@ -224,52 +229,145 @@
   background-size: var(--inked-plate-card-dot-pitch) var(--inked-plate-card-dot-pitch);
 }
 
-/*
-  Four corner brackets with a rounded elbow, and they are one bordered box
-  rather than eight background bars: draw the whole rounded rectangle, then
-  mask it down to a square at each corner. Eight straight bars cannot turn a
-  corner — that construction is why they were sharp, and sharp corner ticks
-  are a crop mark, which is a printer's registration device and the most
-  borrowed thing left on this card.
+/* --- the drawing ------------------------------------------------------ */
 
-  The radius is a little tighter than the plate's so the frame reads as
-  something sitting inside the plate rather than as a second outline of it,
-  and the mask square is wider than that radius, so each bracket is the arc
-  plus a short straight run on both arms.
+.inked-plate-card__art {
+  position: relative;
+  aspect-ratio: var(--inked-plate-card-art-ratio);
+  max-width: 100%;
+  /* A dot grid, not a texture image: one radial stop per tile, sized so the
+     dot lands on a whole pixel. A sub-pixel radius here renders as nothing on
+     a 1x screen. */
+  background-image:
+    radial-gradient(
+      circle var(--inked-plate-card-dot-size) at 50% 50%,
+      var(--inked-plate-card-dot) 99%,
+      #0000 0);
+  background-size: var(--inked-plate-card-dot-pitch) var(--inked-plate-card-dot-pitch);
+  /* `round`, not `repeat`, and it is not a nicety. A tiled background is cut
+     off wherever the box ends, so unless the field happens to be a whole
+     number of cells wide the last column and the bottom row are half a dot —
+     a flat-sided dot against round ones, which is exactly the kind of defect
+     that is invisible in a mock-up and obvious on a screen. The card is 300px
+     of field at its own width and lands clean; at 348, which is what the
+     thumbnail asks for, it is 3px over and every edge dot is shaved.
+     `round` scales the tile a hair so a whole number fits — 4.971px instead of
+     5 at that width — which is a pitch nobody can see moving and a clipped dot
+     anybody can. */
+  background-repeat: round;
+}
+
+/*
+  The frame is the field's own grid, re-inked.
+
+  It was a hairline before, and a hairline is a printer's mark: it belongs to
+  the plate-maker rather than to the plate. Painted with the tile the drawing
+  field already uses — same pitch, same dot, the frame's darker ink — the card
+  is down to two kinds of mark, the plotted line and the grid, and the frame is
+  made of the second one. It reads as the grid saying where the field ends
+  rather than as a rule drawn around it.
+
+  One element again: the dot tile is the background, and eight mask bars — two
+  per corner, one tile thick and a few dots long — decide which dots survive.
+  The bars union, which is what mask layers do by default, so the corner dot is
+  simply shared by both arms of its bracket and no compositing is involved.
+  There is no radius anywhere in it now: a dotted run has no corner to round,
+  which is the part of this that deleted a problem rather than solving it — the
+  concentric bottom corners and the mask square derived off the biggest radius
+  both went with the hairline that needed them.
 */
 .inked-plate-card__crop {
   position: absolute;
   inset: var(--inked-plate-card-crop-inset);
   pointer-events: none;
-  border: var(--inked-plate-card-crop-w) solid var(--inked-plate-card-crop);
-  /* The top pair is in open plate and takes the frame's own radius. The bottom
-     pair sits inside the plate's seam corners, and there it has to be
-     concentric with them — outer radius less the gap — or the clearance
-     pinches exactly where the bracket's own arc is: 10px along the straight
-     run, 7.7px at the corner, which is the amount that reads as *off* without
-     announcing what it is. */
-  border-radius:
-    var(--inked-plate-card-crop-radius) var(--inked-plate-card-crop-radius)
-    calc(var(--inked-plate-card-seam-radius) - var(--inked-plate-card-crop-gap))
-    calc(var(--inked-plate-card-seam-radius) - var(--inked-plate-card-crop-gap));
+
+  --inked-plate-card-crop-run:
+    calc(var(--inked-plate-card-crop-arm) * var(--inked-plate-card-dot-pitch));
+
+  /* The tile draws in `currentColor` rather than reading the variable
+     directly, and that is the whole mechanism for the inking below: a custom
+     property cannot be transitioned without registering it, and `color` has
+     been animatable since forever. */
+  color: var(--inked-plate-card-crop);
+  background-image:
+    radial-gradient(
+      circle var(--inked-plate-card-dot-size) at 50% 50%,
+      currentColor 99%,
+      #0000 0);
+  background-size: var(--inked-plate-card-dot-pitch) var(--inked-plate-card-dot-pitch);
+  /* Rounded to whole cells, same as the field — and the two stay in step
+     because both tiles start at their own left edge and the frame's box is a
+     whole number of pitches wider, so the rounding lands them within a tenth
+     of a pixel of each other. */
+  background-repeat: round;
+
   -webkit-mask-image:
-    var(--inked-plate-card-crop-corner), var(--inked-plate-card-crop-corner),
-    var(--inked-plate-card-crop-corner), var(--inked-plate-card-crop-corner);
+    var(--inked-plate-card-crop-bar), var(--inked-plate-card-crop-bar),
+    var(--inked-plate-card-crop-bar), var(--inked-plate-card-crop-bar),
+    var(--inked-plate-card-crop-bar), var(--inked-plate-card-crop-bar),
+    var(--inked-plate-card-crop-bar), var(--inked-plate-card-crop-bar);
   mask-image:
-    var(--inked-plate-card-crop-corner), var(--inked-plate-card-crop-corner),
-    var(--inked-plate-card-crop-corner), var(--inked-plate-card-crop-corner);
+    var(--inked-plate-card-crop-bar), var(--inked-plate-card-crop-bar),
+    var(--inked-plate-card-crop-bar), var(--inked-plate-card-crop-bar),
+    var(--inked-plate-card-crop-bar), var(--inked-plate-card-crop-bar),
+    var(--inked-plate-card-crop-bar), var(--inked-plate-card-crop-bar);
   -webkit-mask-repeat: no-repeat;
   mask-repeat: no-repeat;
-  -webkit-mask-position: 0 0, 100% 0, 0 100%, 100% 100%;
-  mask-position: 0 0, 100% 0, 0 100%, 100% 100%;
-  -webkit-mask-size: var(--inked-plate-card-crop-len) var(--inked-plate-card-crop-len);
-  mask-size: var(--inked-plate-card-crop-len) var(--inked-plate-card-crop-len);
-  /* The radius travels with the inset: pushed out on hover the frame is nearer
-     the plate's edge, so the concentric bottom pair opens up by the same 3px. */
+  -webkit-mask-position:
+    0 0, 0 0, 100% 0, 100% 0, 0 100%, 0 100%, 100% 100%, 100% 100%;
+  mask-position:
+    0 0, 0 0, 100% 0, 100% 0, 0 100%, 0 100%, 100% 100%, 100% 100%;
+  -webkit-mask-size:
+    var(--inked-plate-card-crop-run) var(--inked-plate-card-dot-pitch),
+    var(--inked-plate-card-dot-pitch) var(--inked-plate-card-crop-run),
+    var(--inked-plate-card-crop-run) var(--inked-plate-card-dot-pitch),
+    var(--inked-plate-card-dot-pitch) var(--inked-plate-card-crop-run),
+    var(--inked-plate-card-crop-run) var(--inked-plate-card-dot-pitch),
+    var(--inked-plate-card-dot-pitch) var(--inked-plate-card-crop-run),
+    var(--inked-plate-card-crop-run) var(--inked-plate-card-dot-pitch),
+    var(--inked-plate-card-dot-pitch) var(--inked-plate-card-crop-run);
+  mask-size:
+    var(--inked-plate-card-crop-run) var(--inked-plate-card-dot-pitch),
+    var(--inked-plate-card-dot-pitch) var(--inked-plate-card-crop-run),
+    var(--inked-plate-card-crop-run) var(--inked-plate-card-dot-pitch),
+    var(--inked-plate-card-dot-pitch) var(--inked-plate-card-crop-run),
+    var(--inked-plate-card-crop-run) var(--inked-plate-card-dot-pitch),
+    var(--inked-plate-card-dot-pitch) var(--inked-plate-card-crop-run),
+    var(--inked-plate-card-crop-run) var(--inked-plate-card-dot-pitch),
+    var(--inked-plate-card-dot-pitch) var(--inked-plate-card-crop-run);
+
+  /* Hover reaches the brackets further along the grid instead of pushing the
+     whole frame outward, which is the move the hairline made. The frame has to
+     sit on a whole pitch to keep its dots whole, and the next whole pitch out
+     is 3px from the plate's edge; two more dots per arm says the same thing
+     and never leaves the lattice. */
   transition:
-    inset var(--inked-plate-card-transition),
-    border-radius var(--inked-plate-card-transition);
+    -webkit-mask-size var(--inked-plate-card-transition),
+    mask-size var(--inked-plate-card-transition),
+    color var(--inked-plate-card-transition);
+
+  /* The frame inks with the drawing. While the plotter is running the
+     brackets are the line's colour, and they settle back to the field's as it
+     finishes — the grid holding the drawing's ink for exactly as long as there
+     is drawing going on. Under the pointer they hold it outright, because the
+     drawing is re-inking for as long as you are there.
+
+     No fill mode on the animation: when it ends the declared `color` above
+     takes over at the same value it landed on, which is what leaves the hover
+     rule free to override it. A second, re-inking copy of these keyframes was
+     the first attempt at the hover half and it fought the held colour — ink,
+     fade to grey, snap back to ink. A transition does the same job in one
+     direction at a time. */
+  animation:
+    inked-plate-card-crop-ink var(--inked-plate-card-draw)
+    var(--inked-plate-card-draw-ease);
 }
+
+@keyframes inked-plate-card-crop-ink {
+  from { color: var(--inked-plate-card-line); }
+  to   { color: var(--inked-plate-card-crop); }
+}
+
 
 .inked-plate-card__ink {
   position: absolute;
@@ -339,7 +437,8 @@
 .inked-plate-card:hover .inked-plate-card__crop,
 .inked-plate-card:focus-visible .inked-plate-card__crop,
 .inked-plate-card--live .inked-plate-card__crop {
-  inset: var(--inked-plate-card-crop-inset-open);
+  --inked-plate-card-crop-arm: var(--inked-plate-card-crop-arm-open);
+  color: var(--inked-plate-card-line);
 }
 
 .inked-plate-card:hover .inked-plate-card__line,
@@ -359,7 +458,8 @@
   }
 
   .inked-plate-card:active .inked-plate-card__crop {
-    inset: var(--inked-plate-card-crop-inset-open);
+    --inked-plate-card-crop-arm: var(--inked-plate-card-crop-arm-open);
+    color: var(--inked-plate-card-line);
   }
 
   .inked-plate-card:active .inked-plate-card__line {
@@ -377,7 +477,6 @@
   --inked-plate-card-muted: rgba(20, 26, 8, 0.62);
   --inked-plate-card-line: #141a08;
   --inked-plate-card-dot: rgba(20, 26, 8, 0.26);
-  --inked-plate-card-crop: rgba(20, 26, 8, 0.48);
   --inked-plate-card-accent: #14181a;
 }
 
@@ -387,7 +486,6 @@
   --inked-plate-card-muted: #7f8892;
   --inked-plate-card-line: #c8ef4a;
   --inked-plate-card-dot: rgba(232, 235, 228, 0.16);
-  --inked-plate-card-crop: rgba(232, 235, 228, 0.3);
 }
 
 /* Ochre on bark: the one warm pair. Its plate is the most saturated surface
@@ -399,7 +497,6 @@
   --inked-plate-card-muted: rgba(43, 33, 20, 0.6);
   --inked-plate-card-line: #2b2114;
   --inked-plate-card-dot: rgba(43, 33, 20, 0.24);
-  --inked-plate-card-crop: rgba(43, 33, 20, 0.46);
   --inked-plate-card-accent: #14181a;
 }
 
@@ -413,7 +510,6 @@
   --inked-plate-card-muted: #8188b8;
   --inked-plate-card-line: #a6b0ff;
   --inked-plate-card-dot: rgba(166, 176, 255, 0.2);
-  --inked-plate-card-crop: rgba(166, 176, 255, 0.34);
   --inked-plate-card-accent: #a6b0ff;
 }
 
@@ -428,7 +524,6 @@
   --inked-plate-card-muted: #5d7480;
   --inked-plate-card-line: #14323c;
   --inked-plate-card-dot: rgba(20, 50, 60, 0.22);
-  --inked-plate-card-crop: rgba(20, 50, 60, 0.42);
   --inked-plate-card-accent: #14181a;
 }
 
