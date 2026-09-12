@@ -2,12 +2,12 @@ type: navigation
 
 A floating toolbar on one pane of glass. Four items sit together and a fifth is
 set apart; exactly one of them carries its label, and it is the one you are on.
-The search item opens into a field and the activity item opens the pane
+The search item opens into a field and the log item opens the pane
 downward into a panel — neither is a second sheet sliding out from underneath,
 the one surface changes shape, and the corner it does that around never moves.
 
 The set is a working surface rather than an operating system: Base, search,
-Versions, Activity, Display. Each item is named for what its glyph can actually
+Versions, Log, Display. Each item is named for what its glyph can actually
 do — two sliders are display controls, not a settings screen; two drawers are
 versions of a thing, not a mailbox — so the bar says what it is for before a
 label opens. It is also why the labelled item is *Base* and not Home: a toolbar
@@ -41,9 +41,9 @@ benchmark won because it is the only triangle in the set — nothing else here
 has a diagonal — and because it says what Base means: the mark everything else
 is measured from.
 
-The panel item is called Activity, not Notifications, and the icon is four bars
+The panel item is called Log, not Notifications, and the icon is four bars
 of uneven height. Notifications is a promise about delivery — it says these are
-things that were pushed at you. What the four rows actually are is a log of
+things that were pushed at you. What the four rows actually are is a record of
 what was decided: a type pair set, a tint thinned, a spacing rhythm fixed, a
 radius made proportional. Naming it for the content rather than for the
 transport also stops the component being read as an alert centre, which is a
@@ -117,19 +117,20 @@ on each side, which is what the eye reads and what `getBBox()` leaves out.
 
   The bearing is not one number, which is the part that took measuring. Every
   icon in the set is symmetric inside its own box, but they do not agree with
-  each other — at a 24px icon: Home 1.8, Archive 2.6, Settings 2.8, Activity 3.4.
-  `--icon/9` is the mean across the four that carry a label, so a single constant
-  lands within a pixel of right for all of them and exactly right for none.
+  each other — at a 24px icon: the benchmark 2.2, the drawers 2.6, the sliders
+  2.8, the bars 3.4. `--icon/9` is 2.67 against a mean of 2.75 across the four
+  that carry a label, so a single constant lands within half a pixel of right for
+  all of them and exactly right for none.
 
   It was `--icon/6` — the mean plus a deliberate 1.35px, on the theory that text
   reads tighter against a stadium's curve than a roundish glyph does. That was
   tuned against a 16px label, and it did not survive the label coming down to
   13px: the word is smaller and no longer reaches the part of the curve that
-  closes in, so the correction had outgrown the thing it corrected. On Home —
+  closes in, so the correction had outgrown the thing it corrected. On Base —
   the narrowest bearing in the set, and the item the thumbnail shows at rest —
-  the pill was carrying 2.2px more air after the word than before the glyph,
-  which is enough to see. At `--icon/9` the residual there is 1.1px, and the only
-  way past that is to normalise the icons to one bearing rather than average
+  the pill was carrying 1.8px more air after the word than before the glyph,
+  which is enough to see. At `--icon/9` the residual there is 0.47px, and the
+  only way past that is to normalise the icons to one bearing rather than average
   over four.
 
   Vertically it was the label that was out of step, not the icons: all five are
@@ -145,7 +146,7 @@ on each side, which is what the eye reads and what `getBBox()` leaves out.
   the flex centring the action already does lands the letters rather than the em
   box. It costs a `padding-block`, because trimmed to the baseline a descender
   hangs outside the box and the reveal's `overflow: hidden` would take the 'y'
-  off "Activity". That padding goes on the label, not the reveal — the reveal
+  off "Log". That padding goes on the label, not the reveal — the reveal
   also holds the search input at full `--hit` — and it is padding-block, which
   the label can carry where padding-inline would floor its collapsed width above
   zero.
@@ -411,7 +412,8 @@ The query fires at 25rem, and the gap between that and the 264px above is the
 correction this reference needed most. 264px is what the *collapsed* row costs,
 and this bar is never collapsed: one action always carries its label, and the
 label is the widest thing in the component. Five squares, the split and an open
-"Activity" come to about 390px, so every phone held upright sat in the band
+"Versions" — the longest label in the set — come to about 400px, so every
+phone held upright sat in the band
 between the two numbers — wide enough to stay at full scale, too narrow to show
 the word. The surface clipped "Base" to its first letter rather than the
 component standing down to the scale that fits, which is the same failure as the

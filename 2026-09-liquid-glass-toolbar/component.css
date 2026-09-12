@@ -1,7 +1,7 @@
 /*
   Liquid glass toolbar — self-contained styles.
 
-  One glass surface. The bar and the activity panel are not two sheets that
+  One glass surface. The bar and the log panel are not two sheets that
   slide over each other: `.liquid-glass-toolbar__shell` is the only thing with a
   backdrop filter, a rim and a shadow, and everything else changes its shape.
 
@@ -55,19 +55,20 @@
      the text. The trail is that bearing, handed to the trailing side.
 
      Every icon here is symmetric inside its own box, but the bearing is not the
-     same from one to the next — measured at a 24px icon: Home 1.8, Archive 2.6,
-     Settings 2.8, Activity 3.4. --icon/9 is the mean across the four that carry
-     a label, so one constant is as close as a single value gets; the residual is
-     under a pixel either way.
+     same from one to the next — measured at a 24px icon: the benchmark 2.2, the
+     drawers 2.6, the sliders 2.8, the bars 3.4. --icon/9 is 2.67 against a mean
+     of 2.75 across the four that carry a label, so one constant is as close as a
+     single value gets; the residual is under half a pixel either way.
 
      It used to be --icon/6, which is the mean plus a deliberate 1.35px on top —
      text reads tighter against a stadium's curve than a roundish glyph does, so
      the trailing side was given back more than it was owed. That overshoot was
      set against a 16px label. At 13px the word is smaller and sits further from
      where the curve actually closes in, and the correction had grown larger than
-     the thing it corrects: on Home, the narrowest bearing in the set, the pill
-     was carrying 2.2px more air after the word than before the glyph. Visible,
-     and visible first on the one item the thumbnail shows at rest. */
+     the thing it corrects: on Base, the narrowest bearing in the set, the pill
+     was carrying 1.8px more air after the word than before the glyph. Visible,
+     and visible first on the one item the thumbnail shows at rest. It is 0.47px
+     there now. */
   --liquid-glass-toolbar-label-trail: calc(var(--liquid-glass-toolbar-icon) / 9);
 
   /* the feed. Sized off the row height so the whole panel scales with one
@@ -157,7 +158,7 @@
   --liquid-glass-toolbar-label-track: 0.005em;
   /* Room handed back to ascenders and descenders after the line box is trimmed
      to the cap block — see __label. Symmetric, so it does not move the centre;
-     it only keeps the 'y' in "Activity" inside the reveal's `overflow: hidden`.
+     it only keeps the 'g' in "Log" inside the reveal's `overflow: hidden`.
      It has to clear the taller of the two: 0.26em of ascender above the cap, and
      0.23em of descent below the baseline. */
   --liquid-glass-toolbar-label-leading: calc(var(--liquid-glass-toolbar-label-size) * 0.4);
@@ -1021,7 +1022,8 @@
   The breakpoint is 25rem and not the 264px that sum comes to, because 264px is
   what the *collapsed* row needs and this bar is never collapsed: one action
   always carries its label, and the label is the widest thing in the component.
-  Five squares plus the split plus an open "Activity" is about 390px, so every
+  Five squares plus the split plus an open "Versions" — the longest label in the
+  set — is about 400px, so every
   phone held upright sat in the band between the two numbers — wide enough to
   stay at full scale, too narrow to show the word, and the surface clipped the
   label to its first letter rather than the component standing down to the
