@@ -439,7 +439,13 @@ The type filter above the rail is built by `index.js` from the `type.*` key on
 each card's badge, so a study of a new type needs nothing added to it. Filtering
 hides cards with a class rather than the `hidden` attribute — `.piece` sets its
 own `display`, and the warning about `[hidden]` in the preview contract applies
-here for the same reason. The rail counts what it is showing and the footer
+here for the same reason. The chips are one row that scrolls sideways, never
+two rows that wrap: a second line pushed the first card off the fold on a
+phone, and the rail below already answers a narrow screen the same way. That
+costs the focus ring two things — `overflow-x: auto` computes overflow-y to
+`auto`, so the row carries top padding or the outline is clipped, and Chromium
+does not scroll a chip that Tab reaches back into view, so `index.js` does it
+on `focusin`. The rail counts what it is showing and the footer
 counts what exists — the masthead states neither, because the rail's own
 "Study 01 / 05" is where a reader takes the total from.
 

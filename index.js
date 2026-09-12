@@ -614,6 +614,17 @@
     filterRow.hidden = false;
   }
 
+  // The row scrolls sideways on a narrow screen rather than wrapping, which
+  // means a chip can sit outside it — and Chromium does not bring a chip that
+  // Tab reaches back into view on its own here, so the last option is focused
+  // and invisible. One call, and a no-op at every width where the row fits.
+  if (filterRow) {
+    filterRow.addEventListener('focusin', (event) => {
+      const btn = event.target.closest('.rail__filter-btn');
+      if (btn) btn.scrollIntoView({ inline: 'nearest', block: 'nearest' });
+    });
+  }
+
   // The chips carry card labels, so they are rewritten with everything else
   // when the language changes. This runs after the module has re-labelled the
   // badges, which is where every chip but All reads its text from.
