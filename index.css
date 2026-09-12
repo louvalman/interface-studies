@@ -253,8 +253,11 @@ body.is-locked {
 }
 
 /* Small stat row under the lede. */
+/* One item now that the count has gone to the rail, where "Study 01 / 05"
+   already carries it — so a little less air above it than a row of three
+   wanted. */
 .head__meta {
-  margin: clamp(2rem, 4vw, 3rem) 0 0;
+  margin: clamp(1.5rem, 3vw, 2.25rem) 0 0;
   padding: 0;
   display: flex;
   flex-wrap: wrap;
