@@ -68,7 +68,7 @@
       'piece.liquidGlassToolbar.title': 'Værktøjslinje i flydende glas',
       'piece.liquidGlassToolbar.note': 'Én glasflade der skifter form — det '
         + 'valgte punkt folder sig ud til en pille med etiket, søgning til et '
-        + 'felt, loggen til et panel — i fem materialer fra én opskrift.',
+        + 'felt, loggen til et panel — i seks materialer fra én opskrift.',
       'cta.quickLookToolbar': 'Hurtigt kig: Værktøjslinje i flydende glas',
       'piece.inkedPlate.title': 'Kort med tegnede plader',
       'piece.inkedPlate.note': 'En billedplade og en tekstplade med afskårne '
@@ -759,6 +759,36 @@
     });
 
     filterRow.hidden = false;
+    syncFilterFade();
+  }
+
+  // The row scrolls sideways on a narrow screen rather than wrapping, which
+  // means a chip can sit outside it — and Chromium does not bring a chip that
+  // Tab reaches back into view on its own here, so the last option is focused
+  // and invisible. One call, and a no-op at every width where the row fits.
+  if (filterRow) {
+    filterRow.addEventListener('focusin', (event) => {
+      const btn = event.target.closest('.rail__filter-btn');
+      if (btn) btn.scrollIntoView({ inline: 'nearest', block: 'nearest' });
+    });
+  }
+
+  // Which end of the row wears a fade. The mask is CSS; what it cannot know is
+  // whether there is anything past either edge, which is a scroll position and
+  // two widths. A whole pixel of slack, because a scrollLeft at the end is
+  // fractional on a fractional device ratio and a permanent fade at an end
+  // with nothing past it is the one thing this is meant not to say.
+  function syncFilterFade() {
+    if (!filterRow || filterRow.hidden) return;
+    const max = filterRow.scrollWidth - filterRow.clientWidth;
+    const at = filterRow.scrollLeft;
+    filterRow.classList.toggle('is-fade-start', at > 1);
+    filterRow.classList.toggle('is-fade-end', max > 1 && at < max - 1);
+  }
+
+  if (filterRow) {
+    filterRow.addEventListener('scroll', syncFilterFade, { passive: true });
+    window.addEventListener('resize', syncFilterFade);
   }
 
   // The chips carry card labels, so they are rewritten with everything else
@@ -771,6 +801,9 @@
       btn.firstChild.textContent =
         type === FILTER_ALL ? filterText('filter.all') : typeLabel(type);
     });
+    // Danish labels are not the width English ones were, so the row may have
+    // gained or lost the overflow the fade is reporting.
+    syncFilterFade();
   });
 
   // --- rail -------------------------------------------------------------

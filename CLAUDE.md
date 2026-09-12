@@ -402,43 +402,6 @@ The matte part is the grain: the dark ground is a wash across two thousand
 pixels, which 8-bit colour cannot draw without ringing. A fractal-noise tile at
 a low alpha dithers the banding out, and reads as paper rather than as texture.
 
-The card list is hand-maintained in `index.html`. Adding a study means
-adding one `<article class="piece">` block to it, pointing at the new folder's
-`demo.html` and `preview.html`, and carrying a `data-date` — `index.js` sorts
-the rail by that, newest first, so where the block is pasted does not matter.
-Leave the `piece__no` em dash alone too: the number is written from the card's
-position once the rail is sorted. Both used to be typed in, and both were a
-second source of truth for something already stated once — a card added at the
-front invalidated every number below it, and two sessions adding one at the
-same time left the order to whichever way the merge fell. Without a `data-date`
-a card falls back to the month in its folder name, which sorts it behind
-anything dated in that month.
-
-The card is an `<article>` with a stretched link on the title rather than an
-`<a>` wrapping everything, because the quick-look button lives inside the card
-and an anchor may not contain a button. Everything the overlay shows is read
-back out of that block, so no title, note or path is written twice. That is the
-only file outside the study folder that a new study may touch.
-
-The preview iframe carries its path in `data-src`, not `src`. Every card on the
-page is a live component — which is the point, and also what it costs: one
-thumbnail alone runs 289 dots on their own animations, on screen or not, and
-the rail drifts, so every card eventually arrives. `index.js` loads a preview
-when it comes within a card-width of the rail's scrollport and drops it again
-two card-widths past, so a long rail only ever has a handful alive. A card
-whose preview has been dropped shows its skeleton, not an empty frame. This
-does mean no previews at all without JavaScript; the index already needs it for
-the rail's order, its numbers and its counts.
-
-The type filter above the rail is built by `index.js` from the `type.*` key on
-each card's badge, so a study of a new type needs nothing added to it. Filtering
-hides cards with a class rather than the `hidden` attribute — `.piece` sets its
-own `display`, and the warning about `[hidden]` in the preview contract applies
-here for the same reason. The rail counts what it is showing and the footer
-counts what exists — the masthead states neither, because the rail's own
-"Study 01 / 05" is where a reader takes the total from.
-
-
 ## JavaScript
 
 Vanilla HTML and CSS by default. Add JavaScript only when the study
@@ -532,6 +495,52 @@ the choice back; `localStorage` is the secondary channel, because over `file://`
 each document gets its own opaque origin and does not share it. `_template/`
 holds the block to copy. Translate the page's own prose only — component sample
 copy and class-name hints stay as they are.
+
+The card list is hand-maintained in `index.html`. Adding a study means
+adding one `<article class="piece">` block to it, pointing at the new folder's
+`demo.html` and `preview.html`, and carrying a `data-date` — `index.js` sorts
+the rail by that, newest first, so where the block is pasted does not matter.
+Leave the `piece__no` em dash alone too: the number is written from the card's
+position once the rail is sorted. Both used to be typed in, and both were a
+second source of truth for something already stated once — a card added at the
+front invalidated every number below it, and two sessions adding one at the
+same time left the order to whichever way the merge fell. Without a `data-date`
+a card falls back to the month in its folder name, which sorts it behind
+anything dated in that month.
+
+The card is an `<article>` with a stretched link on the title rather than an
+`<a>` wrapping everything, because the quick-look button lives inside the card
+and an anchor may not contain a button. Everything the overlay shows is read
+back out of that block, so no title, note or path is written twice. That is the
+only file outside the study folder that a new study may touch.
+
+The preview iframe carries its path in `data-src`, not `src`. Every card on the
+page is a live component — which is the point, and also what it costs: one
+thumbnail alone runs 289 dots on their own animations, on screen or not, and
+the rail drifts, so every card eventually arrives. `index.js` loads a preview
+when it comes within a card-width of the rail's scrollport and drops it again
+two card-widths past, so a long rail only ever has a handful alive. A card
+whose preview has been dropped shows its skeleton, not an empty frame. This
+does mean no previews at all without JavaScript; the index already needs it for
+the rail's order, its numbers and its counts.
+
+The type filter above the rail is built by `index.js` from the `type.*` key on
+each card's badge, so a study of a new type needs nothing added to it. Filtering
+hides cards with a class rather than the `hidden` attribute — `.piece` sets its
+own `display`, and the warning about `[hidden]` in the preview contract applies
+here for the same reason. The chips are one row that scrolls sideways, never
+two rows that wrap: a second line pushed the first card off the fold on a
+phone, and the rail below already answers a narrow screen the same way. That
+costs the focus ring two things — `overflow-x: auto` computes overflow-y to
+`auto`, so the row carries top padding or the outline is clipped, and Chromium
+does not scroll a chip that Tab reaches back into view, so `index.js` does it
+on `focusin`. A mask fades whichever end has chips past it, so the row says it
+scrolls rather than looking cut off; the mask paints against the scroller's own
+border box and stays put while the chips move under it, and `index.js` sets
+each end from the scroll position, because whether there is anything past an
+edge is not something CSS can ask. The rail counts what it is showing and the footer
+counts what exists — the masthead states neither, because the rail's own
+"Study 01 / 05" is where a reader takes the total from.
 
 ### The type is stated twice, and that is the best available
 

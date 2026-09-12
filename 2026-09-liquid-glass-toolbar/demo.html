@@ -29,7 +29,7 @@
   <meta property="og:type" content="article" />
   <meta property="og:site_name" content="Interface Studies" />
   <meta property="og:title" content="Liquid glass toolbar &mdash; Interface Studies" />
-  <meta property="og:description" content="One glass surface that changes shape: a bar that opens into a search field, and then into a panel. Five materials, one construction." />
+  <meta property="og:description" content="One glass surface that changes shape: a bar that opens into a search field, and then into a panel. Six materials, one construction." />
   <meta property="og:image" content="../og.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
@@ -46,6 +46,16 @@
        edge shift on every trip between them. */
     :root {
       --demo-gutter: clamp(1.5rem, 6vw, 6rem);
+
+      /* Three widths, and the page had seven before — 46rem, 52ch, 56ch, 62ch,
+         54rem, 36rem, 42rem, on two unit systems, so no two blocks starting at
+         the left margin ended at the same place. Every run of prose is one
+         measure now, the stages are the one thing allowed to be wider than it,
+         and the read-out is the one thing allowed to be narrower. Anything that
+         wants a fourth width needs a reason that can be written down. */
+      --demo-measure: 44rem;   /* every run of text: the intro, the steps, the notes */
+      --demo-figure: 54rem;    /* a stage, wide enough to give the bar air */
+      --demo-readout: 36rem;   /* the motion clocks: a table of three, not prose */
 
       /* The page's palette, and the only place a colour is written. Every rule
          below reads a token, so the dark block underneath is this same list with
@@ -272,7 +282,7 @@
 
     /* --- the document ---------------------------------------------------- */
 
-    .demo__intro { max-width: 46rem; }
+    .demo__intro { max-width: var(--demo-measure); }
 
     .demo__kicker {
       margin: 0 0 0.75rem;
@@ -293,7 +303,7 @@
 
     .demo__lede {
       margin: 1.25rem 0 0;
-      max-width: 52ch;
+      max-width: var(--demo-measure);
       font-size: 1.0625rem;
       line-height: 1.6;
       color: var(--demo-soft);
@@ -335,7 +345,7 @@
     .demo__steps {
       margin: clamp(1.75rem, 4vw, 2.5rem) 0 0;
       padding: 0;
-      max-width: 62ch;
+      max-width: var(--demo-measure);
       list-style: none;
       counter-reset: step;
     }
@@ -398,7 +408,7 @@
       box-sizing: border-box;
       /* Wide enough to give the bar air, capped so it does not strand itself in
          the middle of a large monitor. */
-      width: min(54rem, 100%);
+      width: min(var(--demo-figure), 100%);
       border-radius: 1.25rem;
       overflow: hidden;
 
@@ -413,7 +423,7 @@
 
     .demo__stage + .demo__stage { margin-top: 1.25rem; }
 
-    /* The materials stage holds five sheets rather than one, so it stacks them
+    /* The materials stage holds six sheets rather than one, so it stacks them
        with room to breathe instead of centring a single item. */
     .demo__stage--stack {
       row-gap: 2rem;
@@ -451,7 +461,7 @@
       margin: 0 0 1.25rem;
       display: grid;
       gap: 0.75rem;
-      max-width: 36rem;
+      max-width: var(--demo-readout);
       padding: 1.1rem 1.25rem;
       border-radius: 0.875rem;
       background: var(--demo-chip-soft);
@@ -539,7 +549,7 @@
       border-top: 1px solid var(--demo-line);
       /* Prose measure, not the page's. The states above lay out as wide as
          they need; a paragraph does not. */
-      max-width: 42rem;
+      max-width: var(--demo-measure);
     }
 
     .demo__notes-title {
@@ -789,7 +799,7 @@
     <h1 class="demo__heading" data-i18n="heading">Liquid glass toolbar</h1>
     <p class="demo__lede" data-i18n="lede">
       One glass surface that changes shape: a bar that opens into a search
-      field, and then into a panel. Five materials, one construction.
+      field, and then into a panel. Six materials, one construction.
     </p>
   </header>
 
@@ -1705,7 +1715,7 @@
     <section class="demo__group">
       <div class="demo__group-head">
         <h2 class="demo__group-title" data-i18n="materials.title">Materials</h2>
-        <p class="demo__group-note" data-i18n="materials.note">Nothing below the variable block changes for any of them. All five sit on Origin deliberately: a set is only comparable as the same state five times.</p>
+        <p class="demo__group-note" data-i18n="materials.note">Nothing below the variable block changes for any of them. All six sit on Origin deliberately: a set is only comparable as the same state six times.</p>
       </div>
 
       <div class="demo__stage demo__stage--stack">
@@ -2346,6 +2356,165 @@
                 </nav>
               </div>
               <div class="demo__sheet">
+                <span class="demo__tag">--carnelian</span>
+                <nav class="liquid-glass-toolbar liquid-glass-toolbar--carnelian" aria-label="Primary, carnelian">
+                  <div class="liquid-glass-toolbar__shell">
+
+                    <div class="liquid-glass-toolbar__bar">
+
+                      <a class="liquid-glass-toolbar__action" href="#" aria-current="page">
+                        <span class="liquid-glass-toolbar__icon">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="12" cy="12" r="7.2" />
+                            <circle cx="12" cy="12" r="1.9" fill="currentColor" stroke="none" />
+                          </svg>
+                        </span>
+                        <span class="liquid-glass-toolbar__reveal">
+                          <span class="liquid-glass-toolbar__label">Origin</span>
+                        </span>
+                      </a>
+
+                            <label class="liquid-glass-toolbar__action liquid-glass-toolbar__action--search">
+                        <span class="liquid-glass-toolbar__icon">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="10.4" cy="10.4" r="6.4" />
+                            <path d="M15.2 15.2 20 20" />
+                          </svg>
+                        </span>
+                        <span class="liquid-glass-toolbar__reveal">
+                          <input class="liquid-glass-toolbar__input" type="text"
+                                 placeholder="Search…" aria-label="Search" />
+                        </span>
+                      </label>
+
+                      <a class="liquid-glass-toolbar__action" href="#" aria-current="false">
+                        <span class="liquid-glass-toolbar__icon">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <rect x="3.4" y="4.4" width="17.2" height="6.2" rx="1.7" />
+                            <rect x="3.4" y="13.4" width="17.2" height="6.2" rx="1.7" />
+                            <path d="M9.9 7.5h4.2M9.9 16.5h4.2" />
+                          </svg>
+                        </span>
+                        <span class="liquid-glass-toolbar__reveal">
+                          <span class="liquid-glass-toolbar__label">Versions</span>
+                        </span>
+                      </a>
+
+                      <button class="liquid-glass-toolbar__action liquid-glass-toolbar__action--panel"
+                              type="button" aria-expanded="false">
+                        <span class="liquid-glass-toolbar__icon">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M4.8 4.8v14.4" />
+                            <path d="M9.2 8h10M9.2 12h7M9.2 16h8.8" />
+                          </svg>
+                          <span class="liquid-glass-toolbar__badge" aria-hidden="true"></span>
+                        </span>
+                        <span class="liquid-glass-toolbar__reveal">
+                          <span class="liquid-glass-toolbar__label">Log</span>
+                        </span>
+                      </button>
+
+                      <a class="liquid-glass-toolbar__action liquid-glass-toolbar__action--trailing" href="#" aria-current="false">
+                        <span class="liquid-glass-toolbar__icon">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M3.6 8.2h5.6M14.8 8.2h5.6" />
+                            <circle cx="12" cy="8.2" r="2.5" />
+                            <path d="M3.6 15.8h2.6M11.8 15.8h8.6" />
+                            <circle cx="9" cy="15.8" r="2.5" />
+                          </svg>
+                        </span>
+                        <span class="liquid-glass-toolbar__reveal">
+                          <span class="liquid-glass-toolbar__label">Display</span>
+                        </span>
+                      </a>
+
+                    </div>
+
+                        <div class="liquid-glass-toolbar__panel">
+                      <ul class="liquid-glass-toolbar__feed">
+
+                        <li>
+                          <a class="liquid-glass-toolbar__row liquid-glass-toolbar__row--unread" href="#">
+                            <span class="liquid-glass-toolbar__chip">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                                   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M4.6 7.4h14.8" stroke-width="2.8" />
+                                <path d="M4.6 13h9.6" stroke-width="1.8" />
+                                <path d="M4.6 17.6h5.8" stroke-width="1.2" />
+                              </svg>
+                            </span>
+                            <span class="liquid-glass-toolbar__line">
+                              <strong class="liquid-glass-toolbar__topic">Type</strong>
+                              48/16 pair, label at 11px
+                            </span>
+                            <span class="liquid-glass-toolbar__time">2m</span>
+                          </a>
+                        </li>
+
+                        <li>
+                          <a class="liquid-glass-toolbar__row liquid-glass-toolbar__row--unread" href="#">
+                            <span class="liquid-glass-toolbar__chip">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                                   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <circle cx="12" cy="12" r="7.4" />
+                                <path d="M12 4.6a7.4 7.4 0 0 1 0 14.8z" fill="currentColor" stroke="none" />
+                              </svg>
+                            </span>
+                            <span class="liquid-glass-toolbar__line">
+                              <strong class="liquid-glass-toolbar__topic">Tint</strong>
+                              28% over an 8px blur
+                            </span>
+                            <span class="liquid-glass-toolbar__time">14m</span>
+                          </a>
+                        </li>
+
+                        <li>
+                          <a class="liquid-glass-toolbar__row" href="#">
+                            <span class="liquid-glass-toolbar__chip">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                                   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M5.6 5.6v12.8M18.4 5.6v12.8" />
+                                <path d="M8.6 12h6.8" />
+                                <path d="M10.4 10.2 8.6 12l1.8 1.8M13.6 10.2 15.4 12l-1.8 1.8" />
+                              </svg>
+                            </span>
+                            <span class="liquid-glass-toolbar__line">
+                              <strong class="liquid-glass-toolbar__topic">Spacing</strong>
+                              8px rhythm, 4px at the label
+                            </span>
+                            <span class="liquid-glass-toolbar__time">1h</span>
+                          </a>
+                        </li>
+
+                        <li>
+                          <a class="liquid-glass-toolbar__row" href="#">
+                            <span class="liquid-glass-toolbar__chip">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                                   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M3.9 20.1V10.2A6.3 6.3 0 0 1 10.2 3.9H20.1" />
+                                <path d="M3.9 9.1V3.9h5.2" stroke-opacity="0.42" />
+                              </svg>
+                            </span>
+                            <span class="liquid-glass-toolbar__line">
+                              <strong class="liquid-glass-toolbar__topic">Radius</strong>
+                              12% of the tile, not 12px
+                            </span>
+                            <span class="liquid-glass-toolbar__time">3h</span>
+                          </a>
+                        </li>
+
+                      </ul>
+                    </div>
+
+                  </div>
+                </nav>
+              </div>
+              <div class="demo__sheet">
                 <span class="demo__tag">--crystal</span>
                 <nav class="liquid-glass-toolbar liquid-glass-toolbar--crystal" aria-label="Primary, crystal">
                   <div class="liquid-glass-toolbar__shell">
@@ -2513,7 +2682,7 @@
       </li>
       <li class="demo__step">
         <strong data-i18n="materials.2t">Thin, not opaque.</strong>
-        <span data-i18n="materials.2b">The tint came down to 28&ndash;44% and the work moved into the filter. Blur is frost: past about 10px the ground stops being a place. You should see the page&rsquo;s cross-light continue across every sheet.</span>
+        <span data-i18n="materials.2b">The tint came down to 28&ndash;44% and the work moved into the filter. Carnelian sits at the top of that range because red has the least chroma to spare: the backdrop is neutral paper, so <code>saturate</code> has nothing to amplify and the hue rides on the tint&rsquo;s alpha alone. Blur is frost: past about 10px the ground stops being a place. You should see the page&rsquo;s cross-light continue across every sheet.</span>
       </li>
       <li class="demo__step">
         <strong data-i18n="materials.3t">Crystal is that argument at its end.</strong>
@@ -2529,7 +2698,7 @@
     <section class="demo__group">
       <div class="demo__group-head">
         <h2 class="demo__group-title" data-i18n="narrow.title">Narrow</h2>
-        <p class="demo__group-note" data-i18n="narrow.note">Five 48px targets, the gaps between them and the surface&rsquo;s own padding need about 264px &mdash; but the resting bar also has a label open, so the real floor is about 390px. The switch is at 25rem.</p>
+        <p class="demo__group-note" data-i18n="narrow.note">Five 48px targets, the gaps between them and the surface&rsquo;s own padding need about 264px &mdash; but the resting bar also has a label open, and the longest is <em>Versions</em> at 63px, so the real floor is about 400px. The switch is at 25rem, where the split compresses rather than the label clipping.</p>
       </div>
 
       <div class="demo__stage">
@@ -2735,9 +2904,8 @@
 
       <p class="demo__notes-lede">A floating toolbar on one pane of glass. Four items sit together and a fifth is set apart; exactly one of them carries its label, and it is the one you are on. The search item opens into a field and the log item opens the pane downward into a panel — neither is a second sheet sliding out from underneath, the one surface changes shape, and the corner it does that around never moves.</p>
       <p class="demo__notes-lede">The set is a working surface rather than an operating system: Origin, search, Versions, Log, Display. Each item is named for what its glyph can actually do — two sliders are display controls, not a settings screen; two drawers are versions of a thing, not a mailbox — so the bar says what it is for before a label opens. It is also why the labelled item is <em>Origin</em> and not Home: a toolbar that floats over work has no front door to return to, it has a point it measures from, and that is what its glyph draws — a dot inside a ring.</p>
-      <p class="demo__notes-lede">The ground in <code>demo.html</code> and <code>preview.html</code> is page scaffolding, not part of the component: the index's own recipe, warm paper with the same two washes at the same strength, so a study sitting in the rail does not arrive louder than the page around it.</p>
       <p class="demo__notes-lede">It is as dull as it can afford to be, and finding that floor is the point. Glass has no look of its own — a blur over one flat fill is indistinguishable from a translucent rectangle, and the whole component disappears. But what it actually needs is <em>range</em>, not incident: two soft cross-lit ramps with no edges anywhere give the rim something to sit against and the blur something to carry, and an earlier version with hard-cut clay and sage planes turned out to be buying that at the cost of a backdrop that upstaged the thing in front of it. An even ground settles the vertical centring too. The component is centred exactly — 262.5px of frame above and below it in the thumbnail — but a ground whose whole colour mass sat in the lower third read as bottom-heavy, and a thing centred in a bottom-heavy frame looks like it is floating high.</p>
-      <p class="demo__notes-lede">That argument is about the stage, and the thumbnail does not get it. Every other study's preview sits on a flat #f3f2ef, and this one arrived in the rail on its own darker, warmer paper — at 0.7 scale beside three near-white neighbours the card read as a different kind of object before it read as a component, which is the opposite of what a thumbnail is for. So preview.html takes the shared paper and demo.html's stage keeps the ramps. The glass survives the trade because the thumbnail is not showing one sheet: it stacks five, three of them dark, and each carries its own rim, sheen and drop shadow. A single alabaster sheet on flat paper would be the failure above; five materials on it are still five materials.</p>
+      <p class="demo__notes-lede">The ground under the component is page scaffolding in both files rather than part of it, which is what lets the two differ at all. That argument is about the stage, and the thumbnail does not get it. Every other study's preview sits on a flat #f3f2ef, and this one arrived in the rail on its own darker, warmer paper — at 0.7 scale beside three near-white neighbours the card read as a different kind of object before it read as a component, which is the opposite of what a thumbnail is for. So preview.html takes the shared paper and demo.html's stage keeps the ramps. The glass survives the trade because the thumbnail is not showing one sheet: it stacks six, four of them dark, and each carries its own rim, sheen and drop shadow. A single alabaster sheet on flat paper would be the failure above; six materials on it are still six materials.</p>
       <p class="demo__notes-lede">The icons are drawn rather than borrowed: a dot inside a ring, a magnifier, two drawers, a ruled ledger, two sliders. The magnifier is the one glyph in a toolbar with no synonym — every other function has several ways to be drawn, so the set is a place to have an opinion; search is not.</p>
       <p class="demo__notes-lede">Origin was an arched doorway first, then a benchmark triangle. The doorway was drawing the word <em>home</em> rather than the word it sits under, and five were rendered at real size in the bar to replace it: a square on a baseline, three courses of a plinth, a diamond resting on a rule, a circle overshooting one, and a block on a ground plane in axonometric. The plinth read as an align-left control, the circle read as a second magnifier, and the axonometric block turned to mush at 24px. The benchmark won that round for being the only triangle in the set. It was also the only hard corner in a component built entirely of stadiums, and that is what eventually lost it: the glyph was stern where nothing else is. What stands there now is the station mark a survey measures from — a dot inside a ring — which is the idea the benchmark was drawing, without the diagonal. The circle that failed the first round failed as a bare circle beside a magnifier; what separates these two is the centre dot and the absence of a stem, and at 24px in the bar they do not trade. The cost is that the set gives up its only diagonal, so the magnifier's stem is the one oblique left in it.</p>
       <p class="demo__notes-lede">The panel item is called Log, not Notifications, and the icon is a margin rule with three entries set beside it. Notifications is a promise about delivery — it says these are things that were pushed at you. What the four rows actually are is a record of what was decided: a type pair set, a tint thinned, a spacing rhythm fixed, a radius made proportional. Naming it for the content rather than for the transport also stops the component being read as an alert centre, which is a different thing with different rules about badges and dismissal.</p>
@@ -2779,11 +2947,11 @@
         </li>
         <li>
           <h3 class="demo__notes-head">Glass as a recipe, so a theme is a tint swap.</h3>
-          <p>Four shadows doing four jobs: a 1px inset rim that separates glass from what is behind it, an inset highlight along the top edge that gives the sheet thickness, a hairline along the inside of the bottom that is the same light coming back off the far face, and a soft drop that lifts it off the page. Two of those are new and so are two filter scalars — see the thinning note below; the bottom edge is <code>0 0 0 0 transparent</code> and the scalars are 1 unless a material asks. The lit lozenge used to carry a second, weaker <code>backdrop-filter</code> of its own, and it looked marginally better and cost far too much — see the motion note below. It is a translucent tint and a rim now. The hue is carried by the tint alone: the glass is moss, and the rim, the sheen and the ink are warm off-whites pulled a few points the same way, so moving the tint does not send you round re-tuning six other colours. The one saturated value is the accent, clay from across the wheel, and it is spent only on the two marks that mean unread. <code>--light</code> changes nothing below the variable block — tint, rim, sheen and ink — and the same construction comes back in five materials. Moss is the default and has no modifier; <code>--alabaster</code>, <code>--slate</code>, <code>--basalt</code> and <code>--crystal</code> are the others. Named for materials rather than for brightness, which is not decoration: two of the five flip to dark ink, so <code>--light</code> would have been describing part of the set by a property the rest do not share. Alabaster took a round to get right, and the mistake is the useful part. The first version tinted it with the dark theme's own hue, and a green-grey glass sitting on warm paper reads as a cast rather than as a material. Four palettes on the real ground settled it: pale sage read sickly, cool porcelain read clinical against the paper, limestone had the most material presence but muddied the lit pill's edge, and bone kept both the warmth and the crispness. So a light theme is not the dark one turned up — it is a second material of the same construction, and what decides its hue is the ground it will sit on. Its ink is a warm greige rather than a near-black, for the same reason the glass is not white: alabaster is the lightest thing in the component, and ink at full strength on it reads as printed on top of the sheet rather than seen through it. The part worth remembering is what has to move with it. Softening the strong text spends contrast the strong text had going spare — 12.5:1 down to 7.0:1 against this surface — but the muted line is derived from the same colour and had none to spare at 4.1:1, so dropping the ink without taking its alpha <em>up</em> quietly takes the quiet text below where it started. It ends at 4.5:1, better than it was. The other two are each a whole palette for the same reason, not a hue rotation. Slate wants its saturation kept <em>down</em>, because a blue glass with the saturate pushed up starts tinting what is behind it and reads as a filter rather than a surface. Basalt leans on its rim more than any of them: against a light ground a near-black sheet has plenty of contrast at its face and none at all at its edge, so without the hairline it stops reading as glass and starts reading as a hole. And the accent moves with each — the warm mark that reads on moss is not the warm that reads on a near-black.</p>
+          <p>Four shadows doing four jobs: a 1px inset rim that separates glass from what is behind it, an inset highlight along the top edge that gives the sheet thickness, a hairline along the inside of the bottom that is the same light coming back off the far face, and a soft drop that lifts it off the page. Two of those are new and so are two filter scalars — see the thinning note below; the bottom edge is <code>0 0 0 0 transparent</code> and the scalars are 1 unless a material asks. The lit lozenge used to carry a second, weaker <code>backdrop-filter</code> of its own, and it looked marginally better and cost far too much — see the motion note below. It is a translucent tint and a rim now. The hue is carried by the tint alone: the glass is moss, and the rim, the sheen and the ink are warm off-whites pulled a few points the same way, so moving the tint does not send you round re-tuning six other colours. The one saturated value is the accent, clay from across the wheel, and it is spent only on the two marks that mean unread. <code>--light</code> changes nothing below the variable block — tint, rim, sheen and ink — and the same construction comes back in six materials. Moss is the default and has no modifier; <code>--alabaster</code>, <code>--slate</code>, <code>--basalt</code>, <code>--carnelian</code> and <code>--crystal</code> are the others. Named for materials rather than for brightness, which is not decoration: two of the six flip to dark ink, so <code>--light</code> would have been describing part of the set by a property the rest do not share. Alabaster took a round to get right, and the mistake is the useful part. The first version tinted it with the dark theme's own hue, and a green-grey glass sitting on warm paper reads as a cast rather than as a material. Four palettes on the real ground settled it: pale sage read sickly, cool porcelain read clinical against the paper, limestone had the most material presence but muddied the lit pill's edge, and bone kept both the warmth and the crispness. So a light theme is not the dark one turned up — it is a second material of the same construction, and what decides its hue is the ground it will sit on. Its ink is a warm greige rather than a near-black, for the same reason the glass is not white: alabaster is the lightest thing in the component, and ink at full strength on it reads as printed on top of the sheet rather than seen through it. The part worth remembering is what has to move with it. Softening the strong text spends contrast the strong text had going spare — 12.5:1 down to 7.0:1 against this surface — but the muted line is derived from the same colour and had none to spare at 4.1:1, so dropping the ink without taking its alpha <em>up</em> quietly takes the quiet text below where it started. It ends at 4.5:1, better than it was. The other two are each a whole palette for the same reason, not a hue rotation. Slate wants its saturation kept <em>down</em>, because a blue glass with the saturate pushed up starts tinting what is behind it and reads as a filter rather than a surface. Basalt leans on its rim more than any of them: against a light ground a near-black sheet has plenty of contrast at its face and none at all at its edge, so without the hairline it stops reading as glass and starts reading as a hole. And the accent moves with each — the warm mark that reads on moss is not the warm that reads on a near-black, and carnelian is the one that cannot move by hue at all: its ground is that hue, so the set's amber sits within 0.004 of the sheet's own luminance and disappears. It separates on lightness instead, the same amber walked up until it clears the sheet.</p>
         </li>
         <li>
           <h3 class="demo__notes-head">Thin the tint, and the filter has to take the work.</h3>
-          <p>The first version of the set carried its colour in the tint, at 42–64% opacity. That is a coloured surface with a texture underneath it rather than glass: nothing of the page survives the trip through it, and the backdrop filter is only there to keep the texture from being legible. Every material is thinner now — 28–44%, and crystal at 7% — and thinning is not a slider you can turn on its own. Three things had to move with it. The filter grew <code>brightness</code> and <code>contrast</code>. Brightness does the darkening the tint used to do, which is the whole trick for the dark materials: moss at 28% over a light page is a pale green wash, and moss at 28% over a page turned down to 0.56 is a dark sheet you can see the page's cross-light through. It is also better ink: the label went from 2.3:1 against the lit pill to about 4:1, because the surface under it got <em>darker</em> while getting more transparent. Contrast keeps the ground's range from flattening as it is pushed around. The blur came down, 14px to 8px, and this is the counter-intuitive half. Blur is frost, not glass — past about 10px whatever is behind the sheet stops being a place and becomes a wash, and at that point the tint is doing all the work again. Clear glass displaces what is behind it; it does not hide it. And the edges took over what the body gave up. Every rim and sheen went up, the lit lozenge became a rim with a thin body rather than a pale fill — a glaze is a transparent body with a lit edge, and it is now that in all five rather than only in alabaster — and each drop gained a second, tight contact shadow, because one soft shadow lifts an opaque card fine and a thin one still reads as painted on.</p>
+          <p>The first version of the set carried its colour in the tint, at 42–64% opacity. That is a coloured surface with a texture underneath it rather than glass: nothing of the page survives the trip through it, and the backdrop filter is only there to keep the texture from being legible. Every material is thinner now — 28–44%, and crystal at 7% — and thinning is not a slider you can turn on its own. Three things had to move with it. The filter grew <code>brightness</code> and <code>contrast</code>. Brightness does the darkening the tint used to do, which is the whole trick for the dark materials: moss at 28% over a light page is a pale green wash, and moss at 28% over a page turned down to 0.56 is a dark sheet you can see the page's cross-light through. It is also better ink: the label went from 2.3:1 against the lit pill to about 4:1, because the surface under it got <em>darker</em> while getting more transparent. Contrast keeps the ground's range from flattening as it is pushed around. The blur came down, 14px to 8px, and this is the counter-intuitive half. Blur is frost, not glass — past about 10px whatever is behind the sheet stops being a place and becomes a wash, and at that point the tint is doing all the work again. Clear glass displaces what is behind it; it does not hide it. And the edges took over what the body gave up. Every rim and sheen went up, the lit lozenge became a rim with a thin body rather than a pale fill — a glaze is a transparent body with a lit edge, and it is now that in all six rather than only in alabaster — and each drop gained a second, tight contact shadow, because one soft shadow lifts an opaque card fine and a thin one still reads as painted on.</p>
         </li>
         <li>
           <h3 class="demo__notes-head">Crystal, the one that is actually glass.</h3>
@@ -2858,7 +3026,7 @@
         'heading':
           'Liquid glass toolbar',
         'lede':
-          'Én glasflade, der skifter form: en linje, der folder ud til et søgefelt og derfra til et panel. Fem materialer, én konstruktion.',
+          'Én glasflade, der skifter form: en linje, der folder ud til et søgefelt og derfra til et panel. Seks materialer, én konstruktion.',
         'rest.title':
           'I hvile',
         'rest.note':
@@ -2930,7 +3098,7 @@
         'materials.title':
           'Materialer',
         'materials.note':
-          'Intet under variabelblokken ændrer sig for nogen af dem. Alle fem står på Origin med vilje: et sæt kan kun sammenlignes som den samme tilstand fem gange.',
+          'Intet under variabelblokken ændrer sig for nogen af dem. Alle seks står på Origin med vilje: et sæt kan kun sammenlignes som den samme tilstand seks gange.',
         'materials.1t':
           'Et materiale er en hel palet.',
         'materials.1b':
@@ -2950,7 +3118,7 @@
         'narrow.title':
           'Smal',
         'narrow.note':
-          'Fem mål på 48px, mellemrummene mellem dem og fladens egen padding kræver omkring 264px — men linjen har også en etiket åben, når den hviler, så den reelle grænse er omkring 390px. Skiftet sker ved 25rem.',
+          'Fem mål på 48px, mellemrummene mellem dem og fladens egen padding kræver omkring 264px — men linjen har også en etiket åben, når den hviler, og den længste er <em>Versions</em> på 63px, så den reelle grænse er omkring 400px. Skiftet sker ved 25rem, hvor mellemrummet trykkes sammen i stedet for at etiketten beskæres.',
         'narrow.1t':
           'Skalér, klem ikke.',
         'narrow.1b':
