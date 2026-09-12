@@ -118,7 +118,8 @@
       'a11y.filter': 'Filtrér efter type',
       'a11y.variants': 'Varianter',
       'a11y.closeQuickLook': 'Luk hurtigt kig',
-      'a11y.livePreview': 'Live forhåndsvisning af komponent'
+      'a11y.livePreview': 'Live forhåndsvisning af komponent',
+      'a11y.theme': 'Mørk tilstand'
     }
   };
 
@@ -216,6 +217,75 @@
   // apply() also rewrites the outgoing links, so English runs too — it has to
   // strip a ?lang= that an earlier switch left on them.
   queueMicrotask(() => apply(initial === 'da' ? 'da' : 'en'));
+})();
+
+
+// --- theme ---------------------------------------------------------------
+//
+// Site chrome only, like the language switch above, and for the same reason:
+// a preview is its own document with its own ground, so the cards stay lit
+// plates under a dark page rather than inverting with it.
+//
+// The answer is already on <html> by the time this runs — the head carries a
+// six-line copy of the same resolution, so the first paint is not a frame of
+// the wrong theme. What is left here is the toggle, the state it reports, and
+// the crossfade.
+//
+// index.css reads the attribute and nothing else, which is what keeps the dark
+// palette to one block. The system preference is resolved here rather than in
+// a media query, so it is still live: until someone picks a theme, an OS
+// switch made while the page is open moves the page and relabels the button.
+
+(function () {
+  const STORE_KEY = 'interface-studies:theme';
+  const SWITCH_MS = 420;   // matches .is-theming in index.css
+
+  const root = document.documentElement;
+  const toggle = document.querySelector('[data-theme-toggle]');
+  if (!toggle) return;
+
+  const media = window.matchMedia
+    ? window.matchMedia('(prefers-color-scheme: dark)')
+    : null;
+
+  // What the head script read, read again — not what it wrote: the attribute
+  // is by then the resolved answer, and a system dark theme is not a choice
+  // to keep once the OS changes.
+  let chosen = null;
+  try { chosen = localStorage.getItem(STORE_KEY); } catch (err) { /* private mode */ }
+  if (chosen !== 'dark' && chosen !== 'light') chosen = null;
+
+  function shown() {
+    return chosen || (media && media.matches ? 'dark' : 'light');
+  }
+
+  function paint() {
+    const theme = shown();
+    root.setAttribute('data-theme', theme);
+    toggle.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
+  }
+
+  let settle = 0;
+  toggle.addEventListener('click', () => {
+    chosen = shown() === 'dark' ? 'light' : 'dark';
+    try { localStorage.setItem(STORE_KEY, chosen); } catch (err) { /* private mode */ }
+
+    // The crossfade is hung on <html> for its own length and taken off again,
+    // so the rule is not sitting on every element for the rest of the session.
+    root.classList.add('is-theming');
+    clearTimeout(settle);
+    settle = setTimeout(() => root.classList.remove('is-theming'), SWITCH_MS);
+
+    paint();
+  });
+
+  if (media) {
+    const follow = () => { if (!chosen) paint(); };
+    if (media.addEventListener) media.addEventListener('change', follow);
+    else if (media.addListener) media.addListener(follow);
+  }
+
+  paint();
 })();
 
 

@@ -407,6 +407,38 @@ each document gets its own opaque origin and does not share it. `_template/`
 holds the block to copy. Translate the page's own prose only — component sample
 copy and class-name hints stay as they are.
 
+### The index has two themes, and the studies have one
+
+`index.css` declares every colour it uses as a token in `:root`, and the dark
+theme is that same list re-declared under `:root[data-theme="dark"]`. There is
+no rule that exists in one theme and not the other, no second stylesheet, and
+no `prefers-color-scheme` query — a colour hardcoded past the token block is a
+colour that will be wrong in one of the two.
+
+The attribute is the only thing the stylesheet reads, which is what keeps the
+dark palette to one block: the two inputs are resolved in script instead, where
+they become one answer. The stored choice, or the system's when there is none.
+Six inline lines in `<head>` do it before the first paint — a stored dark theme
+that arrives with the stylesheet flashes a frame of white paper — and `index.js`
+does it again on load, keeps listening while nothing is stored, so an OS switch
+made with the page open still moves it. Choosing stores; a stored choice then
+outranks the OS in both directions. Without JavaScript the page is light, which
+is the deal this page already makes — without it there are no previews, no rail
+order and no counts either.
+
+The studies are deliberately left out of it. A `preview.html` is its own
+document with its own ground, and the folder owns its styling, so the cards
+stay lit plates on a dark page rather than inverting with the chrome. Theming
+them would mean the same colour-scheme block copied into every folder, which is
+the sweep this repo does not do. The one place that has to know is the chips
+that sit *on* a thumbnail — the type badge, the number, quick look — which are
+painted against the preview rather than against the page, and so invert with
+the chrome rather than with the plate they cover.
+
+The matte part is the grain: the dark ground is a wash across two thousand
+pixels, which 8-bit colour cannot draw without ringing. A fractal-noise tile at
+a low alpha dithers the banding out, and reads as paper rather than as texture.
+
 The card list is hand-maintained in `index.html`. Adding a study means
 adding one `<article class="piece">` block to it, pointing at the new folder's
 `demo.html` and `preview.html`, and carrying a `data-date` — `index.js` sorts
