@@ -8,10 +8,18 @@
   Two things here differ from demo.html on purpose, and both are about being
   read at thumbnail size.
 
-  The ground: this page uses the light #f3f2ef every study in this repo
-  sits on, so the rail reads as one set of cards rather than one dark frame
-  among light ones. The plotter grid runs in ink rather than chalk behind it.
-  The dark ground the aesthetic is built for is demo.html's, and it keeps it.
+  The ground: it follows the index. On the light rail this page uses the
+  #f3f2ef every study in this repo sits on, with the plotter grid in ink rather
+  than chalk, so the rail reads as one set of cards rather than one dark frame
+  among light ones. On the dark rail that argument inverts — the surrounding
+  cards are no longer light, and this is the one study whose authored page is
+  ink — so it takes demo.html's ground, and the grid goes back to chalk.
+
+  It is told which, over the message contract: `?theme=` on the src it is
+  loaded with, and a `preview:theme` message if the index is switched while
+  this is on screen. A folder decides for itself what to do with that, and the
+  other four studies here do nothing with it at all: their light ground is the
+  component's own staging rather than the page's. This one is not.
 
   The surface: the demo leads with the porcelain default, this page leads with
   --acid and the waterfall. Not because porcelain fails at thumbnail size — at
@@ -39,6 +47,15 @@
 
   <link rel="stylesheet" href="component.css">
 
+  <!-- The ground, before the first paint. The index loads this frame with
+     ?theme= on the src, so the thumbnail is never drawn on the wrong one and
+     then corrected — the card would flash paper for a frame on a dark page.
+     Opened on its own, with no query, this page keeps the light ground. -->
+  <script>
+    var theme = new URLSearchParams(location.search).get('theme');
+    if (theme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+  </script>
+
   <style>
     /* Thumbnail scaffolding only. Nothing here names a component class. */
     /* The same ground every study in this repo sits on. Repeated as a
@@ -46,8 +63,22 @@
        copied out — but it has to be the same number in all of them, or the
        rail stops reading as one set of cards. <html> carries it too, so
        <body>'s background does not propagate to the viewport canvas and leave
-       a seam at the frame edge. */
-    html { background-color: #f3f2ef; }
+       a seam at the frame edge.
+
+       Both grounds are tokens, and the dark pair is demo.html's: the same
+       drawing surface, the same chalk grid. The script at the foot of this
+       file sets data-theme from what the index tells it. */
+    :root {
+      --preview-ground: #f3f2ef;
+      --preview-grid: rgba(20, 24, 26, 0.05);
+    }
+
+    :root[data-theme="dark"] {
+      --preview-ground: #101418;
+      --preview-grid: rgba(232, 235, 228, 0.05);
+    }
+
+    html { background-color: var(--preview-ground); }
 
     body {
       margin: 0;
@@ -64,15 +95,15 @@
       padding: 2.5rem 1rem 1.5rem;
       box-sizing: border-box;
 
-      background-color: #f3f2ef;
-      /* The plotter grid the demo page uses, in ink rather than in chalk. It
-         places the card on a drawing surface, and it is also what draws the
-         edge of the porcelain plate when quick look steps to it: the grid runs
-         up to the plate and stops. The lime plate this page rests on needs no
-         such help. */
+      background-color: var(--preview-ground);
+      /* The plotter grid the demo page uses — in ink on the light ground, in
+         chalk on the dark one. It places the card on a drawing surface, and it
+         is also what draws the edge of the porcelain plate when quick look
+         steps to it: the grid runs up to the plate and stops. The lime plate
+         this page rests on needs no such help. */
       background-image:
-        linear-gradient(rgba(20, 24, 26, 0.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(20, 24, 26, 0.05) 1px, transparent 1px);
+        linear-gradient(var(--preview-grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--preview-grid) 1px, transparent 1px);
       background-size: 44px 44px;
 
       font-family: "Plus Jakarta Sans", system-ui, sans-serif;
@@ -357,6 +388,18 @@
         if (data.type === 'preview:variant') {
           var variant = VARIANTS[data.index];
           if (variant) apply(variant);
+        }
+
+        // The index was switched while this thumbnail was on screen. The
+        // component is not touched — its plates are the study, and they are
+        // the same six in both themes. Only the surface they are drawn on
+        // moves, which is the one this folder authored either way.
+        if (data.type === 'preview:theme') {
+          if (data.theme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+          } else {
+            document.documentElement.removeAttribute('data-theme');
+          }
         }
       });
 

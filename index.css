@@ -2,15 +2,58 @@
    never reaches into any study folder. Nothing here names a component
    class; the previews are iframes, and they own their own styling. */
 
+/* Two themes, one token set. Every colour on this page is read from the
+   block below, so the dark theme further down is a re-declaration of the
+   same names and nothing else — no second stylesheet, no rule that exists
+   only in one theme, and no component class named anywhere near either. A
+   colour hardcoded past this point is a colour that will be wrong in one of
+   the two.
+
+   The previews are deliberately left out of it. A study's preview.html is
+   its own document with its own ground, and the repo's rule is that the
+   folder owns its styling — so on a dark page the cards read as lit plates
+   rather than inverting with the chrome. The chips that sit on top of a
+   thumbnail are the one place that has to be told about it: they are
+   painted against the preview, not against the page. */
 :root {
+  color-scheme: light;
+
   --paper: #f5f4f1;
   --surface: #fbfaf8;
   --ink: #17181a;
   --ink-soft: #55565a;
   --muted: #6c6b67;
+  --note: #61625f;
   --hairline: rgba(23, 24, 26, 0.1);
   --hairline-strong: rgba(23, 24, 26, 0.22);
   --accent: #ac512d;
+
+  /* The page's ground: a wash of two corner lights over --paper, and a grain
+     film the light theme has no use for. */
+  --page-wash:
+    radial-gradient(58% 46% at 12% 0%, rgba(180, 85, 47, 0.07), transparent 68%),
+    radial-gradient(46% 38% at 92% 4%, rgba(78, 110, 190, 0.06), transparent 70%);
+  --page-grain: none;
+
+  /* Chips. --chip-bg is the one that sits on the page (the language and theme
+     controls); --chip-over-preview and its -strong pair sit on a thumbnail,
+     which is why they are near-opaque and carry their own ink. */
+  --chip-bg: rgba(251, 250, 248, 0.72);
+  --chip-over-preview: rgba(251, 250, 248, 0.88);
+  --chip-over-preview-strong: rgba(251, 250, 248, 0.92);
+  --chip-over-preview-ink: #3a3b3e;
+  --chip-over-preview-ink-soft: #6c6b67;
+
+  /* The one inverted surface on the page: the filter chip that is pressed. */
+  --on-ink-bg: var(--ink);
+  --on-ink-fg: var(--paper);
+
+  --progress: var(--ink);
+  --scrim: rgba(23, 24, 26, 0.42);
+  --shimmer: rgba(23, 24, 26, 0.05);
+  --shadow-card: 0 1px 2px rgba(23, 24, 26, 0.04);
+  --shadow-lift: 0 22px 46px -20px rgba(23, 24, 26, 0.32);
+  --shadow-panel: 0 40px 80px -32px rgba(23, 24, 26, 0.5);
 
   --sans: "Plus Jakarta Sans", system-ui, sans-serif;
   --mono: "JetBrains Mono", ui-monospace, monospace;
@@ -34,6 +77,75 @@
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* The dark theme: the same names, and nothing else. It hangs off the
+   attribute alone, so there is one copy of it rather than one here and a
+   second inside a prefers-color-scheme query that the attribute would then
+   have to out-specify. index.js resolves which of the two applies — the
+   stored choice, or the system's when there is none — and writes the
+   attribute; a head script does the same before the first paint. That does
+   mean no dark theme with JavaScript off, which is the deal this page
+   already makes: without it there are no previews, no rail order and no
+   counts either. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Matte, and the whole palette is built to stay that way: no pure black to
+     sit under, no pure white to sit on, and elevation carried by the surface
+     getting lighter rather than by a shadow getting heavier. #121316 is a
+     warm-neutral graphite — the same slightly-warm cast --paper has, read
+     from the other end — so the ink can stay off-white without the page
+     turning blue under it.
+
+     A dark ground of this size bands: the wash below is a gradient across
+     2000-odd pixels with nowhere near enough steps to draw it, and 8-bit
+     colour puts visible rings in the corner light. The grain film is what
+     fixes it — a fractal-noise tile at an alpha low enough to read as paper
+     rather than as texture, which breaks the banding by dithering it. It is
+     also, not coincidentally, what makes the surface look matte. */
+  --paper: #121316;
+  --surface: #191b1e;
+  --ink: #e9e8e4;
+  --ink-soft: #a4a39f;
+  --muted: #7e7d79;
+  --note: #9a9995;
+  --hairline: rgba(233, 232, 228, 0.11);
+  --hairline-strong: rgba(233, 232, 228, 0.26);
+  /* Lifted off #ac512d, which is a 3:1 burnt orange against this ground. */
+  --accent: #e08453;
+
+  --page-wash:
+    radial-gradient(58% 46% at 12% 0%, rgba(224, 132, 83, 0.07), transparent 68%),
+    radial-gradient(46% 38% at 92% 4%, rgba(108, 140, 220, 0.055), transparent 70%);
+  --page-grain:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.18'/%3E%3C/svg%3E");
+
+  --chip-bg: rgba(30, 32, 36, 0.72);
+  /* These two still sit on a light thumbnail, so they invert with the page
+     rather than against it: smoked glass over the plate, not a paper chip. */
+  --chip-over-preview: rgba(16, 17, 20, 0.82);
+  --chip-over-preview-strong: rgba(16, 17, 20, 0.88);
+  --chip-over-preview-ink: #dcdbd6;
+  /* Lifted off --muted, which is a 3:1 grey once the chip behind it is a
+     smoked panel rather than paper. */
+  --chip-over-preview-ink-soft: #a9a8a3;
+
+  /* Off-white rather than --ink: a chip filled with the text colour is a
+     small pool of glare at this contrast, and the point of the fill is that
+     it reads as pressed, not that it is the brightest thing on the page. */
+  --on-ink-bg: #dedcd6;
+  --on-ink-fg: #131417;
+
+  --progress: rgba(233, 232, 228, 0.72);
+  --scrim: rgba(6, 7, 9, 0.72);
+  --shimmer: rgba(233, 232, 228, 0.06);
+  /* Deeper and softer than the light pair. A shadow on a dark ground does
+     almost no work, so the card's separation comes from --surface and the
+     hairline; these only keep it from floating flat. */
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-lift: 0 26px 54px -22px rgba(0, 0, 0, 0.72);
+  --shadow-panel: 0 48px 96px -36px rgba(0, 0, 0, 0.82);
+}
+
 * { box-sizing: border-box; }
 
 /* For the footer's back-to-top link. The reduced-motion block below turns
@@ -43,10 +155,10 @@ html { scroll-behavior: smooth; }
 body {
   margin: 0;
   min-height: 100vh;
-  background:
-    radial-gradient(58% 46% at 12% 0%, rgba(180, 85, 47, 0.07), transparent 68%),
-    radial-gradient(46% 38% at 92% 4%, rgba(78, 110, 190, 0.06), transparent 70%),
-    var(--paper);
+  /* Grain over wash over ground. The grain tiles at its own size; the wash
+     has no background-size of its own, so it covers. */
+  background-color: var(--paper);
+  background-image: var(--page-grain), var(--page-wash);
   background-attachment: fixed;
   color: var(--ink);
   font-family: var(--sans);
@@ -65,25 +177,34 @@ body.is-locked {
   overflow: hidden;
 }
 
-/* --- language selector -------------------------------------------------- */
+/* --- page controls ------------------------------------------------------ */
 
-/* Aligned to the page gutter, not to an inset of its own — everything else
+/* Language and theme, in one cluster at the top-right corner.
+
+   Aligned to the page gutter, not to an inset of its own — everything else
    on the page hangs off --gutter, and a control floating inside that margin
    reads as a browser extension rather than part of the layout.
 
-   Absolute, not fixed. Language is picked once on arrival and never again, so
-   the chip has no business riding the viewport for the rest of the page — and
-   while it did, it sat on top of the rail's next button: both are pinned to
-   the gutter's right edge, and at the scroll offset that puts the rail bar
-   near the top of the window the chip covered it. Positioned against the
-   initial containing block rather than a wrapper, so it still hangs off the
-   page's top-right corner; the masthead's own top padding is deeper than the
-   chip, which is what keeps it clear of the eyebrow at every width. */
-.lang {
+   Absolute, not fixed. Both choices are made once on arrival and then left
+   alone, so the cluster has no business riding the viewport for the rest of
+   the page — and while the language chip did, it sat on top of the rail's
+   next button: both are pinned to the gutter's right edge, and at the scroll
+   offset that puts the rail bar near the top of the window the chip covered
+   it. Positioned against the initial containing block rather than a wrapper,
+   so it still hangs off the page's top-right corner; the masthead's own top
+   padding is deeper than the cluster, which is what keeps it clear of the
+   eyebrow at every width. */
+.controls {
   position: absolute;
   top: clamp(1.25rem, 3vw, 2.25rem);
   right: var(--gutter);
   z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.lang {
   display: flex;
   align-items: center;
   gap: 0.1rem;
@@ -92,7 +213,7 @@ body.is-locked {
   /* Same chip the card badges use, so it belongs to the same family rather
      than introducing a third surface treatment. No backdrop-filter: it scrolls
      with the page now and the only thing ever behind it is the paper. */
-  background: rgba(251, 250, 248, 0.72);
+  background: var(--chip-bg);
 }
 
 .lang__btn {
@@ -131,6 +252,85 @@ body.is-locked {
   height: 0.7rem;
   background: var(--hairline);
 }
+
+/* --- theme toggle ------------------------------------------------------- */
+
+/* The same chip as the language group, round rather than a pill, because it
+   holds one mark instead of two words. It offers the state it would move to —
+   the rule the rail's drift button already follows — so the page reads as
+   light when there is a moon in the corner. */
+.theme {
+  flex: none;
+  width: 1.85rem;
+  height: 1.85rem;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--chip-bg);
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 240ms var(--ease), background 240ms var(--ease);
+}
+
+.theme:hover { color: var(--ink); }
+
+.theme:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.theme__icon {
+  width: 0.95rem;
+  height: 0.95rem;
+  overflow: visible;
+}
+
+/* One shape for both states: a disc with a bite taken out of it, and a ring
+   of rays around it. Dark moves the bite off the disc and brings the rays in;
+   light parks the bite over the disc's upper right and folds the rays away.
+   The bite is moved with a transform rather than by animating cx/cy — those
+   are CSS properties in every current engine, but a browser that does not
+   take them leaves the mark stuck in one state, where an unsupported
+   transform simply arrives without the tween. */
+.theme__cut {
+  fill: #000;
+  transform-box: fill-box;
+  transform-origin: center;
+  /* The bite, parked over the disc's upper-right shoulder — an offset of
+     just under a third of the diameter, which is a crescent thick enough to
+     hold at 15px. Dark slides it out along the same diagonal. */
+  transform: translate(30%, -30%);
+  transition: transform 520ms var(--ease);
+}
+
+.theme__disc {
+  fill: currentColor;
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scale(1);
+  transition: transform 520ms var(--ease);
+}
+
+.theme__rays {
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  transform-box: fill-box;
+  transform-origin: center;
+  opacity: 0;
+  transform: scale(0.55) rotate(-45deg);
+  transition:
+    opacity 320ms var(--ease),
+    transform 520ms var(--ease);
+}
+
+/* The sun: the bite slides off the disc, the disc gives up the room, and the
+   rays turn in. Hung off the same attribute the tokens are. */
+:root[data-theme="dark"] .theme__cut { transform: translate(125%, -125%); }
+:root[data-theme="dark"] .theme__disc { transform: scale(0.74); }
+:root[data-theme="dark"] .theme__rays { opacity: 1; transform: scale(1) rotate(0deg); }
 
 /* --- the site mark ----------------------------------------------------- */
 
@@ -483,9 +683,9 @@ body.is-locked {
 /* Filled, not underlined: this one is a state the rest of the rail is in, and
    it has to read as pressed from across the page rather than as a link. */
 .rail__filter-btn[aria-pressed="true"] {
-  background: var(--ink);
-  border-color: var(--ink);
-  color: var(--paper);
+  background: var(--on-ink-bg);
+  border-color: var(--on-ink-bg);
+  color: var(--on-ink-fg);
 }
 
 .rail__filter-btn:focus-visible {
@@ -567,7 +767,7 @@ body.is-locked {
   inset: 0 auto 0 0;
   width: var(--rail-progress, 30%);
   border-radius: 2px;
-  background: var(--ink);
+  background: var(--progress);
   transition: width 200ms linear;
 }
 
@@ -599,7 +799,7 @@ body.is-locked {
   border-radius: 1rem;
   background: var(--surface);
   border: 1px solid var(--hairline);
-  box-shadow: 0 1px 2px rgba(23, 24, 26, 0.04);
+  box-shadow: var(--shadow-card);
   transition:
     box-shadow 520ms var(--ease),
     border-color 520ms var(--ease);
@@ -608,7 +808,7 @@ body.is-locked {
 .piece:hover .piece__frame,
 .piece:focus-within .piece__frame {
   border-color: var(--hairline-strong);
-  box-shadow: 0 22px 46px -20px rgba(23, 24, 26, 0.32);
+  box-shadow: var(--shadow-lift);
 }
 
 .piece__preview {
@@ -636,7 +836,7 @@ body.is-locked {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(100deg, transparent 20%, rgba(23, 24, 26, 0.05) 50%, transparent 80%)
+    linear-gradient(100deg, transparent 20%, var(--shimmer) 50%, transparent 80%)
     var(--surface);
   background-size: 220% 100%;
   animation: piece-shimmer 1.5s linear infinite;
@@ -663,20 +863,20 @@ body.is-locked {
   z-index: 2;
   padding: 0.35em 0.75em;
   border-radius: 999px;
-  background: rgba(251, 250, 248, 0.88);
+  background: var(--chip-over-preview);
   backdrop-filter: blur(6px);
   font-family: var(--mono);
   font-size: 0.625rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #3a3b3e;
+  color: var(--chip-over-preview-ink);
 }
 
 .piece__type { left: 0.875rem; }
 
 .piece__no {
   right: 0.875rem;
-  color: var(--muted);
+  color: var(--chip-over-preview-ink-soft);
 }
 
 /* Sits above the stretched link so it can take its own click. */
@@ -691,7 +891,7 @@ body.is-locked {
   padding: 0.5em 0.85em;
   border: 1px solid var(--hairline);
   border-radius: 999px;
-  background: rgba(251, 250, 248, 0.92);
+  background: var(--chip-over-preview-strong);
   backdrop-filter: blur(6px);
   color: var(--ink);
   font-family: var(--mono);
@@ -789,7 +989,7 @@ body.is-locked {
   margin: 0;
   font-size: 0.875rem;
   line-height: 1.55;
-  color: #61625f;
+  color: var(--note);
 }
 
 .piece__cta {
@@ -890,7 +1090,7 @@ body.is-locked {
 .lightbox__scrim {
   position: absolute;
   inset: 0;
-  background: rgba(23, 24, 26, 0.42);
+  background: var(--scrim);
   backdrop-filter: blur(3px);
   opacity: 0;
   transition: opacity 320ms var(--ease);
@@ -917,7 +1117,7 @@ body.is-locked {
   border-radius: 1.25rem;
   background: var(--surface);
   border: 1px solid var(--hairline);
-  box-shadow: 0 40px 80px -32px rgba(23, 24, 26, 0.5);
+  box-shadow: var(--shadow-panel);
   opacity: 0;
   transform: translateY(0.75rem) scale(0.985);
   transition:
@@ -1379,6 +1579,11 @@ body.is-locked {
     min-height: 2.25rem;
   }
 
+  .theme {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+
   .lightbox__close {
     width: 2.75rem;
     height: 2.75rem;
@@ -1429,6 +1634,35 @@ body.is-locked {
   }
 
   .rail__filter { padding-bottom: 0.625rem; }
+}
+
+/* --- the switch itself -------------------------------------------------- */
+
+/* Flipping the token block repaints the whole page in one frame, which reads
+   as a cut rather than as a change of light. index.js hangs .is-theming on
+   <html> for the length of the crossfade and takes it off again, so the
+   transition exists only while the theme is actually moving — a page that
+   carries it permanently pays for it on every hover, and a rule this broad
+   would then be fighting every transition the chrome already owns.
+
+   The selector is one class plus a type, so it outranks the component rules
+   it is standing in for without !important — which means transform has to be
+   in the list rather than left to the rules it is overriding: the toggle's
+   own sun/moon morph is a transform, and it runs inside this exact window.
+   The reduced-motion block below cuts all of it to 1ms with the rest. */
+html.is-theming,
+html.is-theming *,
+html.is-theming *::before,
+html.is-theming *::after {
+  transition:
+    background-color 420ms var(--ease),
+    background-image 420ms var(--ease),
+    border-color 420ms var(--ease),
+    box-shadow 420ms var(--ease),
+    color 420ms var(--ease),
+    fill 420ms var(--ease),
+    stroke 420ms var(--ease),
+    transform 420ms var(--ease);
 }
 
 @media (prefers-reduced-motion: reduce) {

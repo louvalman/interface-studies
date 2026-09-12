@@ -86,6 +86,20 @@
           var variant = VARIANTS[data.index];
           if (variant) apply(variant);
         }
+
+        // Which theme the index is in. Delete this if the component's ground
+        // is the component's own staging, which is the usual case — a
+        // thumbnail is a picture of the component, not of the page around it.
+        // Keep it only where this study's page ground is itself a decision of
+        // the study, and then the src also carries ?theme= so the first paint
+        // is right. 2026-09-inked-plate-card is the worked example.
+        if (data.type === 'preview:theme') {
+          if (data.theme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+          } else {
+            document.documentElement.removeAttribute('data-theme');
+          }
+        }
       });
 
       // Quick look runs this file with pointer events live, so the pointer —
