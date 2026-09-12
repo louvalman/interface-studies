@@ -979,6 +979,51 @@
   a white page is still moss; crystal on a flat white page is a rim and a
   shadow with nothing inside them.
 */
+/*
+  Carnelian, and it is the thickest sheet in the set at 0.44 — the top of the
+  range, where moss sits at 0.28.
+
+  That is not a licence, it is what an orange costs here. `saturate` works on
+  the backdrop, and the backdrop is near-neutral paper, so there is nothing in
+  it to amplify: on this ground the filter's saturation barely moves the hue and
+  the colour is carried almost entirely by the tint's alpha. Greens survive that
+  — moss reads as a clear green at 0.28 — but a red at the same alpha over a
+  neutral goes to brick and then to dusty rose, which is four drafts' worth of
+  finding out. Red has the least chroma to spare of any hue in the set, so it
+  gets the most alpha, and the two facts are the same fact.
+
+  It is also the one material whose accent had to leave warm. Every other sheet
+  marks unread with a clay or an amber, and a warm mark on a warm ground is not
+  a mark. Jade is the complement, and the only cool value anywhere in the
+  component — spent, like every other accent here, on the two things that mean
+  unread and nothing else.
+*/
+.liquid-glass-toolbar--carnelian {
+  --liquid-glass-toolbar-tint: rgba(196, 72, 18, 0.44);
+  --liquid-glass-toolbar-blur: 9px;
+  --liquid-glass-toolbar-saturate: 2;
+  --liquid-glass-toolbar-brightness: 0.56;
+  --liquid-glass-toolbar-contrast: 1.12;
+  --liquid-glass-toolbar-rim: rgba(252, 230, 220, 0.4);
+  --liquid-glass-toolbar-sheen: rgba(255, 240, 232, 0.62);
+  --liquid-glass-toolbar-edge: 0 calc(-1 * var(--liquid-glass-toolbar-hairline)) 0 0 rgba(252, 228, 218, 0.2);
+  --liquid-glass-toolbar-drop:
+    0 1.5rem 3rem -1rem rgba(46, 14, 8, 0.42),
+    0 0.125rem 0.5rem -0.25rem rgba(46, 14, 8, 0.22);
+
+  --liquid-glass-toolbar-lit: rgba(252, 226, 214, 0.12);
+  --liquid-glass-toolbar-lit-rim: rgba(255, 234, 222, 0.5);
+  --liquid-glass-toolbar-lit-sheen: rgba(255, 242, 234, 0.6);
+
+  --liquid-glass-toolbar-warm: rgba(250, 224, 212, 0.08);
+  --liquid-glass-toolbar-warm-rim: rgba(252, 232, 220, 0.24);
+
+  --liquid-glass-toolbar-fg: rgba(255, 243, 237, 0.97);
+  --liquid-glass-toolbar-muted: rgba(250, 230, 222, 0.64);
+  --liquid-glass-toolbar-dim: rgba(250, 230, 222, 0.46);
+  --liquid-glass-toolbar-accent: #46c6a4;
+}
+
 .liquid-glass-toolbar--crystal {
   --liquid-glass-toolbar-tint: rgba(252, 250, 245, 0.07);
   --liquid-glass-toolbar-blur: 6px;

@@ -33,9 +33,9 @@ neighbours the card read as a different kind of object before it read as a
 component, which is the opposite of what a thumbnail is for. So preview.html
 takes the shared paper and demo.html's stage keeps the ramps. The glass
 survives the trade because the thumbnail is not showing one sheet: it stacks
-five, three of them dark, and each carries its own rim, sheen and drop shadow.
-A single alabaster sheet on flat paper would be the failure above; five
-materials on it are still five materials.
+six, four of them dark, and each carries its own rim, sheen and drop shadow.
+A single alabaster sheet on flat paper would be the failure above; six
+materials on it are still six materials.
 
 The icons are drawn rather than borrowed: a dot inside a ring, a magnifier, two
 drawers, a ruled ledger, two sliders. The magnifier is the one glyph in a
@@ -300,7 +300,7 @@ side, which is what the eye reads and what `getBBox()` leaves out.
   other colours. The one saturated value is the accent, clay from across the
   wheel, and it is spent only on the two marks that mean unread. `--light`
   changes nothing below the variable block — tint, rim, sheen and ink — and the
-  same construction comes back in five materials. Moss is the default and has no
+  same construction comes back in six materials. Moss is the default and has no
   modifier; `--alabaster`, `--slate`, `--basalt` and `--crystal` are the others.
   Named for materials rather than for brightness, which is not decoration: two
   of the five flip to dark ink, so `--light` would have been describing part of
@@ -357,7 +357,7 @@ side, which is what the eye reads and what `getBBox()` leaves out.
 
   And the edges took over what the body gave up. Every rim and sheen went up,
   the lit lozenge became a rim with a thin body rather than a pale fill — a
-  glaze is a transparent body with a lit edge, and it is now that in all five
+  glaze is a transparent body with a lit edge, and it is now that in all six
   rather than only in alabaster — and each drop gained a second, tight contact
   shadow, because one soft shadow lifts an opaque card fine and a thin one still
   reads as painted on.
@@ -505,7 +505,7 @@ the attribute can never disagree about what is lit.
 
 The demo page is six sections rather than three, and each one is a single claim
 with the state that proves it: the anatomy of the bar, the reveal, the extended
-view, the motion, the five materials, the narrow scale. The prose is page
+view, the motion, the six materials, the narrow scale. The prose is page
 scaffolding like the background is — it says what the thing in front of it is
 doing, so the page can be read as well as poked at, and it is where the numbers
 that are not visible in a screenshot live: 220 against 300, 25rem against 264px,
@@ -524,10 +524,10 @@ table are static strings in the file. Material names are not translated — they
 are shown as the class that selects them, which makes them class-name hints
 rather than page prose.
 
-The card shows all five materials stacked, which is a deliberate departure from
+The card shows all six materials stacked, which is a deliberate departure from
 this repo's rule that a thumbnail holds one instance and no second copy. The rule
 is there to stop a thumbnail turning into a small demo page, and it is the right
-rule — but what this study offers is a construction that comes in five
+rule — but what this study offers is a construction that comes in six
 materials, and one bar cannot advertise that. So the card is the set, with no
 captions and no state labels, and the variant dots step into a single bar where
 a panel has somewhere to open. The stagger down the stack costs nothing to add
@@ -535,12 +535,14 @@ from outside, because the motion is a custom property whose value is a whole
 shorthand: a delay goes on the end of it without the component knowing. The
 sheets are added and removed rather than hidden — `component.css` gives the root
 a `display`, and an author rule beats the user-agent `[hidden]` one, which would
-have left all five on screen.
+have left all six on screen.
+
+Darkest at the top, and that is the thumbnail's order rather than the demo's. The stack used to run lightest first, which put the two palest sheets against the card's own near-white paper at the moment the eye lands — two faint outlines and then the weight arriving underneath, so the card read as empty at the top and heavy at the bottom. Reversed, the mass is where the eye starts and the sheets fade out of it. demo.html keeps its own order, default first, because that page is making a different argument: moss is what the component ships as, and the rest are shown against it.
 
 Which makes rebuilding the stack a thing that has to be done sparingly, and
-getting the order right is what got that wrong. Appending all five in order is
+getting the order right is what got that wrong. Appending all six in order is
 the tidy way to both restore the missing sheets and sort them, and it is also a
-*move* for the four already in place — a move is a removal and an insertion, and
+*move* for the five already in place — a move is a removal and an insertion, and
 a re-inserted element has no before-change style, so every transition on it is
 cancelled and the next one never starts. Hover runs through the same function,
 and on hover the stack is already built, so the card went dead: the search field
