@@ -18,14 +18,38 @@
 
   <link rel="stylesheet" href="component.css">
 
+  <!-- The ground, before the first paint. The index loads this frame with
+     ?theme= on the src, so a thumbnail is never drawn on the wrong one and
+     then corrected. Opened on its own, with no query, it keeps the light
+     ground. -->
+  <script>
+    var theme = new URLSearchParams(location.search).get('theme');
+    if (theme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+  </script>
+
   <style>
     /* Thumbnail scaffolding only. Nothing here may name a component class. */
+
+    /* The shared ground, and the only colour this page writes. Both values are
+       literals repeated in every folder rather than shared from anywhere — the
+       folder has to survive being copied out — but they have to be the same
+       two numbers in all of them, or the rail stops reading as one set of
+       cards. That is what this ground is for: it is the rail's, not the
+       component's, which is why it follows the index into dark rather than
+       staying lit under it. Copy both lines as they are. */
+    :root { --preview-ground: #f3f2ef; }
+    :root[data-theme="dark"] { --preview-ground: #191b1e; }
+
+    /* <html> carries it as well as <body>, so the background does not
+       propagate to the viewport canvas and leave a seam at the frame edge. */
+    html { background-color: var(--preview-ground); }
+
     body {
       margin: 0;
       min-height: 100vh;
       display: grid;
       place-items: center;
-      background: #ddd9d0;
+      background-color: var(--preview-ground);
       font-family: system-ui, sans-serif;
     }
   </style>
@@ -87,12 +111,11 @@
           if (variant) apply(variant);
         }
 
-        // Which theme the index is in. Delete this if the component's ground
-        // is the component's own staging, which is the usual case — a
-        // thumbnail is a picture of the component, not of the page around it.
-        // Keep it only where this study's page ground is itself a decision of
-        // the study, and then the src also carries ?theme= so the first paint
-        // is right. 2026-09-inked-plate-card is the worked example.
+        // Which theme the index is in. Keep this: the ground above is the
+        // rail's rather than this study's, and every thumbnail moves with the
+        // page together or the rail stops reading as one set of cards. What
+        // the component sits on beyond the ground is the study's own, and is
+        // not touched here.
         if (data.type === 'preview:theme') {
           if (data.theme === 'dark') {
             document.documentElement.setAttribute('data-theme', 'dark');

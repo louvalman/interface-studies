@@ -294,13 +294,20 @@ back. The index rewrites `data-src` rather than `src`, so the two places that
 load a preview (the rail on approach, quick look on open) never learn about any
 of this.
 
-What a preview does with it is the folder's business, and doing nothing is the
-normal answer: a thumbnail is a picture of the component, and the light ground
-four of the five sit on is the component's own staging rather than the page's.
-The exception is a study whose page ground is itself a decision —
-`2026-09-inked-plate-card` is ink by authorship, so on a dark rail it takes its
-own ground back, grid and all, and the card then matches what opening it shows.
-The component is not touched either way.
+Every preview takes it, and takes it the same way: `--preview-ground` is
+`#f3f2ef` on a light rail and `#191b1e` on a dark one, two literals repeated in
+every folder. That ground is the rail's rather than the component's — it is
+repeated across the folders precisely so the rail reads as one set of cards,
+which is an argument about the index and not about any study — so it follows
+the index into dark rather than staying lit under it. A card that kept the
+paper while the others went dark would read as a different kind of thing rather
+than as that study's card.
+
+What sits on the ground is still the folder's own: `2026-09-inked-plate-card`
+brings its plotter grid along, in ink on the paper and in chalk on the dark.
+The component is never touched by any of it, and `demo.html`'s ground is a
+separate decision — that page may be ink in both themes while its thumbnail is
+neither.
 
 `preview:key` is the fifth, and it goes the other way — preview to index. An
 iframe is its own document: keys pressed inside it fire against that document
@@ -382,10 +389,8 @@ file, as a decision of the study.
 
 `preview.html` is told, rather than left out. The index cannot reach into a
 framed document — over `file://` it is behind an opaque origin — so the theme
-rides on the src and over `preview:theme`, and the folder decides what to do
-with it. Four of the five do nothing, because their ground is the component's
-own staging; the ink study takes its ground back on a dark rail. See **The
-preview message contract**.
+rides on the src and over `preview:theme`. Every preview moves its shared
+ground with it and nothing else; see **The preview message contract**.
 
 The chips that sit *on* a thumbnail are the part of the index that has to know:
 the type badge, the number and quick look are painted against the preview
