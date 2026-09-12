@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>2026-09-drawn-gradients</title>
+  <title>Drawn gradients &mdash; Interface Studies</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1820,6 +1820,12 @@
           var key = el.getAttribute('data-i18n');
           el.textContent = table && table[key] ? table[key] : english[i];
         });
+
+        // The tab follows the heading rather than keeping its own copy of it,
+        // so the study's name is the same string in both places and in both
+        // languages. The <title> in the markup is the no-script fallback.
+        var head = document.querySelector('.demo__heading');
+        if (head) document.title = head.textContent.trim() + ' \u2014 Interface Studies';
 
         document.documentElement.lang = lang;
         buttons.forEach(function (b) {

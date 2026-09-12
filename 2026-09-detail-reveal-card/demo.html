@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>2026-09-detail-reveal-card</title>
+  <title>Detail reveal card &mdash; Interface Studies</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -951,7 +951,6 @@
       var back = document.querySelector('.demo__back');
 
       var english = nodes.map(function (el) { return el.textContent; });
-      var titleEn = document.title;
 
       function apply(lang) {
         var table = lang === 'da' ? DA : null;
@@ -961,8 +960,13 @@
           el.textContent = table && table[key] ? table[key] : english[i];
         });
 
+        // The tab follows the heading rather than keeping its own copy of it,
+        // so the study's name is the same string in both places and in both
+        // languages. The <title> in the markup is the no-script fallback.
+        var head = document.querySelector('.demo__heading');
+        if (head) document.title = head.textContent.trim() + ' \u2014 Interface Studies';
+
         document.documentElement.lang = lang;
-        document.title = titleEn;   // the folder slug, not prose
 
         buttons.forEach(function (b) {
           b.setAttribute('aria-pressed', b.dataset.lang === lang ? 'true' : 'false');

@@ -103,39 +103,34 @@
         </span>
       </p>
 
+      <!-- Both halves are facts the page can count, and neither is in the
+         lede. "Scope — a few decisions" and "Each study — stands alone" used
+         to sit here: the lede says the first in its own first sentence and the
+         footer says the second in full, so the row spent ninety pixels
+         repeating what was already on the page twice. A count and a date say
+         how much is here and whether it is still moving, which is what a
+         masthead is for and what nothing else on the page states. Both are
+         written by index.js from the cards. -->
       <dl class="head__meta">
         <div class="head__meta-item">
           <dt class="head__meta-key" data-i18n="meta.studies">Studies</dt>
-          <dd class="head__meta-val" id="meta-count">—</dd>
+          <dd class="head__meta-val" id="meta-count">&mdash;</dd>
         </div>
         <div class="head__meta-item">
-          <dt class="head__meta-key" data-i18n="meta.scope">Scope</dt>
-          <dd class="head__meta-val" data-i18n="meta.fewDecisions">
-            A few decisions
-          </dd>
-        </div>
-        <div class="head__meta-item">
-          <dt class="head__meta-key" data-i18n="meta.eachStudy">Each study</dt>
-          <dd class="head__meta-val" data-i18n="meta.standsAlone">
-            Stands alone
-          </dd>
+          <dt class="head__meta-key" data-i18n="meta.latest">Latest</dt>
+          <dd class="head__meta-val" id="meta-latest">&mdash;</dd>
         </div>
       </dl>
     </header>
 
     <section class="rail">
       <div class="rail__bar">
-        <div class="rail__meta">
-          <p class="rail__count">
-            <span data-i18n="rail.study">Study</span>
-            <span id="rail-index">01</span>
-            /
-            <span id="rail-total">01</span>
-          </p>
-          <p class="rail__hint" data-rail-hint>
-            Hover to play &middot; drag to scroll &middot; &larr; &rarr;
-          </p>
-        </div>
+        <p class="rail__count">
+          <span data-i18n="rail.study">Study</span>
+          <span id="rail-index">01</span>
+          /
+          <span id="rail-total">01</span>
+        </p>
         <nav
           class="rail__nav"
           data-i18n-aria="a11y.carousel"

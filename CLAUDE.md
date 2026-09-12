@@ -189,6 +189,11 @@ demo.html links `component.css`; it never redefines it. If the demo needs a
 style, that style belongs in a `<style>` block scoped to the demo page's own
 scaffolding — never a rule that reaches into the component's classes.
 
+Its `<title>` is the study's name, not the folder slug — the tab, the bookmark
+and the history entry are read by a person. The language script writes it from
+the page's own `<h1>` so the name is one string rather than two, and the tag in
+the markup is the no-script fallback.
+
 It also carries `og:` tags, because a demo page is the link that gets pasted
 somewhere. Title and description come from the page's own `<h1>` and lede;
 `og:image` is `../og.png`, the index's card, from the same place up a level
@@ -365,10 +370,15 @@ matching `og:url` and `<link rel="canonical">`.
 `og.html` is what that PNG is a photograph of. It is not a page anyone visits
 and nothing links to it; it exists so that changing the card is an edit rather
 than a rebuild-by-eye, which is what the first two versions were. Its head
-carries the render command. The masthead's copy is in it by hand — the h1, the
-lede and the meta row — so a headline change means editing `index.html`, then
-`og.html`, then re-rendering, and skipping the last two leaves a link that
-pastes as one page and opens as another.
+carries the render command. The masthead's copy is in it by hand — the h1 and the
+lede — so a headline change means editing `index.html`, then `og.html`, then
+re-rendering, and skipping the last two leaves a link that pastes as one page
+and opens as another.
+
+Its meta row is the exception, and deliberately not a copy: the masthead's row
+is a count and the newest study's date, both read off the cards at runtime.
+Baked into a PNG either one is wrong from the next study onward. The card
+states three things about the set that do not move instead.
 
 The rail ends on its own rule: `.rail__progress` is both the scroll position
 and the line under the cards, so its track is always drawn and only the fill is

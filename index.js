@@ -58,13 +58,8 @@
       'head.ledeHintTouch': 'Tryk på hurtigt kig for at afspille et kort, eller '
         + 'åbn det i fuld størrelse.',
       'meta.studies': 'Studier',
-      'meta.scope': 'Omfang',
-      'meta.fewDecisions': 'Få beslutninger',
-      'meta.eachStudy': 'Hvert studie',
-      'meta.standsAlone': 'Står alene',
+      'meta.latest': 'Seneste',
       'rail.study': 'Studie',
-      'rail.hint': 'Hold musen over for at afspille · træk for at rulle · ← →',
-      'rail.hintTouch': 'Stryg for at rulle · tryk på hurtigt kig',
       'type.card': 'Kort',
       'type.aesthetic': 'Æstetik',
       'type.navigation': 'Navigation',
@@ -183,8 +178,8 @@
       link.setAttribute('href', lang === 'en' ? base : base + '?lang=' + lang);
     });
 
-    // The rail's hint is written by index.js, not by the markup, so it is
-    // handed the table rather than reading a data-i18n key.
+    // The lede's closing sentence is written by index.js, not by the markup,
+    // so it is handed the table rather than reading a data-i18n key.
     document.dispatchEvent(new CustomEvent('lang:change', {
       detail: { lang: lang, copy: table || null }
     }));
@@ -217,7 +212,8 @@
 
   // Deferred by a microtask so every lang:change listener further down this
   // file is attached before the first one fires — otherwise script-written
-  // copy like the rail hint misses the restore and stays English.
+  // copy like the lede's closing sentence misses the restore and stays
+  // English.
   // apply() also rewrites the outgoing links, so English runs too — it has to
   // strip a ?lang= that an earlier switch left on them.
   queueMicrotask(() => apply(initial === 'da' ? 'da' : 'en'));
@@ -243,8 +239,8 @@
   const indexOut = document.getElementById('rail-index');
   const totalOut = document.getElementById('rail-total');
   const metaCount = document.getElementById('meta-count');
+  const metaLatest = document.getElementById('meta-latest');
   const footCount = document.getElementById('foot-count');
-  const hint = document.querySelector('[data-rail-hint]');
   const ledeHint = document.querySelector('[data-lede-hint]');
 
   const pieces = () => Array.from(track.children);
@@ -833,6 +829,16 @@
     if (totalOut) totalOut.textContent = pad(count);
     if (metaCount) metaCount.textContent = pad(total);
     if (footCount) footCount.textContent = pad(total);
+
+    // The newest study's month. order() has already sorted the rail newest
+    // first, so it is the first card's own date — read off the same attribute
+    // the sort uses rather than written down a second time. Numeric, so it
+    // needs no translating and no month table.
+    if (metaLatest) {
+      const newest = allPieces()[0];
+      const key = newest ? orderKey(newest) : '';
+      metaLatest.textContent = key ? key.slice(0, 7).replace('-', ' · ') : '—';
+    }
 
     const active = activeIndex();
     markActive(active);
@@ -1568,11 +1574,6 @@
 
   // --- go ---------------------------------------------------------------
 
-  const HINT_EN = {
-    pointer: 'Hover to play · drag to scroll · ← →',
-    touch: 'Swipe to scroll · tap quick look'
-  };
-
   const LEDE_EN = {
     pointer: 'Hover a card to run it in place, or open it at full size.',
     touch: 'Tap quick look to run a card in place, or open it at full size.'
@@ -1582,14 +1583,9 @@
   // language switch.
   let hintCopy = null;
 
-  function renderHint(copy) {
+  function renderLedeHint(copy) {
     hintCopy = copy;
     const touch = coarse.matches;
-
-    if (hint) {
-      const key = touch ? 'rail.hintTouch' : 'rail.hint';
-      hint.textContent = (copy && copy[key]) || (touch ? HINT_EN.touch : HINT_EN.pointer);
-    }
 
     // The lede's closing sentence, for the same reason: there is nothing to
     // hover on a phone, and the card's own affordance is the quick-look
@@ -1605,7 +1601,7 @@
   // this, so re-labelling here lands after it and the wrap label survives a
   // switch made while sitting at an edge.
   document.addEventListener('lang:change', (event) => {
-    renderHint(event.detail.copy);
+    renderLedeHint(event.detail.copy);
     navCopy = event.detail.copy;
     renderNav();
   });
@@ -1615,14 +1611,14 @@
   // once at load.
   if (coarse.addEventListener) {
     coarse.addEventListener('change', () => {
-      renderHint(hintCopy);
+      renderLedeHint(hintCopy);
       const list = real();
       list.forEach((piece) => tell(piece, false));
       if (coarse.matches && list[currentActive]) tell(list[currentActive], true);
     });
   }
 
-  renderHint(null);
+  renderLedeHint(null);
   order();
   buildFilter();   // after order(), so the chips count a settled rail
   number();
