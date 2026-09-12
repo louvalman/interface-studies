@@ -376,9 +376,9 @@ re-rendering, and skipping the last two leaves a link that pastes as one page
 and opens as another.
 
 Its meta row is the exception, and deliberately not a copy: the masthead's row
-is a count and the newest study's date, both read off the cards at runtime.
-Baked into a PNG either one is wrong from the next study onward. The card
-states three things about the set that do not move instead.
+is the newest study's date, read off the cards at runtime, and baked into a PNG
+that is wrong from the next study onward. The card states three things about
+the set that do not move instead.
 
 The rail ends on its own rule: `.rail__progress` is both the scroll position
 and the line under the cards, so its track is always drawn and only the fill is
@@ -439,8 +439,9 @@ The type filter above the rail is built by `index.js` from the `type.*` key on
 each card's badge, so a study of a new type needs nothing added to it. Filtering
 hides cards with a class rather than the `hidden` attribute — `.piece` sets its
 own `display`, and the warning about `[hidden]` in the preview contract applies
-here for the same reason. The rail counts what it is showing; the masthead and
-the footer go on counting what exists.
+here for the same reason. The rail counts what it is showing and the footer
+counts what exists — the masthead states neither, because the rail's own
+"Study 01 / 05" is where a reader takes the total from.
 
 ### The type is stated twice, and that is the best available
 

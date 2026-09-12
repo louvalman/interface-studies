@@ -57,7 +57,6 @@
         + 'det i fuld størrelse.',
       'head.ledeHintTouch': 'Tryk på hurtigt kig for at afspille et kort, eller '
         + 'åbn det i fuld størrelse.',
-      'meta.studies': 'Studier',
       'meta.latest': 'Seneste',
       'rail.study': 'Studie',
       'type.card': 'Kort',
@@ -238,7 +237,6 @@
   const progress = document.querySelector('[data-rail-progress]');
   const indexOut = document.getElementById('rail-index');
   const totalOut = document.getElementById('rail-total');
-  const metaCount = document.getElementById('meta-count');
   const metaLatest = document.getElementById('meta-latest');
   const footCount = document.getElementById('foot-count');
   const ledeHint = document.querySelector('[data-lede-hint]');
@@ -821,13 +819,13 @@
   function sync() {
     const max = maxScroll();
 
-    // The rail counts what it is showing; the masthead and the footer count
-    // what exists. Filtering to one type does not mean four studies stopped
-    // being written.
+    // The rail counts what it is showing; the footer counts what exists.
+    // Filtering to one type does not mean four studies stopped being written,
+    // and the rail's own "Study 01 / 05" is where the total is read anyway —
+    // which is why the masthead no longer carries a second copy of it.
     const count = real().length;
     const total = allPieces().length;
     if (totalOut) totalOut.textContent = pad(count);
-    if (metaCount) metaCount.textContent = pad(total);
     if (footCount) footCount.textContent = pad(total);
 
     // The newest study's month. order() has already sorted the rail newest
