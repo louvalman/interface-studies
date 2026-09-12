@@ -143,6 +143,32 @@
 
   let current = 'en';
 
+  // The theme the visitor actually chose, if they chose one. It arrives on the
+  // theme:change event below rather than being read off <html>, because the
+  // attribute there is the resolved answer — a dark page on a dark machine is
+  // not a choice, and handing it on as one would store it at the other end.
+  let themeChoice = null;
+
+  // Demo pages are separate documents that carry their own copy of both
+  // switches, so the choices travel in the link. Over file:// each document
+  // gets its own opaque origin and localStorage does not carry across, which
+  // is why the query string is the primary channel rather than a fallback.
+  function syncLinks() {
+    const query = [];
+    if (current !== 'en') query.push('lang=' + current);
+    if (themeChoice) query.push('theme=' + themeChoice);
+
+    document.querySelectorAll('[data-lang-link]').forEach((link) => {
+      const base = link.getAttribute('data-lang-link');
+      link.setAttribute('href', base + (query.length ? '?' + query.join('&') : ''));
+    });
+  }
+
+  document.addEventListener('theme:change', (event) => {
+    themeChoice = event.detail ? event.detail.chosen : null;
+    syncLinks();
+  });
+
   function apply(lang) {
     const table = COPY[lang];
     current = lang;
@@ -169,14 +195,7 @@
       b.setAttribute('aria-pressed', b.dataset.lang === lang ? 'true' : 'false');
     });
 
-    // Demo pages are separate documents that carry their own copy, so the
-    // choice travels in the link. Over file:// each document gets its own
-    // opaque origin and localStorage does not carry across, which is why the
-    // query string is the primary channel rather than a fallback.
-    document.querySelectorAll('[data-lang-link]').forEach((link) => {
-      const base = link.getAttribute('data-lang-link');
-      link.setAttribute('href', lang === 'en' ? base : base + '?lang=' + lang);
-    });
+    syncLinks();
 
     // The lede's closing sentence is written by index.js, not by the markup,
     // so it is handed the table rather than reading a data-i18n key.
@@ -251,9 +270,17 @@
   // What the head script read, read again — not what it wrote: the attribute
   // is by then the resolved answer, and a system dark theme is not a choice
   // to keep once the OS changes.
-  let chosen = null;
-  try { chosen = localStorage.getItem(STORE_KEY); } catch (err) { /* private mode */ }
-  if (chosen !== 'dark' && chosen !== 'light') chosen = null;
+  //
+  // A demo page hands the choice back the way it received it, so the query
+  // string comes first here for the same reason it does for the language.
+  let chosen = new URLSearchParams(location.search).get('theme');
+  if (chosen !== 'dark' && chosen !== 'light') {
+    chosen = null;
+    try { chosen = localStorage.getItem(STORE_KEY); } catch (err) { /* private mode */ }
+    if (chosen !== 'dark' && chosen !== 'light') chosen = null;
+  } else {
+    try { localStorage.setItem(STORE_KEY, chosen); } catch (err) { /* private mode */ }
+  }
 
   function shown() {
     return chosen || (media && media.matches ? 'dark' : 'light');
@@ -263,12 +290,27 @@
     const theme = shown();
     root.setAttribute('data-theme', theme);
     toggle.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
+
+    // The language module owns the outgoing links; it needs the choice, not
+    // the resolved answer.
+    document.dispatchEvent(new CustomEvent('theme:change', {
+      detail: { theme: theme, chosen: chosen }
+    }));
   }
 
   let settle = 0;
   toggle.addEventListener('click', () => {
     chosen = shown() === 'dark' ? 'light' : 'dark';
     try { localStorage.setItem(STORE_KEY, chosen); } catch (err) { /* private mode */ }
+
+    // Keep ?theme= in step with the choice, the way the language switch does:
+    // left stale, an older value would win over the stored one on the next
+    // reload and undo the switch.
+    try {
+      const url = new URL(location.href);
+      url.searchParams.set('theme', chosen);
+      history.replaceState({}, '', url);
+    } catch (err) { /* file:// can refuse replaceState */ }
 
     // The crossfade is hung on <html> for its own length and taken off again,
     // so the rule is not sitting on every element for the rest of the session.

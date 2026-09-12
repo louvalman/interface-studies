@@ -179,6 +179,8 @@ is the exact markup `component.css` expects, and what gets copied out.
 All page-level context lives here, and only here:
 
 - background and centering
+- the page's own colour tokens, in a `:root` block and a second one for the
+  other theme — see **Two themes** below
 - font loading (`<link>` to a font service is fine *here*)
 - a link to `component.css`
 - an `<h1>` naming the study, with the type and a one-sentence lede
@@ -320,6 +322,101 @@ posts back when it is framed. This is the one place a study folder may carry
 script without meeting the JavaScript bar below — it is thumbnail scaffolding,
 not component behaviour, and it never goes in `component.js`.
 
+## Two themes, and every page carries its own copy
+
+`index.css` declares every colour it uses as a token in `:root`, and the dark
+theme is that same list re-declared under `:root[data-theme="dark"]`. There is
+no rule that exists in one theme and not the other, no second stylesheet, and
+no `prefers-color-scheme` query — a colour hardcoded past the token block is a
+colour that will be wrong in one of the two.
+
+The attribute is the only thing the stylesheet reads, which is what keeps the
+dark palette to one block: the two inputs are resolved in script instead, where
+they become one answer. The stored choice, or the system's when there is none.
+Six inline lines in `<head>` do it before the first paint — a theme that
+arrives with the stylesheet instead flashes a frame of the other one — and the
+page's own script does it again on load, then keeps listening while nothing is
+stored, so an OS switch made with the page open still moves it. Choosing
+stores; a stored choice then outranks the OS in both directions.
+
+Without JavaScript a page keeps whatever its bare `:root` holds. On the index
+that is the light theme, and the index already needs script for its previews,
+its rail order and its counts; on a demo page it is the ground the folder
+authored, which is the right thing to fall back to.
+
+A demo page does the same in its own `<style>`: its own tokens, its own two
+blocks, its own copy of the toggle and of the head script. No shared module and
+no shared stylesheet — the folder has to survive being copied out, which is the
+same reason its language table is its own. `_template/demo.html` holds the
+block to copy.
+
+Which theme a folder's bare `:root` holds is the folder's business.
+`2026-09-inked-plate-card` is ink by authorship — the plotter ground is that
+study's own staging, not a default it inherited — so its `:root` carries the
+dark theme and it declares `:root[data-theme="light"]` instead. The attribute
+selects either way.
+
+`component.css` is not in it, in any folder. A component owns its colours in
+both themes and no demo rule may reach into them, so on a dark page it sits as
+a lit plate — which is exactly what it does on the index cards. A study that
+wants a dark variant of the component declares one as a modifier, in its own
+file, as a decision of the study.
+
+`preview.html` stays out of it too. It is framed by the index, which cannot
+tell it what theme it is in — over `file://` the parent is behind an opaque
+origin — and the thumbnail is a picture of the component, not of the page
+around it. The chips that sit *on* a thumbnail are the one part of the index
+that has to know: the type badge, the number and quick look are painted
+against the preview rather than against the page, so they invert with the
+chrome rather than with the plate they cover.
+
+The choice travels in the link, the way the language does: the index appends
+`?theme=` to the link that opens a demo, the demo's back link hands it back,
+and `localStorage` is the secondary channel. Only an explicit choice travels —
+a theme resolved from the system is not a choice, and the other end would
+resolve it the same way anyway.
+
+The matte part is the grain: the dark ground is a wash across two thousand
+pixels, which 8-bit colour cannot draw without ringing. A fractal-noise tile at
+a low alpha dithers the banding out, and reads as paper rather than as texture.
+
+The card list is hand-maintained in `index.html`. Adding a study means
+adding one `<article class="piece">` block to it, pointing at the new folder's
+`demo.html` and `preview.html`, and carrying a `data-date` — `index.js` sorts
+the rail by that, newest first, so where the block is pasted does not matter.
+Leave the `piece__no` em dash alone too: the number is written from the card's
+position once the rail is sorted. Both used to be typed in, and both were a
+second source of truth for something already stated once — a card added at the
+front invalidated every number below it, and two sessions adding one at the
+same time left the order to whichever way the merge fell. Without a `data-date`
+a card falls back to the month in its folder name, which sorts it behind
+anything dated in that month.
+
+The card is an `<article>` with a stretched link on the title rather than an
+`<a>` wrapping everything, because the quick-look button lives inside the card
+and an anchor may not contain a button. Everything the overlay shows is read
+back out of that block, so no title, note or path is written twice. That is the
+only file outside the study folder that a new study may touch.
+
+The preview iframe carries its path in `data-src`, not `src`. Every card on the
+page is a live component — which is the point, and also what it costs: one
+thumbnail alone runs 289 dots on their own animations, on screen or not, and
+the rail drifts, so every card eventually arrives. `index.js` loads a preview
+when it comes within a card-width of the rail's scrollport and drops it again
+two card-widths past, so a long rail only ever has a handful alive. A card
+whose preview has been dropped shows its skeleton, not an empty frame. This
+does mean no previews at all without JavaScript; the index already needs it for
+the rail's order, its numbers and its counts.
+
+The type filter above the rail is built by `index.js` from the `type.*` key on
+each card's badge, so a study of a new type needs nothing added to it. Filtering
+hides cards with a class rather than the `hidden` attribute — `.piece` sets its
+own `display`, and the warning about `[hidden]` in the preview contract applies
+here for the same reason. The rail counts what it is showing and the footer
+counts what exists — the masthead states neither, because the rail's own
+"Study 01 / 05" is where a reader takes the total from.
+
+
 ## JavaScript
 
 Vanilla HTML and CSS by default. Add JavaScript only when the study
@@ -337,10 +434,17 @@ intentional, because each folder has to survive being copied out on its own.
 When asked to add a study, touch that folder and nothing else — with the
 single exception below.
 
-The one thing that legitimately sweeps every folder is an identity change —
-the site was renamed, and each `demo.html` carries its own copy of the back
-link's strings. That is a rename, not a refactor: it touches the strings and
-nothing structural, and a folder still owns its own copy afterwards.
+Two things legitimately sweep every folder, and both are the same shape. One is
+an identity change — the site was renamed, and each `demo.html` carries its own
+copy of the back link's strings. The other is a page contract every demo has to
+meet, which is how the language switch arrived and how the theme switch did:
+each folder gets its own copy, written into its own file, in its own palette.
+
+Neither is a refactor. The test is what the folder owns afterwards: a sweep
+that leaves every folder holding its own copy is a sweep; one that leaves them
+sharing a file is the thing this rule forbids. Adding a contract like that is a
+decision about the whole repo — make it deliberately, write it down here, and
+put it in `_template/` so the next study is born with it.
 
 ## The landing page
 
@@ -406,74 +510,6 @@ the choice back; `localStorage` is the secondary channel, because over `file://`
 each document gets its own opaque origin and does not share it. `_template/`
 holds the block to copy. Translate the page's own prose only — component sample
 copy and class-name hints stay as they are.
-
-### The index has two themes, and the studies have one
-
-`index.css` declares every colour it uses as a token in `:root`, and the dark
-theme is that same list re-declared under `:root[data-theme="dark"]`. There is
-no rule that exists in one theme and not the other, no second stylesheet, and
-no `prefers-color-scheme` query — a colour hardcoded past the token block is a
-colour that will be wrong in one of the two.
-
-The attribute is the only thing the stylesheet reads, which is what keeps the
-dark palette to one block: the two inputs are resolved in script instead, where
-they become one answer. The stored choice, or the system's when there is none.
-Six inline lines in `<head>` do it before the first paint — a stored dark theme
-that arrives with the stylesheet flashes a frame of white paper — and `index.js`
-does it again on load, keeps listening while nothing is stored, so an OS switch
-made with the page open still moves it. Choosing stores; a stored choice then
-outranks the OS in both directions. Without JavaScript the page is light, which
-is the deal this page already makes — without it there are no previews, no rail
-order and no counts either.
-
-The studies are deliberately left out of it. A `preview.html` is its own
-document with its own ground, and the folder owns its styling, so the cards
-stay lit plates on a dark page rather than inverting with the chrome. Theming
-them would mean the same colour-scheme block copied into every folder, which is
-the sweep this repo does not do. The one place that has to know is the chips
-that sit *on* a thumbnail — the type badge, the number, quick look — which are
-painted against the preview rather than against the page, and so invert with
-the chrome rather than with the plate they cover.
-
-The matte part is the grain: the dark ground is a wash across two thousand
-pixels, which 8-bit colour cannot draw without ringing. A fractal-noise tile at
-a low alpha dithers the banding out, and reads as paper rather than as texture.
-
-The card list is hand-maintained in `index.html`. Adding a study means
-adding one `<article class="piece">` block to it, pointing at the new folder's
-`demo.html` and `preview.html`, and carrying a `data-date` — `index.js` sorts
-the rail by that, newest first, so where the block is pasted does not matter.
-Leave the `piece__no` em dash alone too: the number is written from the card's
-position once the rail is sorted. Both used to be typed in, and both were a
-second source of truth for something already stated once — a card added at the
-front invalidated every number below it, and two sessions adding one at the
-same time left the order to whichever way the merge fell. Without a `data-date`
-a card falls back to the month in its folder name, which sorts it behind
-anything dated in that month.
-
-The card is an `<article>` with a stretched link on the title rather than an
-`<a>` wrapping everything, because the quick-look button lives inside the card
-and an anchor may not contain a button. Everything the overlay shows is read
-back out of that block, so no title, note or path is written twice. That is the
-only file outside the study folder that a new study may touch.
-
-The preview iframe carries its path in `data-src`, not `src`. Every card on the
-page is a live component — which is the point, and also what it costs: one
-thumbnail alone runs 289 dots on their own animations, on screen or not, and
-the rail drifts, so every card eventually arrives. `index.js` loads a preview
-when it comes within a card-width of the rail's scrollport and drops it again
-two card-widths past, so a long rail only ever has a handful alive. A card
-whose preview has been dropped shows its skeleton, not an empty frame. This
-does mean no previews at all without JavaScript; the index already needs it for
-the rail's order, its numbers and its counts.
-
-The type filter above the rail is built by `index.js` from the `type.*` key on
-each card's badge, so a study of a new type needs nothing added to it. Filtering
-hides cards with a class rather than the `hidden` attribute — `.piece` sets its
-own `display`, and the warning about `[hidden]` in the preview contract applies
-here for the same reason. The rail counts what it is showing and the footer
-counts what exists — the masthead states neither, because the rail's own
-"Study 01 / 05" is where a reader takes the total from.
 
 ### The type is stated twice, and that is the best available
 
