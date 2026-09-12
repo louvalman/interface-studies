@@ -86,6 +86,19 @@ brightness: porcelain, `--acid`, `--graphite`, `--ochre`, `--indigo` and
   without touching the field; none of the six surfaces carries a crop colour of
   its own any more.
 
+  The tile repeats with `round` rather than `repeat`, and that is what stops a
+  frame made of dots from having a defect built into it. A tiled background is
+  cut off wherever its box ends, so unless the field is a whole number of cells
+  wide the last column and the bottom row come out as half a dot — flat-sided
+  against round ones, which is invisible in a mock-up and obvious on a screen.
+  The card is 300px of field at its own width and lands clean; at the 348 the
+  thumbnail asks for it is 3px over and every edge dot is shaved. `round`
+  scales the tile a hair so a whole number fits — 4.971px instead of 5 at that
+  width. A pitch nobody can see moving, against a clipped dot anybody can. It
+  is on the field and the frame alike, and the two stay in step because both
+  tiles start at their own left edge and the frame's box is a whole number of
+  pitches wider, so the rounding lands them within a tenth of a pixel.
+
   The one number that is load-bearing is the inset: it has to be a whole number
   of pitches, because the tile paints its dot in the middle of every cell. On
   the pitch the outermost column lands 2.5px inside the frame's edge and is

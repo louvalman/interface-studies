@@ -244,6 +244,17 @@
       var(--inked-plate-card-dot) 99%,
       #0000 0);
   background-size: var(--inked-plate-card-dot-pitch) var(--inked-plate-card-dot-pitch);
+  /* `round`, not `repeat`, and it is not a nicety. A tiled background is cut
+     off wherever the box ends, so unless the field happens to be a whole
+     number of cells wide the last column and the bottom row are half a dot —
+     a flat-sided dot against round ones, which is exactly the kind of defect
+     that is invisible in a mock-up and obvious on a screen. The card is 300px
+     of field at its own width and lands clean; at 348, which is what the
+     thumbnail asks for, it is 3px over and every edge dot is shaved.
+     `round` scales the tile a hair so a whole number fits — 4.971px instead of
+     5 at that width — which is a pitch nobody can see moving and a clipped dot
+     anybody can. */
+  background-repeat: round;
 }
 
 /*
@@ -284,6 +295,11 @@
       currentColor 99%,
       #0000 0);
   background-size: var(--inked-plate-card-dot-pitch) var(--inked-plate-card-dot-pitch);
+  /* Rounded to whole cells, same as the field — and the two stay in step
+     because both tiles start at their own left edge and the frame's box is a
+     whole number of pitches wider, so the rounding lands them within a tenth
+     of a pixel of each other. */
+  background-repeat: round;
 
   -webkit-mask-image:
     var(--inked-plate-card-crop-bar), var(--inked-plate-card-crop-bar),
