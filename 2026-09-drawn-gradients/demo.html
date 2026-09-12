@@ -1662,6 +1662,10 @@
           <p><code>--drawn</code> swaps the stop list for an SVG of two or three overlapping shapes blurred past recognition. The overlaps supply the mid-tones a stop list has to be hand-tuned to produce, and shapes with points — a star, a leaf — leave soft spokes that no arrangement of radial stops will give you. Two things make it work: the blur is a ratio of the surface rather than a fixed length, so it dissolves by the same amount at any size — and the ratio is per drawing, since a dense one (a mosaic, a scatter, stacked bands) averages to a single flat colour at the 0.26 a few large shapes want, and needs 0.1 or less; and the artwork bleeds 22% past the frame before being clipped, because blur samples the transparency outside the drawing and a fitted drawing fades to a vignette at every edge. <code>--raw</code> shows the same drawing before the blur, which is the useful half when building a new one. It carries no construction outline: at half fill-opacity the shapes already read from their own edges, and a stroke around each one fences off the overlaps — the part of the drawing actually worth seeing. <code>--…-raw-stroke</code> puts an outline back for anyone who wants one. On <code>--night</code> a drawing also has to cover the frame. Where the artwork leaves a gap the base shows through, and that gap reads as a highlight on paper but as a hole on ink — a mosaic with empty cells and crossed bands with open diamonds both blur to a blotchy field there, so they stay on the light themes and the night set is drawn edge to edge.</p>
         </li>
         <li>
+          <h3 class="demo__notes-head">The two recipes can be cross-faded, not only swapped.</h3>
+          <p><code>--drawn</code> drops the stop list &mdash; <code>background-image: none</code> &mdash; because there the drawing <em>is</em> the surface, and that makes the swap a cut: nothing is underneath to fade into. <code>--mix</code> keeps both on one surface, the drawing over the stops, and <code>--&hellip;-mix</code> is its opacity: 1 is the drawn surface, 0 is the stopped one, and the middle is a genuine double exposure. It is the only part of the recipe besides the base that interpolates, which is what lets a state be eased <em>through</em> rather than cut to &mdash; the index card rests at 1 and dissolves to 0 when it is looked at. The curve is symmetric on purpose: a quint ease-out looks right on a single element and is the wrong shape for a cross-fade, down to 0.28 a fifth of the way in and then three fifths of the duration spent between 0.09 and 0, which reads as a cut followed by nothing. <code>cubic-bezier(0.65, 0, 0.35, 1)</code> over 520ms keeps the change in the middle, where both images are on screen together and the double exposure is the whole effect.</p>
+        </li>
+        <li>
           <h3 class="demo__notes-head">Two radial pools over a vertical settle, never a single linear ramp.</h3>
           <p>Colour gathers at two off-centre origins near the top edge and dissolves outward; a <code>linear-gradient</code> underneath carries the last of it down to the base. One linear ramp corner-to-corner is what makes cheap gradients band — the eye finds the axis. With the pools offset from each other there is no axis to find, and the falloff stays smooth at any size.</p>
         </li>
@@ -1680,10 +1684,6 @@
         <li>
           <h3 class="demo__notes-head">Content type is a ratio of the surface, like the radius.</h3>
           <p>The figure, label and micro line are <code>calc()</code>s of <code>--…-size</code>, not fixed rem. Set in rem they stayed put while the card scaled, so a card shown small kept full-size type and the label ran outside its own box. The ratios resolve to the original values at the default size; only the legend that <em>names</em> a set keeps a fixed size, because it sits beside the surfaces rather than on them.</p>
-        </li>
-        <li>
-          <h3 class="demo__notes-head">The corner radius is proportional, not fixed.</h3>
-          <p><code>12%</code> on the tile, so the squircle character holds whether the shape renders at 96px in a thumbnail or at 400px on a page. A fixed <code>border-radius</code> in px reads as a different shape at each size.</p>
         </li>
       </ol>
 

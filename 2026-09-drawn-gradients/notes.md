@@ -42,6 +42,50 @@ runs across all three bands as one shape.
   diamonds both blur to a blotchy field there, so they stay on the light
   themes and the night set is drawn edge to edge.
 
+- **The two recipes can be cross-faded, not only swapped.** `--drawn` drops
+  the stop list — `background-image: none` — because there the drawing IS the
+  surface, and that makes the swap a cut: nothing is underneath to fade into.
+  `--mix` keeps both on one surface, the drawing over the stops, and
+  `--…-mix` is its opacity: 1 is the drawn surface, 0 is the stopped one,
+  and the middle is a genuine double exposure of the two. It is the only part
+  of this recipe besides the base that interpolates, which is what lets a state
+  be *eased through* rather than cut to — the index card rests at 1 and
+  dissolves to 0 when it is looked at.
+
+  The curve is symmetric on purpose, and that took measuring. A quint ease-out
+  looks right on a single element and is the wrong shape for a cross-fade: it
+  was down to 0.28 a fifth of the way in and spent the remaining three fifths
+  between 0.09 and 0 — a fast fade with a long dead tail, which reads as a cut
+  followed by nothing. `cubic-bezier(0.65, 0, 0.35, 1)` over 520ms keeps the
+  change in the middle, where both images are on screen together and the double
+  exposure is the whole effect. Measured through it: 0.99, 0.92, 0.71, 0.30,
+  0.08, 0.01, 0.
+
+  One thing it has to borrow from `--drawn`: on a `--step` band the drawing is
+  sized to the whole block and anchored right, not to the band. Left off, each
+  mixed band drew its own copy and the field broke into three with a hard step
+  at every tread.
+
+  **A card in a rail can carry a slow colour drift, if the colour never moves.**
+  The index card holds the drawing three times, each copy tinted once in the
+  markup and never again, and cross-fades between them on a seven-second timer.
+  The obvious version — one drawing whose hues are transitioned — looks
+  identical and is the expensive one: `fill` interpolates, so every frame of
+  the fade re-runs the blur on every band. Measured in the card with the rail
+  being dragged, that dropped 3 to 5 frames per fade; re-tinting a hidden copy
+  before fading it in is no better, because the re-tint rasters it, and that
+  landed one 83 to 117ms frame on every step. Fixed copies raster once at load
+  — 36 to 86ms for all eighteen — and after that a step is opacity on layers
+  whose contents never change.
+
+  It still needed `will-change: opacity` on the drawing, which is why that
+  lives on the modifier rather than in the preview: the first frame of a
+  cross-fade otherwise has to raster the layer it is bringing up, and a blurred
+  layer is not cheap to raster. Measured over nine seconds, one 66.7ms frame
+  per step without it and a clean 16.8ms maximum with it. With it on, the
+  drift costs nothing the rail can see: dragging the rail through the whole
+  cycle came back 60fps with zero frames over 20ms.
+
 - **Two radial pools over a vertical settle, never a single linear ramp.**
   Colour gathers at two off-centre origins near the top edge and dissolves
   outward; a `linear-gradient` underneath carries the last of it down to the
@@ -114,50 +158,6 @@ A phone is narrower than the card at 2.15x or the pill at 1.85x, and a surface
 that insisted on its width there would scroll the page sideways rather than
 fit. Because the radius and the type are ratios of the surface, a fitted one is
 still the same shape, only smaller.
-
-- **The two recipes can be cross-faded, not only swapped.** `--drawn` drops
-  the stop list — `background-image: none` — because there the drawing IS the
-  surface, and that makes the swap a cut: nothing is underneath to fade into.
-  `--mix` keeps both on one surface, the drawing over the stops, and
-  `--…-mix` is its opacity: 1 is the drawn surface, 0 is the stopped one,
-  and the middle is a genuine double exposure of the two. It is the only part
-  of this recipe besides the base that interpolates, which is what lets a state
-  be *eased through* rather than cut to — the index card rests at 1 and
-  dissolves to 0 when it is looked at.
-
-  The curve is symmetric on purpose, and that took measuring. A quint ease-out
-  looks right on a single element and is the wrong shape for a cross-fade: it
-  was down to 0.28 a fifth of the way in and spent the remaining three fifths
-  between 0.09 and 0 — a fast fade with a long dead tail, which reads as a cut
-  followed by nothing. `cubic-bezier(0.65, 0, 0.35, 1)` over 520ms keeps the
-  change in the middle, where both images are on screen together and the double
-  exposure is the whole effect. Measured through it: 0.99, 0.92, 0.71, 0.30,
-  0.08, 0.01, 0.
-
-  One thing it has to borrow from `--drawn`: on a `--step` band the drawing is
-  sized to the whole block and anchored right, not to the band. Left off, each
-  mixed band drew its own copy and the field broke into three with a hard step
-  at every tread.
-
-  **A card in a rail can carry a slow colour drift, if the colour never moves.**
-  The index card holds the drawing three times, each copy tinted once in the
-  markup and never again, and cross-fades between them on a seven-second timer.
-  The obvious version — one drawing whose hues are transitioned — looks
-  identical and is the expensive one: `fill` interpolates, so every frame of
-  the fade re-runs the blur on every band. Measured in the card with the rail
-  being dragged, that dropped 3 to 5 frames per fade; re-tinting a hidden copy
-  before fading it in is no better, because the re-tint rasters it, and that
-  landed one 83 to 117ms frame on every step. Fixed copies raster once at load
-  — 36 to 86ms for all eighteen — and after that a step is opacity on layers
-  whose contents never change.
-
-  It still needed `will-change: opacity` on the drawing, which is why that
-  lives on the modifier rather than in the preview: the first frame of a
-  cross-fade otherwise has to raster the layer it is bringing up, and a blurred
-  layer is not cheap to raster. Measured over nine seconds, one 66.7ms frame
-  per step without it and a clean 16.8ms maximum with it. With it on, the
-  drift costs nothing the rail can see: dragging the rail through the whole
-  cycle came back 60fps with zero frames over 20ms.
 
 - **`--step`: geometry that comes out of the copy.** The other shapes are
   things to look at; this one exists to be used, and it is not a shape at all.
