@@ -384,15 +384,81 @@ body.is-locked {
 
 /* Written by index.js from the types the cards declare, so it is empty until
    it runs and hidden when there is only one type to choose between — a filter
-   with a single option is a label pretending to be a control. */
+   with a single option is a label pretending to be a control.
+
+   One row that scrolls, not two rows that wrap. A second line of chips pushed
+   the first card off the fold on a phone, and the rail underneath already
+   answers a narrow screen by scrolling sideways — so the filter answers it the
+   same way, at whatever width it runs out of room rather than only below a
+   breakpoint. Same treatment as `.rail__track`: no scrollbar drawn, and a
+   swipe that reaches either end stays in the row instead of chaining out as a
+   back-navigation gesture.
+
+   The top padding is the focus ring's. `overflow-x: auto` computes overflow-y
+   to `auto` as well, so an outline drawn 2px outside a chip is clipped without
+   it; the bottom padding gives back what it takes, and the box is the height
+   it was. */
 .rail__filter {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 0.4rem;
-  padding: 0 var(--gutter) 1.25rem;
+  padding: 0.375rem var(--gutter) 0.875rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  scroll-padding-inline: var(--gutter);
+
+  /* And a fade at whichever end has more chips past it, so the row reads as
+     scrollable rather than as one that happens to be cut off. The mask is on
+     the scroller itself, which paints against its border box and so stays put
+     while the chips move under it — no overlay element, and nothing for the
+     scroll to drag out of place. */
+  --rail-filter-fade: 1.25rem;
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 var(--rail-filter-fade-start),
+    #000 calc(100% - var(--rail-filter-fade-end)),
+    transparent 100%
+  );
+  transition:
+    --rail-filter-fade-start 200ms var(--ease),
+    --rail-filter-fade-end 200ms var(--ease);
 }
 
+.rail__filter::-webkit-scrollbar { display: none; }
+
+/* The two ends of the row's mask, registered so they interpolate — an
+   unregistered custom property is a token, and a token swap is a jump cut. An
+   engine without @property still gets the fade, it just arrives all at once. */
+@property --rail-filter-fade-start {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --rail-filter-fade-end {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+/* Set by index.js from the row's own scroll position, each end independently:
+   the fade is there to say there is more that way, so an end with nothing past
+   it does not wear one. A row that fits wears neither and reads as a plain row
+   of chips, which is what it is.
+
+   Narrower than --gutter on purpose. The row keeps a gutter of padding past
+   the last chip, so at either extreme the chip nearest the edge — and the 2px
+   focus ring outside it — clears the ramp rather than being dimmed by it. */
+.rail__filter.is-fade-start { --rail-filter-fade-start: var(--rail-filter-fade); }
+.rail__filter.is-fade-end { --rail-filter-fade-end: var(--rail-filter-fade); }
+
 .rail__filter-btn {
+  /* A chip is as wide as its label. Without this the flex line shrinks them
+     all to fit instead of overflowing, which is the wrap problem again on one
+     line. */
+  flex: 0 0 auto;
   padding: 0.4rem 0.75rem;
   border: 1px solid var(--hairline);
   border-radius: 999px;
@@ -1362,7 +1428,7 @@ body.is-locked {
     gap: 0.75rem;
   }
 
-  .rail__filter { padding-bottom: 1rem; }
+  .rail__filter { padding-bottom: 0.625rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
