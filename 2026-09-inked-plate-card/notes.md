@@ -77,6 +77,17 @@ brightness: porcelain, `--acid`, `--graphite`, `--ochre`, `--indigo` and
   plate's own rounded corner and reads as a second outline of the plate, which
   is the other way to get this wrong.
 
+  Two things had to follow the plate once the frame moved out. Its bottom pair
+  of corners sits inside the plate's seam corners, so it has to be *concentric*
+  with them — the plate's radius less the gap, 30 less 10 — or the clearance
+  pinches exactly where the bracket's own arc is: 10px along the straight run
+  and 7.7px at the corner. That is the amount that reads as wrong without
+  announcing what it is. And the masked square at each corner is derived from
+  the largest of the frame's radii rather than set by hand, because the first
+  version of this had a 20px bottom corner inside an 18.4px square: the whole
+  square went on the curve and the bracket came out as a bare smile with no
+  arms on it.
+
 - **The plate is annotated with what the drawing is made of.** The caption
   plate's right-hand slot says `13 paths`, `9 paths`, `48 paths` — a fact about
   the artwork above it that changes when the drawing does. It stands where two

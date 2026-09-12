@@ -52,8 +52,23 @@
   --inked-plate-card-caption-min: 4.625rem;
 
   --inked-plate-card-art-ratio: 1;
-  --inked-plate-card-crop-len: 1.15rem;   /* the masked square at each corner */
   --inked-plate-card-crop-radius: 0.9rem;
+  --inked-plate-card-crop-run: 0.5rem;    /* straight arm past the arc */
+  /* How far the frame sits inside the plate: the plate's padding, less however
+     far the frame is pushed out past the drawing field. Its bottom corners are
+     concentric with the plate's at that distance — see the frame rule. */
+  --inked-plate-card-crop-gap:
+    calc(var(--inked-plate-card-pad) + var(--inked-plate-card-crop-inset));
+  /* The masked square at each corner, derived rather than set: it has to clear
+     the *largest* of the frame's radii, or the corner with the biggest arc has
+     its whole square spent on the curve and comes out as a bare smile with no
+     arms on it. Whichever corner is roundest, every bracket is its arc plus
+     the same straight run. */
+  --inked-plate-card-crop-len:
+    calc(max(
+      var(--inked-plate-card-crop-radius),
+      var(--inked-plate-card-seam-radius) - var(--inked-plate-card-crop-gap)
+    ) + var(--inked-plate-card-crop-run));
   --inked-plate-card-crop-w: 1px;
   /* Negative: the frame sits outside the dot field, in the plate's own margin.
      Flush with the field, a 1px line runs straight over the outermost row of
@@ -227,7 +242,16 @@
   inset: var(--inked-plate-card-crop-inset);
   pointer-events: none;
   border: var(--inked-plate-card-crop-w) solid var(--inked-plate-card-crop);
-  border-radius: var(--inked-plate-card-crop-radius);
+  /* The top pair is in open plate and takes the frame's own radius. The bottom
+     pair sits inside the plate's seam corners, and there it has to be
+     concentric with them — outer radius less the gap — or the clearance
+     pinches exactly where the bracket's own arc is: 10px along the straight
+     run, 7.7px at the corner, which is the amount that reads as *off* without
+     announcing what it is. */
+  border-radius:
+    var(--inked-plate-card-crop-radius) var(--inked-plate-card-crop-radius)
+    calc(var(--inked-plate-card-seam-radius) - var(--inked-plate-card-crop-gap))
+    calc(var(--inked-plate-card-seam-radius) - var(--inked-plate-card-crop-gap));
   -webkit-mask-image:
     var(--inked-plate-card-crop-corner), var(--inked-plate-card-crop-corner),
     var(--inked-plate-card-crop-corner), var(--inked-plate-card-crop-corner);
@@ -240,7 +264,11 @@
   mask-position: 0 0, 100% 0, 0 100%, 100% 100%;
   -webkit-mask-size: var(--inked-plate-card-crop-len) var(--inked-plate-card-crop-len);
   mask-size: var(--inked-plate-card-crop-len) var(--inked-plate-card-crop-len);
-  transition: inset var(--inked-plate-card-transition);
+  /* The radius travels with the inset: pushed out on hover the frame is nearer
+     the plate's edge, so the concentric bottom pair opens up by the same 3px. */
+  transition:
+    inset var(--inked-plate-card-transition),
+    border-radius var(--inked-plate-card-transition);
 }
 
 .inked-plate-card__ink {
