@@ -15,6 +15,8 @@
 //                         index: n }
 //   parent -> preview   { source: 'interface-studies', type: 'preview:scale',
 //                         scale: n }
+//   parent -> preview   { source: 'interface-studies', type: 'preview:theme',
+//                         theme: 'light' | 'dark' }
 //   preview -> parent   { source: 'interface-studies', type: 'preview:ready',
 //                         variants?: [{ id, label }] }
 //
@@ -286,10 +288,43 @@
     return chosen || (media && media.matches ? 'dark' : 'light');
   }
 
+  // The previews are separate documents as well, and a framed one is behind an
+  // opaque origin over file:// — so the theme rides on the src the way it rides
+  // on a demo link. Rewriting data-src rather than src is what keeps the two
+  // places that load a preview (the rail on approach, quick look on open) from
+  // having to know about any of this: they read data-src as they always did.
+  //
+  // A preview that is already loaded is told instead, over the same contract
+  // the rail uses for everything else — reloading a live thumbnail to change
+  // one colour would drop its animation and flash the skeleton back.
+  //
+  // What each preview does with it is the folder's business, and most do
+  // nothing: a thumbnail is a picture of the component, and the light ground
+  // four of them sit on is the component's own staging rather than the page's.
+  // The one that acts on it is the study whose authored page is ink.
+  function tellPreviews(theme) {
+    document.querySelectorAll('[data-preview]').forEach((frame) => {
+      const src = frame.getAttribute('data-src');
+      if (src) frame.setAttribute('data-src', src.split('?')[0] + '?theme=' + theme);
+    });
+
+    document.querySelectorAll('[data-preview], [data-lightbox-frame]').forEach((frame) => {
+      const live = frame.getAttribute('src');
+      if (!live || live === 'about:blank') return;
+      try {
+        frame.contentWindow.postMessage(
+          { source: 'interface-studies', type: 'preview:theme', theme: theme },
+          '*'
+        );
+      } catch (err) { /* not loaded yet: the src it loads with carries it */ }
+    });
+  }
+
   function paint() {
     const theme = shown();
     root.setAttribute('data-theme', theme);
     toggle.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
+    tellPreviews(theme);
 
     // The language module owns the outgoing links; it needs the choice, not
     // the resolved answer.

@@ -262,6 +262,7 @@ position:
 { source: 'interface-studies', type: 'preview', active: true | false }
 { source: 'interface-studies', type: 'preview:variant', index: n }
 { source: 'interface-studies', type: 'preview:scale', scale: n }
+{ source: 'interface-studies', type: 'preview:theme', theme: 'light' | 'dark' }
 
 // preview -> index, once its listener is live
 { source: 'interface-studies', type: 'preview:ready',
@@ -284,7 +285,24 @@ itself. Beware toggling a variant's element with the `hidden` attribute — if
 `component.css` gives that element a `display`, the author rule beats the UA
 `[hidden]` rule and it will not hide. Add and remove the node instead.
 
-`preview:key` is the fourth, and it goes the other way — preview to index. An
+`preview:theme` says which theme the index is in. It arrives twice over, and
+deliberately: as `?theme=` on the src the frame is loaded with, so a thumbnail
+is never painted on the wrong ground and then corrected, and as this message if
+the index is switched while the frame is already on screen — reloading a live
+thumbnail to change one colour would drop its animation and flash the skeleton
+back. The index rewrites `data-src` rather than `src`, so the two places that
+load a preview (the rail on approach, quick look on open) never learn about any
+of this.
+
+What a preview does with it is the folder's business, and doing nothing is the
+normal answer: a thumbnail is a picture of the component, and the light ground
+four of the five sit on is the component's own staging rather than the page's.
+The exception is a study whose page ground is itself a decision —
+`2026-09-inked-plate-card` is ink by authorship, so on a dark rail it takes its
+own ground back, grid and all, and the card then matches what opening it shows.
+The component is not touched either way.
+
+`preview:key` is the fifth, and it goes the other way — preview to index. An
 iframe is its own document: keys pressed inside it fire against that document
 and never reach the index. Quick look runs the preview with pointer events
 live, which is the whole point of it, so a click on the component moves focus
@@ -362,13 +380,17 @@ a lit plate — which is exactly what it does on the index cards. A study that
 wants a dark variant of the component declares one as a modifier, in its own
 file, as a decision of the study.
 
-`preview.html` stays out of it too. It is framed by the index, which cannot
-tell it what theme it is in — over `file://` the parent is behind an opaque
-origin — and the thumbnail is a picture of the component, not of the page
-around it. The chips that sit *on* a thumbnail are the one part of the index
-that has to know: the type badge, the number and quick look are painted
-against the preview rather than against the page, so they invert with the
-chrome rather than with the plate they cover.
+`preview.html` is told, rather than left out. The index cannot reach into a
+framed document — over `file://` it is behind an opaque origin — so the theme
+rides on the src and over `preview:theme`, and the folder decides what to do
+with it. Four of the five do nothing, because their ground is the component's
+own staging; the ink study takes its ground back on a dark rail. See **The
+preview message contract**.
+
+The chips that sit *on* a thumbnail are the part of the index that has to know:
+the type badge, the number and quick look are painted against the preview
+rather than against the page, so they invert with the chrome rather than with
+the plate they cover.
 
 The choice travels in the link, the way the language does: the index appends
 `?theme=` to the link that opens a demo, the demo's back link hands it back,
