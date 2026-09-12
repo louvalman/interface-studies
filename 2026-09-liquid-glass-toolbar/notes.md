@@ -6,13 +6,13 @@ The search item opens into a field and the log item opens the pane
 downward into a panel — neither is a second sheet sliding out from underneath,
 the one surface changes shape, and the corner it does that around never moves.
 
-The set is a working surface rather than an operating system: Base, search,
-Versions, Log, Display. Each item is named for what its glyph can actually
-do — two sliders are display controls, not a settings screen; two drawers are
+The set is a working surface rather than an operating system: Origin, search,
+Versions, Log, Display. Each item is named for what its glyph can actually do —
+two sliders are display controls, not a settings screen; two drawers are
 versions of a thing, not a mailbox — so the bar says what it is for before a
-label opens. It is also why the labelled item is *Base* and not Home: a toolbar
-that floats over work has no front door to return to, it has a datum to measure
-from, and that is what its glyph draws — a benchmark standing on a rule.
+label opens. It is also why the labelled item is *Origin* and not Home: a
+toolbar that floats over work has no front door to return to, it has a point it
+measures from, and that is what its glyph draws — a dot inside a ring.
 
 It is as dull as it can afford to be, and finding that floor is the point. Glass
 has no look of its own — a blur over one flat fill is indistinguishable from a
@@ -26,44 +26,58 @@ frame above and below it in the thumbnail — but a ground whose whole colour ma
 sat in the lower third read as bottom-heavy, and a thing centred in a
 bottom-heavy frame looks like it is floating high.
 
-The icons are drawn rather than borrowed: a benchmark on a rule, a magnifier,
-two drawers, four bars, two sliders. The magnifier is the one glyph in a
+The icons are drawn rather than borrowed: a dot inside a ring, a magnifier, two
+drawers, a ruled ledger, two sliders. The magnifier is the one glyph in a
 toolbar with no synonym — every other function has several ways to be drawn, so
 the set is a place to have an opinion; search is not.
 
-Base was an arched doorway first, and the doorway was drawing the word *home*
-rather than the word it sits under. Five were rendered at real size in the bar
-to replace it: a square on a baseline, three courses of a plinth, a diamond
-resting on a rule, a circle overshooting one, and a block on a ground plane in
-axonometric. The plinth read as an align-left control, the circle read as a
-second magnifier, and the axonometric block turned to mush at 24px. The
-benchmark won because it is the only triangle in the set — nothing else here
-has a diagonal — and because it says what Base means: the mark everything else
-is measured from.
+Origin was an arched doorway first, then a benchmark triangle. The doorway was
+drawing the word *home* rather than the word it sits under, and five were
+rendered at real size in the bar to replace it: a square on a baseline, three
+courses of a plinth, a diamond resting on a rule, a circle overshooting one,
+and a block on a ground plane in axonometric. The plinth read as an align-left
+control, the circle read as a second magnifier, and the axonometric block
+turned to mush at 24px. The benchmark won that round for being the only
+triangle in the set. It was also the only hard corner in a component built
+entirely of stadiums, and that is what eventually lost it: the glyph was stern
+where nothing else is. What stands there now is the station mark a survey
+measures from — a dot inside a ring — which is the idea the benchmark was
+drawing, without the diagonal. The circle that failed the first round failed as
+a bare circle beside a magnifier; what separates these two is the centre dot
+and the absence of a stem, and at 24px in the bar they do not trade. The cost
+is that the set gives up its only diagonal, so the magnifier's stem is the one
+oblique left in it.
 
-The panel item is called Log, not Notifications, and the icon is four bars
-of uneven height. Notifications is a promise about delivery — it says these are
-things that were pushed at you. What the four rows actually are is a record of
-what was decided: a type pair set, a tint thinned, a spacing rhythm fixed, a
-radius made proportional. Naming it for the content rather than for the
-transport also stops the component being read as an alert centre, which is a
-different thing with different rules about badges and dismissal.
+The panel item is called Log, not Notifications, and the icon is a margin rule
+with three entries set beside it. Notifications is a promise about delivery —
+it says these are things that were pushed at you. What the four rows actually
+are is a record of what was decided: a type pair set, a tint thinned, a spacing
+rhythm fixed, a radius made proportional. Naming it for the content rather than
+for the transport also stops the component being read as an alert centre, which
+is a different thing with different rules about badges and dismissal.
 
-The bars were picked against four other drafts rendered at real size in the bar
-— broadcast rings, a clock, a bulleted timeline, a one-sided ripple. Two of them
-failed on the same thing: a magnifier, two drawers and two sliders are all
-rectilinear or horizontal, so a timeline read as more drawers and a clock read
-as a second magnifier. The bars are the only glyph in the set standing on
-vertical strokes, which is most of why they are legible at 24px. The heights go
-up, up, up, then down — a monotonic rise would read as signal strength rather
-than as something recorded.
+The ledger replaced four bars of uneven height, and the rename is what broke
+them. Four bars measure a quantity; they were a fair drawing of Activity and
+they are the wrong drawing of a Log, which records entries rather than levels.
+Four drafts went up at real size against them: bulleted entries, a spine with
+commit dots, a spine with branch ticks, and three rules of even length. The
+commit dots blobbed into their own stem at 24px, the branch ticks read as a
+fork, and three even rules read as a menu. The bulleted list read cleanly and
+still lost, because a bulleted list is a list of anything — a playlist, a to-do
+— where a margin rule with entries beside it is a ledger. It also keeps the
+vertical stroke the bars were carrying, which matters more than it sounds: with
+it gone, Versions, Log and Display are three horizontal-line glyphs sitting in
+a row, and the middle of the bar turns to hatching.
 
 Drawing a set by hand means centring it by hand. The pill centres the icon's
 *box*, so a glyph that does not centre in its own 24-unit box is off-centre in
 every pill it lands in, and it is invisible in the source — the numbers look
-tidy. Three of the five were out: the benchmark and the bars sat 0.70 units
-low, the magnifier 0.40 low and 0.40 right. Measured as the ink bounds plus half a stroke
-on each side, which is what the eye reads and what `getBBox()` leaves out.
+tidy. Three of the five were out when the set was first drawn: the benchmark
+and the bars sat 0.70 units low, the magnifier 0.40 low and 0.40 right. The
+ring and the ledger that replaced two of them were drawn to the same rule and
+checked the same way — all five now land on 12.00 of 24, and all five are
+symmetric across it. Measured as the ink bounds plus half a stroke on each
+side, which is what the eye reads and what `getBBox()` leaves out.
 
 - **Every row in the panel carries a specimen, not an avatar.** The four
   entries are decisions that were taken — a type pair, a tint, a spacing
@@ -117,21 +131,23 @@ on each side, which is what the eye reads and what `getBBox()` leaves out.
 
   The bearing is not one number, which is the part that took measuring. Every
   icon in the set is symmetric inside its own box, but they do not agree with
-  each other — at a 24px icon: the benchmark 2.2, the drawers 2.6, the sliders
-  2.8, the bars 3.4. `--icon/9` is 2.67 against a mean of 2.75 across the four
-  that carry a label, so a single constant lands within half a pixel of right for
-  all of them and exactly right for none.
+  each other — at a 24px icon: the drawers 2.6, the sliders 2.8, the ring 4.0,
+  the ledger 4.0. `--icon/7` is 3.43 against a mean of 3.35 across the four that
+  carry a label, so a single constant lands within a pixel of right for all of
+  them and exactly right for none. It tracks the glyphs, so it moves when they
+  do: this was `--icon/9` against the benchmark-and-bars set, whose mean was
+  2.75, and redrawing two of the five moved it. Redraw an icon, re-measure this.
 
   It was `--icon/6` — the mean plus a deliberate 1.35px, on the theory that text
   reads tighter against a stadium's curve than a roundish glyph does. That was
   tuned against a 16px label, and it did not survive the label coming down to
   13px: the word is smaller and no longer reaches the part of the curve that
-  closes in, so the correction had outgrown the thing it corrected. On Base —
-  the narrowest bearing in the set, and the item the thumbnail shows at rest —
-  the pill was carrying 1.8px more air after the word than before the glyph,
-  which is enough to see. At `--icon/9` the residual there is 0.47px, and the
-  only way past that is to normalise the icons to one bearing rather than average
-  over four.
+  closes in, so the correction had outgrown the thing it corrected. On the
+  narrowest bearing in the set the pill was carrying nearly 2px more air after
+  the word than before the glyph, which is enough to see, and that is the item
+  the thumbnail shows at rest. The worst residual is 0.83px now, on Versions, and
+  the only way past that is to normalise the icons to one bearing rather than
+  average over four.
 
   Vertically it was the label that was out of step, not the icons: all five are
   centred in their own boxes to the hundredth (12.00 of 24, measured). The label
@@ -415,7 +431,7 @@ label is the widest thing in the component. Five squares, the split and an open
 "Versions" — the longest label in the set — come to about 400px, so every
 phone held upright sat in the band
 between the two numbers — wide enough to stay at full scale, too narrow to show
-the word. The surface clipped "Base" to its first letter rather than the
+the word. The surface clipped the label to its first letter rather than the
 component standing down to the scale that fits, which is the same failure as the
 missing trailing action, one step further in. A breakpoint has to be measured
 against the state the component is actually in, not against the state its parts

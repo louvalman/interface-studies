@@ -55,21 +55,27 @@
      the text. The trail is that bearing, handed to the trailing side.
 
      Every icon here is symmetric inside its own box, but the bearing is not the
-     same from one to the next — measured at a 24px icon: the benchmark 2.2, the
-     drawers 2.6, the sliders 2.8, the bars 3.4. --icon/9 is 2.67 against a mean
-     of 2.75 across the four that carry a label, so one constant is as close as a
-     single value gets; the residual is under half a pixel either way.
+     same from one to the next — measured at a 24px icon: the drawers 2.6, the
+     sliders 2.8, the ring 4.0, the ledger 4.0. --icon/7 is 3.43 against a mean of
+     3.35 across the four that carry a label, so one constant is as close as a
+     single value gets; the residual is under a pixel either way.
+
+     It tracks the glyphs, so it moves when they do. This was --icon/9 while the
+     first item was a benchmark triangle and the panel item four bars — a set
+     whose mean bearing was 2.75. Redrawing two of the five moved the mean to
+     3.35, and a trail left at the old value would have run the pills 0.7px tight
+     on the trailing side across the board. Redraw an icon, re-measure this.
 
      It used to be --icon/6, which is the mean plus a deliberate 1.35px on top —
      text reads tighter against a stadium's curve than a roundish glyph does, so
      the trailing side was given back more than it was owed. That overshoot was
      set against a 16px label. At 13px the word is smaller and sits further from
      where the curve actually closes in, and the correction had grown larger than
-     the thing it corrects: on Base, the narrowest bearing in the set, the pill
-     was carrying 1.8px more air after the word than before the glyph. Visible,
-     and visible first on the one item the thumbnail shows at rest. It is 0.47px
-     there now. */
-  --liquid-glass-toolbar-label-trail: calc(var(--liquid-glass-toolbar-icon) / 9);
+     the thing it corrects: the pill was carrying nearly 2px more air after the
+     word than before the glyph on the narrowest bearing in the set, which is
+     also the item the thumbnail shows at rest. The worst residual is 0.83px
+     now, on Versions. */
+  --liquid-glass-toolbar-label-trail: calc(var(--liquid-glass-toolbar-icon) / 7);
 
   /* the feed. Sized off the row height so the whole panel scales with one
      value, the way the bar scales off --hit. */
