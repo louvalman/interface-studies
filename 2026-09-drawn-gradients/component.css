@@ -710,6 +710,16 @@
   overflow: visible;
 }
 
+/* Moving that opacity is the whole point of the modifier, so the compositor
+   is told. Without it the first frame of a cross-fade has to raster the layer
+   it is bringing up — a blurred one, so not cheap — and the fade begins with
+   a dropped frame: measured 66.7ms at the start of every step against a clean
+   16.8 with this on, over the same nine seconds. The cost is a retained
+   texture per drawing, which is what the modifier is asking for anyway. */
+.drawn-gradients__surface--mix .drawn-gradients__draw {
+  will-change: opacity;
+}
+
 .drawn-gradients__blob {
   /* Overlaps are where the colour mixes, so nothing is fully opaque. */
   fill-opacity: 0.85;

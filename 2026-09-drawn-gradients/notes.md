@@ -138,6 +138,26 @@ still the same shape, only smaller.
   mixed band drew its own copy and the field broke into three with a hard step
   at every tread.
 
+  **A card in a rail can carry a slow colour drift, if the colour never moves.**
+  The index card holds the drawing three times, each copy tinted once in the
+  markup and never again, and cross-fades between them on a seven-second timer.
+  The obvious version — one drawing whose hues are transitioned — looks
+  identical and is the expensive one: `fill` interpolates, so every frame of
+  the fade re-runs the blur on every band. Measured in the card with the rail
+  being dragged, that dropped 3 to 5 frames per fade; re-tinting a hidden copy
+  before fading it in is no better, because the re-tint rasters it, and that
+  landed one 83 to 117ms frame on every step. Fixed copies raster once at load
+  — 36 to 86ms for all eighteen — and after that a step is opacity on layers
+  whose contents never change.
+
+  It still needed `will-change: opacity` on the drawing, which is why that
+  lives on the modifier rather than in the preview: the first frame of a
+  cross-fade otherwise has to raster the layer it is bringing up, and a blurred
+  layer is not cheap to raster. Measured over nine seconds, one 66.7ms frame
+  per step without it and a clean 16.8ms maximum with it. With it on, the
+  drift costs nothing the rail can see: dragging the rail through the whole
+  cycle came back 60fps with zero frames over 20ms.
+
 - **`--step`: geometry that comes out of the copy.** The other shapes are
   things to look at; this one exists to be used, and it is not a shape at all.
   It is one band per line of type, each starting where its own label ends — so
