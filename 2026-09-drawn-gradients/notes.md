@@ -674,7 +674,7 @@ in the rail shows one object. And the set is laid out along the colour axis, so
 the card led with the warmest, lightest themes in the folder. It now shows the
 one composition — `--step` used twice, mirrored, with `--rise` on the upper
 block so the colour gathers where the two blocks meet and dissolves out to the
-page at both ends — and quick look steps the colour axis through it.
+page at both ends.
 The page ground stayed a constant `#f3f2ef` in the same pass: the rail only
 reads as one set of cards if the ground behind them never moves, so a dark
 surface is the surface's business and not the page's.
@@ -685,23 +685,25 @@ the mirrored pair settles into the page at both ends instead, and a base that
 is ink at one end and paper at the other is not a pair fading away from
 itself — it is two objects again.
 
-**So ink became what being looked at means.** The card's hover — and, on a
-touch device, the card in the read position, which is the same message —
-moves what the field settles *to*, from the page's ground to ink. The hues,
-the shape and the direction all stay put; one axis moves. It is the better
-home for `--night` than a quick-look dot was, for the same reason the ground
-is a constant: the rail reads as one set of cards only if nothing behind them
-moves, so the resting card settles into the page, and the dark version is
-something the card does when you look at it rather than a state to pick out
-of a list. The resting card is lighter than it was, and that is the trade.
+**So the recipe became what being looked at means.** The card's hover — and,
+on a touch device, the card in the read position, which is the same message —
+cross-fades the surface from the drawing to the stop list underneath it. The
+hues, the shape and the direction all stay put; one axis moves, and it is the
+axis this folder is about. It is also the only one in the recipe that
+interpolates, so the change is something a state can be eased *through*
+rather than cut to.
 
-The surface eases into it rather than cutting, because the base is the only
-part of the recipe that *can* ease: a `background-image` of gradient stops
-does not interpolate, so a theme swap is a cut whatever you ask for — but
-`--night` moves the base, the border and the shadow and nothing else, which
-are all animatable. `--…-ease` is the one duration in the file, and the
-transition lists those three properties only; naming the gradient would cost
-a repaint and change nothing.
+Ink was the other candidate and was built first: hover moving what the field
+settles *to*, from the page's ground to ink. It eases as well as the mix does
+— `--night` moves the base, the border and the shadow and nothing else, all
+animatable, where a `background-image` of gradient stops does not interpolate
+and a theme swap is a cut whatever you ask for. What it is not is the thing
+being demonstrated. A base arriving under the fill reads as the card getting
+darker; the drawing dissolving into the stop list that was hand-tuned to
+imitate it is the argument the two recipes are having, made in one move on
+one surface. `--night` is in quick look instead, on the dot that crosses it
+with the five themes and on the one that puts it under a card, where it can
+be compared rather than glimpsed.
 
 The other thing hover could have moved is the settle *direction* — swapping
 `--rise` onto the lower block, so the pair fades inward instead of outward.
@@ -716,9 +718,36 @@ Neither route is the component's own `:hover`, and that is deliberate. A card
 thumbnail has pointer events off, so the index sends the message; quick look
 runs the same file with pointer events on, where a `pointerenter` listener in
 `preview.html` fires instead and no message arrives. Both call one function.
-A `:hover` rule in `component.css` would have been wrong anyway: settling to
-ink is a thumbnail's editorial decision about its own resting state, not
-something a gradient field does when a pointer crosses it.
+A `:hover` rule in `component.css` would have been wrong anyway: which recipe
+a surface rests on is a thumbnail's editorial decision about its own resting
+state, not something a gradient field does when a pointer crosses it.
+
+**Quick look shows the folder, not the card again.** A dot used to step the
+theme — the same two blocks in six hues — which spent on quick look the one
+axis the card already spends for free, since the thumbnail drifts through
+three colour pairs on its own. Everything else the folder has was reachable
+only by opening the demo. So a dot is a *composition* now, and they run in the
+demo's own order: the card, the set as `component.html` builds it, five
+shapes taking one drawing, the five themes crossed with `--night`, the ink
+base under a card, a tile and a band, and `--step` run the other way. The colour axis
+is one of the six rather than all of them, which is also the only place the
+themes can be compared instead of remembered.
+
+Two things hold it together. Every surface that can carry both recipes carries
+both — `--mix`, not `--drawn` — so being looked at means one thing in all six:
+the drawing dissolves and the stop list underneath is what is left. A `--drawn`
+or `--raw` tile is left alone, because there the drawing *is* the surface and
+taking its opacity to zero empties the tile rather than revealing anything;
+that is why the raw half of every pair in the set holds still. And a
+composition is a `<template>`, cloned on first use and kept: inert is what a
+`<template>` already is, so a card in the rail renders its own composition and
+pays for none of the others, and stepping back through the dots costs nothing
+after the first pass.
+
+The set composition is `component.html`'s markup with that one modifier
+changed, which makes it the third thing in this folder kept in step by hand —
+alongside the thumbnail's own resting markup and the demo's rendered notes.
+Edit the one, edit the other.
 
 Inspiration: two supplied screenshots, kept as `ref.png` and `ref2.png`. The
 first is a weather widget, for the two pools and the settle; the second a
