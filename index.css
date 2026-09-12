@@ -407,9 +407,52 @@ body.is-locked {
   overscroll-behavior-x: contain;
   scrollbar-width: none;
   scroll-padding-inline: var(--gutter);
+
+  /* And a fade at whichever end has more chips past it, so the row reads as
+     scrollable rather than as one that happens to be cut off. The mask is on
+     the scroller itself, which paints against its border box and so stays put
+     while the chips move under it — no overlay element, and nothing for the
+     scroll to drag out of place. */
+  --rail-filter-fade: 1.25rem;
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 var(--rail-filter-fade-start),
+    #000 calc(100% - var(--rail-filter-fade-end)),
+    transparent 100%
+  );
+  transition:
+    --rail-filter-fade-start 200ms var(--ease),
+    --rail-filter-fade-end 200ms var(--ease);
 }
 
 .rail__filter::-webkit-scrollbar { display: none; }
+
+/* The two ends of the row's mask, registered so they interpolate — an
+   unregistered custom property is a token, and a token swap is a jump cut. An
+   engine without @property still gets the fade, it just arrives all at once. */
+@property --rail-filter-fade-start {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --rail-filter-fade-end {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+/* Set by index.js from the row's own scroll position, each end independently:
+   the fade is there to say there is more that way, so an end with nothing past
+   it does not wear one. A row that fits wears neither and reads as a plain row
+   of chips, which is what it is.
+
+   Narrower than --gutter on purpose. The row keeps a gutter of padding past
+   the last chip, so at either extreme the chip nearest the edge — and the 2px
+   focus ring outside it — clears the ramp rather than being dimmed by it. */
+.rail__filter.is-fade-start { --rail-filter-fade-start: var(--rail-filter-fade); }
+.rail__filter.is-fade-end { --rail-filter-fade-end: var(--rail-filter-fade); }
 
 .rail__filter-btn {
   /* A chip is as wide as its label. Without this the flex line shrinks them

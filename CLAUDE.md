@@ -445,7 +445,11 @@ phone, and the rail below already answers a narrow screen the same way. That
 costs the focus ring two things — `overflow-x: auto` computes overflow-y to
 `auto`, so the row carries top padding or the outline is clipped, and Chromium
 does not scroll a chip that Tab reaches back into view, so `index.js` does it
-on `focusin`. The rail counts what it is showing and the footer
+on `focusin`. A mask fades whichever end has chips past it, so the row says it
+scrolls rather than looking cut off; the mask paints against the scroller's own
+border box and stays put while the chips move under it, and `index.js` sets
+each end from the scroll position, because whether there is anything past an
+edge is not something CSS can ask. The rail counts what it is showing and the footer
 counts what exists — the masthead states neither, because the rail's own
 "Study 01 / 05" is where a reader takes the total from.
 

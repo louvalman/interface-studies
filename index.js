@@ -612,6 +612,7 @@
     });
 
     filterRow.hidden = false;
+    syncFilterFade();
   }
 
   // The row scrolls sideways on a narrow screen rather than wrapping, which
@@ -625,6 +626,24 @@
     });
   }
 
+  // Which end of the row wears a fade. The mask is CSS; what it cannot know is
+  // whether there is anything past either edge, which is a scroll position and
+  // two widths. A whole pixel of slack, because a scrollLeft at the end is
+  // fractional on a fractional device ratio and a permanent fade at an end
+  // with nothing past it is the one thing this is meant not to say.
+  function syncFilterFade() {
+    if (!filterRow || filterRow.hidden) return;
+    const max = filterRow.scrollWidth - filterRow.clientWidth;
+    const at = filterRow.scrollLeft;
+    filterRow.classList.toggle('is-fade-start', at > 1);
+    filterRow.classList.toggle('is-fade-end', max > 1 && at < max - 1);
+  }
+
+  if (filterRow) {
+    filterRow.addEventListener('scroll', syncFilterFade, { passive: true });
+    window.addEventListener('resize', syncFilterFade);
+  }
+
   // The chips carry card labels, so they are rewritten with everything else
   // when the language changes. This runs after the module has re-labelled the
   // badges, which is where every chip but All reads its text from.
@@ -635,6 +654,9 @@
       btn.firstChild.textContent =
         type === FILTER_ALL ? filterText('filter.all') : typeLabel(type);
     });
+    // Danish labels are not the width English ones were, so the row may have
+    // gained or lost the overflow the fade is reporting.
+    syncFilterFade();
   });
 
   // --- rail -------------------------------------------------------------
