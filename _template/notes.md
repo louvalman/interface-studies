@@ -5,9 +5,11 @@ type: card
        layout                     -> structure + placeholder content, grid only
        aesthetic                  -> a token block + 2-3 sample elements -->
 
-Source: https://example.com/the-page-this-came-from
-<!-- The origin. A URL for a recreation, or `Source: original design` for a
-     component built from a Figma design of your own. -->
+<!-- Open on the component, in its own terms: one short paragraph saying what
+     this is and what it does. Not where it came from — that line goes at the
+     bottom of the file — and not a disclaimer about what was left behind. -->
+
+A card that does one thing, said in a sentence or two.
 
 <!-- 2-5 bullets. Name the specific decisions the build captures, not a general
      description. Delete these examples and write real ones. -->
@@ -22,5 +24,13 @@ Source: https://example.com/the-page-this-came-from
   shadow grows to 8px, 120ms ease-out — the shadow does the work, not a colour
   change.
 
-<!-- Optional: what was deliberately left behind (branding, copy, imagery,
-     a decision that only works in its original context). -->
+<!-- Optional: a decision that only works in its original context, or a
+     construction deliberately changed — but as a bullet above, next to the
+     other decisions, not as a paragraph of provenance. -->
+
+<!-- The last line of the file. A URL for something seen elsewhere, or
+     `Inspiration: none — original design`. At most a sentence or two after it
+     if there is something worth saying about what was taken; no inventory of
+     what was left behind. -->
+
+Inspiration: https://example.com/the-page-this-came-from

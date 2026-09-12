@@ -510,6 +510,14 @@
       border-radius: 0.15rem;
     }
 
+    /* The inspiration row, below the decisions rather than above them. */
+    .demo__notes-meta--foot { margin-top: 2.5rem; }
+    .demo__notes-meta--foot + .demo__notes-foot { margin-top: 1.1rem; }
+    /* 'Inspiration' is longer than 'Type' and sets its own column. */
+    .demo__notes-meta--foot .demo__notes-row {
+      grid-template-columns: 6.25rem minmax(0, 1fr);
+    }
+
     .demo__notes-foot {
       margin: 2.5rem 0 0;
       font-family: "JetBrains Mono", ui-monospace, monospace;
@@ -1642,15 +1650,11 @@
           <dt data-i18n="notes.type">Type</dt>
           <dd data-i18n="type">Aesthetic</dd>
         </div>
-        <div class="demo__notes-row">
-          <dt data-i18n="notes.source">Source</dt>
-          <dd>two supplied screenshots, kept as <code>ref.png</code> and <code>ref2.png</code>.</dd>
-        </div>
       </dl>
 
-      <p class="demo__notes-lede"><code>ref.png</code> is a weather widget's gradient treatment, and it is where the recipe comes from: the two pools, the settle, and the drawing-then-blurring the folder is named after. <code>ref2.png</code> is a stepped block set into three lines of type, and it is where <code>--step</code> comes from — the interlock and nothing else. Not its rounded concave corners, not its palette, and not its copy.</p>
-      <p class="demo__notes-lede">The widget's content is not what is being captured. What is captured is how the colour sits on the surface: the reference could hold anything, and the gradient would still read the same way.</p>
-      <p class="demo__notes-lede">Rebuilt around how such a field is <em>made</em>. The primary technique here is to draw a few overlapping shapes in SVG and blur them past recognition — the shapes are the instrument, not the subject, which is why they are not what the reference is named after. A hand-written stop list reaches the same look more cheaply, so both are kept: the drawing for surfaces that are large or moving, the stop list for the static ones.</p>
+      <p class="demo__notes-lede">A gradient recipe and the surfaces that demonstrate it. Colour gathers at two off-centre pools near one edge and settles to the surface's own base at the other, so a shape reads as lit from a direction rather than as a two-colour blend — and the same recipe is re-projected onto every shape, so a tile, a circle, an arch, a pill and a full-width band all take the same light.</p>
+      <p class="demo__notes-lede">There are two ways to make that field and both are kept, because they are good at different things. The stop list is a hand-written set of radial and linear stops: cheap, static, exact. <code>--drawn</code> replaces it with two or three overlapping shapes in SVG blurred past recognition, which is how such a field is actually made — the overlaps supply mid-tones a stop list has to be tuned into producing, and a shape with points leaves soft spokes no arrangement of stops will give you. <code>--mix</code> puts both on one surface and cross-fades between them.</p>
+      <p class="demo__notes-lede"><code>--step</code> is the odd one in the set and the reason the recipe has to be re-projectable: a block of bands, one per line of type, each starting where its own label ends, so the ragged end of the copy is the staircase and the field runs across all three bands as one shape.</p>
 
       <ol class="demo__notes-list">
         <li>
@@ -1683,6 +1687,15 @@
         </li>
       </ol>
 
+      <!-- Where it started, last: the block opens on the component, and the
+           lineage is a footnote to it. Same order notes.md has. -->
+      <dl class="demo__notes-meta demo__notes-meta--foot">
+        <div class="demo__notes-row">
+          <dt data-i18n="notes.inspiration">Inspiration</dt>
+          <dd>two supplied screenshots, kept as <code>ref.png</code> and <code>ref2.png</code> &mdash; a weather widget for the two pools and the settle, a stepped block for <code>--step</code>'s interlock.</dd>
+        </div>
+      </dl>
+
       <p class="demo__notes-foot">
         <a href="notes.md">notes.md</a>
         <span data-i18n="notes.full">&mdash; the full record, including what was tried and dropped</span>
@@ -1699,7 +1712,7 @@
       var DA = {
         'notes.title': 'Beslutninger',
         'notes.type': 'Type',
-        'notes.source': 'Kilde',
+        'notes.inspiration': 'Inspiration',
         'notes.full': '\u2014 hele optegnelsen, ogs\u00e5 det der blev pr\u00f8vet og forkastet',
         'back': 'Alle studier',
         'type': 'Æstetik',

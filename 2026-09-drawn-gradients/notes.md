@@ -1,23 +1,24 @@
 type: aesthetic
 
-Source: two supplied screenshots, kept as `ref.png` and `ref2.png`.
+A gradient recipe and the surfaces that demonstrate it. Colour gathers at two
+off-centre pools near one edge and settles to the surface's own base at the
+other, so a shape reads as lit from a direction rather than as a two-colour
+blend — and the same recipe is re-projected onto every shape, so a tile, a
+circle, an arch, a pill and a full-width band all take the same light.
 
-`ref.png` is a weather widget's gradient treatment, and it is where the recipe
-comes from: the two pools, the settle, and the drawing-then-blurring the folder
-is named after. `ref2.png` is a stepped block set into three lines of type, and
-it is where `--step` comes from — the interlock and nothing else. Not its
-rounded concave corners, not its palette, and not its copy.
+There are two ways to make that field and both are kept, because they are good
+at different things. The stop list is a hand-written set of radial and linear
+stops: cheap, static, exact. `--drawn` replaces it with two or three
+overlapping shapes in SVG blurred past recognition, which is how such a field
+is actually made — the overlaps supply mid-tones a stop list has to be tuned
+into producing, and a shape with points leaves soft spokes no arrangement of
+stops will give you. `--mix` puts both on one surface and cross-fades between
+them.
 
-The widget's content is not what is being captured. What is captured is how the
-colour sits on the surface: the reference could hold anything, and the gradient
-would still read the same way.
-
-Rebuilt around how such a field is *made*. The primary technique here is to draw
-a few overlapping shapes in SVG and blur them past recognition — the shapes are
-the instrument, not the subject, which is why they are not what the reference is
-named after. A hand-written stop list reaches the same look more cheaply, so
-both are kept: the drawing for surfaces that are large or moving, the stop list
-for the static ones.
+`--step` is the odd one in the set and the reason the recipe has to be
+re-projectable: a block of bands, one per line of type, each starting where its
+own label ends, so the ragged end of the copy is the staircase and the field
+runs across all three bands as one shape.
 
 - **The gradient is drawn, then blurred.** `--drawn` swaps the stop list for
   an SVG of two or three overlapping shapes blurred past recognition.
@@ -697,3 +698,7 @@ A `:hover` rule in `component.css` would have been wrong anyway: settling to
 ink is a thumbnail's editorial decision about its own resting state, not
 something a gradient field does when a pointer crosses it.
 
+Inspiration: two supplied screenshots, kept as `ref.png` and `ref2.png`. The
+first is a weather widget, for the two pools and the settle; the second a
+stepped block set into three lines of type, for the interlock — the geometry of
+`--step` and nothing else about it.

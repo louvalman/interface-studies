@@ -1,20 +1,17 @@
 type: navigation
 
-Source: https://x.com/renzobianchi_/status/2097400239162351924 — three frames of a
-liquid-glass toolbar: a labelled Home pill at rest, the search item opened into
-a field, and the whole bar opened downward into an activity panel.
+A floating toolbar on one pane of glass. Four items sit together and a fifth is
+set apart; exactly one of them carries its label, and it is the one you are on.
+The search item opens into a field and the activity item opens the pane
+downward into a panel — neither is a second sheet sliding out from underneath,
+the one surface changes shape, and the corner it does that around never moves.
 
-`ref.png` is the resting frame — the labelled Home pill over a rendered scene of
-grey and slate planes. The other two frames, the opened search field and the
-opened panel, are described above rather than kept, since the decisions they
-carry are named below.
-
-What is not being captured: the Memoji avatars, the product copy, the cool grey
-render the glass sits on, and the icon set. The ground in `demo.html` and
-`preview.html` owes the reference nothing: it is the index's own recipe, warm
-paper with the same two washes at the same strength, so a study sitting in
-the rail does not arrive louder than the page around it. It is page scaffolding,
-not part of the component.
+The set is a desk rather than an operating system: Desk, search, Versions,
+Activity, Display. Each item is named for what its glyph can actually do — two
+sliders are display controls, not a settings screen; two drawers are versions
+of a thing, not a mailbox — so the bar says what it is for before a label
+opens. It is also why the labelled item is a place you can be rather than a
+home to return to: a toolbar over a working surface has no front door.
 
 It is as dull as it can afford to be, and finding that floor is the point. Glass
 has no look of its own — a blur over one flat fill is indistinguishable from a
@@ -28,12 +25,10 @@ frame above and below it in the thumbnail — but a ground whose whole colour ma
 sat in the lower third read as bottom-heavy, and a thing centred in a
 bottom-heavy frame looks like it is floating high.
 
-The icons are drawn rather than borrowed, and all but one are deliberately not
-the reference's: a doorway instead of a house, two drawers instead of a lidded
-box, four bars instead of a bell, two sliders instead of a cog. The
-magnifier is the exception, and it is the exception for a reason — it is the one
-glyph in a toolbar with no synonym. Every other function has several ways to be
-drawn, so the set is a place to have an opinion; search is not.
+The icons are drawn rather than borrowed: a doorway, a magnifier, two drawers,
+four bars, two sliders. The magnifier is the one glyph in a toolbar with no
+synonym — every other function has several ways to be drawn, so the set is a
+place to have an opinion; search is not.
 
 The panel item is called Activity, not Notifications, and the icon is four bars
 of uneven height. Notifications is a promise about delivery — it says
@@ -58,6 +53,18 @@ every pill it lands in, and it is invisible in the source — the numbers look
 tidy. Three of the five were out: the arch and the bars sat 0.70 units low, the
 magnifier 0.40 low and 0.40 right. Measured as the ink bounds plus half a stroke
 on each side, which is what the eye reads and what `getBBox()` leaves out.
+
+- **The unread mark is a rule under the glyph, not a dot on its corner.** A
+  corner dot is the platform idiom and it is the wrong object on this bar: it
+  is opaque, it is round, and it sits *on* a surface whose whole argument is
+  that everything is either the material or seen through it. Set under the
+  glyph it reads as part of the item instead, and it is the lozenge's own shape
+  at a fifth of the size — the bar already says *current* with a stadium, so it
+  can say *unread* with one too. It is 0.75 of the glyph long, centred on it
+  rather than pinned to a corner, so it travels with the icon instead of being
+  left behind when one collapses to zero width, and it stops a hair short of
+  full strength, because an accent at 1 would be the only thing on the bar not
+  under the surface.
 
 - **One reveal mechanism, two payloads.** Every morph in the bar is the same
   `grid-template-columns: 0fr -> 1fr` column with `overflow: hidden` over it.
@@ -312,7 +319,7 @@ and this bar is never collapsed: one action always carries its label, and the
 label is the widest thing in the component. Five squares, the split and an open
 "Activity" come to about 390px, so every phone held upright sat in the band
 between the two numbers — wide enough to stay at full scale, too narrow to show
-the word. The surface clipped "Home" to its first letter rather than the
+the word. The surface clipped "Desk" to its first letter rather than the
 component standing down to the scale that fits, which is the same failure as the
 missing trailing action, one step further in. A breakpoint has to be measured
 against the state the component is actually in, not against the state its parts
@@ -462,3 +469,8 @@ can promise. The search field is the better thumbnail: one line of shape change,
 legible at any scale, and its width is a number the preview sets rather than
 something the copy decides. The panel is still a click away in quick look and a
 dot away in the variant row, where there is room for it.
+
+Inspiration: https://x.com/renzobianchi_/status/2097400239162351924 — three
+frames of a glass toolbar, of which `ref.png` is the resting one. What it
+supplies is the material and the morph; the item set, the naming, the marks and
+the ground are this build's.
