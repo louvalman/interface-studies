@@ -68,7 +68,9 @@ runs across all three bands as one shape.
 
   **A card in a rail can carry a slow colour drift, if the colour never moves.**
   The index card holds the drawing three times, each copy tinted once in the
-  markup and never again, and cross-fades between them on a seven-second timer.
+  markup and never again, and cross-fades between them on a three-second beat:
+  1.5s of fade against 1.5s held, so the field is always about to change rather
+  than occasionally changing.
   The obvious version — one drawing whose hues are transitioned — looks
   identical and is the expensive one: `fill` interpolates, so every frame of
   the fade re-runs the blur on every band. Measured in the card with the rail

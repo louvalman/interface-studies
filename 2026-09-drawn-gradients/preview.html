@@ -411,7 +411,9 @@
       /* --- the slow drift ------------------------------------------------
          Every band carries the drawing three times, each copy tinted once in
          the markup and never again, and the card cross-fades between them on
-         a long timer. Colour in the rail without the rail paying for it.
+         a three-second beat — 1.5s moving, 1.5s held, so the field is always
+         about to change rather than occasionally changing. Colour in the rail
+         without the rail paying for it.
 
          Three FIXED copies rather than two re-tinted ones, and that is the
          whole performance answer. The blobs' fills interpolate, so moving the
@@ -436,8 +438,8 @@
          state, and a colour arriving underneath it would be a second thing
          happening — and nothing once a variant is picked in quick look, since
          the hues are that dot's answer and not this timer's. */
-      var DRIFT = '2400ms cubic-bezier(0.65, 0, 0.35, 1)';
-      var STEP = 7000;
+      var DRIFT = '1500ms cubic-bezier(0.65, 0, 0.35, 1)';
+      var STEP = 3000;
       var front = 0;
       var still = window.matchMedia('(prefers-reduced-motion: reduce)');
 
