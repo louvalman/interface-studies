@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>2026-09-raster-pulse</title>
+  <title>Raster pulse &mdash; Interface Studies</title>
 
   <!-- Font loading is the demo's job, never the component's. -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11,6 +11,20 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap">
 
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+
+  <!-- What a link to this page looks like when it is pasted somewhere. The
+     card image is the index's, one level up — the same place this page
+     already takes its favicon and its back link from, so it goes stale in
+     exactly the same way and no worse. A copied-out folder loses the
+     picture and keeps the title and the sentence. -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Interface Studies" />
+  <meta property="og:title" content="Raster pulse &mdash; Interface Studies" />
+  <meta property="og:description" content="A poster card whose dot field works out its own shape. Every dot carries nothing but its grid coordinate; CSS derives whether it belongs to the pattern, which of two tones it takes, and where it sits in the pulse travelling through the field." />
+  <meta property="og:image" content="../og.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
 
   <link rel="stylesheet" href="component.css">
 
@@ -21,11 +35,9 @@
     body {
       margin: 0;
       min-height: 100vh;
-      display: grid;
-      place-items: start center;
       padding: 4rem var(--demo-gutter);
       box-sizing: border-box;
-      /* The same #f3f2ef every reference in this repo sits on, repeated here
+      /* The same #f3f2ef every study in this repo sits on, repeated here
          rather than shared — the folder has to survive being copied out. The
          reference showed its posters on a gradient, and a mid-dark ground did
          flatter the ink-black art panel; one ground across the whole set is
@@ -36,14 +48,46 @@
       font-family: "Space Grotesk", system-ui, sans-serif;
     }
 
+    /* Left-aligned at the gutter, not centred — the index hangs its masthead
+       and rail off the same edge, and a centred column here would step the
+       content inwards on every navigation. */
     .demo {
-      display: grid;
-      gap: 4rem;
-      width: min(100%, 30rem);
+      max-width: 78rem;
     }
 
+    /* The posters are 22rem each and the page used to stack all five down one
+       30rem column: eight rem of empty column beside every one of them, and
+       roughly 3500px of scroll to see five states of one component. They lay
+       out as a row instead, three to a line on a laptop.
+
+       The max-width is the natural width of one full line, so a full line has
+       no leftover to distribute and still starts at the gutter; `center` then
+       only has something to do when the line wraps, at which point the two
+       left over sit under the middle of the three above rather than hanging
+       off the left edge. The two only work together: the cap without the
+       centring leaves the remainder hanging left, the centring without the
+       cap pushes a full line into the middle of the page. Flex, not grid —
+       grid leaves a short last row at the gutter whatever `justify-content`
+       says, because the tracks are the same for every row. */
+    .demo__grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 4rem 2.5rem;
+      max-width: 71rem;    /* 3 × 22rem + 2 gaps */
+    }
+
+    /* One poster per line is not a line to centre: the caption is set left
+       above it. Below the width where a second fits — 2 × 22rem + the gap,
+       against a 6vw gutter — the row goes back to the gutter. */
+    @media (max-width: 52.8rem) {
+      .demo__grid { justify-content: flex-start; }
+    }
+
+    /* Absolute, not fixed: the language is picked once and the chip has no
+       reason to ride the viewport down the page. */
     .demo__lang {
-      position: fixed;
+      position: absolute;
       top: clamp(1.25rem, 3vw, 2.25rem);
       right: var(--demo-gutter);
       z-index: 20;
@@ -53,14 +97,13 @@
       padding: 0.2rem 0.35rem;
       border-radius: 999px;
       background: rgba(255, 255, 255, 0.72);
-      backdrop-filter: blur(8px);
     }
 
     .demo__lang-btn {
       padding: 0.35em 0.5em;
       border: 0;
       background: transparent;
-      color: #8a919c;
+      color: #656b73;
       font-family: "JetBrains Mono", ui-monospace, monospace;
       font-size: 0.625rem;
       letter-spacing: 0.16em;
@@ -74,7 +117,7 @@
     .demo__lang-btn[aria-pressed="true"] {
       color: #14171c;
       text-decoration: underline;
-      text-decoration-color: #b4552f;
+      text-decoration-color: #ac512d;
       text-decoration-thickness: 1px;
       text-underline-offset: 0.4em;
     }
@@ -92,8 +135,10 @@
     }
 
     .demo__back {
-      justify-self: start;
       display: inline-flex;
+      /* The column used to be a grid and this sat in its 4rem gap; the states
+         are their own row now, so the space is stated here. */
+      margin-bottom: 3rem;
       align-items: center;
       gap: 0.5rem;
       padding: 0.5rem 0.9rem 0.5rem 0.75rem;
@@ -114,10 +159,14 @@
 
     .demo__back svg { width: 0.85rem; height: 0.85rem; }
 
-    /* The pair that keeps this page off a phone's horizontal scrollbar: the
-       cell is capped at its column, and the column is told it may shrink
-       below its content. */
+    /* `0 1 22rem` is the poster's own width as a flex basis: the state never
+       grows past the poster it holds, so a short line stays a line of posters
+       rather than two stretched cells, and it may still shrink — which, with
+       the two lines under it, is what keeps this page off a phone's
+       horizontal scrollbar: the cell is capped at its column, and the column
+       is told it may shrink below its content. */
     .demo__state {
+      flex: 0 1 22rem;
       display: grid;
       grid-template-columns: minmax(0, 1fr);
       gap: 0.9rem;
@@ -143,6 +192,221 @@
 
       .demo__back { min-height: 2.75rem; }
     }
+
+    /* --- intro ----------------------------------------------------------
+       The page had no heading at all: it opened on a back link and a grid of
+       captions, so a reader arriving from the index had nothing naming what
+       they were looking at, and a screen reader had no heading to land on. */
+    .demo__intro {
+      max-width: 46rem;
+      margin-bottom: clamp(2.5rem, 6vw, 4rem);
+    }
+
+    .demo__kicker {
+      margin: 0 0 0.75rem;
+      font-family: %(mono)s;
+      font-size: 0.6875rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: %(soft)s;
+    }
+
+    .demo__heading {
+      margin: 0;
+      font-size: clamp(1.75rem, 4vw, 2.75rem);
+      font-weight: 600;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      color: %(ink)s;
+    }
+
+    .demo__lede {
+      margin: 1.25rem 0 0;
+      max-width: 52ch;
+      font-size: 1.0625rem;
+      line-height: 1.6;
+      color: %(body)s;
+    }
+
+    /* --- decisions ------------------------------------------------------
+
+       notes.md, rendered. The file stays the record; this is the shape the
+       contract asks every study to state — the type, the origin, and the
+       decisions the build captures — so the page that shows the component also
+       says what was extracted and why. It used to live only in the repo, which
+       meant the one artefact worth lifting was the one thing the site never
+       showed.
+
+       Kept in step with notes.md by hand, like the language table above it and
+       preview.html's markup: there is no build step to read the file, and
+       fetching it fails over file://, where each document gets an opaque
+       origin. The prose is left in the language it was written in — it is a
+       record of decisions, not page copy, and the same reasoning that leaves
+       component sample copy alone applies. Only the labels around it switch. */
+    .demo__notes {
+      margin-top: clamp(3.5rem, 8vw, 6rem);
+      padding-top: clamp(2rem, 4vw, 3rem);
+      border-top: 1px solid rgba(20, 23, 28, 0.12);
+      /* Prose measure, not the page's. The states above lay out as wide as
+         they need; a paragraph does not. */
+      max-width: 42rem;
+    }
+
+    .demo__notes-title {
+      margin: 0;
+      font-size: 1.125rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: #14171c;
+    }
+
+    /* The disclosure row. `list-style: none` kills the marker in Firefox and
+       Chrome; the ::-webkit- rule is still needed for Safari. */
+    .demo__notes-summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.25rem 0 0.75rem;
+      cursor: pointer;
+      list-style: none;
+    }
+
+    .demo__notes-summary::-webkit-details-marker { display: none; }
+
+    .demo__notes-summary:focus-visible {
+      outline: 2px solid #14171c;
+      outline-offset: 4px;
+      border-radius: 0.25rem;
+    }
+
+    .demo__notes-chevron {
+      flex: none;
+      width: 1rem;
+      height: 1rem;
+      color: #6b655a;
+      transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .demo__notes-summary:hover .demo__notes-chevron { color: #14171c; }
+
+    .demo__notes[open] .demo__notes-chevron { transform: rotate(180deg); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .demo__notes-chevron { transition: none; }
+    }
+
+    /* Touch: the row is the target, and it has to be one you can hit. */
+    @media (hover: none) {
+      .demo__notes-summary { min-height: 2.75rem; }
+    }
+
+    .demo__notes-body { padding-bottom: 0.5rem; }
+
+    .demo__notes-meta {
+      margin: 0.75rem 0 0;
+      display: grid;
+      gap: 0.6rem;
+    }
+
+    .demo__notes-row {
+      display: grid;
+      grid-template-columns: 4.5rem minmax(0, 1fr);
+      gap: 0.9rem;
+      align-items: baseline;
+    }
+
+    .demo__notes-row dt {
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.625rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #6b655a;
+    }
+
+    .demo__notes-row dd {
+      margin: 0;
+      font-size: 0.875rem;
+      line-height: 1.5;
+      color: #45484f;
+      /* A source URL is one unbroken word and the page is 320px wide on a
+         phone: without this it sets the whole column's minimum. */
+      overflow-wrap: anywhere;
+    }
+
+    .demo__notes-lede {
+      margin: 1.75rem 0 0;
+      font-size: 0.9375rem;
+      line-height: 1.7;
+      color: #45484f;
+    }
+
+    .demo__notes-list {
+      margin: 2.25rem 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 1.75rem;
+    }
+
+    .demo__notes-list > li {
+      display: grid;
+      gap: 0.45rem;
+    }
+
+    .demo__notes-head {
+      margin: 0;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      line-height: 1.45;
+      color: #14171c;
+    }
+
+    .demo__notes-list p {
+      margin: 0;
+      font-size: 0.9375rem;
+      line-height: 1.7;
+      color: #45484f;
+    }
+
+    .demo__notes code {
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.85em;
+      padding: 0.12em 0.32em;
+      border-radius: 0.25rem;
+      background: rgba(20, 23, 28, 0.06);
+      /* Declarations run long and a code span may not push the page sideways. */
+      overflow-wrap: anywhere;
+    }
+
+    .demo__notes a {
+      color: inherit;
+      text-decoration-color: #ac512d;
+      text-underline-offset: 0.2em;
+    }
+
+    .demo__notes a:focus-visible {
+      outline: 2px solid #14171c;
+      outline-offset: 2px;
+      border-radius: 0.15rem;
+    }
+
+    /* The inspiration row, below the decisions rather than above them. */
+    .demo__notes-meta--foot { margin-top: 2.5rem; }
+    .demo__notes-meta--foot + .demo__notes-foot { margin-top: 1.1rem; }
+    /* 'Inspiration' is longer than 'Type' and sets its own column. */
+    .demo__notes-meta--foot .demo__notes-row {
+      grid-template-columns: 6.25rem minmax(0, 1fr);
+    }
+
+    .demo__notes-foot {
+      margin: 2.5rem 0 0;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.6875rem;
+      line-height: 1.7;
+      letter-spacing: 0.08em;
+      color: #6b655a;
+    }
   </style>
 </head>
 <body>
@@ -158,9 +422,22 @@
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
         <path d="M10 2 4 8l6 6" stroke-linecap="round" stroke-linejoin="round" />
       </svg>
-      <span data-i18n="back">All references</span>
+      <span data-i18n="back">All studies</span>
     </a>
 
+    <header class="demo__intro">
+      <p class="demo__kicker">2026-09 &middot; <span data-i18n="type">Card</span></p>
+      <h1 class="demo__heading" data-i18n="heading">Raster pulse</h1>
+      <p class="demo__lede" data-i18n="lede">
+        A poster card whose dot field works out its own shape. Every dot carries
+        nothing but its grid coordinate; CSS derives whether it belongs to the
+        pattern, which of two tones it takes, and where it sits in the pulse
+        travelling through the field.
+      </p>
+    </header>
+
+
+    <div class="demo__grid">
       <section class="demo__state">
         <p class="demo__caption" data-i18n="state.default">Default &mdash; ring field, resting pulse</p>
         <article class="raster-pulse">
@@ -186,16 +463,12 @@
             </div>
           </div>
           <div class="raster-pulse__foot">
-            <p class="raster-pulse__brand">
-              <svg class="raster-pulse__glyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <circle cx="6.5" cy="6.5" r="4.3" />
-                <circle cx="17.5" cy="6.5" r="4.3" />
-                <circle cx="6.5" cy="17.5" r="4.3" />
-                <circle cx="17.5" cy="17.5" r="4.3" />
-              </svg>
-              <span class="raster-pulse__wordmark">raster</span>
+            <p class="raster-pulse__spec">
+              <span>17 &times; 17</span>
+              <span>289 cells</span>
+              <span>one rule</span>
             </p>
-            <h2 class="raster-pulse__headline">Raster &mdash; The Grid That Draws Its Own Shapes.</h2>
+            <h2 class="raster-pulse__headline">No shape is drawn here. Every dot is asked where it sits.</h2>
             <span class="raster-pulse__bracket raster-pulse__bracket--tr" aria-hidden="true"></span>
             <span class="raster-pulse__bracket raster-pulse__bracket--br" aria-hidden="true"></span>
           </div>
@@ -227,16 +500,12 @@
             </div>
           </div>
           <div class="raster-pulse__foot">
-            <p class="raster-pulse__brand">
-              <svg class="raster-pulse__glyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <circle cx="6.5" cy="6.5" r="4.3" />
-                <circle cx="17.5" cy="6.5" r="4.3" />
-                <circle cx="6.5" cy="17.5" r="4.3" />
-                <circle cx="17.5" cy="17.5" r="4.3" />
-              </svg>
-              <span class="raster-pulse__wordmark">raster</span>
+            <p class="raster-pulse__spec">
+              <span>17 &times; 17</span>
+              <span>289 cells</span>
+              <span>one rule</span>
             </p>
-            <h2 class="raster-pulse__headline">Raster &mdash; The Grid That Draws Its Own Shapes.</h2>
+            <h2 class="raster-pulse__headline">No shape is drawn here. Every dot is asked where it sits.</h2>
             <span class="raster-pulse__bracket raster-pulse__bracket--tr" aria-hidden="true"></span>
             <span class="raster-pulse__bracket raster-pulse__bracket--br" aria-hidden="true"></span>
           </div>
@@ -268,16 +537,12 @@
             </div>
           </div>
           <div class="raster-pulse__foot">
-            <p class="raster-pulse__brand">
-              <svg class="raster-pulse__glyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <circle cx="6.5" cy="6.5" r="4.3" />
-                <circle cx="17.5" cy="6.5" r="4.3" />
-                <circle cx="6.5" cy="17.5" r="4.3" />
-                <circle cx="17.5" cy="17.5" r="4.3" />
-              </svg>
-              <span class="raster-pulse__wordmark">raster</span>
+            <p class="raster-pulse__spec">
+              <span>17 &times; 17</span>
+              <span>289 cells</span>
+              <span>one rule</span>
             </p>
-            <h2 class="raster-pulse__headline">Raster &mdash; Five Arms, One Formula, No Extra Markup.</h2>
+            <h2 class="raster-pulse__headline">No shape is drawn here. Every dot is asked where it sits.</h2>
             <span class="raster-pulse__bracket raster-pulse__bracket--tr" aria-hidden="true"></span>
             <span class="raster-pulse__bracket raster-pulse__bracket--br" aria-hidden="true"></span>
           </div>
@@ -285,7 +550,7 @@
       </section>
 
       <section class="demo__state">
-        <p class="demo__caption" data-i18n="state.halftone">Halftone disc &mdash; light theme, corner clusters</p>
+        <p class="demo__caption" data-i18n="state.halftone">Halftone disc &mdash; light theme, screened rim</p>
         <article class="raster-pulse raster-pulse--halftone">
           <div class="raster-pulse__art" aria-hidden="true">
             <div class="raster-pulse__field">
@@ -309,16 +574,49 @@
             </div>
           </div>
           <div class="raster-pulse__foot">
-            <p class="raster-pulse__brand">
-              <svg class="raster-pulse__glyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <circle cx="6.5" cy="6.5" r="4.3" />
-                <circle cx="17.5" cy="6.5" r="4.3" />
-                <circle cx="6.5" cy="17.5" r="4.3" />
-                <circle cx="17.5" cy="17.5" r="4.3" />
-              </svg>
-              <span class="raster-pulse__wordmark">raster</span>
+            <p class="raster-pulse__spec">
+              <span>17 &times; 17</span>
+              <span>289 cells</span>
+              <span>one rule</span>
             </p>
-            <h2 class="raster-pulse__headline">Raster &mdash; A Disc Is Just A Radius Test.</h2>
+            <h2 class="raster-pulse__headline">No shape is drawn here. Every dot is asked where it sits.</h2>
+            <span class="raster-pulse__bracket raster-pulse__bracket--tr" aria-hidden="true"></span>
+            <span class="raster-pulse__bracket raster-pulse__bracket--br" aria-hidden="true"></span>
+          </div>
+        </article>
+      </section>
+
+      <section class="demo__state">
+        <p class="demo__caption" data-i18n="state.moire">Interference &mdash; two ring systems, one either side of centre</p>
+        <article class="raster-pulse raster-pulse--moire">
+          <div class="raster-pulse__art" aria-hidden="true">
+            <div class="raster-pulse__field">
+              <i class="raster-pulse__dot" style="--x:-8;--y:-8"></i><i class="raster-pulse__dot" style="--x:-7;--y:-8"></i><i class="raster-pulse__dot" style="--x:-6;--y:-8"></i><i class="raster-pulse__dot" style="--x:-5;--y:-8"></i><i class="raster-pulse__dot" style="--x:-4;--y:-8"></i><i class="raster-pulse__dot" style="--x:-3;--y:-8"></i><i class="raster-pulse__dot" style="--x:-2;--y:-8"></i><i class="raster-pulse__dot" style="--x:-1;--y:-8"></i><i class="raster-pulse__dot" style="--x:0;--y:-8"></i><i class="raster-pulse__dot" style="--x:1;--y:-8"></i><i class="raster-pulse__dot" style="--x:2;--y:-8"></i><i class="raster-pulse__dot" style="--x:3;--y:-8"></i><i class="raster-pulse__dot" style="--x:4;--y:-8"></i><i class="raster-pulse__dot" style="--x:5;--y:-8"></i><i class="raster-pulse__dot" style="--x:6;--y:-8"></i><i class="raster-pulse__dot" style="--x:7;--y:-8"></i><i class="raster-pulse__dot" style="--x:8;--y:-8"></i>
+              <i class="raster-pulse__dot" style="--x:-8;--y:-7"></i><i class="raster-pulse__dot" style="--x:-7;--y:-7"></i><i class="raster-pulse__dot" style="--x:-6;--y:-7"></i><i class="raster-pulse__dot" style="--x:-5;--y:-7"></i><i class="raster-pulse__dot" style="--x:-4;--y:-7"></i><i class="raster-pulse__dot" style="--x:-3;--y:-7"></i><i class="raster-pulse__dot" style="--x:-2;--y:-7"></i><i class="raster-pulse__dot" style="--x:-1;--y:-7"></i><i class="raster-pulse__dot" style="--x:0;--y:-7"></i><i class="raster-pulse__dot" style="--x:1;--y:-7"></i><i class="raster-pulse__dot" style="--x:2;--y:-7"></i><i class="raster-pulse__dot" style="--x:3;--y:-7"></i><i class="raster-pulse__dot" style="--x:4;--y:-7"></i><i class="raster-pulse__dot" style="--x:5;--y:-7"></i><i class="raster-pulse__dot" style="--x:6;--y:-7"></i><i class="raster-pulse__dot" style="--x:7;--y:-7"></i><i class="raster-pulse__dot" style="--x:8;--y:-7"></i>
+              <i class="raster-pulse__dot" style="--x:-8;--y:-6"></i><i class="raster-pulse__dot" style="--x:-7;--y:-6"></i><i class="raster-pulse__dot" style="--x:-6;--y:-6"></i><i class="raster-pulse__dot" style="--x:-5;--y:-6"></i><i class="raster-pulse__dot" style="--x:-4;--y:-6"></i><i class="raster-pulse__dot" style="--x:-3;--y:-6"></i><i class="raster-pulse__dot" style="--x:-2;--y:-6"></i><i class="raster-pulse__dot" style="--x:-1;--y:-6"></i><i class="raster-pulse__dot" style="--x:0;--y:-6"></i><i class="raster-pulse__dot" style="--x:1;--y:-6"></i><i class="raster-pulse__dot" style="--x:2;--y:-6"></i><i class="raster-pulse__dot" style="--x:3;--y:-6"></i><i class="raster-pulse__dot" style="--x:4;--y:-6"></i><i class="raster-pulse__dot" style="--x:5;--y:-6"></i><i class="raster-pulse__dot" style="--x:6;--y:-6"></i><i class="raster-pulse__dot" style="--x:7;--y:-6"></i><i class="raster-pulse__dot" style="--x:8;--y:-6"></i>
+              <i class="raster-pulse__dot" style="--x:-8;--y:-5"></i><i class="raster-pulse__dot" style="--x:-7;--y:-5"></i><i class="raster-pulse__dot" style="--x:-6;--y:-5"></i><i class="raster-pulse__dot" style="--x:-5;--y:-5"></i><i class="raster-pulse__dot" style="--x:-4;--y:-5"></i><i class="raster-pulse__dot" style="--x:-3;--y:-5"></i><i class="raster-pulse__dot" style="--x:-2;--y:-5"></i><i class="raster-pulse__dot" style="--x:-1;--y:-5"></i><i class="raster-pulse__dot" style="--x:0;--y:-5"></i><i class="raster-pulse__dot" style="--x:1;--y:-5"></i><i class="raster-pulse__dot" style="--x:2;--y:-5"></i><i class="raster-pulse__dot" style="--x:3;--y:-5"></i><i class="raster-pulse__dot" style="--x:4;--y:-5"></i><i class="raster-pulse__dot" style="--x:5;--y:-5"></i><i class="raster-pulse__dot" style="--x:6;--y:-5"></i><i class="raster-pulse__dot" style="--x:7;--y:-5"></i><i class="raster-pulse__dot" style="--x:8;--y:-5"></i>
+              <i class="raster-pulse__dot" style="--x:-8;--y:-4"></i><i class="raster-pulse__dot" style="--x:-7;--y:-4"></i><i class="raster-pulse__dot" style="--x:-6;--y:-4"></i><i class="raster-pulse__dot" style="--x:-5;--y:-4"></i><i class="raster-pulse__dot" style="--x:-4;--y:-4"></i><i class="raster-pulse__dot" style="--x:-3;--y:-4"></i><i class="raster-pulse__dot" style="--x:-2;--y:-4"></i><i class="raster-pulse__dot" style="--x:-1;--y:-4"></i><i class="raster-pulse__dot" style="--x:0;--y:-4"></i><i class="raster-pulse__dot" style="--x:1;--y:-4"></i><i class="raster-pulse__dot" style="--x:2;--y:-4"></i><i class="raster-pulse__dot" style="--x:3;--y:-4"></i><i class="raster-pulse__dot" style="--x:4;--y:-4"></i><i class="raster-pulse__dot" style="--x:5;--y:-4"></i><i class="raster-pulse__dot" style="--x:6;--y:-4"></i><i class="raster-pulse__dot" style="--x:7;--y:-4"></i><i class="raster-pulse__dot" style="--x:8;--y:-4"></i>
+              <i class="raster-pulse__dot" style="--x:-8;--y:-3"></i><i class="raster-pulse__dot" style="--x:-7;--y:-3"></i><i class="raster-pulse__dot" style="--x:-6;--y:-3"></i><i class="raster-pulse__dot" style="--x:-5;--y:-3"></i><i class="raster-pulse__dot" style="--x:-4;--y:-3"></i><i class="raster-pulse__dot" style="--x:-3;--y:-3"></i><i class="raster-pulse__dot" style="--x:-2;--y:-3"></i><i class="raster-pulse__dot" style="--x:-1;--y:-3"></i><i class="raster-pulse__dot" style="--x:0;--y:-3"></i><i class="raster-pulse__dot" style="--x:1;--y:-3"></i><i class="raster-pulse__dot" style="--x:2;--y:-3"></i><i class="raster-pulse__dot" style="--x:3;--y:-3"></i><i class="raster-pulse__dot" style="--x:4;--y:-3"></i><i class="raster-pulse__dot" style="--x:5;--y:-3"></i><i class="raster-pulse__dot" style="--x:6;--y:-3"></i><i class="raster-pulse__dot" style="--x:7;--y:-3"></i><i class="raster-pulse__dot" style="--x:8;--y:-3"></i>
+              <i class="raster-pulse__dot" style="--x:-8;--y:-2"></i><i class="raster-pulse__dot" style="--x:-7;--y:-2"></i><i class="raster-pulse__dot" style="--x:-6;--y:-2"></i><i class="raster-pulse__dot" style="--x:-5;--y:-2"></i><i class="raster-pulse__dot" style="--x:-4;--y:-2"></i><i class="raster-pulse__dot" style="--x:-3;--y:-2"></i><i class="raster-pulse__dot" style="--x:-2;--y:-2"></i><i class="raster-pulse__dot" style="--x:-1;--y:-2"></i><i class="raster-pulse__dot" style="--x:0;--y:-2"></i><i class="raster-pulse__dot" style="--x:1;--y:-2"></i><i class="raster-pulse__dot" style="--x:2;--y:-2"></i><i class="raster-pulse__dot" style="--x:3;--y:-2"></i><i class="raster-pulse__dot" style="--x:4;--y:-2"></i><i class="raster-pulse__dot" style="--x:5;--y:-2"></i><i class="raster-pulse__dot" style="--x:6;--y:-2"></i><i class="raster-pulse__dot" style="--x:7;--y:-2"></i><i class="raster-pulse__dot" style="--x:8;--y:-2"></i>
+              <i class="raster-pulse__dot" style="--x:-8;--y:-1"></i><i class="raster-pulse__dot" style="--x:-7;--y:-1"></i><i class="raster-pulse__dot" style="--x:-6;--y:-1"></i><i class="raster-pulse__dot" style="--x:-5;--y:-1"></i><i class="raster-pulse__dot" style="--x:-4;--y:-1"></i><i class="raster-pulse__dot" style="--x:-3;--y:-1"></i><i class="raster-pulse__dot" style="--x:-2;--y:-1"></i><i class="raster-pulse__dot" style="--x:-1;--y:-1"></i><i class="raster-pulse__dot" style="--x:0;--y:-1"></i><i class="raster-pulse__dot" style="--x:1;--y:-1"></i><i class="raster-pulse__dot" style="--x:2;--y:-1"></i><i class="raster-pulse__dot" style="--x:3;--y:-1"></i><i class="raster-pulse__dot" style="--x:4;--y:-1"></i><i class="raster-pulse__dot" style="--x:5;--y:-1"></i><i class="raster-pulse__dot" style="--x:6;--y:-1"></i><i class="raster-pulse__dot" style="--x:7;--y:-1"></i><i class="raster-pulse__dot" style="--x:8;--y:-1"></i>
+              <i class="raster-pulse__dot" style="--x:-8;--y:0"></i><i class="raster-pulse__dot" style="--x:-7;--y:0"></i><i class="raster-pulse__dot" style="--x:-6;--y:0"></i><i class="raster-pulse__dot" style="--x:-5;--y:0"></i><i class="raster-pulse__dot" style="--x:-4;--y:0"></i><i class="raster-pulse__dot" style="--x:-3;--y:0"></i><i class="raster-pulse__dot" style="--x:-2;--y:0"></i><i class="raster-pulse__dot" style="--x:-1;--y:0"></i><i class="raster-pulse__dot" style="--x:0;--y:0"></i><i class="raster-pulse__dot" style="--x:1;--y:0"></i><i class="raster-pulse__dot" style="--x:2;--y:0"></i><i class="raster-pulse__dot" style="--x:3;--y:0"></i><i class="raster-pulse__dot" style="--x:4;--y:0"></i><i class="raster-pulse__dot" style="--x:5;--y:0"></i><i class="raster-pulse__dot" style="--x:6;--y:0"></i><i class="raster-pulse__dot" style="--x:7;--y:0"></i><i class="raster-pulse__dot" style="--x:8;--y:0"></i>
+              <i class="raster-pulse__dot" style="--x:-8;--y:1"></i><i class="raster-pulse__dot" style="--x:-7;--y:1"></i><i class="raster-pulse__dot" style="--x:-6;--y:1"></i><i class="raster-pulse__dot" style="--x:-5;--y:1"></i><i class="raster-pulse__dot" style="--x:-4;--y:1"></i><i class="raster-pulse__dot" style="--x:-3;--y:1"></i><i class="raster-pulse__dot" style="--x:-2;--y:1"></i><i class="raster-pulse__dot" style="--x:-1;--y:1"></i><i class="raster-pulse__dot" style="--x:0;--y:1"></i><i class="raster-pulse__dot" style="--x:1;--y:1"></i><i class="raster-pulse__dot" style="--x:2;--y:1"></i><i class="raster-pulse__dot" style="--x:3;--y:1"></i><i class="raster-pulse__dot" style="--x:4;--y:1"></i><i class="raster-pulse__dot" style="--x:5;--y:1"></i><i class="raster-pulse__dot" style="--x:6;--y:1"></i><i class="raster-pulse__dot" style="--x:7;--y:1"></i><i class="raster-pulse__dot" style="--x:8;--y:1"></i>
+              <i class="raster-pulse__dot" style="--x:-8;--y:2"></i><i class="raster-pulse__dot" style="--x:-7;--y:2"></i><i class="raster-pulse__dot" style="--x:-6;--y:2"></i><i class="raster-pulse__dot" style="--x:-5;--y:2"></i><i class="raster-pulse__dot" style="--x:-4;--y:2"></i><i class="raster-pulse__dot" style="--x:-3;--y:2"></i><i class="raster-pulse__dot" style="--x:-2;--y:2"></i><i class="raster-pulse__dot" style="--x:-1;--y:2"></i><i class="raster-pulse__dot" style="--x:0;--y:2"></i><i class="raster-pulse__dot" style="--x:1;--y:2"></i><i class="raster-pulse__dot" style="--x:2;--y:2"></i><i class="raster-pulse__dot" style="--x:3;--y:2"></i><i class="raster-pulse__dot" style="--x:4;--y:2"></i><i class="raster-pulse__dot" style="--x:5;--y:2"></i><i class="raster-pulse__dot" style="--x:6;--y:2"></i><i class="raster-pulse__dot" style="--x:7;--y:2"></i><i class="raster-pulse__dot" style="--x:8;--y:2"></i>
+              <i class="raster-pulse__dot" style="--x:-8;--y:3"></i><i class="raster-pulse__dot" style="--x:-7;--y:3"></i><i class="raster-pulse__dot" style="--x:-6;--y:3"></i><i class="raster-pulse__dot" style="--x:-5;--y:3"></i><i class="raster-pulse__dot" style="--x:-4;--y:3"></i><i class="raster-pulse__dot" style="--x:-3;--y:3"></i><i class="raster-pulse__dot" style="--x:-2;--y:3"></i><i class="raster-pulse__dot" style="--x:-1;--y:3"></i><i class="raster-pulse__dot" style="--x:0;--y:3"></i><i class="raster-pulse__dot" style="--x:1;--y:3"></i><i class="raster-pulse__dot" style="--x:2;--y:3"></i><i class="raster-pulse__dot" style="--x:3;--y:3"></i><i class="raster-pulse__dot" style="--x:4;--y:3"></i><i class="raster-pulse__dot" style="--x:5;--y:3"></i><i class="raster-pulse__dot" style="--x:6;--y:3"></i><i class="raster-pulse__dot" style="--x:7;--y:3"></i><i class="raster-pulse__dot" style="--x:8;--y:3"></i>
+              <i class="raster-pulse__dot" style="--x:-8;--y:4"></i><i class="raster-pulse__dot" style="--x:-7;--y:4"></i><i class="raster-pulse__dot" style="--x:-6;--y:4"></i><i class="raster-pulse__dot" style="--x:-5;--y:4"></i><i class="raster-pulse__dot" style="--x:-4;--y:4"></i><i class="raster-pulse__dot" style="--x:-3;--y:4"></i><i class="raster-pulse__dot" style="--x:-2;--y:4"></i><i class="raster-pulse__dot" style="--x:-1;--y:4"></i><i class="raster-pulse__dot" style="--x:0;--y:4"></i><i class="raster-pulse__dot" style="--x:1;--y:4"></i><i class="raster-pulse__dot" style="--x:2;--y:4"></i><i class="raster-pulse__dot" style="--x:3;--y:4"></i><i class="raster-pulse__dot" style="--x:4;--y:4"></i><i class="raster-pulse__dot" style="--x:5;--y:4"></i><i class="raster-pulse__dot" style="--x:6;--y:4"></i><i class="raster-pulse__dot" style="--x:7;--y:4"></i><i class="raster-pulse__dot" style="--x:8;--y:4"></i>
+              <i class="raster-pulse__dot" style="--x:-8;--y:5"></i><i class="raster-pulse__dot" style="--x:-7;--y:5"></i><i class="raster-pulse__dot" style="--x:-6;--y:5"></i><i class="raster-pulse__dot" style="--x:-5;--y:5"></i><i class="raster-pulse__dot" style="--x:-4;--y:5"></i><i class="raster-pulse__dot" style="--x:-3;--y:5"></i><i class="raster-pulse__dot" style="--x:-2;--y:5"></i><i class="raster-pulse__dot" style="--x:-1;--y:5"></i><i class="raster-pulse__dot" style="--x:0;--y:5"></i><i class="raster-pulse__dot" style="--x:1;--y:5"></i><i class="raster-pulse__dot" style="--x:2;--y:5"></i><i class="raster-pulse__dot" style="--x:3;--y:5"></i><i class="raster-pulse__dot" style="--x:4;--y:5"></i><i class="raster-pulse__dot" style="--x:5;--y:5"></i><i class="raster-pulse__dot" style="--x:6;--y:5"></i><i class="raster-pulse__dot" style="--x:7;--y:5"></i><i class="raster-pulse__dot" style="--x:8;--y:5"></i>
+              <i class="raster-pulse__dot" style="--x:-8;--y:6"></i><i class="raster-pulse__dot" style="--x:-7;--y:6"></i><i class="raster-pulse__dot" style="--x:-6;--y:6"></i><i class="raster-pulse__dot" style="--x:-5;--y:6"></i><i class="raster-pulse__dot" style="--x:-4;--y:6"></i><i class="raster-pulse__dot" style="--x:-3;--y:6"></i><i class="raster-pulse__dot" style="--x:-2;--y:6"></i><i class="raster-pulse__dot" style="--x:-1;--y:6"></i><i class="raster-pulse__dot" style="--x:0;--y:6"></i><i class="raster-pulse__dot" style="--x:1;--y:6"></i><i class="raster-pulse__dot" style="--x:2;--y:6"></i><i class="raster-pulse__dot" style="--x:3;--y:6"></i><i class="raster-pulse__dot" style="--x:4;--y:6"></i><i class="raster-pulse__dot" style="--x:5;--y:6"></i><i class="raster-pulse__dot" style="--x:6;--y:6"></i><i class="raster-pulse__dot" style="--x:7;--y:6"></i><i class="raster-pulse__dot" style="--x:8;--y:6"></i>
+              <i class="raster-pulse__dot" style="--x:-8;--y:7"></i><i class="raster-pulse__dot" style="--x:-7;--y:7"></i><i class="raster-pulse__dot" style="--x:-6;--y:7"></i><i class="raster-pulse__dot" style="--x:-5;--y:7"></i><i class="raster-pulse__dot" style="--x:-4;--y:7"></i><i class="raster-pulse__dot" style="--x:-3;--y:7"></i><i class="raster-pulse__dot" style="--x:-2;--y:7"></i><i class="raster-pulse__dot" style="--x:-1;--y:7"></i><i class="raster-pulse__dot" style="--x:0;--y:7"></i><i class="raster-pulse__dot" style="--x:1;--y:7"></i><i class="raster-pulse__dot" style="--x:2;--y:7"></i><i class="raster-pulse__dot" style="--x:3;--y:7"></i><i class="raster-pulse__dot" style="--x:4;--y:7"></i><i class="raster-pulse__dot" style="--x:5;--y:7"></i><i class="raster-pulse__dot" style="--x:6;--y:7"></i><i class="raster-pulse__dot" style="--x:7;--y:7"></i><i class="raster-pulse__dot" style="--x:8;--y:7"></i>
+              <i class="raster-pulse__dot" style="--x:-8;--y:8"></i><i class="raster-pulse__dot" style="--x:-7;--y:8"></i><i class="raster-pulse__dot" style="--x:-6;--y:8"></i><i class="raster-pulse__dot" style="--x:-5;--y:8"></i><i class="raster-pulse__dot" style="--x:-4;--y:8"></i><i class="raster-pulse__dot" style="--x:-3;--y:8"></i><i class="raster-pulse__dot" style="--x:-2;--y:8"></i><i class="raster-pulse__dot" style="--x:-1;--y:8"></i><i class="raster-pulse__dot" style="--x:0;--y:8"></i><i class="raster-pulse__dot" style="--x:1;--y:8"></i><i class="raster-pulse__dot" style="--x:2;--y:8"></i><i class="raster-pulse__dot" style="--x:3;--y:8"></i><i class="raster-pulse__dot" style="--x:4;--y:8"></i><i class="raster-pulse__dot" style="--x:5;--y:8"></i><i class="raster-pulse__dot" style="--x:6;--y:8"></i><i class="raster-pulse__dot" style="--x:7;--y:8"></i><i class="raster-pulse__dot" style="--x:8;--y:8"></i>
+            </div>
+          </div>
+          <div class="raster-pulse__foot">
+            <p class="raster-pulse__spec">
+              <span>17 &times; 17</span>
+              <span>289 cells</span>
+              <span>one rule</span>
+            </p>
+            <h2 class="raster-pulse__headline">No shape is drawn here. Every dot is asked where it sits.</h2>
             <span class="raster-pulse__bracket raster-pulse__bracket--tr" aria-hidden="true"></span>
             <span class="raster-pulse__bracket raster-pulse__bracket--br" aria-hidden="true"></span>
           </div>
@@ -350,23 +648,87 @@
             </div>
           </div>
           <div class="raster-pulse__foot">
-            <p class="raster-pulse__brand">
-              <svg class="raster-pulse__glyph" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                <circle cx="6.5" cy="6.5" r="4.3" />
-                <circle cx="17.5" cy="6.5" r="4.3" />
-                <circle cx="6.5" cy="17.5" r="4.3" />
-                <circle cx="17.5" cy="17.5" r="4.3" />
-              </svg>
-              <span class="raster-pulse__wordmark">raster</span>
+            <p class="raster-pulse__spec">
+              <span>17 &times; 17</span>
+              <span>289 cells</span>
+              <span>one rule</span>
             </p>
-            <h2 class="raster-pulse__headline">Raster &mdash; Turn The Axis And The Shape Becomes Motion.</h2>
+            <h2 class="raster-pulse__headline">No shape is drawn here. Every dot is asked where it sits.</h2>
             <span class="raster-pulse__bracket raster-pulse__bracket--tr" aria-hidden="true"></span>
             <span class="raster-pulse__bracket raster-pulse__bracket--br" aria-hidden="true"></span>
           </div>
         </article>
       </section>
+    </div>
 
   </div>
+
+  <!-- notes.md, rendered. Closed by default: the states are what the page is
+       for, and the decisions are what you open when you want to know why. A
+       <details> rather than a scripted panel — disclosure is the one thing the
+       element already is, keyboard and screen reader included, and this page
+       has no other reason to carry script. -->
+  <details class="demo__notes">
+    <summary class="demo__notes-summary">
+      <h2 class="demo__notes-title" data-i18n="notes.title">Decisions</h2>
+      <svg class="demo__notes-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+        <path d="M4 6l4 4 4-4" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </summary>
+
+    <div class="demo__notes-body">
+
+      <dl class="demo__notes-meta">
+        <div class="demo__notes-row">
+          <dt data-i18n="notes.type">Type</dt>
+          <dd data-i18n="type">Card</dd>
+        </div>
+      </dl>
+
+      <p class="demo__notes-lede">A poster card whose artwork is a field of 289 dots, and not one of them is placed. Each carries its coordinate and nothing else; the stylesheet decides from that whether a dot is in the shape, which of the two tones it takes, and where it sits in a pulse travelling across the field. A pattern is therefore three formulas on one class — change them and the same 289 elements draw something else — and the footer under the artwork states what the field is made of rather than whose it is.</p>
+
+      <ol class="demo__notes-list">
+        <li>
+          <h3 class="demo__notes-head">The dot carries a coordinate; the stylesheet carries the shape.</h3>
+          <p>Each of the 289 <code>&lt;i&gt;</code> elements holds nothing but <code>--x</code> and <code>--y</code>, running −8..8 with 0,0 on a true centre cell (the field is odd-numbered for exactly that reason). <code>component.css</code> derives the rest: <code>max(|x|,|y|)</code> for the square-ring index, <code>hypot()</code> for the radius, <code>atan2()</code> for the bearing. A pattern is then three formulas on <code>.raster-pulse__dot</code> — <code>--on</code> (is this dot in the shape), <code>--tone</code> (which of the two colours), <code>--phase</code> (0..1, where it sits in the wave) — which is why <code>--pinwheel</code>, <code>--halftone</code>, <code>--moire</code> and <code>--scan</code> are one class on the root and not one grid each, and why none of it needs JavaScript. The booleans are arithmetic: <code>clamp(0, v <em> 1000, 1)</code> steps a signed test to 0 or 1, <code>max()</code> is OR, <code>min()</code> is AND — that is the whole of the halftone's "inside the disc, or past 6.5 on both axes at once". <code>abs()</code> is written the long way as <code>max(v, -1 </em> v)</code> on purpose: everything else here (hypot, atan2, sin, mod, round) is Chrome 125 / Safari 15.4 / Firefox 118, and <code>abs()</code> alone would have moved that floor to Chrome 133.</p>
+        </li>
+        <li>
+          <h3 class="demo__notes-head">One animation, 289 delays.</h3>
+          <p>Every dot runs the same three-stop keyframe at the same duration — one set per state, alpha at rest and colour when active, the same shape in two currencies — and the travelling wave is one declaration: <code>animation-delay: calc((var(--phase) - 1) <em> var(--spread) </em> var(--dur))</code>. The <code>- 1</code> makes the delay negative, so the field is already mid-pulse on the first frame instead of sitting dark for a cycle. The bright window is 0–16% of the cycle against a 28% recovery — a symmetric curve reads as the whole field breathing, and only a narrow peak reads as a ring <em>moving through</em> it. Because the wave lives entirely in <code>--phase</code>, <code>--scan</code> is that one formula turned diagonal — same field, same keyframe, and the shape becomes motion.</p>
+        </li>
+        <li>
+          <h3 class="demo__notes-head">At rest the pulse moves brightness; active, it moves hue.</h3>
+          <p>Resting, a dot cycles between its own tone pulled 60% toward the field background and full strength, at 6.4s. On hover, <code>--open</code>, or <code>:active</code>, the pair swaps: the trough becomes the dot's own tone and the peak becomes the <em>other</em> tone, at 1.9s — so a band of the second colour crosses the field instead of a band of light. The two halves are paid for differently, and that is a decision rather than an implementation detail: a tone pulled toward the field background <em>is</em> alpha, so the resting wave is one static colour and an opacity ramp, while the hue swap — which alpha cannot say — animates the colour itself. Only the second is expensive, and it only ever runs on the card under the pointer. The resting field costs nothing, where animating a <code>var()</code>-derived <code>background-color</code> across 289 dots cost a whole main thread in five thumbnails nobody was looking at. Alpha carries a little more chroma than the same mix in oklab, which is the 60% against the 58% that drew this field before — near enough to sit unnoticed, far enough to be worth writing down. Both tones come out of one <code>color-mix()</code> keyed on <code>--tone</code>, and its inverse, so no state needs a second selector per colour. This is also the answer to <code>(hover: none)</code>: the component's whole second half lives in that state, so a press holds it for as long as it is held.</p>
+        </li>
+        <li>
+          <h3 class="demo__notes-head">Type is a ratio of the poster, not a rem value.</h3>
+          <p><code>container-type: inline-size</code> on the root and every footer metric in <code>cqw</code> — headline 8, footer padding 6.4, spec line 3.1, registration marks 2.6. That is what makes the thumbnail the same poster at 312px that the demo is at 352px and the phone is at 272px; set in rem the headline held its size while the frame shrank and walked out of its band. It also means <code>--raster-pulse-width</code> is a single-value rescale of the whole footer, which is how the thumbnail is sized.</p>
+        </li>
+        <li>
+          <h3 class="demo__notes-head">One pattern could not have been a shape.</h3>
+          <p>Every other pattern here tests a region — inside this disc, on this arm, past this ring — and <code>--moire</code> has no region at all. Two ring systems sit either side of the centre, and a dot is on where exactly one of them has a ring there: XOR, written with the same <code>max()</code> and <code>min()</code> doing OR and AND everywhere else. Nothing in the file knows what it looks like until the cells are laid out, which is the thesis stated once. Two numbers make it legible. The tone says which source owns a dot — the nearer one — because tone by ring parity has every dot changing colour as often as it changes state, and the field reads as confetti; split by ownership it is two colours meeting down the middle with the fringes drawn in both. And the ring pitch has to be coarse: at 0.8 rings per cell the fringes fall a cell apart and scatter, where at 0.35 they are three cells wide and the interference has room to be a shape.</p>
+        </li>
+        <li>
+          <h3 class="demo__notes-head">Nothing sits on the field, and the footer carries a spec rather than a mark.</h3>
+          <p>The artwork holds no emblem at all. A 3-cell knockout badge on the centre cell was the first version, and it was the one thing on that field the grid did not derive; taken out, the ring's hollow centre is the field's own rather than a square hole punched over it, the pinwheel's arms converge where you can see them do it, and the scan runs edge to edge. The only marks left are two registration brackets down one edge — a pair reads as a crop mark, all four read as a frame around the type, which is a different and worse idea. The footer went the same way. A mark and a name under an artwork make it an advertisement for a product that does not exist; what is worth printing there is what the artwork is made of. So the line reads 17 × 17 · 289 cells · one rule, tracked and uppercase in the register the brackets are in, and every part of it is still true whichever pattern the root is wearing — which a name never would be. Its separator is a circle at the field's own pitch, drawn by the rule rather than typed into the copy, so the words stay three plain words.</p>
+        </li>
+      </ol>
+
+      <!-- Where it started, last: the block opens on the component, and the
+           lineage is a footnote to it. Same order notes.md has. -->
+      <dl class="demo__notes-meta demo__notes-meta--foot">
+        <div class="demo__notes-row">
+          <dt data-i18n="notes.inspiration">Inspiration</dt>
+          <dd><a href="https://x.com/chalaska" target="_blank" rel="noopener noreferrer">x.com/chalaska</a></dd>
+        </div>
+      </dl>
+
+      <p class="demo__notes-foot">
+        <a href="notes.md">notes.md</a>
+        <span data-i18n="notes.full">&mdash; the full record, including what was tried and dropped</span>
+      </p>
+    </div>
+  </details>
 
   <!--
     Language. Self-contained on purpose: the folder has to survive being copied
@@ -377,14 +739,25 @@
   -->
   <script>
     (function () {
-      var STORE_KEY = 'ui-reference-base:lang';
+      var STORE_KEY = 'interface-studies:lang';
 
       var DA = {
-        'back': 'Alle referencer',
+        'notes.title': 'Beslutninger',
+        'notes.type': 'Type',
+        'notes.inspiration': 'Inspiration',
+        'notes.full': '\u2014 hele optegnelsen, ogs\u00e5 det der blev pr\u00f8vet og forkastet',
+        'type': 'Kort',
+        'heading': 'Rasterpuls',
+        'lede': 'Et plakatkort, hvis punktfelt selv regner sin form ud. Hvert '
+          + 'punkt b\u00e6rer intet andet end sin koordinat i gitteret; CSS '
+          + 'udleder, om det h\u00f8rer til m\u00f8nsteret, hvilken af to toner det '
+          + 'f\u00e5r, og hvor det ligger i den puls, der vandrer gennem feltet.',
+        'back': 'Alle studier',
         'state.default': 'Standard \u2014 ringfelt, hvilende puls',
         'state.active': 'Aktiv \u2014 samme felt, pulsen holdt \u00e5ben',
         'state.pinwheel': 'Vindm\u00f8lle \u2014 arme af retning plus radius',
-        'state.halftone': 'Rasterskive \u2014 lyst tema, hj\u00f8rneklynger',
+        'state.halftone': 'Rasterskive \u2014 lyst tema, rastreret kant',
+        'state.moire': 'Interferens \u2014 to ringsystemer, \u00e9t p\u00e5 hver side af midten',
         'state.scan': 'Scanning \u2014 alle punkter t\u00e6ndt, pulsaksen drejet diagonalt'
       };
 
@@ -400,6 +773,12 @@
           var key = el.getAttribute('data-i18n');
           el.textContent = table && table[key] ? table[key] : english[i];
         });
+
+        // The tab follows the heading rather than keeping its own copy of it,
+        // so the study's name is the same string in both places and in both
+        // languages. The <title> in the markup is the no-script fallback.
+        var head = document.querySelector('.demo__heading');
+        if (head) document.title = head.textContent.trim() + ' \u2014 Interface Studies';
 
         document.documentElement.lang = lang;
         buttons.forEach(function (b) {

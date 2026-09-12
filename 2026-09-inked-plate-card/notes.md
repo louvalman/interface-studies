@@ -1,30 +1,105 @@
 type: card
 
-Source: https://aesthetic-cards.vercel.app/ — the feature-card row going
-around on X. `ref.png` is a redrawing of the shared screenshot rather than the
-screenshot itself, because the source host is unreachable from the build
-environment. Checked against the original and kept.
+One card as two plates: a drawing plate and a caption plate under it, the same
+width, 6px apart. The four corners that face each other across that gap are
+rounded harder than the rest — 30px against 14px — so the two plates turn
+towards each other at the seam and away from it everywhere else, which is what
+keeps the pair reading as two plates rather than as one box with a line through
+it. The drawing field sits on a dot grid inside a bracketed frame, and the line
+drawing inks itself on load — every path draws at the same rate, in an order
+the markup declares, with no script anywhere. The plates carry a title and a
+note, and the only other thing printed on them is the number of paths the
+drawing took.
 
-Extraction, not a copy. What is taken is the construction — two plates with cut
-facing corners, a crop-marked drawing field on a dot grid, and a line drawing
-that inks itself on load. What is left behind is everything that identifies the
-original: the orange and cream, the three shapes (nested circles with ± glyphs,
-a ruled triangle, a hatched Venn), the product copy, and the `◇ FEATURES`
-section header — a row of three cards is page layout, and this is one card.
+Six drawings, all of them constructions rather than pictures: concentric
+squares rotating into a vortex, a waterfall of drifting ridgelines, a nephroid
+drawn as 48 straight chords across a circle, 14 circles shrinking off-centre
+into an orbit, nine nested Lissajous figures at 3:2, and a 7×7 grid bulged
+around a point into a lens. Six surfaces, each a pair of colours rather than a
+brightness: porcelain, `--acid`, `--graphite`, `--ochre`, `--indigo` and
+`--chalk`.
 
-Colours are lime on graphite instead of orange on warm grey, and the drawings
-are three of my own: concentric squares rotating into a vortex, a waterfall of
-drifting ridgelines, and a nephroid drawn as 47 straight chords across a circle.
+- **The card is two plates, and the seam is the point.** Not one box with a
+  rule across it: a drawing plate and a caption plate, 6px apart, and the
+  four corners facing that gap are rounded to 30px while the rest stay at 14px,
+  so each plate turns towards the other at the seam and away from it everywhere
+  else. Hover widens the seam to 13px and pushes the bracket frame 3px
+  outward, so the two plates separate a little rather than the card lifting.
 
-- **The card is two plates, and the seam is the point.** Not one box with a rule
-  across it: an artwork plate and a caption plate, 6px apart, and the two
-  corners facing that gap are cut at 45° while the outer four stay at a 14px
-  radius — each plate reads as a piece of cut sheet rather than half of a
-  rounded box. The cut is `mask-image` with two `linear-gradient`s and
-  `mask-composite: intersect`; **intersect** is load-bearing, because mask
-  layers union by default and the union of two corner cuts removes nothing at
-  all. Hover widens the seam to 13px and pushes the crop marks 3px outward, so
-  the two plates separate a little rather than the card lifting.
+  Those corners were a 45° chamfer first, cut out of each plate with a
+  `mask-image` per corner and `mask-composite: intersect` — intersect being
+  load-bearing there, since mask layers union by default and the union of two
+  corner cuts removes nothing at all. It is a sharper idea than this card
+  wants: a chamfer is a cut edge, which says *sheet stock*, and everything
+  else here — the plotter drawing, the soft plate, the annotation — is calmer
+  than that. Rounding the same corners says the same thing about the seam and
+  says it in one property. The whole mask apparatus came out with it, which is
+  the rare change that is both a design decision and less code.
+
+- **Both plates are the same width, and the seam is what separates them.**
+  Two plates of equal width stacked with a gap can read as one box with a line
+  through it, and the first answer to that was to narrow the caption to 72% —
+  a label under a plate, with the step all on the right. Built, looked at,
+  dropped: once the facing corners round towards each other the pair reads as
+  two plates at any width, and the narrowing was solving a problem the corners
+  had already solved. It cost more than it looked, too — a third off the note's
+  measure, so the copy had to shorten and the caption's floor had to go up to
+  three lines to keep the cards level.
+
+  `--…-caption-w` keeps it one value away, and the corner rule follows the
+  width on its own: *a corner takes the seam radius when there is a plate
+  directly across the gap from it*. At 100% that is all four. Narrow the
+  caption and the drawing plate's bottom right faces the page instead, so it
+  wants the card's own radius back — a seam corner answering something that is
+  not there is the one thing this rule is for.
+
+- **The frame around the drawing is a bracket, not a crop mark.** Four corner
+  ticks around a field is a printer's registration device, and it was the most
+  borrowed thing left on this card — a piece of furniture that arrives with
+  the construction and stays because nobody asks what it is for. The brackets
+  have a rounded elbow now, which is the same frame in this card's own
+  language rather than in a plate-maker's.
+
+  It is one bordered box masked down to a square at each corner, not eight
+  background bars: eight straight bars cannot turn a corner, and that
+  construction is exactly why they were sharp in the first place. Draw the
+  whole rounded rectangle, then let four mask squares decide how much of it
+  shows. Each mask square is wider than the radius, so a bracket is the arc
+  plus a short straight run on both arms. It still moves: hover pushes the
+  whole box 3px outward, which is one `inset` rather than eight positions.
+
+  And it sits 8px *outside* the dot field rather than flush with it. Flush,
+  the arc runs straight over the outermost row of dots and both lose: the line
+  picks up the dots' rhythm and reads as broken, the dots pick up the line and
+  read as a smudge, and at a rounded corner the two cross at every angle at
+  once. Clear of the field the frame is a frame and the field keeps its own
+  edge. Further out again — past about 11px — it starts to parallel the
+  plate's own rounded corner and reads as a second outline of the plate, which
+  is the other way to get this wrong.
+
+  Two things had to follow the plate once the frame moved out. Its bottom pair
+  of corners sits inside the plate's seam corners, so it has to be *concentric*
+  with them — the plate's radius less the gap, 30 less 10 — or the clearance
+  pinches exactly where the bracket's own arc is: 10px along the straight run
+  and 7.7px at the corner. That is the amount that reads as wrong without
+  announcing what it is. And the masked square at each corner is derived from
+  the largest of the frame's radii rather than set by hand, because the first
+  version of this had a 20px bottom corner inside an 18.4px square: the whole
+  square went on the curve and the bracket came out as a bare smile with no
+  arms on it.
+
+- **The plate is annotated with what the drawing is made of.** The caption
+  plate's right-hand slot says `13 paths`, `9 paths`, `48 paths` — a fact about
+  the artwork above it that changes when the drawing does. It stands where two
+  pieces of borrowed furniture used to be: a catalogue number at the top right
+  of the drawing plate, which said nothing a single card does not already say,
+  and a ⋮ in the caption, which promised a menu this component has not got.
+  Both are the kind of thing that arrives with a construction and stays because
+  nobody asked what it was for. Moving the one annotation down also separates
+  the two plates by job: the drawing plate carries the title and the drawing,
+  the caption plate carries the prose and the measurement. It sits on the
+  note's first baseline rather than at its box top, because 10px mono against
+  13px text aligned flush at the top reads as two lines that missed each other.
 
 - **`pathLength="1"` is the whole reason the draw needs no JavaScript.** Every
   path declares its length as 1, so `stroke-dasharray: 1` and a single keyframe
@@ -33,6 +108,36 @@ drifting ridgelines, and a nephroid drawn as 47 straight chords across a circle.
   which is the only thing that would have forced a `component.js`. The drawing
   order is `--i` inline on each path — the one thing the markup carries that is
   not geometry — multiplied by the stagger to get the delay.
+
+- **Six constructions, and none of them is a picture.** A drawing here is a
+  rule applied n times — that is what makes it a plotter's subject rather than
+  an illustration, and what lets the ink animation mean something: you watch
+  the rule being carried out. Three were already here; the three added extend
+  the range rather than the count. *Orbit* is 14 circles whose radius shrinks
+  as their centre drifts, so a set of concentric rings becomes a funnel.
+  *Rosette* is nine nested Lissajous figures at 3:2, scaled 0.34 to 1 with a
+  0.06 phase drift — the drift is what keeps it from being one figure drawn
+  nine times. *Lens* is a 7×7 grid displaced radially from a point.
+
+  Lens took a second attempt, and the reason is worth keeping. The first
+  version pushed every point *away* from the centre by a Gaussian falloff,
+  which is singular at the origin: the two grid lines that pass within 4 units
+  of it get pushed in opposite directions along their length, and each came out
+  with a visible kink. Resampling did not fix it, because the kink is in the
+  field and not in the sampling. The profile is `u · e^(1−u²)` now, which is
+  zero at the centre and peaks at `σ/√2`, so the displacement is continuous
+  everywhere and the grid reads as a lens rather than as a hole with a fault in
+  it. The name followed the fix: it bulges, so it is a lens.
+
+- **A surface is a pair of colours, not a brightness.** Each of the six sets a
+  plate, an ink, a line and two alphas, and they are not a light-to-dark ramp:
+  `--graphite` draws lime on near-black, `--indigo` draws a tint of its own
+  plate three steps lighter, `--ochre` puts brown on the most saturated plate
+  in the set because a true black there reads as a warning sign rather than as
+  a drawing, and `--chalk` differs from the porcelain default by hue alone at
+  the same weight. That last pair is the one worth having: a set with no near
+  neighbours is a palette, and the interesting question about a surface is
+  whether it survives sitting next to the one it nearly is.
 
 - **The stagger is per drawing, not per component.** 34ms across the vortex's
   13 squares, 44ms across the waterfall's 9 ridgelines, 12ms across the
@@ -54,8 +159,8 @@ drifting ridgelines, and a nephroid drawn as 47 straight chords across a circle.
   drawing's own coordinates, so the weight shrinks with the card instead of
   getting heavier as the card gets smaller — a card at 320px is the same
   drawing, only smaller. The type does not scale: 18px/500 title, 13px note,
-  and a 10px mono number at 0.14em tracking, three sizes with nothing in
-  between. The crop marks and the dot grid stay in px for the same reason a
+  and a 10px mono count at 0.14em tracking, three sizes with nothing in
+  between. The bracket frame and the dot grid stay in px for the same reason a
   hairline does.
 
 Where there is no pointer, nothing is lost, because the draw is a load event
@@ -73,27 +178,59 @@ index's observer stands in for the one the CSS has not got. Off the index,
 finished lines, which is the honest reduction: the artwork is the component,
 the wipe is not.
 
-Surfaces are `--acid` (lime plate, ink lines) and `--graphite` (dark plate,
-lime lines); the default is porcelain. Each is three colour values and a dot
-opacity, nothing structural. `--live` is the index's hover.
+Surfaces are `--acid`, `--graphite`, `--ochre`, `--indigo` and `--chalk`; the
+default is porcelain. Each is a handful of colour values and two alphas,
+nothing structural. `--live` is the index's hover.
 
-The two pages disagree about the ground, and only about the ground.
-`demo.html` keeps the dark one the aesthetic is built for — ink plates over a
-chalk plotter grid, which is where the component lives, and where `--graphite`
-sits beside the default so the pair isolates the surface: one drawing, one
-wipe, two colours to read it against. `preview.html` shows the same default
-card on the light `#f3f2ef` every reference in this repo shares, because the
-rail has to read as one set of cards and a dark frame among light ones reads
-as a hole rather than a card.
+`demo.html` is laid out one drawing to a row, three surfaces across. The axis
+matters: a page grouped by surface compares colours and says nothing about the
+constructions, where a row holding one drawing on three plates isolates exactly
+the thing the surface is supposed to be doing — one drawing, one wipe, three
+colours to read it against. The trio rotates down the page, so no two rows show
+the same three and the page covers eighteen of the thirty-six pairings without
+repeating one. A full matrix of all thirty-six would be a colour picker.
 
-What makes that work is that the plotter grid belongs to the page and not to
-the plate. On the light ground the grid runs up to the porcelain plate and
-stops, and that stop is the plate's edge — which is why a card whose fill is
-four percent lighter than what it sits on still reads as an object. Take the
-grid away and the same pairing needs a hairline.
+It keeps the dark ground the aesthetic is built for — ink plates over a chalk
+plotter grid, which is where the component lives — and it opens on the exact
+card the index shows: `--acid`, the waterfall, the same title and note. The
+porcelain default would be the tidier choice on paper, being the component with
+no modifier applied, and it is the wrong one. A thumbnail is a promise about
+what is behind it, and a page that opens on a different card than the one just
+clicked spends its first moment making the reader check they landed in the
+right place. The default is one row down, first in its own row, which is early
+enough. The last row is the only one that is not about looking: it holds the
+two states that are about behaviour, the re-ink and a note longer than the
+caption plate's floor.
 
-One change from the source rather than an extraction of it:
-`--…-caption-min` gives the caption plate a floor, so a two-line and a
-three-line note leave the card the same height. The original lets the footer
-strips size to their own text, which leaves a row of three cards with a ragged
-bottom edge — the cards look like a set until you look at where they end.
+`preview.html` takes the light `#f3f2ef` every study in this repo shares,
+because the rail has to read as one set of cards and a dark frame among light
+ones reads as a hole rather than a card. What makes a porcelain plate work on
+that ground is that the plotter grid belongs to the page and not to the plate:
+the grid runs up to the plate and stops, and that stop is the plate's edge,
+which is why a fill four percent lighter than what it sits on still reads as an
+object. Take the grid away and the same pairing needs a hairline.
+
+It holds at thumbnail size too — the card lays the preview out at
+`--preview-w` and shows it at `--preview-scale`, and at 0.7 the edge and the
+vortex both survive. What does not survive is being noticed: porcelain plate on
+porcelain ground inside the index's own light rail is three near-whites
+stacked, and a thumbnail's one job is to be picked out of a row of them. So the
+preview rests on `--acid` with the waterfall instead — the one surface with
+presence in that rail that does not go dark and read as a hole, and 9 curves
+that carry further than 13 nested squares at any scale. The cost is that the
+card advertises a modifier rather than the unmodified default, and that this is
+the loudest card on the page; porcelain is one quick-look dot behind it, and it
+is still what `demo.html` opens on.
+
+`--…-caption-min` gives the caption plate a floor of two lines plus its
+padding, so a one or two line note leaves the card exactly the same height.
+Let the caption size to its own text and a row of these cards has a ragged
+bottom edge — they look like a set until you look at where they end. The floor
+tracks the measure rather than being a constant: it went to three lines while
+the plate was narrowed and came back down with the width, and set above the
+longest ordinary note it levels nothing and leaves the note floating in air.
+
+Inspiration: https://aesthetic-cards.vercel.app/ — a feature-card row, for the
+two-plate construction and the cut facing corners. `ref.png` is a redrawing of
+a screenshot of it rather than the screenshot, because the host is unreachable
+from the build environment; checked against the original and kept.

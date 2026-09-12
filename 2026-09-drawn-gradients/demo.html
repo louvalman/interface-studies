@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>2026-09-drawn-gradients</title>
+  <title>Drawn gradients &mdash; Interface Studies</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,6 +12,20 @@
   <!-- Page chrome, like the back link: goes stale if this folder is copied
        out on its own, and nothing else breaks when it does. -->
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+
+  <!-- What a link to this page looks like when it is pasted somewhere. The
+     card image is the index's, one level up — the same place this page
+     already takes its favicon and its back link from, so it goes stale in
+     exactly the same way and no worse. A copied-out folder loses the
+     picture and keeps the title and the sentence. -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Interface Studies" />
+  <meta property="og:title" content="Drawn gradients &mdash; Interface Studies" />
+  <meta property="og:description" content="How a soft gradient field gets made, and then what to do with it. Shapes drawn and blurred until they are one, or the same look written as a stop list — either way projected onto whatever geometry it is given. Shape and theme are separate axes, and everything else is a custom property." />
+  <meta property="og:image" content="../og.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
 
   <link rel="stylesheet" href="component.css">
 
@@ -36,8 +50,10 @@
 
     /* Aligned to the page's own padding, so it sits on the same edge as the
        content rather than floating inside the margin. */
+    /* Absolute, not fixed: the language is picked once and the chip has no
+       reason to ride the viewport down the page. */
     .demo__lang {
-      position: fixed;
+      position: absolute;
       top: clamp(1.25rem, 3vw, 2.25rem);
       right: var(--demo-gutter);
       z-index: 20;
@@ -47,14 +63,13 @@
       padding: 0.2rem 0.35rem;
       border-radius: 999px;
       background: rgba(255, 255, 255, 0.72);
-      backdrop-filter: blur(8px);
     }
 
     .demo__lang-btn {
       padding: 0.35em 0.5em;
       border: 0;
       background: transparent;
-      color: #8a919c;
+      color: #656b73;
       font-family: "JetBrains Mono", ui-monospace, monospace;
       font-size: 0.625rem;
       letter-spacing: 0.16em;
@@ -68,7 +83,7 @@
     .demo__lang-btn[aria-pressed="true"] {
       color: #14171c;
       text-decoration: underline;
-      text-decoration-color: #b4552f;
+      text-decoration-color: #ac512d;
       text-decoration-thickness: 1px;
       text-underline-offset: 0.4em;
     }
@@ -110,7 +125,7 @@
       font-size: 0.6875rem;
       letter-spacing: 0.18em;
       text-transform: uppercase;
-      color: #8a919c;
+      color: #656b73;
     }
 
     .demo__heading {
@@ -155,13 +170,40 @@
       max-width: 56ch;
       font-size: 0.9375rem;
       line-height: 1.55;
-      color: #8a8a84;
+      color: #6a6a66;
     }
 
+    /* The examples are intrinsically sized — a pair of surfaces sized in rem
+       neither grows nor shrinks to a track — so a wrapped line leaves its
+       remainder hanging off the left edge under a full line above it.
+
+       --demo-grid-max is half the fix and lives here; the other half is the
+       centring on --tiles below, and neither works alone. The cap is the
+       natural width of one full line, so a line that fills it has no leftover
+       to distribute and still starts at the gutter, in step with the band
+       title above it — which is what lets the centring stay out of the way
+       until a line actually wraps. Flex, not grid: a short last row is
+       left-set whatever grid's `justify-content` says, because the tracks are
+       the same for every row. */
     .demo__grid {
       display: flex;
       flex-wrap: wrap;
       gap: clamp(1.5rem, 4vw, 3rem);
+      max-width: var(--demo-grid-max, 100%);
+    }
+
+    /* Only a row of equal-width examples earns this. Three pairs of 7rem
+       surfaces plus two gaps is the natural line of every colour band, and
+       the four shapes land on the same number — so the cap binds, and the
+       centring below has nothing to do until a line actually wraps.
+
+       The groups further down hold examples of four different widths, and
+       there the same pair reads as a mistake: a lone 14rem card centred under
+       a line of three unequal ones is not aligned to anything. Those stay at
+       the gutter. */
+    .demo__grid--tiles {
+      --demo-grid-max: 52rem;
+      justify-content: center;
     }
 
     /* A wrapped flex line still overflows if an item refuses to shrink, and
@@ -239,7 +281,7 @@
       font-family: "JetBrains Mono", ui-monospace, monospace;
       font-size: 0.625rem;
       letter-spacing: 0.14em;
-      color: #8a8a84;
+      color: #6a6a66;
     }
 
     .demo__step strong {
@@ -258,6 +300,36 @@
       color: #55565a;
     }
 
+    /* Below 36.5rem — 2 × 7rem-pair plus the gap floor against a 6vw gutter —
+       every line holds one example, and left-setting them put all of the
+       leftover on the right: a 15rem pair in a 24rem column, ragged down the
+       whole page. So the example centres here too, and the caption and the
+       hint centre with it — a left-set caption over a centred pair is the
+       misalignment this was meant to avoid, not a fix for it.
+
+       The state box is already the width of the example it holds, so centring
+       the line is enough to move it; what was left was the two labels sitting
+       left inside it. They are centred by name — not by an `align-items` on
+       the state, which sizes every child to its own content and blew a
+       full-bleed example past both edges of a 320px screen, and not by a
+       `text-align` on the state either, which inherits, and the groups
+       further down put real copy inside the component. Nothing here reaches
+       into a component class.
+
+       It sits down here rather than beside the grid rules because .demo__hint
+       carries align-self: flex-start at every other width, and one class
+       beats one class on source order alone. */
+    @media (max-width: 36.5rem) {
+      .demo__grid { justify-content: center; }
+
+      .demo__caption { text-align: center; }
+
+      .demo__hint {
+        align-self: center;
+        text-align: center;
+      }
+    }
+
     /* --- touch targets --- */
 
     /* No hover means a finger, and a finger cannot aim at a 10px label. The
@@ -274,6 +346,186 @@
 
       .demo__back { min-height: 2.75rem; }
     }
+
+    /* --- decisions ------------------------------------------------------
+
+       notes.md, rendered. The file stays the record; this is the shape the
+       contract asks every study to state — the type, the origin, and the
+       decisions the build captures — so the page that shows the component also
+       says what was extracted and why. It used to live only in the repo, which
+       meant the one artefact worth lifting was the one thing the site never
+       showed.
+
+       Kept in step with notes.md by hand, like the language table above it and
+       preview.html's markup: there is no build step to read the file, and
+       fetching it fails over file://, where each document gets an opaque
+       origin. The prose is left in the language it was written in — it is a
+       record of decisions, not page copy, and the same reasoning that leaves
+       component sample copy alone applies. Only the labels around it switch. */
+    .demo__notes {
+      margin-top: clamp(3.5rem, 8vw, 6rem);
+      padding-top: clamp(2rem, 4vw, 3rem);
+      border-top: 1px solid rgba(20, 23, 28, 0.12);
+      /* Prose measure, not the page's. The states above lay out as wide as
+         they need; a paragraph does not. */
+      max-width: 42rem;
+    }
+
+    .demo__notes-title {
+      margin: 0;
+      font-size: 1.125rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: #14171c;
+    }
+
+    /* The disclosure row. `list-style: none` kills the marker in Firefox and
+       Chrome; the ::-webkit- rule is still needed for Safari. */
+    .demo__notes-summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.25rem 0 0.75rem;
+      cursor: pointer;
+      list-style: none;
+    }
+
+    .demo__notes-summary::-webkit-details-marker { display: none; }
+
+    .demo__notes-summary:focus-visible {
+      outline: 2px solid #14171c;
+      outline-offset: 4px;
+      border-radius: 0.25rem;
+    }
+
+    .demo__notes-chevron {
+      flex: none;
+      width: 1rem;
+      height: 1rem;
+      color: #6a6a66;
+      transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .demo__notes-summary:hover .demo__notes-chevron { color: #14171c; }
+
+    .demo__notes[open] .demo__notes-chevron { transform: rotate(180deg); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .demo__notes-chevron { transition: none; }
+    }
+
+    /* Touch: the row is the target, and it has to be one you can hit. */
+    @media (hover: none) {
+      .demo__notes-summary { min-height: 2.75rem; }
+    }
+
+    .demo__notes-body { padding-bottom: 0.5rem; }
+
+    .demo__notes-meta {
+      margin: 0.75rem 0 0;
+      display: grid;
+      gap: 0.6rem;
+    }
+
+    .demo__notes-row {
+      display: grid;
+      grid-template-columns: 4.5rem minmax(0, 1fr);
+      gap: 0.9rem;
+      align-items: baseline;
+    }
+
+    .demo__notes-row dt {
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.625rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #6a6a66;
+    }
+
+    .demo__notes-row dd {
+      margin: 0;
+      font-size: 0.875rem;
+      line-height: 1.5;
+      color: #55565a;
+      /* A source URL is one unbroken word and the page is 320px wide on a
+         phone: without this it sets the whole column's minimum. */
+      overflow-wrap: anywhere;
+    }
+
+    .demo__notes-lede {
+      margin: 1.75rem 0 0;
+      font-size: 0.9375rem;
+      line-height: 1.7;
+      color: #55565a;
+    }
+
+    .demo__notes-list {
+      margin: 2.25rem 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 1.75rem;
+    }
+
+    .demo__notes-list > li {
+      display: grid;
+      gap: 0.45rem;
+    }
+
+    .demo__notes-head {
+      margin: 0;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      line-height: 1.45;
+      color: #14171c;
+    }
+
+    .demo__notes-list p {
+      margin: 0;
+      font-size: 0.9375rem;
+      line-height: 1.7;
+      color: #55565a;
+    }
+
+    .demo__notes code {
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.85em;
+      padding: 0.12em 0.32em;
+      border-radius: 0.25rem;
+      background: rgba(20, 23, 28, 0.06);
+      /* Declarations run long and a code span may not push the page sideways. */
+      overflow-wrap: anywhere;
+    }
+
+    .demo__notes a {
+      color: inherit;
+      text-decoration-color: #ac512d;
+      text-underline-offset: 0.2em;
+    }
+
+    .demo__notes a:focus-visible {
+      outline: 2px solid #14171c;
+      outline-offset: 2px;
+      border-radius: 0.15rem;
+    }
+
+    /* The inspiration row, below the decisions rather than above them. */
+    .demo__notes-meta--foot { margin-top: 2.5rem; }
+    .demo__notes-meta--foot + .demo__notes-foot { margin-top: 1.1rem; }
+    /* 'Inspiration' is longer than 'Type' and sets its own column. */
+    .demo__notes-meta--foot .demo__notes-row {
+      grid-template-columns: 6.25rem minmax(0, 1fr);
+    }
+
+    .demo__notes-foot {
+      margin: 2.5rem 0 0;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.6875rem;
+      line-height: 1.7;
+      letter-spacing: 0.08em;
+      color: #6a6a66;
+    }
   </style>
 </head>
 <body>
@@ -289,7 +541,7 @@
     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
       <path d="M10 2 4 8l6 6" stroke-linecap="round" stroke-linejoin="round" />
     </svg>
-    <span data-i18n="back">All references</span>
+    <span data-i18n="back">All studies</span>
   </a>
 
   <header class="demo__intro">
@@ -322,7 +574,7 @@
         <span class="demo__swatch demo__swatch--dawn" aria-hidden="true"></span>
         <span data-i18n="band.orange">Orange</span>
       </p>
-      <div class="demo__grid">
+      <div class="demo__grid demo__grid--tiles">
       <section class="demo__state">
         <p class="demo__caption" data-i18n="drawn.sunburst">Sunburst — radiating wedges</p>
         <p class="demo__hint">blur 0.16</p>
@@ -434,7 +686,7 @@
         <span class="demo__swatch demo__swatch--ice" aria-hidden="true"></span>
         <span data-i18n="band.blue">Blue</span>
       </p>
-      <div class="demo__grid">
+      <div class="demo__grid demo__grid--tiles">
       <section class="demo__state">
         <p class="demo__caption" data-i18n="drawn.a">Quatrefoil, ribbon, star</p>
         <p class="demo__hint">--drawn / --raw</p>
@@ -593,7 +845,7 @@
         <span class="demo__swatch demo__swatch--mint" aria-hidden="true"></span>
         <span data-i18n="band.mint">Mint</span>
       </p>
-      <div class="demo__grid">
+      <div class="demo__grid demo__grid--tiles">
       <section class="demo__state">
         <p class="demo__caption" data-i18n="drawn.ocean">Ocean — stacked swells</p>
         <p class="demo__hint">blur 0.2</p>
@@ -706,7 +958,7 @@
         <span class="demo__swatch demo__swatch--night" aria-hidden="true"></span>
         <span data-i18n="band.night">Night</span>
       </p>
-      <div class="demo__grid">
+      <div class="demo__grid demo__grid--tiles">
       <section class="demo__state">
         <p class="demo__caption" data-i18n="drawn.scanlines">Scanlines — analogue bands</p>
         <p class="demo__hint">blur 0.09</p>
@@ -878,7 +1130,7 @@
       </p>
     </div>
 
-    <div class="demo__grid">
+    <div class="demo__grid demo__grid--tiles">
       <section class="demo__state">
         <p class="demo__caption" data-i18n="state.tile">Tile</p>
         <p class="demo__hint">--tile</p>
@@ -1051,6 +1303,58 @@
           </div>
         </div>
       </section>
+
+      <section class="demo__state">
+        <p class="demo__caption" data-i18n="state.mix">Both recipes at once</p>
+        <p class="demo__hint">--mix, --…-mix: 1 / 0.5 / 0</p>
+        <!-- --drawn puts the drawing in place of the stop list; --mix puts it
+             on top of it and --…-mix is the opacity, so the two recipes can be
+             cross-faded rather than swapped. At 1 it is the drawn surface, at 0
+             the stopped one, and the middle is both at once — which is the only
+             state here that could not be reached by a class. It is also the one
+             thing in the recipe besides the base that interpolates, so it is
+             what a hover can spend: the card in the rail rests at 1 and
+             dissolves to 0 when it is looked at. -->
+        <div class="drawn-gradients" style="--drawn-gradients-size: 7rem;
+                                            --drawn-gradients-blur-ratio: 0.24;">
+          <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--mix drawn-gradients__surface--dusk"
+               style="--drawn-gradients-mix: 1;">  <!-- the drawing -->
+            <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+                 preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <ellipse class="drawn-gradients__blob drawn-gradients__blob--hot"
+                       cx="26" cy="20" rx="82" ry="54" transform="rotate(-18 26 20)" />
+              <ellipse class="drawn-gradients__blob drawn-gradients__blob--cool"
+                       cx="104" cy="48" rx="70" ry="48" transform="rotate(24 104 48)" />
+              <ellipse class="drawn-gradients__blob drawn-gradients__blob--warm"
+                       cx="54" cy="104" rx="88" ry="52" transform="rotate(-8 54 104)" />
+            </svg>
+          </div>
+          <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--mix drawn-gradients__surface--dusk"
+               style="--drawn-gradients-mix: 0.5;">  <!-- both -->
+            <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+                 preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <ellipse class="drawn-gradients__blob drawn-gradients__blob--hot"
+                       cx="26" cy="20" rx="82" ry="54" transform="rotate(-18 26 20)" />
+              <ellipse class="drawn-gradients__blob drawn-gradients__blob--cool"
+                       cx="104" cy="48" rx="70" ry="48" transform="rotate(24 104 48)" />
+              <ellipse class="drawn-gradients__blob drawn-gradients__blob--warm"
+                       cx="54" cy="104" rx="88" ry="52" transform="rotate(-8 54 104)" />
+            </svg>
+          </div>
+          <div class="drawn-gradients__surface drawn-gradients__surface--tile drawn-gradients__surface--mix drawn-gradients__surface--dusk"
+               style="--drawn-gradients-mix: 0;">  <!-- the stop list -->
+            <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+                 preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <ellipse class="drawn-gradients__blob drawn-gradients__blob--hot"
+                       cx="26" cy="20" rx="82" ry="54" transform="rotate(-18 26 20)" />
+              <ellipse class="drawn-gradients__blob drawn-gradients__blob--cool"
+                       cx="104" cy="48" rx="70" ry="48" transform="rotate(24 104 48)" />
+              <ellipse class="drawn-gradients__blob drawn-gradients__blob--warm"
+                       cx="54" cy="104" rx="88" ry="52" transform="rotate(-8 54 104)" />
+            </svg>
+          </div>
+        </div>
+      </section>
     </div>
   </section>
 
@@ -1095,14 +1399,14 @@
               <span class="drawn-gradients__surface drawn-gradients__surface--step drawn-gradients__surface--ice drawn-gradients__surface--night"
                     style="--drawn-gradients-step-row: 0;"></span>
             </div>
-            <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">03</span>
+            <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">34%</span>
 
             <div class="drawn-gradients__usage-row">
               <span class="drawn-gradients__usage-line drawn-gradients__usage-line--label">Flat colour</span>
               <span class="drawn-gradients__surface drawn-gradients__surface--step drawn-gradients__surface--ice drawn-gradients__surface--night"
                     style="--drawn-gradients-step-row: 1;"></span>
             </div>
-            <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">0.85</span>
+            <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">61%</span>
 
             <div class="drawn-gradients__usage-row">
               <span class="drawn-gradients__usage-line drawn-gradients__usage-line--label">Wash</span>
@@ -1156,7 +1460,7 @@
               </svg>
               </span>
             </div>
-            <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">0.85</span>
+            <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">61%</span>
 
             <div class="drawn-gradients__usage-row">
               <span class="drawn-gradients__usage-line drawn-gradients__usage-line--label">Overlapping art</span>
@@ -1173,7 +1477,7 @@
               </svg>
               </span>
             </div>
-            <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">03</span>
+            <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">34%</span>
           </div>
         </div>
       </section>
@@ -1207,7 +1511,7 @@
               </svg>
               </span>
             </div>
-            <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">03</span>
+            <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">34%</span>
 
             <div class="drawn-gradients__usage-row">
               <span class="drawn-gradients__usage-line drawn-gradients__usage-line--label">Flat colour</span>
@@ -1224,7 +1528,7 @@
               </svg>
               </span>
             </div>
-            <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">0.85</span>
+            <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">61%</span>
 
             <div class="drawn-gradients__usage-row">
               <span class="drawn-gradients__usage-line drawn-gradients__usage-line--label">Wash</span>
@@ -1269,14 +1573,14 @@
               <span class="drawn-gradients__surface drawn-gradients__surface--step drawn-gradients__surface--ice drawn-gradients__surface--rise"
                     style="--drawn-gradients-step-row: 0; --drawn-gradients-base: #f3f2ef;"></span>
             </div>
-            <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">03</span>
+            <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">34%</span>
 
             <div class="drawn-gradients__usage-row">
               <span class="drawn-gradients__usage-line drawn-gradients__usage-line--label">Flat colour</span>
               <span class="drawn-gradients__surface drawn-gradients__surface--step drawn-gradients__surface--ice drawn-gradients__surface--rise"
                     style="--drawn-gradients-step-row: 1; --drawn-gradients-base: #f3f2ef;"></span>
             </div>
-            <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">0.85</span>
+            <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">61%</span>
 
             <div class="drawn-gradients__usage-row">
               <span class="drawn-gradients__usage-line drawn-gradients__usage-line--label">Wash</span>
@@ -1299,14 +1603,14 @@
               <span class="drawn-gradients__surface drawn-gradients__surface--step drawn-gradients__surface--arc"
                     style="--drawn-gradients-step-row: 1; --drawn-gradients-base: #f3f2ef;"></span>
             </div>
-            <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">0.85</span>
+            <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">61%</span>
 
             <div class="drawn-gradients__usage-row">
               <span class="drawn-gradients__usage-line drawn-gradients__usage-line--label">Overlapping art</span>
               <span class="drawn-gradients__surface drawn-gradients__surface--step drawn-gradients__surface--arc"
                     style="--drawn-gradients-step-row: 2; --drawn-gradients-base: #f3f2ef;"></span>
             </div>
-            <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">03</span>
+            <span class="drawn-gradients__usage-line drawn-gradients__usage-line--value">34%</span>
           </div>
         </div>
       </section>
@@ -1326,14 +1630,91 @@
     </div>
   </section>
 
+  <!-- notes.md, rendered. Closed by default: the states are what the page is
+       for, and the decisions are what you open when you want to know why. A
+       <details> rather than a scripted panel — disclosure is the one thing the
+       element already is, keyboard and screen reader included, and this page
+       has no other reason to carry script. -->
+  <details class="demo__notes">
+    <summary class="demo__notes-summary">
+      <h2 class="demo__notes-title" data-i18n="notes.title">Decisions</h2>
+      <svg class="demo__notes-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+        <path d="M4 6l4 4 4-4" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </summary>
+
+    <div class="demo__notes-body">
+
+      <dl class="demo__notes-meta">
+        <div class="demo__notes-row">
+          <dt data-i18n="notes.type">Type</dt>
+          <dd data-i18n="type">Aesthetic</dd>
+        </div>
+      </dl>
+
+      <p class="demo__notes-lede">A gradient recipe and the surfaces that demonstrate it. Colour gathers at two off-centre pools near one edge and settles to the surface's own base at the other, so a shape reads as lit from a direction rather than as a two-colour blend — and the same recipe is re-projected onto every shape, so a tile, a circle, an arch, a pill and a full-width band all take the same light.</p>
+      <p class="demo__notes-lede">There are two ways to make that field and both are kept, because they are good at different things. The stop list is a hand-written set of radial and linear stops: cheap, static, exact. <code>--drawn</code> replaces it with two or three overlapping shapes in SVG blurred past recognition, which is how such a field is actually made — the overlaps supply mid-tones a stop list has to be tuned into producing, and a shape with points leaves soft spokes no arrangement of stops will give you. <code>--mix</code> puts both on one surface and cross-fades between them.</p>
+      <p class="demo__notes-lede"><code>--step</code> is the odd one in the set and the reason the recipe has to be re-projectable: a block of bands, one per line of type, each starting where its own label ends, so the ragged end of the copy is the staircase and the field runs across all three bands as one shape.</p>
+
+      <ol class="demo__notes-list">
+        <li>
+          <h3 class="demo__notes-head">The gradient is drawn, then blurred.</h3>
+          <p><code>--drawn</code> swaps the stop list for an SVG of two or three overlapping shapes blurred past recognition. The overlaps supply the mid-tones a stop list has to be hand-tuned to produce, and shapes with points — a star, a leaf — leave soft spokes that no arrangement of radial stops will give you. Two things make it work: the blur is a ratio of the surface rather than a fixed length, so it dissolves by the same amount at any size — and the ratio is per drawing, since a dense one (a mosaic, a scatter, stacked bands) averages to a single flat colour at the 0.26 a few large shapes want, and needs 0.1 or less; and the artwork bleeds 22% past the frame before being clipped, because blur samples the transparency outside the drawing and a fitted drawing fades to a vignette at every edge. <code>--raw</code> shows the same drawing before the blur, which is the useful half when building a new one. It carries no construction outline: at half fill-opacity the shapes already read from their own edges, and a stroke around each one fences off the overlaps — the part of the drawing actually worth seeing. <code>--…-raw-stroke</code> puts an outline back for anyone who wants one. On <code>--night</code> a drawing also has to cover the frame. Where the artwork leaves a gap the base shows through, and that gap reads as a highlight on paper but as a hole on ink — a mosaic with empty cells and crossed bands with open diamonds both blur to a blotchy field there, so they stay on the light themes and the night set is drawn edge to edge.</p>
+        </li>
+        <li>
+          <h3 class="demo__notes-head">The two recipes can be cross-faded, not only swapped.</h3>
+          <p><code>--drawn</code> drops the stop list &mdash; <code>background-image: none</code> &mdash; because there the drawing <em>is</em> the surface, and that makes the swap a cut: nothing is underneath to fade into. <code>--mix</code> keeps both on one surface, the drawing over the stops, and <code>--&hellip;-mix</code> is its opacity: 1 is the drawn surface, 0 is the stopped one, and the middle is a genuine double exposure. It is the only part of the recipe besides the base that interpolates, which is what lets a state be eased <em>through</em> rather than cut to &mdash; the index card rests at 1 and dissolves to 0 when it is looked at. The curve is symmetric on purpose: a quint ease-out looks right on a single element and is the wrong shape for a cross-fade, down to 0.28 a fifth of the way in and then three fifths of the duration spent between 0.09 and 0, which reads as a cut followed by nothing. <code>cubic-bezier(0.65, 0, 0.35, 1)</code> over 520ms keeps the change in the middle, where both images are on screen together and the double exposure is the whole effect.</p>
+        </li>
+        <li>
+          <h3 class="demo__notes-head">Two radial pools over a vertical settle, never a single linear ramp.</h3>
+          <p>Colour gathers at two off-centre origins near the top edge and dissolves outward; a <code>linear-gradient</code> underneath carries the last of it down to the base. One linear ramp corner-to-corner is what makes cheap gradients band — the eye finds the axis. With the pools offset from each other there is no axis to find, and the falloff stays smooth at any size.</p>
+        </li>
+        <li>
+          <h3 class="demo__notes-head">It settles to the surface colour, not to a second hue.</h3>
+          <p>The bottom ~40% is plain <code>#fff</code>. That is what makes the shape read as lit from one corner rather than as a two-colour blend, and it is why body copy can sit on the lower half without a scrim.</p>
+        </li>
+        <li>
+          <h3 class="demo__notes-head">Saturation drops faster than lightness.</h3>
+          <p>The hot stop is the only saturated colour; the wash stop is already half-way to the base. Fading a gradient by lightness alone leaves a muddy middle — dropping saturation first keeps the mid-tones clean.</p>
+        </li>
+        <li>
+          <h3 class="demo__notes-head">One recipe, re-projected per shape.</h3>
+          <p><code>--drawn-gradients-art</code> is declared once and every surface uses it; the shape modifiers change only <code>border-radius</code> and <code>aspect-ratio</code>. The pools are positioned in percentages, so a circle, a pill and a full-width band each get the same light from the same relative direction rather than needing their own gradient.</p>
+        </li>
+        <li>
+          <h3 class="demo__notes-head">Content type is a ratio of the surface, like the radius.</h3>
+          <p>The figure, label and micro line are <code>calc()</code>s of <code>--…-size</code>, not fixed rem. Set in rem they stayed put while the card scaled, so a card shown small kept full-size type and the label ran outside its own box. The ratios resolve to the original values at the default size; only the legend that <em>names</em> a set keeps a fixed size, because it sits beside the surfaces rather than on them.</p>
+        </li>
+      </ol>
+
+      <!-- Where it started, last: the block opens on the component, and the
+           lineage is a footnote to it. Same order notes.md has. -->
+      <dl class="demo__notes-meta demo__notes-meta--foot">
+        <div class="demo__notes-row">
+          <dt data-i18n="notes.inspiration">Inspiration</dt>
+          <dd>two supplied screenshots, kept as <code>ref.png</code> and <code>ref2.png</code> &mdash; a weather widget for the two pools and the settle, a stepped block for <code>--step</code>'s interlock.</dd>
+        </div>
+      </dl>
+
+      <p class="demo__notes-foot">
+        <a href="notes.md">notes.md</a>
+        <span data-i18n="notes.full">&mdash; the full record, including what was tried and dropped</span>
+      </p>
+    </div>
+  </details>
+
   <script>
     // Language for this page only. No shared module: the folder has to survive
     // being copied out on its own.
     (function () {
-      var STORE_KEY = 'ui-reference-base:lang';
+      var STORE_KEY = 'interface-studies:lang';
 
       var DA = {
-        'back': 'Alle referencer',
+        'notes.title': 'Beslutninger',
+        'notes.type': 'Type',
+        'notes.inspiration': 'Inspiration',
+        'notes.full': '\u2014 hele optegnelsen, ogs\u00e5 det der blev pr\u00f8vet og forkastet',
+        'back': 'Alle studier',
         'type': 'Æstetik',
         'heading': 'Tegnede gradienter',
         'lede': 'Hvordan en blød gradientflade bliver til, og hvad man så gør '
@@ -1420,6 +1801,7 @@
         'state.night': 'Falder til blæk',
         'state.retuned': 'Puljer flyttet',
         'state.settle': 'Faldretning',
+        'state.mix': 'Begge opskrifter på én gang',
         'sample.label': 'Etiket',
         'sample.line': 'Pladsholderlinje',
         'sample.bandTitle': 'En sektionsoverskrift',
@@ -1438,6 +1820,12 @@
           var key = el.getAttribute('data-i18n');
           el.textContent = table && table[key] ? table[key] : english[i];
         });
+
+        // The tab follows the heading rather than keeping its own copy of it,
+        // so the study's name is the same string in both places and in both
+        // languages. The <title> in the markup is the no-script fallback.
+        var head = document.querySelector('.demo__heading');
+        if (head) document.title = head.textContent.trim() + ' \u2014 Interface Studies';
 
         document.documentElement.lang = lang;
         buttons.forEach(function (b) {

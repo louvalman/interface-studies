@@ -269,6 +269,13 @@
            before the blur, with no outline on it. --…-bleed and --…-blur tune
            it; --…-raw-stroke puts a construction outline back.
 
+           --mix is the third option: the drawing sits ON the stop list rather
+           than in place of it, and --…-mix is its opacity. At 1 that is the
+           drawn surface, at 0 the stopped one, and between them both at once
+           — the one part of the recipe besides the base that interpolates, so
+           it is what a state can be eased through. --…-mix-ease is its curve,
+           and it wants the drawing in the markup either way.
+
   --step's own block takes --down or --up to say which way the labels rag, which
   is what decides which of each band's two left corners is on the outside and
   gets the radius. Leave it off for a rag that is not monotonic.

@@ -1,23 +1,24 @@
 type: aesthetic
 
-Source: two supplied screenshots, kept as `ref.png` and `ref2.png`.
+A gradient recipe and the surfaces that demonstrate it. Colour gathers at two
+off-centre pools near one edge and settles to the surface's own base at the
+other, so a shape reads as lit from a direction rather than as a two-colour
+blend — and the same recipe is re-projected onto every shape, so a tile, a
+circle, an arch, a pill and a full-width band all take the same light.
 
-`ref.png` is a weather widget's gradient treatment, and it is where the recipe
-comes from: the two pools, the settle, and the drawing-then-blurring the folder
-is named after. `ref2.png` is a stepped block set into three lines of type, and
-it is where `--step` comes from — the interlock and nothing else. Not its
-rounded concave corners, not its palette, and not its copy.
+There are two ways to make that field and both are kept, because they are good
+at different things. The stop list is a hand-written set of radial and linear
+stops: cheap, static, exact. `--drawn` replaces it with two or three
+overlapping shapes in SVG blurred past recognition, which is how such a field
+is actually made — the overlaps supply mid-tones a stop list has to be tuned
+into producing, and a shape with points leaves soft spokes no arrangement of
+stops will give you. `--mix` puts both on one surface and cross-fades between
+them.
 
-The widget's content is not what is being captured. What is captured is how the
-colour sits on the surface: the reference could hold anything, and the gradient
-would still read the same way.
-
-Rebuilt around how such a field is *made*. The primary technique here is to draw
-a few overlapping shapes in SVG and blur them past recognition — the shapes are
-the instrument, not the subject, which is why they are not what the reference is
-named after. A hand-written stop list reaches the same look more cheaply, so
-both are kept: the drawing for surfaces that are large or moving, the stop list
-for the static ones.
+`--step` is the odd one in the set and the reason the recipe has to be
+re-projectable: a block of bands, one per line of type, each starting where its
+own label ends, so the ragged end of the copy is the staircase and the field
+runs across all three bands as one shape.
 
 - **The gradient is drawn, then blurred.** `--drawn` swaps the stop list for
   an SVG of two or three overlapping shapes blurred past recognition.
@@ -40,6 +41,50 @@ for the static ones.
   as a hole on ink — a mosaic with empty cells and crossed bands with open
   diamonds both blur to a blotchy field there, so they stay on the light
   themes and the night set is drawn edge to edge.
+
+- **The two recipes can be cross-faded, not only swapped.** `--drawn` drops
+  the stop list — `background-image: none` — because there the drawing IS the
+  surface, and that makes the swap a cut: nothing is underneath to fade into.
+  `--mix` keeps both on one surface, the drawing over the stops, and
+  `--…-mix` is its opacity: 1 is the drawn surface, 0 is the stopped one,
+  and the middle is a genuine double exposure of the two. It is the only part
+  of this recipe besides the base that interpolates, which is what lets a state
+  be *eased through* rather than cut to — the index card rests at 1 and
+  dissolves to 0 when it is looked at.
+
+  The curve is symmetric on purpose, and that took measuring. A quint ease-out
+  looks right on a single element and is the wrong shape for a cross-fade: it
+  was down to 0.28 a fifth of the way in and spent the remaining three fifths
+  between 0.09 and 0 — a fast fade with a long dead tail, which reads as a cut
+  followed by nothing. `cubic-bezier(0.65, 0, 0.35, 1)` over 520ms keeps the
+  change in the middle, where both images are on screen together and the double
+  exposure is the whole effect. Measured through it: 0.99, 0.92, 0.71, 0.30,
+  0.08, 0.01, 0.
+
+  One thing it has to borrow from `--drawn`: on a `--step` band the drawing is
+  sized to the whole block and anchored right, not to the band. Left off, each
+  mixed band drew its own copy and the field broke into three with a hard step
+  at every tread.
+
+  **A card in a rail can carry a slow colour drift, if the colour never moves.**
+  The index card holds the drawing three times, each copy tinted once in the
+  markup and never again, and cross-fades between them on a seven-second timer.
+  The obvious version — one drawing whose hues are transitioned — looks
+  identical and is the expensive one: `fill` interpolates, so every frame of
+  the fade re-runs the blur on every band. Measured in the card with the rail
+  being dragged, that dropped 3 to 5 frames per fade; re-tinting a hidden copy
+  before fading it in is no better, because the re-tint rasters it, and that
+  landed one 83 to 117ms frame on every step. Fixed copies raster once at load
+  — 36 to 86ms for all eighteen — and after that a step is opacity on layers
+  whose contents never change.
+
+  It still needed `will-change: opacity` on the drawing, which is why that
+  lives on the modifier rather than in the preview: the first frame of a
+  cross-fade otherwise has to raster the layer it is bringing up, and a blurred
+  layer is not cheap to raster. Measured over nine seconds, one 66.7ms frame
+  per step without it and a clean 16.8ms maximum with it. With it on, the
+  drift costs nothing the rail can see: dragging the rail through the whole
+  cycle came back 60fps with zero frames over 20ms.
 
 - **Two radial pools over a vertical settle, never a single linear ramp.**
   Colour gathers at two off-centre origins near the top edge and dissolves
@@ -128,6 +173,19 @@ still the same shape, only smaller.
   polygon the longest word landed on the deepest step and nearly touched the
   fill, while a short one sat in a gap twice the size. A staircase that is not
   a measurement of the text is decoration standing next to it.
+
+  Which puts a constraint on the sample copy, and it is the one thing about
+  this shape that has to be authored rather than derived. The band measures
+  the LABEL — it starts where the label ends — while the reader's eye sees a
+  bar with a number beside it and reads the bar as measuring the number. The
+  two are only ever consistent by hand. So the rows are ordered longest label
+  to smallest value, and every value carries the same unit: 34% / 61% / 82%
+  against "Overlapping art" / "Flat colour" / "Wash". Before that it was
+  03 / 0.85 / 82% — an index, a ratio and a percentage in one column, none of
+  them comparable, the widest band carrying the one that could not be ranked
+  at all. Mixed units also left the value column ragged where it is set flush
+  right. Rename a label and the step moves; change a value and nothing moves,
+  which is exactly why the copy has to be kept in that order.
 
   Three bands read as one field because **they share a right edge**. Anchor the
   image there with `background-position-x: right`, give every band the same
@@ -660,3 +718,7 @@ A `:hover` rule in `component.css` would have been wrong anyway: settling to
 ink is a thumbnail's editorial decision about its own resting state, not
 something a gradient field does when a pointer crosses it.
 
+Inspiration: two supplied screenshots, kept as `ref.png` and `ref2.png`. The
+first is a weather widget, for the two pools and the settle; the second a
+stepped block set into three lines of type, for the interlock — the geometry of
+`--step` and nothing else about it.

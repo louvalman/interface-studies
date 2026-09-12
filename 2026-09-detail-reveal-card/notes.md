@@ -1,13 +1,14 @@
 type: card
 
-Source: https://x.com/BThreeAgency/status/2084664063272055264
+A card that is a label at rest and a panel when looked at. The label sits on
+the bottom edge; on hover the whole bottom region grows upward, so the label
+rises and the details arrive underneath it in the space it vacated. One
+translation, not four things fading in — the layout itself moves.
 
-This is a reinterpretation, not a copy. The source was a location card backed by
-a blurred landmark photo. Here the reveal mechanic is the component and the
-subject is not — the base card is content-agnostic (an article, a plan, a
-changelog), and the location treatment is a `--map` modifier layered on top:
-an abstract duotone mesh with contour rings and a pulsing pin, so the map is
-drawn rather than photographed.
+The base card is content-agnostic: an article, a plan, a changelog. The
+location treatment is a `--map` modifier layered on top — an abstract duotone
+mesh with contour rings and a pulsing pin, so the map is drawn rather than
+photographed.
 
 - **The reveal is one translation, not a height animation of many parts.** The
   label is the only thing visible at rest, sitting at the bottom edge. On hover
@@ -50,3 +51,7 @@ whatever the source order. Re-theming otherwise happens from outside by
 overriding custom properties; the pin origin moves with `--…-pin-x/y` and the
 rings follow it. The `__kicker` line is optional — the stagger covers three or
 four disclosed rows either way.
+
+Inspiration: https://x.com/BThreeAgency/status/2084664063272055264 — a location
+card whose details rise out from under its label. The reveal is what was taken;
+the card under it is this build's.

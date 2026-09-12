@@ -13,13 +13,27 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>2026-09-liquid-glass-toolbar</title>
+  <title>Liquid glass toolbar &mdash; Interface Studies</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap">
 
   <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+
+  <!-- What a link to this page looks like when it is pasted somewhere. The
+     card image is the index's, one level up — the same place this page
+     already takes its favicon and its back link from, so it goes stale in
+     exactly the same way and no worse. A copied-out folder loses the
+     picture and keeps the title and the sentence. -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Interface Studies" />
+  <meta property="og:title" content="Liquid glass toolbar &mdash; Interface Studies" />
+  <meta property="og:description" content="One glass surface that changes shape: a bar that opens into a search field, and then into a panel. Five materials, one construction." />
+  <meta property="og:image" content="../og.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
 
   <link rel="stylesheet" href="component.css">
 
@@ -41,8 +55,10 @@
       -webkit-font-smoothing: antialiased;
     }
 
+    /* Absolute, not fixed: the language is picked once and the chip has no
+       reason to ride the viewport down the page. */
     .demo__lang {
-      position: fixed;
+      position: absolute;
       top: clamp(1.25rem, 3vw, 2.25rem);
       right: var(--demo-gutter);
       z-index: 20;
@@ -59,7 +75,7 @@
       padding: 0.35em 0.5em;
       border: 0;
       background: transparent;
-      color: #8a847a;
+      color: #67625b;
       font-family: "JetBrains Mono", ui-monospace, monospace;
       font-size: 0.625rem;
       letter-spacing: 0.16em;
@@ -73,7 +89,7 @@
     .demo__lang-btn[aria-pressed="true"] {
       color: #211e19;
       text-decoration: underline;
-      text-decoration-color: #b4552f;
+      text-decoration-color: #ac512d;
       text-decoration-thickness: 1px;
       text-underline-offset: 0.4em;
     }
@@ -117,7 +133,7 @@
       font-size: 0.6875rem;
       letter-spacing: 0.18em;
       text-transform: uppercase;
-      color: #8a847a;
+      color: #67625b;
     }
 
     .demo__heading {
@@ -166,7 +182,7 @@
       max-width: 56ch;
       font-size: 0.9375rem;
       line-height: 1.55;
-      color: #7d776d;
+      color: #67625a;
     }
 
     .demo__steps {
@@ -195,7 +211,7 @@
       font-family: "JetBrains Mono", ui-monospace, monospace;
       font-size: 0.625rem;
       letter-spacing: 0.14em;
-      color: #8a847a;
+      color: #67625b;
     }
 
     .demo__step strong { color: #211e19; font-weight: 600; }
@@ -273,9 +289,10 @@
       color: rgba(50, 46, 40, 0.5);
     }
 
-    /* The narrow stage. 15rem of container, which is under the component's own
-       17rem breakpoint — the query reads this box, not the window, so the same
-       page can show both scales at once. */
+    /* The narrow stage. 15rem of container, well under the component's own
+       25rem breakpoint — the query reads this box, not the window, so a wide
+       window shows both scales at once. A phone is inside the breakpoint
+       everywhere on the page, so there it shows one. */
     .demo__narrow {
       width: min(15rem, 100%);
       max-width: 100%;
@@ -348,6 +365,186 @@
 
       .demo__back { min-height: 2.75rem; }
     }
+
+    /* --- decisions ------------------------------------------------------
+
+       notes.md, rendered. The file stays the record; this is the shape the
+       contract asks every study to state — the type, the origin, and the
+       decisions the build captures — so the page that shows the component also
+       says what was extracted and why. It used to live only in the repo, which
+       meant the one artefact worth lifting was the one thing the site never
+       showed.
+
+       Kept in step with notes.md by hand, like the language table above it and
+       preview.html's markup: there is no build step to read the file, and
+       fetching it fails over file://, where each document gets an opaque
+       origin. The prose is left in the language it was written in — it is a
+       record of decisions, not page copy, and the same reasoning that leaves
+       component sample copy alone applies. Only the labels around it switch. */
+    .demo__notes {
+      margin-top: clamp(3.5rem, 8vw, 6rem);
+      padding-top: clamp(2rem, 4vw, 3rem);
+      border-top: 1px solid rgba(33, 30, 25, 0.14);
+      /* Prose measure, not the page's. The states above lay out as wide as
+         they need; a paragraph does not. */
+      max-width: 42rem;
+    }
+
+    .demo__notes-title {
+      margin: 0;
+      font-size: 1.125rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: #211e19;
+    }
+
+    /* The disclosure row. `list-style: none` kills the marker in Firefox and
+       Chrome; the ::-webkit- rule is still needed for Safari. */
+    .demo__notes-summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.25rem 0 0.75rem;
+      cursor: pointer;
+      list-style: none;
+    }
+
+    .demo__notes-summary::-webkit-details-marker { display: none; }
+
+    .demo__notes-summary:focus-visible {
+      outline: 2px solid #211e19;
+      outline-offset: 4px;
+      border-radius: 0.25rem;
+    }
+
+    .demo__notes-chevron {
+      flex: none;
+      width: 1rem;
+      height: 1rem;
+      color: #67625b;
+      transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .demo__notes-summary:hover .demo__notes-chevron { color: #211e19; }
+
+    .demo__notes[open] .demo__notes-chevron { transform: rotate(180deg); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .demo__notes-chevron { transition: none; }
+    }
+
+    /* Touch: the row is the target, and it has to be one you can hit. */
+    @media (hover: none) {
+      .demo__notes-summary { min-height: 2.75rem; }
+    }
+
+    .demo__notes-body { padding-bottom: 0.5rem; }
+
+    .demo__notes-meta {
+      margin: 0.75rem 0 0;
+      display: grid;
+      gap: 0.6rem;
+    }
+
+    .demo__notes-row {
+      display: grid;
+      grid-template-columns: 4.5rem minmax(0, 1fr);
+      gap: 0.9rem;
+      align-items: baseline;
+    }
+
+    .demo__notes-row dt {
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.625rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #67625b;
+    }
+
+    .demo__notes-row dd {
+      margin: 0;
+      font-size: 0.875rem;
+      line-height: 1.5;
+      color: #56514a;
+      /* A source URL is one unbroken word and the page is 320px wide on a
+         phone: without this it sets the whole column's minimum. */
+      overflow-wrap: anywhere;
+    }
+
+    .demo__notes-lede {
+      margin: 1.75rem 0 0;
+      font-size: 0.9375rem;
+      line-height: 1.7;
+      color: #56514a;
+    }
+
+    .demo__notes-list {
+      margin: 2.25rem 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 1.75rem;
+    }
+
+    .demo__notes-list > li {
+      display: grid;
+      gap: 0.45rem;
+    }
+
+    .demo__notes-head {
+      margin: 0;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      line-height: 1.45;
+      color: #211e19;
+    }
+
+    .demo__notes-list p {
+      margin: 0;
+      font-size: 0.9375rem;
+      line-height: 1.7;
+      color: #56514a;
+    }
+
+    .demo__notes code {
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.85em;
+      padding: 0.12em 0.32em;
+      border-radius: 0.25rem;
+      background: rgba(33, 30, 25, 0.06);
+      /* Declarations run long and a code span may not push the page sideways. */
+      overflow-wrap: anywhere;
+    }
+
+    .demo__notes a {
+      color: inherit;
+      text-decoration-color: #ac512d;
+      text-underline-offset: 0.2em;
+    }
+
+    .demo__notes a:focus-visible {
+      outline: 2px solid #211e19;
+      outline-offset: 2px;
+      border-radius: 0.15rem;
+    }
+
+    /* The inspiration row, below the decisions rather than above them. */
+    .demo__notes-meta--foot { margin-top: 2.5rem; }
+    .demo__notes-meta--foot + .demo__notes-foot { margin-top: 1.1rem; }
+    /* 'Inspiration' is longer than 'Type' and sets its own column. */
+    .demo__notes-meta--foot .demo__notes-row {
+      grid-template-columns: 6.25rem minmax(0, 1fr);
+    }
+
+    .demo__notes-foot {
+      margin: 2.5rem 0 0;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.6875rem;
+      line-height: 1.7;
+      letter-spacing: 0.08em;
+      color: #67625b;
+    }
   </style>
 </head>
 <body>
@@ -362,7 +559,7 @@
     <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
       <path d="M10 2 4 8l6 6" stroke-linecap="round" stroke-linejoin="round" />
     </svg>
-    <span data-i18n="back">All references</span>
+    <span data-i18n="back">All studies</span>
   </a>
 
   <header class="demo__intro">
@@ -390,12 +587,12 @@
                       <span class="liquid-glass-toolbar__icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                          <path d="M4.4 19.5v-7.4a7.6 7.6 0 0 1 15.2 0v7.4" />
-                          <path d="M2.6 19.5h18.8" />
+                          <path d="M3 18h18" />
+                          <path d="M12 6 17.9 16.6H6.1z" />
                         </svg>
                       </span>
                       <span class="liquid-glass-toolbar__reveal">
-                        <span class="liquid-glass-toolbar__label">Home</span>
+                        <span class="liquid-glass-toolbar__label">Base</span>
                       </span>
                     </a>
 
@@ -423,7 +620,7 @@
                         </svg>
                       </span>
                       <span class="liquid-glass-toolbar__reveal">
-                        <span class="liquid-glass-toolbar__label">Archive</span>
+                        <span class="liquid-glass-toolbar__label">Versions</span>
                       </span>
                     </a>
 
@@ -452,7 +649,7 @@
                         </svg>
                       </span>
                       <span class="liquid-glass-toolbar__reveal">
-                        <span class="liquid-glass-toolbar__label">Settings</span>
+                        <span class="liquid-glass-toolbar__label">Display</span>
                       </span>
                     </a>
 
@@ -463,16 +660,17 @@
 
                       <li>
                         <a class="liquid-glass-toolbar__row liquid-glass-toolbar__row--unread" href="#">
-                          <span class="liquid-glass-toolbar__avatar">
+                          <span class="liquid-glass-toolbar__chip">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                              <circle cx="12" cy="9" r="3.6" />
-                              <path d="M5 20a7 7 0 0 1 14 0" />
+                              <path d="M4.6 7.4h14.8" stroke-width="2.8" />
+                              <path d="M4.6 13h9.6" stroke-width="1.8" />
+                              <path d="M4.6 17.6h5.8" stroke-width="1.2" />
                             </svg>
                           </span>
                           <span class="liquid-glass-toolbar__line">
-                            <strong class="liquid-glass-toolbar__who">Mara</strong>
-                            commented on Toolbar morph
+                            <strong class="liquid-glass-toolbar__topic">Type</strong>
+                            48/16 pair, label at 11px
                           </span>
                           <span class="liquid-glass-toolbar__time">2m</span>
                         </a>
@@ -480,15 +678,16 @@
 
                       <li>
                         <a class="liquid-glass-toolbar__row liquid-glass-toolbar__row--unread" href="#">
-                          <span class="liquid-glass-toolbar__avatar">
+                          <span class="liquid-glass-toolbar__chip">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                              <path d="M12 3.4c.6 4.2 4.4 8 8.6 8.6-4.2.6-8 4.4-8.6 8.6-.6-4.2-4.4-8-8.6-8.6 4.2-.6 8-4.4 8.6-8.6z" />
+                              <circle cx="12" cy="12" r="7.4" />
+                              <path d="M12 4.6a7.4 7.4 0 0 1 0 14.8z" fill="currentColor" stroke="none" />
                             </svg>
                           </span>
                           <span class="liquid-glass-toolbar__line">
-                            <strong class="liquid-glass-toolbar__who">Preview</strong>
-                            build finished in 42s
+                            <strong class="liquid-glass-toolbar__topic">Tint</strong>
+                            28% over an 8px blur
                           </span>
                           <span class="liquid-glass-toolbar__time">14m</span>
                         </a>
@@ -496,16 +695,17 @@
 
                       <li>
                         <a class="liquid-glass-toolbar__row" href="#">
-                          <span class="liquid-glass-toolbar__avatar">
+                          <span class="liquid-glass-toolbar__chip">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                              <circle cx="12" cy="9" r="3.6" />
-                              <path d="M5 20a7 7 0 0 1 14 0" />
+                              <path d="M5.6 5.6v12.8M18.4 5.6v12.8" />
+                              <path d="M8.6 12h6.8" />
+                              <path d="M10.4 10.2 8.6 12l1.8 1.8M13.6 10.2 15.4 12l-1.8 1.8" />
                             </svg>
                           </span>
                           <span class="liquid-glass-toolbar__line">
-                            <strong class="liquid-glass-toolbar__who">Idris</strong>
-                            requested a review
+                            <strong class="liquid-glass-toolbar__topic">Spacing</strong>
+                            8px rhythm, 4px at the label
                           </span>
                           <span class="liquid-glass-toolbar__time">1h</span>
                         </a>
@@ -513,16 +713,16 @@
 
                       <li>
                         <a class="liquid-glass-toolbar__row" href="#">
-                          <span class="liquid-glass-toolbar__avatar">
+                          <span class="liquid-glass-toolbar__chip">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                              <path d="M11.2 3.6H20v8.8l-8 8a1.9 1.9 0 0 1-2.7 0l-6.1-6.1a1.9 1.9 0 0 1 0-2.7z" />
-                              <circle cx="16.1" cy="7.6" r="1.4" />
+                              <path d="M3.9 20.1V10.2A6.3 6.3 0 0 1 10.2 3.9H20.1" />
+                              <path d="M3.9 9.1V3.9h5.2" stroke-opacity="0.42" />
                             </svg>
                           </span>
                           <span class="liquid-glass-toolbar__line">
-                            <strong class="liquid-glass-toolbar__who">Invoice</strong>
-                            #2214 was paid
+                            <strong class="liquid-glass-toolbar__topic">Radius</strong>
+                            12% of the tile, not 12px
                           </span>
                           <span class="liquid-glass-toolbar__time">3h</span>
                         </a>
@@ -567,12 +767,12 @@
                       <span class="liquid-glass-toolbar__icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                          <path d="M4.4 19.5v-7.4a7.6 7.6 0 0 1 15.2 0v7.4" />
-                          <path d="M2.6 19.5h18.8" />
+                          <path d="M3 18h18" />
+                          <path d="M12 6 17.9 16.6H6.1z" />
                         </svg>
                       </span>
                       <span class="liquid-glass-toolbar__reveal">
-                        <span class="liquid-glass-toolbar__label">Home</span>
+                        <span class="liquid-glass-toolbar__label">Base</span>
                       </span>
                     </a>
 
@@ -600,7 +800,7 @@
                         </svg>
                       </span>
                       <span class="liquid-glass-toolbar__reveal">
-                        <span class="liquid-glass-toolbar__label">Archive</span>
+                        <span class="liquid-glass-toolbar__label">Versions</span>
                       </span>
                     </a>
 
@@ -629,7 +829,7 @@
                         </svg>
                       </span>
                       <span class="liquid-glass-toolbar__reveal">
-                        <span class="liquid-glass-toolbar__label">Settings</span>
+                        <span class="liquid-glass-toolbar__label">Display</span>
                       </span>
                     </a>
 
@@ -640,16 +840,17 @@
 
                       <li>
                         <a class="liquid-glass-toolbar__row liquid-glass-toolbar__row--unread" href="#">
-                          <span class="liquid-glass-toolbar__avatar">
+                          <span class="liquid-glass-toolbar__chip">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                              <circle cx="12" cy="9" r="3.6" />
-                              <path d="M5 20a7 7 0 0 1 14 0" />
+                              <path d="M4.6 7.4h14.8" stroke-width="2.8" />
+                              <path d="M4.6 13h9.6" stroke-width="1.8" />
+                              <path d="M4.6 17.6h5.8" stroke-width="1.2" />
                             </svg>
                           </span>
                           <span class="liquid-glass-toolbar__line">
-                            <strong class="liquid-glass-toolbar__who">Mara</strong>
-                            commented on Toolbar morph
+                            <strong class="liquid-glass-toolbar__topic">Type</strong>
+                            48/16 pair, label at 11px
                           </span>
                           <span class="liquid-glass-toolbar__time">2m</span>
                         </a>
@@ -657,15 +858,16 @@
 
                       <li>
                         <a class="liquid-glass-toolbar__row liquid-glass-toolbar__row--unread" href="#">
-                          <span class="liquid-glass-toolbar__avatar">
+                          <span class="liquid-glass-toolbar__chip">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                              <path d="M12 3.4c.6 4.2 4.4 8 8.6 8.6-4.2.6-8 4.4-8.6 8.6-.6-4.2-4.4-8-8.6-8.6 4.2-.6 8-4.4 8.6-8.6z" />
+                              <circle cx="12" cy="12" r="7.4" />
+                              <path d="M12 4.6a7.4 7.4 0 0 1 0 14.8z" fill="currentColor" stroke="none" />
                             </svg>
                           </span>
                           <span class="liquid-glass-toolbar__line">
-                            <strong class="liquid-glass-toolbar__who">Preview</strong>
-                            build finished in 42s
+                            <strong class="liquid-glass-toolbar__topic">Tint</strong>
+                            28% over an 8px blur
                           </span>
                           <span class="liquid-glass-toolbar__time">14m</span>
                         </a>
@@ -673,16 +875,17 @@
 
                       <li>
                         <a class="liquid-glass-toolbar__row" href="#">
-                          <span class="liquid-glass-toolbar__avatar">
+                          <span class="liquid-glass-toolbar__chip">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                              <circle cx="12" cy="9" r="3.6" />
-                              <path d="M5 20a7 7 0 0 1 14 0" />
+                              <path d="M5.6 5.6v12.8M18.4 5.6v12.8" />
+                              <path d="M8.6 12h6.8" />
+                              <path d="M10.4 10.2 8.6 12l1.8 1.8M13.6 10.2 15.4 12l-1.8 1.8" />
                             </svg>
                           </span>
                           <span class="liquid-glass-toolbar__line">
-                            <strong class="liquid-glass-toolbar__who">Idris</strong>
-                            requested a review
+                            <strong class="liquid-glass-toolbar__topic">Spacing</strong>
+                            8px rhythm, 4px at the label
                           </span>
                           <span class="liquid-glass-toolbar__time">1h</span>
                         </a>
@@ -690,16 +893,16 @@
 
                       <li>
                         <a class="liquid-glass-toolbar__row" href="#">
-                          <span class="liquid-glass-toolbar__avatar">
+                          <span class="liquid-glass-toolbar__chip">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                              <path d="M11.2 3.6H20v8.8l-8 8a1.9 1.9 0 0 1-2.7 0l-6.1-6.1a1.9 1.9 0 0 1 0-2.7z" />
-                              <circle cx="16.1" cy="7.6" r="1.4" />
+                              <path d="M3.9 20.1V10.2A6.3 6.3 0 0 1 10.2 3.9H20.1" />
+                              <path d="M3.9 9.1V3.9h5.2" stroke-opacity="0.42" />
                             </svg>
                           </span>
                           <span class="liquid-glass-toolbar__line">
-                            <strong class="liquid-glass-toolbar__who">Invoice</strong>
-                            #2214 was paid
+                            <strong class="liquid-glass-toolbar__topic">Radius</strong>
+                            12% of the tile, not 12px
                           </span>
                           <span class="liquid-glass-toolbar__time">3h</span>
                         </a>
@@ -744,12 +947,12 @@
                       <span class="liquid-glass-toolbar__icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                          <path d="M4.4 19.5v-7.4a7.6 7.6 0 0 1 15.2 0v7.4" />
-                          <path d="M2.6 19.5h18.8" />
+                          <path d="M3 18h18" />
+                          <path d="M12 6 17.9 16.6H6.1z" />
                         </svg>
                       </span>
                       <span class="liquid-glass-toolbar__reveal">
-                        <span class="liquid-glass-toolbar__label">Home</span>
+                        <span class="liquid-glass-toolbar__label">Base</span>
                       </span>
                     </a>
 
@@ -777,7 +980,7 @@
                         </svg>
                       </span>
                       <span class="liquid-glass-toolbar__reveal">
-                        <span class="liquid-glass-toolbar__label">Archive</span>
+                        <span class="liquid-glass-toolbar__label">Versions</span>
                       </span>
                     </a>
 
@@ -806,7 +1009,7 @@
                         </svg>
                       </span>
                       <span class="liquid-glass-toolbar__reveal">
-                        <span class="liquid-glass-toolbar__label">Settings</span>
+                        <span class="liquid-glass-toolbar__label">Display</span>
                       </span>
                     </a>
 
@@ -817,16 +1020,17 @@
 
                       <li>
                         <a class="liquid-glass-toolbar__row liquid-glass-toolbar__row--unread" href="#">
-                          <span class="liquid-glass-toolbar__avatar">
+                          <span class="liquid-glass-toolbar__chip">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                              <circle cx="12" cy="9" r="3.6" />
-                              <path d="M5 20a7 7 0 0 1 14 0" />
+                              <path d="M4.6 7.4h14.8" stroke-width="2.8" />
+                              <path d="M4.6 13h9.6" stroke-width="1.8" />
+                              <path d="M4.6 17.6h5.8" stroke-width="1.2" />
                             </svg>
                           </span>
                           <span class="liquid-glass-toolbar__line">
-                            <strong class="liquid-glass-toolbar__who">Mara</strong>
-                            commented on Toolbar morph
+                            <strong class="liquid-glass-toolbar__topic">Type</strong>
+                            48/16 pair, label at 11px
                           </span>
                           <span class="liquid-glass-toolbar__time">2m</span>
                         </a>
@@ -834,15 +1038,16 @@
 
                       <li>
                         <a class="liquid-glass-toolbar__row liquid-glass-toolbar__row--unread" href="#">
-                          <span class="liquid-glass-toolbar__avatar">
+                          <span class="liquid-glass-toolbar__chip">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                              <path d="M12 3.4c.6 4.2 4.4 8 8.6 8.6-4.2.6-8 4.4-8.6 8.6-.6-4.2-4.4-8-8.6-8.6 4.2-.6 8-4.4 8.6-8.6z" />
+                              <circle cx="12" cy="12" r="7.4" />
+                              <path d="M12 4.6a7.4 7.4 0 0 1 0 14.8z" fill="currentColor" stroke="none" />
                             </svg>
                           </span>
                           <span class="liquid-glass-toolbar__line">
-                            <strong class="liquid-glass-toolbar__who">Preview</strong>
-                            build finished in 42s
+                            <strong class="liquid-glass-toolbar__topic">Tint</strong>
+                            28% over an 8px blur
                           </span>
                           <span class="liquid-glass-toolbar__time">14m</span>
                         </a>
@@ -850,16 +1055,17 @@
 
                       <li>
                         <a class="liquid-glass-toolbar__row" href="#">
-                          <span class="liquid-glass-toolbar__avatar">
+                          <span class="liquid-glass-toolbar__chip">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                              <circle cx="12" cy="9" r="3.6" />
-                              <path d="M5 20a7 7 0 0 1 14 0" />
+                              <path d="M5.6 5.6v12.8M18.4 5.6v12.8" />
+                              <path d="M8.6 12h6.8" />
+                              <path d="M10.4 10.2 8.6 12l1.8 1.8M13.6 10.2 15.4 12l-1.8 1.8" />
                             </svg>
                           </span>
                           <span class="liquid-glass-toolbar__line">
-                            <strong class="liquid-glass-toolbar__who">Idris</strong>
-                            requested a review
+                            <strong class="liquid-glass-toolbar__topic">Spacing</strong>
+                            8px rhythm, 4px at the label
                           </span>
                           <span class="liquid-glass-toolbar__time">1h</span>
                         </a>
@@ -867,16 +1073,16 @@
 
                       <li>
                         <a class="liquid-glass-toolbar__row" href="#">
-                          <span class="liquid-glass-toolbar__avatar">
+                          <span class="liquid-glass-toolbar__chip">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                              <path d="M11.2 3.6H20v8.8l-8 8a1.9 1.9 0 0 1-2.7 0l-6.1-6.1a1.9 1.9 0 0 1 0-2.7z" />
-                              <circle cx="16.1" cy="7.6" r="1.4" />
+                              <path d="M3.9 20.1V10.2A6.3 6.3 0 0 1 10.2 3.9H20.1" />
+                              <path d="M3.9 9.1V3.9h5.2" stroke-opacity="0.42" />
                             </svg>
                           </span>
                           <span class="liquid-glass-toolbar__line">
-                            <strong class="liquid-glass-toolbar__who">Invoice</strong>
-                            #2214 was paid
+                            <strong class="liquid-glass-toolbar__topic">Radius</strong>
+                            12% of the tile, not 12px
                           </span>
                           <span class="liquid-glass-toolbar__time">3h</span>
                         </a>
@@ -899,12 +1105,12 @@
                       <span class="liquid-glass-toolbar__icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                          <path d="M4.4 19.5v-7.4a7.6 7.6 0 0 1 15.2 0v7.4" />
-                          <path d="M2.6 19.5h18.8" />
+                          <path d="M3 18h18" />
+                          <path d="M12 6 17.9 16.6H6.1z" />
                         </svg>
                       </span>
                       <span class="liquid-glass-toolbar__reveal">
-                        <span class="liquid-glass-toolbar__label">Home</span>
+                        <span class="liquid-glass-toolbar__label">Base</span>
                       </span>
                     </a>
 
@@ -932,7 +1138,7 @@
                         </svg>
                       </span>
                       <span class="liquid-glass-toolbar__reveal">
-                        <span class="liquid-glass-toolbar__label">Archive</span>
+                        <span class="liquid-glass-toolbar__label">Versions</span>
                       </span>
                     </a>
 
@@ -961,7 +1167,7 @@
                         </svg>
                       </span>
                       <span class="liquid-glass-toolbar__reveal">
-                        <span class="liquid-glass-toolbar__label">Settings</span>
+                        <span class="liquid-glass-toolbar__label">Display</span>
                       </span>
                     </a>
 
@@ -972,16 +1178,17 @@
 
                       <li>
                         <a class="liquid-glass-toolbar__row liquid-glass-toolbar__row--unread" href="#">
-                          <span class="liquid-glass-toolbar__avatar">
+                          <span class="liquid-glass-toolbar__chip">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                              <circle cx="12" cy="9" r="3.6" />
-                              <path d="M5 20a7 7 0 0 1 14 0" />
+                              <path d="M4.6 7.4h14.8" stroke-width="2.8" />
+                              <path d="M4.6 13h9.6" stroke-width="1.8" />
+                              <path d="M4.6 17.6h5.8" stroke-width="1.2" />
                             </svg>
                           </span>
                           <span class="liquid-glass-toolbar__line">
-                            <strong class="liquid-glass-toolbar__who">Mara</strong>
-                            commented on Toolbar morph
+                            <strong class="liquid-glass-toolbar__topic">Type</strong>
+                            48/16 pair, label at 11px
                           </span>
                           <span class="liquid-glass-toolbar__time">2m</span>
                         </a>
@@ -989,15 +1196,16 @@
 
                       <li>
                         <a class="liquid-glass-toolbar__row liquid-glass-toolbar__row--unread" href="#">
-                          <span class="liquid-glass-toolbar__avatar">
+                          <span class="liquid-glass-toolbar__chip">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                              <path d="M12 3.4c.6 4.2 4.4 8 8.6 8.6-4.2.6-8 4.4-8.6 8.6-.6-4.2-4.4-8-8.6-8.6 4.2-.6 8-4.4 8.6-8.6z" />
+                              <circle cx="12" cy="12" r="7.4" />
+                              <path d="M12 4.6a7.4 7.4 0 0 1 0 14.8z" fill="currentColor" stroke="none" />
                             </svg>
                           </span>
                           <span class="liquid-glass-toolbar__line">
-                            <strong class="liquid-glass-toolbar__who">Preview</strong>
-                            build finished in 42s
+                            <strong class="liquid-glass-toolbar__topic">Tint</strong>
+                            28% over an 8px blur
                           </span>
                           <span class="liquid-glass-toolbar__time">14m</span>
                         </a>
@@ -1005,16 +1213,17 @@
 
                       <li>
                         <a class="liquid-glass-toolbar__row" href="#">
-                          <span class="liquid-glass-toolbar__avatar">
+                          <span class="liquid-glass-toolbar__chip">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                              <circle cx="12" cy="9" r="3.6" />
-                              <path d="M5 20a7 7 0 0 1 14 0" />
+                              <path d="M5.6 5.6v12.8M18.4 5.6v12.8" />
+                              <path d="M8.6 12h6.8" />
+                              <path d="M10.4 10.2 8.6 12l1.8 1.8M13.6 10.2 15.4 12l-1.8 1.8" />
                             </svg>
                           </span>
                           <span class="liquid-glass-toolbar__line">
-                            <strong class="liquid-glass-toolbar__who">Idris</strong>
-                            requested a review
+                            <strong class="liquid-glass-toolbar__topic">Spacing</strong>
+                            8px rhythm, 4px at the label
                           </span>
                           <span class="liquid-glass-toolbar__time">1h</span>
                         </a>
@@ -1022,16 +1231,16 @@
 
                       <li>
                         <a class="liquid-glass-toolbar__row" href="#">
-                          <span class="liquid-glass-toolbar__avatar">
+                          <span class="liquid-glass-toolbar__chip">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                              <path d="M11.2 3.6H20v8.8l-8 8a1.9 1.9 0 0 1-2.7 0l-6.1-6.1a1.9 1.9 0 0 1 0-2.7z" />
-                              <circle cx="16.1" cy="7.6" r="1.4" />
+                              <path d="M3.9 20.1V10.2A6.3 6.3 0 0 1 10.2 3.9H20.1" />
+                              <path d="M3.9 9.1V3.9h5.2" stroke-opacity="0.42" />
                             </svg>
                           </span>
                           <span class="liquid-glass-toolbar__line">
-                            <strong class="liquid-glass-toolbar__who">Invoice</strong>
-                            #2214 was paid
+                            <strong class="liquid-glass-toolbar__topic">Radius</strong>
+                            12% of the tile, not 12px
                           </span>
                           <span class="liquid-glass-toolbar__time">3h</span>
                         </a>
@@ -1055,11 +1264,11 @@
       </li>
       <li class="demo__step">
         <strong data-i18n="panel.3t">Activity, not Notifications.</strong>
-        <span data-i18n="panel.3b">Notifications is a promise about delivery. These four rows are a log &mdash; and the name keeps the component from being read as an alert centre.</span>
+        <span data-i18n="panel.3b">Notifications is a promise about delivery. These four rows are a log of what was decided &mdash; and the name keeps the component from being read as an alert centre.</span>
       </li>
       <li class="demo__step">
         <strong data-i18n="panel.4t">The extended view exposes a material.</strong>
-        <span data-i18n="panel.4b">Four rows of small type over a sheet you can read the page through. Nothing in the panel is theme-aware.</span>
+        <span data-i18n="panel.4b">Four rows of small type over a sheet you can read the page through, each headed by a specimen of the decision it records rather than by a face. Nothing in the panel is theme-aware.</span>
       </li>
       </ol>
     </section>
@@ -1102,12 +1311,12 @@
                       <span class="liquid-glass-toolbar__icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                          <path d="M4.4 19.5v-7.4a7.6 7.6 0 0 1 15.2 0v7.4" />
-                          <path d="M2.6 19.5h18.8" />
+                          <path d="M3 18h18" />
+                          <path d="M12 6 17.9 16.6H6.1z" />
                         </svg>
                       </span>
                       <span class="liquid-glass-toolbar__reveal">
-                        <span class="liquid-glass-toolbar__label">Home</span>
+                        <span class="liquid-glass-toolbar__label">Base</span>
                       </span>
                     </a>
 
@@ -1135,7 +1344,7 @@
                         </svg>
                       </span>
                       <span class="liquid-glass-toolbar__reveal">
-                        <span class="liquid-glass-toolbar__label">Archive</span>
+                        <span class="liquid-glass-toolbar__label">Versions</span>
                       </span>
                     </a>
 
@@ -1164,7 +1373,7 @@
                         </svg>
                       </span>
                       <span class="liquid-glass-toolbar__reveal">
-                        <span class="liquid-glass-toolbar__label">Settings</span>
+                        <span class="liquid-glass-toolbar__label">Display</span>
                       </span>
                     </a>
 
@@ -1175,16 +1384,17 @@
 
                       <li>
                         <a class="liquid-glass-toolbar__row liquid-glass-toolbar__row--unread" href="#">
-                          <span class="liquid-glass-toolbar__avatar">
+                          <span class="liquid-glass-toolbar__chip">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                              <circle cx="12" cy="9" r="3.6" />
-                              <path d="M5 20a7 7 0 0 1 14 0" />
+                              <path d="M4.6 7.4h14.8" stroke-width="2.8" />
+                              <path d="M4.6 13h9.6" stroke-width="1.8" />
+                              <path d="M4.6 17.6h5.8" stroke-width="1.2" />
                             </svg>
                           </span>
                           <span class="liquid-glass-toolbar__line">
-                            <strong class="liquid-glass-toolbar__who">Mara</strong>
-                            commented on Toolbar morph
+                            <strong class="liquid-glass-toolbar__topic">Type</strong>
+                            48/16 pair, label at 11px
                           </span>
                           <span class="liquid-glass-toolbar__time">2m</span>
                         </a>
@@ -1192,15 +1402,16 @@
 
                       <li>
                         <a class="liquid-glass-toolbar__row liquid-glass-toolbar__row--unread" href="#">
-                          <span class="liquid-glass-toolbar__avatar">
+                          <span class="liquid-glass-toolbar__chip">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                              <path d="M12 3.4c.6 4.2 4.4 8 8.6 8.6-4.2.6-8 4.4-8.6 8.6-.6-4.2-4.4-8-8.6-8.6 4.2-.6 8-4.4 8.6-8.6z" />
+                              <circle cx="12" cy="12" r="7.4" />
+                              <path d="M12 4.6a7.4 7.4 0 0 1 0 14.8z" fill="currentColor" stroke="none" />
                             </svg>
                           </span>
                           <span class="liquid-glass-toolbar__line">
-                            <strong class="liquid-glass-toolbar__who">Preview</strong>
-                            build finished in 42s
+                            <strong class="liquid-glass-toolbar__topic">Tint</strong>
+                            28% over an 8px blur
                           </span>
                           <span class="liquid-glass-toolbar__time">14m</span>
                         </a>
@@ -1208,16 +1419,17 @@
 
                       <li>
                         <a class="liquid-glass-toolbar__row" href="#">
-                          <span class="liquid-glass-toolbar__avatar">
+                          <span class="liquid-glass-toolbar__chip">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                              <circle cx="12" cy="9" r="3.6" />
-                              <path d="M5 20a7 7 0 0 1 14 0" />
+                              <path d="M5.6 5.6v12.8M18.4 5.6v12.8" />
+                              <path d="M8.6 12h6.8" />
+                              <path d="M10.4 10.2 8.6 12l1.8 1.8M13.6 10.2 15.4 12l-1.8 1.8" />
                             </svg>
                           </span>
                           <span class="liquid-glass-toolbar__line">
-                            <strong class="liquid-glass-toolbar__who">Idris</strong>
-                            requested a review
+                            <strong class="liquid-glass-toolbar__topic">Spacing</strong>
+                            8px rhythm, 4px at the label
                           </span>
                           <span class="liquid-glass-toolbar__time">1h</span>
                         </a>
@@ -1225,16 +1437,16 @@
 
                       <li>
                         <a class="liquid-glass-toolbar__row" href="#">
-                          <span class="liquid-glass-toolbar__avatar">
+                          <span class="liquid-glass-toolbar__chip">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                              <path d="M11.2 3.6H20v8.8l-8 8a1.9 1.9 0 0 1-2.7 0l-6.1-6.1a1.9 1.9 0 0 1 0-2.7z" />
-                              <circle cx="16.1" cy="7.6" r="1.4" />
+                              <path d="M3.9 20.1V10.2A6.3 6.3 0 0 1 10.2 3.9H20.1" />
+                              <path d="M3.9 9.1V3.9h5.2" stroke-opacity="0.42" />
                             </svg>
                           </span>
                           <span class="liquid-glass-toolbar__line">
-                            <strong class="liquid-glass-toolbar__who">Invoice</strong>
-                            #2214 was paid
+                            <strong class="liquid-glass-toolbar__topic">Radius</strong>
+                            12% of the tile, not 12px
                           </span>
                           <span class="liquid-glass-toolbar__time">3h</span>
                         </a>
@@ -1266,7 +1478,7 @@
     <section class="demo__group">
       <div class="demo__group-head">
         <h2 class="demo__group-title" data-i18n="materials.title">Materials</h2>
-        <p class="demo__group-note" data-i18n="materials.note">Nothing below the variable block changes for any of them. All five sit on Home deliberately: a set is only comparable as the same state five times.</p>
+        <p class="demo__group-note" data-i18n="materials.note">Nothing below the variable block changes for any of them. All five sit on Base deliberately: a set is only comparable as the same state five times.</p>
       </div>
 
       <div class="demo__stage demo__stage--stack">
@@ -1281,12 +1493,12 @@
                         <span class="liquid-glass-toolbar__icon">
                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="M4.4 19.5v-7.4a7.6 7.6 0 0 1 15.2 0v7.4" />
-                            <path d="M2.6 19.5h18.8" />
+                            <path d="M3 18h18" />
+                            <path d="M12 6 17.9 16.6H6.1z" />
                           </svg>
                         </span>
                         <span class="liquid-glass-toolbar__reveal">
-                          <span class="liquid-glass-toolbar__label">Home</span>
+                          <span class="liquid-glass-toolbar__label">Base</span>
                         </span>
                       </a>
 
@@ -1314,7 +1526,7 @@
                           </svg>
                         </span>
                         <span class="liquid-glass-toolbar__reveal">
-                          <span class="liquid-glass-toolbar__label">Archive</span>
+                          <span class="liquid-glass-toolbar__label">Versions</span>
                         </span>
                       </a>
 
@@ -1343,7 +1555,7 @@
                           </svg>
                         </span>
                         <span class="liquid-glass-toolbar__reveal">
-                          <span class="liquid-glass-toolbar__label">Settings</span>
+                          <span class="liquid-glass-toolbar__label">Display</span>
                         </span>
                       </a>
 
@@ -1354,16 +1566,17 @@
 
                         <li>
                           <a class="liquid-glass-toolbar__row liquid-glass-toolbar__row--unread" href="#">
-                            <span class="liquid-glass-toolbar__avatar">
+                            <span class="liquid-glass-toolbar__chip">
                               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <circle cx="12" cy="9" r="3.6" />
-                                <path d="M5 20a7 7 0 0 1 14 0" />
+                                <path d="M4.6 7.4h14.8" stroke-width="2.8" />
+                                <path d="M4.6 13h9.6" stroke-width="1.8" />
+                                <path d="M4.6 17.6h5.8" stroke-width="1.2" />
                               </svg>
                             </span>
                             <span class="liquid-glass-toolbar__line">
-                              <strong class="liquid-glass-toolbar__who">Mara</strong>
-                              commented on Toolbar morph
+                              <strong class="liquid-glass-toolbar__topic">Type</strong>
+                              48/16 pair, label at 11px
                             </span>
                             <span class="liquid-glass-toolbar__time">2m</span>
                           </a>
@@ -1371,15 +1584,16 @@
 
                         <li>
                           <a class="liquid-glass-toolbar__row liquid-glass-toolbar__row--unread" href="#">
-                            <span class="liquid-glass-toolbar__avatar">
+                            <span class="liquid-glass-toolbar__chip">
                               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <path d="M12 3.4c.6 4.2 4.4 8 8.6 8.6-4.2.6-8 4.4-8.6 8.6-.6-4.2-4.4-8-8.6-8.6 4.2-.6 8-4.4 8.6-8.6z" />
+                                <circle cx="12" cy="12" r="7.4" />
+                                <path d="M12 4.6a7.4 7.4 0 0 1 0 14.8z" fill="currentColor" stroke="none" />
                               </svg>
                             </span>
                             <span class="liquid-glass-toolbar__line">
-                              <strong class="liquid-glass-toolbar__who">Preview</strong>
-                              build finished in 42s
+                              <strong class="liquid-glass-toolbar__topic">Tint</strong>
+                              28% over an 8px blur
                             </span>
                             <span class="liquid-glass-toolbar__time">14m</span>
                           </a>
@@ -1387,16 +1601,17 @@
 
                         <li>
                           <a class="liquid-glass-toolbar__row" href="#">
-                            <span class="liquid-glass-toolbar__avatar">
+                            <span class="liquid-glass-toolbar__chip">
                               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <circle cx="12" cy="9" r="3.6" />
-                                <path d="M5 20a7 7 0 0 1 14 0" />
+                                <path d="M5.6 5.6v12.8M18.4 5.6v12.8" />
+                                <path d="M8.6 12h6.8" />
+                                <path d="M10.4 10.2 8.6 12l1.8 1.8M13.6 10.2 15.4 12l-1.8 1.8" />
                               </svg>
                             </span>
                             <span class="liquid-glass-toolbar__line">
-                              <strong class="liquid-glass-toolbar__who">Idris</strong>
-                              requested a review
+                              <strong class="liquid-glass-toolbar__topic">Spacing</strong>
+                              8px rhythm, 4px at the label
                             </span>
                             <span class="liquid-glass-toolbar__time">1h</span>
                           </a>
@@ -1404,16 +1619,16 @@
 
                         <li>
                           <a class="liquid-glass-toolbar__row" href="#">
-                            <span class="liquid-glass-toolbar__avatar">
+                            <span class="liquid-glass-toolbar__chip">
                               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <path d="M11.2 3.6H20v8.8l-8 8a1.9 1.9 0 0 1-2.7 0l-6.1-6.1a1.9 1.9 0 0 1 0-2.7z" />
-                                <circle cx="16.1" cy="7.6" r="1.4" />
+                                <path d="M3.9 20.1V10.2A6.3 6.3 0 0 1 10.2 3.9H20.1" />
+                                <path d="M3.9 9.1V3.9h5.2" stroke-opacity="0.42" />
                               </svg>
                             </span>
                             <span class="liquid-glass-toolbar__line">
-                              <strong class="liquid-glass-toolbar__who">Invoice</strong>
-                              #2214 was paid
+                              <strong class="liquid-glass-toolbar__topic">Radius</strong>
+                              12% of the tile, not 12px
                             </span>
                             <span class="liquid-glass-toolbar__time">3h</span>
                           </a>
@@ -1436,12 +1651,12 @@
                         <span class="liquid-glass-toolbar__icon">
                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="M4.4 19.5v-7.4a7.6 7.6 0 0 1 15.2 0v7.4" />
-                            <path d="M2.6 19.5h18.8" />
+                            <path d="M3 18h18" />
+                            <path d="M12 6 17.9 16.6H6.1z" />
                           </svg>
                         </span>
                         <span class="liquid-glass-toolbar__reveal">
-                          <span class="liquid-glass-toolbar__label">Home</span>
+                          <span class="liquid-glass-toolbar__label">Base</span>
                         </span>
                       </a>
 
@@ -1469,7 +1684,7 @@
                           </svg>
                         </span>
                         <span class="liquid-glass-toolbar__reveal">
-                          <span class="liquid-glass-toolbar__label">Archive</span>
+                          <span class="liquid-glass-toolbar__label">Versions</span>
                         </span>
                       </a>
 
@@ -1498,7 +1713,7 @@
                           </svg>
                         </span>
                         <span class="liquid-glass-toolbar__reveal">
-                          <span class="liquid-glass-toolbar__label">Settings</span>
+                          <span class="liquid-glass-toolbar__label">Display</span>
                         </span>
                       </a>
 
@@ -1509,16 +1724,17 @@
 
                         <li>
                           <a class="liquid-glass-toolbar__row liquid-glass-toolbar__row--unread" href="#">
-                            <span class="liquid-glass-toolbar__avatar">
+                            <span class="liquid-glass-toolbar__chip">
                               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <circle cx="12" cy="9" r="3.6" />
-                                <path d="M5 20a7 7 0 0 1 14 0" />
+                                <path d="M4.6 7.4h14.8" stroke-width="2.8" />
+                                <path d="M4.6 13h9.6" stroke-width="1.8" />
+                                <path d="M4.6 17.6h5.8" stroke-width="1.2" />
                               </svg>
                             </span>
                             <span class="liquid-glass-toolbar__line">
-                              <strong class="liquid-glass-toolbar__who">Mara</strong>
-                              commented on Toolbar morph
+                              <strong class="liquid-glass-toolbar__topic">Type</strong>
+                              48/16 pair, label at 11px
                             </span>
                             <span class="liquid-glass-toolbar__time">2m</span>
                           </a>
@@ -1526,15 +1742,16 @@
 
                         <li>
                           <a class="liquid-glass-toolbar__row liquid-glass-toolbar__row--unread" href="#">
-                            <span class="liquid-glass-toolbar__avatar">
+                            <span class="liquid-glass-toolbar__chip">
                               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <path d="M12 3.4c.6 4.2 4.4 8 8.6 8.6-4.2.6-8 4.4-8.6 8.6-.6-4.2-4.4-8-8.6-8.6 4.2-.6 8-4.4 8.6-8.6z" />
+                                <circle cx="12" cy="12" r="7.4" />
+                                <path d="M12 4.6a7.4 7.4 0 0 1 0 14.8z" fill="currentColor" stroke="none" />
                               </svg>
                             </span>
                             <span class="liquid-glass-toolbar__line">
-                              <strong class="liquid-glass-toolbar__who">Preview</strong>
-                              build finished in 42s
+                              <strong class="liquid-glass-toolbar__topic">Tint</strong>
+                              28% over an 8px blur
                             </span>
                             <span class="liquid-glass-toolbar__time">14m</span>
                           </a>
@@ -1542,16 +1759,17 @@
 
                         <li>
                           <a class="liquid-glass-toolbar__row" href="#">
-                            <span class="liquid-glass-toolbar__avatar">
+                            <span class="liquid-glass-toolbar__chip">
                               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <circle cx="12" cy="9" r="3.6" />
-                                <path d="M5 20a7 7 0 0 1 14 0" />
+                                <path d="M5.6 5.6v12.8M18.4 5.6v12.8" />
+                                <path d="M8.6 12h6.8" />
+                                <path d="M10.4 10.2 8.6 12l1.8 1.8M13.6 10.2 15.4 12l-1.8 1.8" />
                               </svg>
                             </span>
                             <span class="liquid-glass-toolbar__line">
-                              <strong class="liquid-glass-toolbar__who">Idris</strong>
-                              requested a review
+                              <strong class="liquid-glass-toolbar__topic">Spacing</strong>
+                              8px rhythm, 4px at the label
                             </span>
                             <span class="liquid-glass-toolbar__time">1h</span>
                           </a>
@@ -1559,16 +1777,16 @@
 
                         <li>
                           <a class="liquid-glass-toolbar__row" href="#">
-                            <span class="liquid-glass-toolbar__avatar">
+                            <span class="liquid-glass-toolbar__chip">
                               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <path d="M11.2 3.6H20v8.8l-8 8a1.9 1.9 0 0 1-2.7 0l-6.1-6.1a1.9 1.9 0 0 1 0-2.7z" />
-                                <circle cx="16.1" cy="7.6" r="1.4" />
+                                <path d="M3.9 20.1V10.2A6.3 6.3 0 0 1 10.2 3.9H20.1" />
+                                <path d="M3.9 9.1V3.9h5.2" stroke-opacity="0.42" />
                               </svg>
                             </span>
                             <span class="liquid-glass-toolbar__line">
-                              <strong class="liquid-glass-toolbar__who">Invoice</strong>
-                              #2214 was paid
+                              <strong class="liquid-glass-toolbar__topic">Radius</strong>
+                              12% of the tile, not 12px
                             </span>
                             <span class="liquid-glass-toolbar__time">3h</span>
                           </a>
@@ -1591,12 +1809,12 @@
                         <span class="liquid-glass-toolbar__icon">
                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="M4.4 19.5v-7.4a7.6 7.6 0 0 1 15.2 0v7.4" />
-                            <path d="M2.6 19.5h18.8" />
+                            <path d="M3 18h18" />
+                            <path d="M12 6 17.9 16.6H6.1z" />
                           </svg>
                         </span>
                         <span class="liquid-glass-toolbar__reveal">
-                          <span class="liquid-glass-toolbar__label">Home</span>
+                          <span class="liquid-glass-toolbar__label">Base</span>
                         </span>
                       </a>
 
@@ -1624,7 +1842,7 @@
                           </svg>
                         </span>
                         <span class="liquid-glass-toolbar__reveal">
-                          <span class="liquid-glass-toolbar__label">Archive</span>
+                          <span class="liquid-glass-toolbar__label">Versions</span>
                         </span>
                       </a>
 
@@ -1653,7 +1871,7 @@
                           </svg>
                         </span>
                         <span class="liquid-glass-toolbar__reveal">
-                          <span class="liquid-glass-toolbar__label">Settings</span>
+                          <span class="liquid-glass-toolbar__label">Display</span>
                         </span>
                       </a>
 
@@ -1664,16 +1882,17 @@
 
                         <li>
                           <a class="liquid-glass-toolbar__row liquid-glass-toolbar__row--unread" href="#">
-                            <span class="liquid-glass-toolbar__avatar">
+                            <span class="liquid-glass-toolbar__chip">
                               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <circle cx="12" cy="9" r="3.6" />
-                                <path d="M5 20a7 7 0 0 1 14 0" />
+                                <path d="M4.6 7.4h14.8" stroke-width="2.8" />
+                                <path d="M4.6 13h9.6" stroke-width="1.8" />
+                                <path d="M4.6 17.6h5.8" stroke-width="1.2" />
                               </svg>
                             </span>
                             <span class="liquid-glass-toolbar__line">
-                              <strong class="liquid-glass-toolbar__who">Mara</strong>
-                              commented on Toolbar morph
+                              <strong class="liquid-glass-toolbar__topic">Type</strong>
+                              48/16 pair, label at 11px
                             </span>
                             <span class="liquid-glass-toolbar__time">2m</span>
                           </a>
@@ -1681,15 +1900,16 @@
 
                         <li>
                           <a class="liquid-glass-toolbar__row liquid-glass-toolbar__row--unread" href="#">
-                            <span class="liquid-glass-toolbar__avatar">
+                            <span class="liquid-glass-toolbar__chip">
                               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <path d="M12 3.4c.6 4.2 4.4 8 8.6 8.6-4.2.6-8 4.4-8.6 8.6-.6-4.2-4.4-8-8.6-8.6 4.2-.6 8-4.4 8.6-8.6z" />
+                                <circle cx="12" cy="12" r="7.4" />
+                                <path d="M12 4.6a7.4 7.4 0 0 1 0 14.8z" fill="currentColor" stroke="none" />
                               </svg>
                             </span>
                             <span class="liquid-glass-toolbar__line">
-                              <strong class="liquid-glass-toolbar__who">Preview</strong>
-                              build finished in 42s
+                              <strong class="liquid-glass-toolbar__topic">Tint</strong>
+                              28% over an 8px blur
                             </span>
                             <span class="liquid-glass-toolbar__time">14m</span>
                           </a>
@@ -1697,16 +1917,17 @@
 
                         <li>
                           <a class="liquid-glass-toolbar__row" href="#">
-                            <span class="liquid-glass-toolbar__avatar">
+                            <span class="liquid-glass-toolbar__chip">
                               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <circle cx="12" cy="9" r="3.6" />
-                                <path d="M5 20a7 7 0 0 1 14 0" />
+                                <path d="M5.6 5.6v12.8M18.4 5.6v12.8" />
+                                <path d="M8.6 12h6.8" />
+                                <path d="M10.4 10.2 8.6 12l1.8 1.8M13.6 10.2 15.4 12l-1.8 1.8" />
                               </svg>
                             </span>
                             <span class="liquid-glass-toolbar__line">
-                              <strong class="liquid-glass-toolbar__who">Idris</strong>
-                              requested a review
+                              <strong class="liquid-glass-toolbar__topic">Spacing</strong>
+                              8px rhythm, 4px at the label
                             </span>
                             <span class="liquid-glass-toolbar__time">1h</span>
                           </a>
@@ -1714,16 +1935,16 @@
 
                         <li>
                           <a class="liquid-glass-toolbar__row" href="#">
-                            <span class="liquid-glass-toolbar__avatar">
+                            <span class="liquid-glass-toolbar__chip">
                               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <path d="M11.2 3.6H20v8.8l-8 8a1.9 1.9 0 0 1-2.7 0l-6.1-6.1a1.9 1.9 0 0 1 0-2.7z" />
-                                <circle cx="16.1" cy="7.6" r="1.4" />
+                                <path d="M3.9 20.1V10.2A6.3 6.3 0 0 1 10.2 3.9H20.1" />
+                                <path d="M3.9 9.1V3.9h5.2" stroke-opacity="0.42" />
                               </svg>
                             </span>
                             <span class="liquid-glass-toolbar__line">
-                              <strong class="liquid-glass-toolbar__who">Invoice</strong>
-                              #2214 was paid
+                              <strong class="liquid-glass-toolbar__topic">Radius</strong>
+                              12% of the tile, not 12px
                             </span>
                             <span class="liquid-glass-toolbar__time">3h</span>
                           </a>
@@ -1746,12 +1967,12 @@
                         <span class="liquid-glass-toolbar__icon">
                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="M4.4 19.5v-7.4a7.6 7.6 0 0 1 15.2 0v7.4" />
-                            <path d="M2.6 19.5h18.8" />
+                            <path d="M3 18h18" />
+                            <path d="M12 6 17.9 16.6H6.1z" />
                           </svg>
                         </span>
                         <span class="liquid-glass-toolbar__reveal">
-                          <span class="liquid-glass-toolbar__label">Home</span>
+                          <span class="liquid-glass-toolbar__label">Base</span>
                         </span>
                       </a>
 
@@ -1779,7 +2000,7 @@
                           </svg>
                         </span>
                         <span class="liquid-glass-toolbar__reveal">
-                          <span class="liquid-glass-toolbar__label">Archive</span>
+                          <span class="liquid-glass-toolbar__label">Versions</span>
                         </span>
                       </a>
 
@@ -1808,7 +2029,7 @@
                           </svg>
                         </span>
                         <span class="liquid-glass-toolbar__reveal">
-                          <span class="liquid-glass-toolbar__label">Settings</span>
+                          <span class="liquid-glass-toolbar__label">Display</span>
                         </span>
                       </a>
 
@@ -1819,16 +2040,17 @@
 
                         <li>
                           <a class="liquid-glass-toolbar__row liquid-glass-toolbar__row--unread" href="#">
-                            <span class="liquid-glass-toolbar__avatar">
+                            <span class="liquid-glass-toolbar__chip">
                               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <circle cx="12" cy="9" r="3.6" />
-                                <path d="M5 20a7 7 0 0 1 14 0" />
+                                <path d="M4.6 7.4h14.8" stroke-width="2.8" />
+                                <path d="M4.6 13h9.6" stroke-width="1.8" />
+                                <path d="M4.6 17.6h5.8" stroke-width="1.2" />
                               </svg>
                             </span>
                             <span class="liquid-glass-toolbar__line">
-                              <strong class="liquid-glass-toolbar__who">Mara</strong>
-                              commented on Toolbar morph
+                              <strong class="liquid-glass-toolbar__topic">Type</strong>
+                              48/16 pair, label at 11px
                             </span>
                             <span class="liquid-glass-toolbar__time">2m</span>
                           </a>
@@ -1836,15 +2058,16 @@
 
                         <li>
                           <a class="liquid-glass-toolbar__row liquid-glass-toolbar__row--unread" href="#">
-                            <span class="liquid-glass-toolbar__avatar">
+                            <span class="liquid-glass-toolbar__chip">
                               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <path d="M12 3.4c.6 4.2 4.4 8 8.6 8.6-4.2.6-8 4.4-8.6 8.6-.6-4.2-4.4-8-8.6-8.6 4.2-.6 8-4.4 8.6-8.6z" />
+                                <circle cx="12" cy="12" r="7.4" />
+                                <path d="M12 4.6a7.4 7.4 0 0 1 0 14.8z" fill="currentColor" stroke="none" />
                               </svg>
                             </span>
                             <span class="liquid-glass-toolbar__line">
-                              <strong class="liquid-glass-toolbar__who">Preview</strong>
-                              build finished in 42s
+                              <strong class="liquid-glass-toolbar__topic">Tint</strong>
+                              28% over an 8px blur
                             </span>
                             <span class="liquid-glass-toolbar__time">14m</span>
                           </a>
@@ -1852,16 +2075,17 @@
 
                         <li>
                           <a class="liquid-glass-toolbar__row" href="#">
-                            <span class="liquid-glass-toolbar__avatar">
+                            <span class="liquid-glass-toolbar__chip">
                               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <circle cx="12" cy="9" r="3.6" />
-                                <path d="M5 20a7 7 0 0 1 14 0" />
+                                <path d="M5.6 5.6v12.8M18.4 5.6v12.8" />
+                                <path d="M8.6 12h6.8" />
+                                <path d="M10.4 10.2 8.6 12l1.8 1.8M13.6 10.2 15.4 12l-1.8 1.8" />
                               </svg>
                             </span>
                             <span class="liquid-glass-toolbar__line">
-                              <strong class="liquid-glass-toolbar__who">Idris</strong>
-                              requested a review
+                              <strong class="liquid-glass-toolbar__topic">Spacing</strong>
+                              8px rhythm, 4px at the label
                             </span>
                             <span class="liquid-glass-toolbar__time">1h</span>
                           </a>
@@ -1869,16 +2093,16 @@
 
                         <li>
                           <a class="liquid-glass-toolbar__row" href="#">
-                            <span class="liquid-glass-toolbar__avatar">
+                            <span class="liquid-glass-toolbar__chip">
                               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <path d="M11.2 3.6H20v8.8l-8 8a1.9 1.9 0 0 1-2.7 0l-6.1-6.1a1.9 1.9 0 0 1 0-2.7z" />
-                                <circle cx="16.1" cy="7.6" r="1.4" />
+                                <path d="M3.9 20.1V10.2A6.3 6.3 0 0 1 10.2 3.9H20.1" />
+                                <path d="M3.9 9.1V3.9h5.2" stroke-opacity="0.42" />
                               </svg>
                             </span>
                             <span class="liquid-glass-toolbar__line">
-                              <strong class="liquid-glass-toolbar__who">Invoice</strong>
-                              #2214 was paid
+                              <strong class="liquid-glass-toolbar__topic">Radius</strong>
+                              12% of the tile, not 12px
                             </span>
                             <span class="liquid-glass-toolbar__time">3h</span>
                           </a>
@@ -1901,12 +2125,12 @@
                         <span class="liquid-glass-toolbar__icon">
                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="M4.4 19.5v-7.4a7.6 7.6 0 0 1 15.2 0v7.4" />
-                            <path d="M2.6 19.5h18.8" />
+                            <path d="M3 18h18" />
+                            <path d="M12 6 17.9 16.6H6.1z" />
                           </svg>
                         </span>
                         <span class="liquid-glass-toolbar__reveal">
-                          <span class="liquid-glass-toolbar__label">Home</span>
+                          <span class="liquid-glass-toolbar__label">Base</span>
                         </span>
                       </a>
 
@@ -1934,7 +2158,7 @@
                           </svg>
                         </span>
                         <span class="liquid-glass-toolbar__reveal">
-                          <span class="liquid-glass-toolbar__label">Archive</span>
+                          <span class="liquid-glass-toolbar__label">Versions</span>
                         </span>
                       </a>
 
@@ -1963,7 +2187,7 @@
                           </svg>
                         </span>
                         <span class="liquid-glass-toolbar__reveal">
-                          <span class="liquid-glass-toolbar__label">Settings</span>
+                          <span class="liquid-glass-toolbar__label">Display</span>
                         </span>
                       </a>
 
@@ -1974,16 +2198,17 @@
 
                         <li>
                           <a class="liquid-glass-toolbar__row liquid-glass-toolbar__row--unread" href="#">
-                            <span class="liquid-glass-toolbar__avatar">
+                            <span class="liquid-glass-toolbar__chip">
                               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <circle cx="12" cy="9" r="3.6" />
-                                <path d="M5 20a7 7 0 0 1 14 0" />
+                                <path d="M4.6 7.4h14.8" stroke-width="2.8" />
+                                <path d="M4.6 13h9.6" stroke-width="1.8" />
+                                <path d="M4.6 17.6h5.8" stroke-width="1.2" />
                               </svg>
                             </span>
                             <span class="liquid-glass-toolbar__line">
-                              <strong class="liquid-glass-toolbar__who">Mara</strong>
-                              commented on Toolbar morph
+                              <strong class="liquid-glass-toolbar__topic">Type</strong>
+                              48/16 pair, label at 11px
                             </span>
                             <span class="liquid-glass-toolbar__time">2m</span>
                           </a>
@@ -1991,15 +2216,16 @@
 
                         <li>
                           <a class="liquid-glass-toolbar__row liquid-glass-toolbar__row--unread" href="#">
-                            <span class="liquid-glass-toolbar__avatar">
+                            <span class="liquid-glass-toolbar__chip">
                               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <path d="M12 3.4c.6 4.2 4.4 8 8.6 8.6-4.2.6-8 4.4-8.6 8.6-.6-4.2-4.4-8-8.6-8.6 4.2-.6 8-4.4 8.6-8.6z" />
+                                <circle cx="12" cy="12" r="7.4" />
+                                <path d="M12 4.6a7.4 7.4 0 0 1 0 14.8z" fill="currentColor" stroke="none" />
                               </svg>
                             </span>
                             <span class="liquid-glass-toolbar__line">
-                              <strong class="liquid-glass-toolbar__who">Preview</strong>
-                              build finished in 42s
+                              <strong class="liquid-glass-toolbar__topic">Tint</strong>
+                              28% over an 8px blur
                             </span>
                             <span class="liquid-glass-toolbar__time">14m</span>
                           </a>
@@ -2007,16 +2233,17 @@
 
                         <li>
                           <a class="liquid-glass-toolbar__row" href="#">
-                            <span class="liquid-glass-toolbar__avatar">
+                            <span class="liquid-glass-toolbar__chip">
                               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <circle cx="12" cy="9" r="3.6" />
-                                <path d="M5 20a7 7 0 0 1 14 0" />
+                                <path d="M5.6 5.6v12.8M18.4 5.6v12.8" />
+                                <path d="M8.6 12h6.8" />
+                                <path d="M10.4 10.2 8.6 12l1.8 1.8M13.6 10.2 15.4 12l-1.8 1.8" />
                               </svg>
                             </span>
                             <span class="liquid-glass-toolbar__line">
-                              <strong class="liquid-glass-toolbar__who">Idris</strong>
-                              requested a review
+                              <strong class="liquid-glass-toolbar__topic">Spacing</strong>
+                              8px rhythm, 4px at the label
                             </span>
                             <span class="liquid-glass-toolbar__time">1h</span>
                           </a>
@@ -2024,16 +2251,16 @@
 
                         <li>
                           <a class="liquid-glass-toolbar__row" href="#">
-                            <span class="liquid-glass-toolbar__avatar">
+                            <span class="liquid-glass-toolbar__chip">
                               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <path d="M11.2 3.6H20v8.8l-8 8a1.9 1.9 0 0 1-2.7 0l-6.1-6.1a1.9 1.9 0 0 1 0-2.7z" />
-                                <circle cx="16.1" cy="7.6" r="1.4" />
+                                <path d="M3.9 20.1V10.2A6.3 6.3 0 0 1 10.2 3.9H20.1" />
+                                <path d="M3.9 9.1V3.9h5.2" stroke-opacity="0.42" />
                               </svg>
                             </span>
                             <span class="liquid-glass-toolbar__line">
-                              <strong class="liquid-glass-toolbar__who">Invoice</strong>
-                              #2214 was paid
+                              <strong class="liquid-glass-toolbar__topic">Radius</strong>
+                              12% of the tile, not 12px
                             </span>
                             <span class="liquid-glass-toolbar__time">3h</span>
                           </a>
@@ -2070,7 +2297,7 @@
     <section class="demo__group">
       <div class="demo__group-head">
         <h2 class="demo__group-title" data-i18n="narrow.title">Narrow</h2>
-        <p class="demo__group-note" data-i18n="narrow.note">Five 48px targets, four gaps and the surface&rsquo;s own padding need about 264px. Below that it clipped its trailing action rather than getting tight.</p>
+        <p class="demo__group-note" data-i18n="narrow.note">Five 48px targets, the gaps between them and the surface&rsquo;s own padding need about 264px &mdash; but the resting bar also has a label open, so the real floor is about 390px. The switch is at 25rem.</p>
       </div>
 
       <div class="demo__stage">
@@ -2084,12 +2311,12 @@
                         <span class="liquid-glass-toolbar__icon">
                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="M4.4 19.5v-7.4a7.6 7.6 0 0 1 15.2 0v7.4" />
-                            <path d="M2.6 19.5h18.8" />
+                            <path d="M3 18h18" />
+                            <path d="M12 6 17.9 16.6H6.1z" />
                           </svg>
                         </span>
                         <span class="liquid-glass-toolbar__reveal">
-                          <span class="liquid-glass-toolbar__label">Home</span>
+                          <span class="liquid-glass-toolbar__label">Base</span>
                         </span>
                       </a>
 
@@ -2117,7 +2344,7 @@
                           </svg>
                         </span>
                         <span class="liquid-glass-toolbar__reveal">
-                          <span class="liquid-glass-toolbar__label">Archive</span>
+                          <span class="liquid-glass-toolbar__label">Versions</span>
                         </span>
                       </a>
 
@@ -2146,7 +2373,7 @@
                           </svg>
                         </span>
                         <span class="liquid-glass-toolbar__reveal">
-                          <span class="liquid-glass-toolbar__label">Settings</span>
+                          <span class="liquid-glass-toolbar__label">Display</span>
                         </span>
                       </a>
 
@@ -2157,16 +2384,17 @@
 
                         <li>
                           <a class="liquid-glass-toolbar__row liquid-glass-toolbar__row--unread" href="#">
-                            <span class="liquid-glass-toolbar__avatar">
+                            <span class="liquid-glass-toolbar__chip">
                               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <circle cx="12" cy="9" r="3.6" />
-                                <path d="M5 20a7 7 0 0 1 14 0" />
+                                <path d="M4.6 7.4h14.8" stroke-width="2.8" />
+                                <path d="M4.6 13h9.6" stroke-width="1.8" />
+                                <path d="M4.6 17.6h5.8" stroke-width="1.2" />
                               </svg>
                             </span>
                             <span class="liquid-glass-toolbar__line">
-                              <strong class="liquid-glass-toolbar__who">Mara</strong>
-                              commented on Toolbar morph
+                              <strong class="liquid-glass-toolbar__topic">Type</strong>
+                              48/16 pair, label at 11px
                             </span>
                             <span class="liquid-glass-toolbar__time">2m</span>
                           </a>
@@ -2174,15 +2402,16 @@
 
                         <li>
                           <a class="liquid-glass-toolbar__row liquid-glass-toolbar__row--unread" href="#">
-                            <span class="liquid-glass-toolbar__avatar">
+                            <span class="liquid-glass-toolbar__chip">
                               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <path d="M12 3.4c.6 4.2 4.4 8 8.6 8.6-4.2.6-8 4.4-8.6 8.6-.6-4.2-4.4-8-8.6-8.6 4.2-.6 8-4.4 8.6-8.6z" />
+                                <circle cx="12" cy="12" r="7.4" />
+                                <path d="M12 4.6a7.4 7.4 0 0 1 0 14.8z" fill="currentColor" stroke="none" />
                               </svg>
                             </span>
                             <span class="liquid-glass-toolbar__line">
-                              <strong class="liquid-glass-toolbar__who">Preview</strong>
-                              build finished in 42s
+                              <strong class="liquid-glass-toolbar__topic">Tint</strong>
+                              28% over an 8px blur
                             </span>
                             <span class="liquid-glass-toolbar__time">14m</span>
                           </a>
@@ -2190,16 +2419,17 @@
 
                         <li>
                           <a class="liquid-glass-toolbar__row" href="#">
-                            <span class="liquid-glass-toolbar__avatar">
+                            <span class="liquid-glass-toolbar__chip">
                               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <circle cx="12" cy="9" r="3.6" />
-                                <path d="M5 20a7 7 0 0 1 14 0" />
+                                <path d="M5.6 5.6v12.8M18.4 5.6v12.8" />
+                                <path d="M8.6 12h6.8" />
+                                <path d="M10.4 10.2 8.6 12l1.8 1.8M13.6 10.2 15.4 12l-1.8 1.8" />
                               </svg>
                             </span>
                             <span class="liquid-glass-toolbar__line">
-                              <strong class="liquid-glass-toolbar__who">Idris</strong>
-                              requested a review
+                              <strong class="liquid-glass-toolbar__topic">Spacing</strong>
+                              8px rhythm, 4px at the label
                             </span>
                             <span class="liquid-glass-toolbar__time">1h</span>
                           </a>
@@ -2207,16 +2437,16 @@
 
                         <li>
                           <a class="liquid-glass-toolbar__row" href="#">
-                            <span class="liquid-glass-toolbar__avatar">
+                            <span class="liquid-glass-toolbar__chip">
                               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
                                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <path d="M11.2 3.6H20v8.8l-8 8a1.9 1.9 0 0 1-2.7 0l-6.1-6.1a1.9 1.9 0 0 1 0-2.7z" />
-                                <circle cx="16.1" cy="7.6" r="1.4" />
+                                <path d="M3.9 20.1V10.2A6.3 6.3 0 0 1 10.2 3.9H20.1" />
+                                <path d="M3.9 9.1V3.9h5.2" stroke-opacity="0.42" />
                               </svg>
                             </span>
                             <span class="liquid-glass-toolbar__line">
-                              <strong class="liquid-glass-toolbar__who">Invoice</strong>
-                              #2214 was paid
+                              <strong class="liquid-glass-toolbar__topic">Radius</strong>
+                              12% of the tile, not 12px
                             </span>
                             <span class="liquid-glass-toolbar__time">3h</span>
                           </a>
@@ -2237,16 +2467,115 @@
       </li>
       <li class="demo__step">
         <strong data-i18n="narrow.2t">A container query, not a media query.</strong>
-        <span data-i18n="narrow.2b">The box below is 15rem; the query reads that box, so the full-size bar further up is unaffected. Reading the viewport is wrong the moment this lands in a sidebar.</span>
+        <span data-i18n="narrow.2b">The box above is 15rem; the query reads that box, so a bar in a wider column is unaffected. Reading the viewport is wrong the moment this lands in a sidebar. On a phone every stage on this page is inside the query, which is the point.</span>
       </li>
       <li class="demo__step">
         <strong data-i18n="narrow.3t">The label is what goes.</strong>
-        <span data-i18n="narrow.3b">There is no room for it, so the reveal stays shut and the lit pill carries the selection alone.</span>
+        <span data-i18n="narrow.3b">There is no room for it, so the reveal stays shut and the lit pill carries the selection alone. The search field is the exception and goes the other way: an input that is not there is not a search, so the other four actions clear out and it opens across the surface.</span>
       </li>
       </ol>
     </section>
 
   <script src="component.js"></script>
+
+  <!-- notes.md, rendered. Closed by default: the states are what the page is
+       for, and the decisions are what you open when you want to know why. A
+       <details> rather than a scripted panel — disclosure is the one thing the
+       element already is, keyboard and screen reader included, and this page
+       has no other reason to carry script. -->
+  <details class="demo__notes">
+    <summary class="demo__notes-summary">
+      <h2 class="demo__notes-title" data-i18n="notes.title">Decisions</h2>
+      <svg class="demo__notes-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+        <path d="M4 6l4 4 4-4" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </summary>
+
+    <div class="demo__notes-body">
+
+      <dl class="demo__notes-meta">
+        <div class="demo__notes-row">
+          <dt data-i18n="notes.type">Type</dt>
+          <dd data-i18n="type">Navigation</dd>
+        </div>
+      </dl>
+
+      <p class="demo__notes-lede">A floating toolbar on one pane of glass. Four items sit together and a fifth is set apart; exactly one of them carries its label, and it is the one you are on. The search item opens into a field and the activity item opens the pane downward into a panel — neither is a second sheet sliding out from underneath, the one surface changes shape, and the corner it does that around never moves.</p>
+      <p class="demo__notes-lede">The set is a working surface rather than an operating system: Base, search, Versions, Activity, Display. Each item is named for what its glyph can actually do — two sliders are display controls, not a settings screen; two drawers are versions of a thing, not a mailbox — so the bar says what it is for before a label opens. It is also why the labelled item is <em>Base</em> and not Home: a toolbar that floats over work has no front door to return to, it has a datum to measure from, and that is what its glyph draws — a benchmark standing on a rule.</p>
+      <p class="demo__notes-lede">The ground in <code>demo.html</code> and <code>preview.html</code> is page scaffolding, not part of the component: the index's own recipe, warm paper with the same two washes at the same strength, so a study sitting in the rail does not arrive louder than the page around it.</p>
+      <p class="demo__notes-lede">It is as dull as it can afford to be, and finding that floor is the point. Glass has no look of its own — a blur over one flat fill is indistinguishable from a translucent rectangle, and the whole component disappears. But what it actually needs is <em>range</em>, not incident: two soft cross-lit ramps with no edges anywhere give the rim something to sit against and the blur something to carry, and an earlier version with hard-cut clay and sage planes turned out to be buying that at the cost of a backdrop that upstaged the thing in front of it. An even ground settles the vertical centring too. The component is centred exactly — 262.5px of frame above and below it in the thumbnail — but a ground whose whole colour mass sat in the lower third read as bottom-heavy, and a thing centred in a bottom-heavy frame looks like it is floating high.</p>
+      <p class="demo__notes-lede">The icons are drawn rather than borrowed: a benchmark on a rule, a magnifier, two drawers, four bars, two sliders. The magnifier is the one glyph in a toolbar with no synonym — every other function has several ways to be drawn, so the set is a place to have an opinion; search is not.</p>
+      <p class="demo__notes-lede">Base was an arched doorway first, and the doorway was drawing the word <em>home</em> rather than the word it sits under. Five were rendered at real size in the bar to replace it: a square on a baseline, three courses of a plinth, a diamond resting on a rule, a circle overshooting one, and a block on a ground plane in axonometric. The plinth read as an align-left control, the circle read as a second magnifier, and the axonometric block turned to mush at 24px. The benchmark won because it is the only triangle in the set — nothing else here has a diagonal — and because it says what Base means: the mark everything else is measured from.</p>
+      <p class="demo__notes-lede">The panel item is called Activity, not Notifications, and the icon is four bars of uneven height. Notifications is a promise about delivery — it says these are things that were pushed at you. What the four rows actually are is a log of what was decided: a type pair set, a tint thinned, a spacing rhythm fixed, a radius made proportional. Naming it for the content rather than for the transport also stops the component being read as an alert centre, which is a different thing with different rules about badges and dismissal.</p>
+      <p class="demo__notes-lede">The bars were picked against four other drafts rendered at real size in the bar — broadcast rings, a clock, a bulleted timeline, a one-sided ripple. Two of them failed on the same thing: a magnifier, two drawers and two sliders are all rectilinear or horizontal, so a timeline read as more drawers and a clock read as a second magnifier. The bars are the only glyph in the set standing on vertical strokes, which is most of why they are legible at 24px. The heights go up, up, up, then down — a monotonic rise would read as signal strength rather than as something recorded.</p>
+      <p class="demo__notes-lede">Drawing a set by hand means centring it by hand. The pill centres the icon's <em>box</em>, so a glyph that does not centre in its own 24-unit box is off-centre in every pill it lands in, and it is invisible in the source — the numbers look tidy. Three of the five were out: the benchmark and the bars sat 0.70 units low, the magnifier 0.40 low and 0.40 right. Measured as the ink bounds plus half a stroke on each side, which is what the eye reads and what <code>getBBox()</code> leaves out.</p>
+
+      <ol class="demo__notes-list">
+        <li>
+          <h3 class="demo__notes-head">Every row in the panel carries a specimen, not an avatar.</h3>
+          <p>The four entries are decisions that were taken — a type pair, a tint, a spacing rhythm, a radius — so the thing at the head of each is a drawing of the <em>kind</em> of decision: a three-step ramp whose bars lose weight as they lose length, a disc filled to half, a gap measured between two rules, a corner filleted over the square corner it replaced, left in at 0.42 behind it so the chip shows what the radius did. A face or a bell says only who or what delivered the row; a diagram says what it is about before the line beside it is read, which is the one job something 19px wide can do. The frame moved with the content: a round frame around a technical diagram reads as an avatar with a picture in it, so the chip is a squircle — the plate the specimen is printed on. The class is <code>__chip</code> and the bold lead is <code>__topic</code>, because <code>__avatar</code> and <code>__who</code> in the contract file would be describing a component that no longer exists.</p>
+        </li>
+        <li>
+          <h3 class="demo__notes-head">The unread mark is a rule under the glyph, not a dot on its corner.</h3>
+          <p>A corner dot is the platform idiom and it is the wrong object on this bar: it is opaque, it is round, and it sits <em>on</em> a surface whose whole argument is that everything is either the material or seen through it. Set under the glyph it reads as part of the item instead, and it is the lozenge's own shape at a fifth of the size — the bar already says <em>current</em> with a stadium, so it can say <em>unread</em> with one too. It is 0.75 of the glyph long, centred on it rather than pinned to a corner, so it travels with the icon instead of being left behind when one collapses to zero width, and it stops a hair short of full strength, because an accent at 1 would be the only thing on the bar not under the surface.</p>
+        </li>
+        <li>
+          <h3 class="demo__notes-head">One reveal mechanism, two payloads.</h3>
+          <p>Every morph in the bar is the same <code>grid-template-columns: 0fr -&gt; 1fr</code> column with <code>overflow: hidden</code> over it. What sits in the track is a text label on four of the items and a text input on the fifth, and the track does not know which — that is why the search field and the nav labels read as the same piece of surface moving rather than as two effects. The catch is that a box cannot be narrower than its own padding, so the gap between an icon and its label is <code>text-indent</code>, not <code>padding</code>: an indent is part of the line, disappears with the text, and still counts towards the max-content width the open track measures. Padded, every collapsed item kept an 11px stripe of nothing beside it. The input is the one payload measured in a length instead of <code>fr</code>, because a text input has no max-content worth the name — its intrinsic width comes from the <code>size</code> attribute, which CSS cannot set. An expanded pill is not padded symmetrically either, and it should not be. A collapsed one is — but the icon does not fill its box, so there is about an <code>--icon/9</code> bearing of free air before the glyph that the text at the other end never gets. Measured on the resting bar: 14.6px before, 12.0px after. <code>--label-trail</code> gives the trailing side that back and a little more, since text reads tighter against a stadium's curve than a roundish glyph does. It is applied in the expanded state only, so the collapsed action stays exactly square, and it moves on the label's clock so the pill does not finish growing after the word inside it has stopped. The same rule caught the panel, in the other axis and much less visibly. Its row collapses to <code>0fr</code> when closed, but the feed inside carried a <code>padding-bottom</code>, so the closed panel was not 0 tall — it was one padding tall. That strip of dead height sat inside the surface under the bar, which put every pill above the bar's centre and made the outer radius stop nesting round the inner ones. Neither symptom looks like a padding problem. The feed's inset is margin now; margins do not floor a box.</p>
+        </li>
+        <li>
+          <h3 class="demo__notes-head">A cluster of four and a trailing one.</h3>
+          <p>The bar is not five evenly spaced icons. Four sit together and the last is set apart by <code>--split</code>, which is what makes a closed pill read as a toolbar rather than as a row of buttons — the gap says the last item is a different kind of thing, before any label appears to explain it. It is also the component's only slack: it is the first thing to give when the bar is squeezed, so a label opening or a narrow column eats into empty space before it starts clipping text. First is a claim that has to be enforced, though, not just declared with a big shrink factor: flex shrink is proportional, not ordered, and a split with six times the factor still handed a third of an overflow to the item beside it. See the search field below. It gives in the other direction too, and that took a second round to notice. The bar stretches to the surface, and the surface is not always the width the row asked for — the panel has a floor of its own, so opening it can make the surface wider than the bar needs. Without a grow factor that extra piled up past the last action and left the trailing icon stranded 60px short of the edge it is supposed to be pinned to. Growing the gap instead is <code>margin-inline-start: auto</code> with a minimum, and the minimum is the point: <code>auto</code> alone collapses the split entirely whenever the bar is exactly its content width, which is most of the time. It is a pseudo-element rather than a spacer in the markup, ordered between the two groups. One catch, and it cost a round: a <code>flex-basis</code> on a pseudo-element is not counted in the flex container's max-content contribution, so the surface sized itself as if the gap were not there and then the gap took its space back out of the labels. Setting <code>width</code> instead of <code>flex-basis</code> is counted.</p>
+        </li>
+        <li>
+          <h3 class="demo__notes-head">The corner is derived, and it is the one thing the morph does not change.</h3>
+          <p><code>--radius-open</code> is <code>--pad + --hit / 2</code>: the pad plus half a pill, which is exactly the radius that runs concentric with the corner actions inside it. Closed, <code>999px</code> clamps to half the bar's height and lands on the same number. So the surface keeps its corner through the morph and the height does all the work — which is what the reference does too, and it is why the inner pills never look like they are sitting in a box cut to a different curve.</p>
+        </li>
+        <li>
+          <h3 class="demo__notes-head">One surface, not two sheets.</h3>
+          <p>The bar and the panel live inside a single <code>__shell</code>, and it is the only thing carrying a backdrop filter, a rim and a shadow. Opening the panel does not slide a second sheet out from under a pill; the one surface changes shape — <code>border-radius</code> from 999px to 1.375rem, and a panel row from <code>0fr</code> to <code>1fr</code>. Width is the part that is not animated and looks like it is: the shell is <code>width: fit-content</code>, and an auto-width box re-measures its children every frame, so a label opening from zero drags the whole pill wider with it. The panel's own <code>width</code> goes 0 -&gt; 24rem for the same reason — it is what the closed shell measures, and at 0 the pill hugs the bar instead of standing at panel width with nothing in it.</p>
+        </li>
+        <li>
+          <h3 class="demo__notes-head">The label is the selection indicator, and ARIA is where the state lives.</h3>
+          <p>Exactly one item carries its label, and it is the one under the lozenge — a label here is not a tooltip. The CSS reads that straight off the attributes the component needs anyway: <code>aria-current="page"</code> on the three destinations, <code>aria-expanded="true"</code> on the panel button, <code>:focus-within</code> on the search field. So <code>component.js</code> writes two attributes and nothing else — it never measures, positions or animates — and the search field needs no script at all. There is no sliding element either: the outgoing pill shrinks back to a square while the incoming one grows, and because they are adjacent in a flex row the highlight reads as one mass travelling.</p>
+        </li>
+        <li>
+          <h3 class="demo__notes-head">The open state is five variables, declared once.</h3>
+          <p><code>--open</code> and the <code>:has()</code> that detects a real <code>aria-expanded</code> both set the same five custom properties, and every rule downstream reads those. The alternative is repeating a two-selector prefix at each rule that cares about being open. Only the three places where a variable cannot carry the change — suppressing the other items' tint, their reveals, and the search track's unit — are written as selectors.</p>
+        </li>
+        <li>
+          <h3 class="demo__notes-head">Glass as a recipe, so a theme is a tint swap.</h3>
+          <p>Four shadows doing four jobs: a 1px inset rim that separates glass from what is behind it, an inset highlight along the top edge that gives the sheet thickness, a hairline along the inside of the bottom that is the same light coming back off the far face, and a soft drop that lifts it off the page. Two of those are new and so are two filter scalars — see the thinning note below; the bottom edge is <code>0 0 0 0 transparent</code> and the scalars are 1 unless a material asks. The lit lozenge used to carry a second, weaker <code>backdrop-filter</code> of its own, and it looked marginally better and cost far too much — see the motion note below. It is a translucent tint and a rim now. The hue is carried by the tint alone: the glass is moss, and the rim, the sheen and the ink are warm off-whites pulled a few points the same way, so moving the tint does not send you round re-tuning six other colours. The one saturated value is the accent, clay from across the wheel, and it is spent only on the two marks that mean unread. <code>--light</code> changes nothing below the variable block — tint, rim, sheen and ink — and the same construction comes back in five materials. Moss is the default and has no modifier; <code>--alabaster</code>, <code>--slate</code>, <code>--basalt</code> and <code>--crystal</code> are the others. Named for materials rather than for brightness, which is not decoration: two of the five flip to dark ink, so <code>--light</code> would have been describing part of the set by a property the rest do not share. Alabaster took a round to get right, and the mistake is the useful part. The first version tinted it with the dark theme's own hue, and a green-grey glass sitting on warm paper reads as a cast rather than as a material. Four palettes on the real ground settled it: pale sage read sickly, cool porcelain read clinical against the paper, limestone had the most material presence but muddied the lit pill's edge, and bone kept both the warmth and the crispness. So a light theme is not the dark one turned up — it is a second material of the same construction, and what decides its hue is the ground it will sit on. Its ink is a warm greige rather than a near-black, for the same reason the glass is not white: alabaster is the lightest thing in the component, and ink at full strength on it reads as printed on top of the sheet rather than seen through it. The part worth remembering is what has to move with it. Softening the strong text spends contrast the strong text had going spare — 12.5:1 down to 7.0:1 against this surface — but the muted line is derived from the same colour and had none to spare at 4.1:1, so dropping the ink without taking its alpha <em>up</em> quietly takes the quiet text below where it started. It ends at 4.5:1, better than it was. The other two are each a whole palette for the same reason, not a hue rotation. Slate wants its saturation kept <em>down</em>, because a blue glass with the saturate pushed up starts tinting what is behind it and reads as a filter rather than a surface. Basalt leans on its rim more than any of them: against a light ground a near-black sheet has plenty of contrast at its face and none at all at its edge, so without the hairline it stops reading as glass and starts reading as a hole. And the accent moves with each — the warm mark that reads on moss is not the warm that reads on a near-black.</p>
+        </li>
+        <li>
+          <h3 class="demo__notes-head">Thin the tint, and the filter has to take the work.</h3>
+          <p>The first version of the set carried its colour in the tint, at 42–64% opacity. That is a coloured surface with a texture underneath it rather than glass: nothing of the page survives the trip through it, and the backdrop filter is only there to keep the texture from being legible. Every material is thinner now — 28–44%, and crystal at 7% — and thinning is not a slider you can turn on its own. Three things had to move with it. The filter grew <code>brightness</code> and <code>contrast</code>. Brightness does the darkening the tint used to do, which is the whole trick for the dark materials: moss at 28% over a light page is a pale green wash, and moss at 28% over a page turned down to 0.56 is a dark sheet you can see the page's cross-light through. It is also better ink: the label went from 2.3:1 against the lit pill to about 4:1, because the surface under it got <em>darker</em> while getting more transparent. Contrast keeps the ground's range from flattening as it is pushed around. The blur came down, 14px to 8px, and this is the counter-intuitive half. Blur is frost, not glass — past about 10px whatever is behind the sheet stops being a place and becomes a wash, and at that point the tint is doing all the work again. Clear glass displaces what is behind it; it does not hide it. And the edges took over what the body gave up. Every rim and sheen went up, the lit lozenge became a rim with a thin body rather than a pale fill — a glaze is a transparent body with a lit edge, and it is now that in all five rather than only in alabaster — and each drop gained a second, tight contact shadow, because one soft shadow lifts an opaque card fine and a thin one still reads as painted on.</p>
+        </li>
+        <li>
+          <h3 class="demo__notes-head">Crystal, the one that is actually glass.</h3>
+          <p>At 7% the tint decides nothing and the material is carried entirely by what it does to the light and by its edges. Its brightness goes slightly <em>below</em> 1, which is the single most useful thing on this page: real glass absorbs a little, and a sheet a shade darker than the page with bright edges reads as glass, where a brighter one reads as paint. Every attempt to sell it by <em>adding</em> — more saturation, more contrast, more lift — came back looking like amber or like a white sticker, because on a warm ground those all push toward cream. <code>--edge</code> is the other half: a hairline along the inside of the bottom, the cheapest available stand-in for refraction, which CSS cannot do, and most of what gives a pane this thin any thickness at all. It cost alabaster a round, and the mistake is instructive. Thinning alabaster along with the others put it and crystal in the same place — two pale sheets on warm paper, distinguishable only by their rims — and a set of five with two members doing the same thing is a set of four with a spare. Alabaster went back up to 44% and kept its brightness near 1: it is milk glass, a body you cannot see through, and crystal is a pane you can. What separates them is not how light they are.</p>
+        </li>
+        <li>
+          <h3 class="demo__notes-head">Everything here animates layout, so the savings are elsewhere.</h3>
+          <p>A label opening is a track going <code>0fr -&gt; 1fr</code>, the panel is a row and a width, and the surface is <code>fit-content</code> around all of it — none of that can be moved onto a transform without giving up the thing that makes it read as one surface breathing. So the way to make it smooth is not to animate less, it is to make each frame cheaper and to stop the curve fighting the layout. Three changes, in the order they mattered. The easing lost its overshoot: a curve that passes 1 and settles back is lovely on a transform, and on a <em>width</em> it means the bar grows past its final size and comes back — with the surface centred, the whole thing slides out and in. That is a wobble, and it was most of what read as jumpy. The lozenge lost its nested <code>backdrop-filter</code>: a backdrop filter inside a backdrop-filtered element takes a second snapshot of the backdrop, and it was on the one element that resizes on every frame of every morph. And the blur came down from 20px to 14px, because backdrop blur costs by radius and it re-runs whenever the surface changes size — which here is constantly. It came down again later, to 8px, for a reason that has nothing to do with cost and everything to do with looking like glass; the saving was free. What is left is one clock split in two: <code>--reveal</code> at 220ms for a label, about 60px of travel, and <code>--morph</code> at 300ms for the panel, about ten times that. A single duration cannot serve both — the label feels sluggish at the panel's speed and the panel feels rushed at the label's. Splitting them also stages the compound move for free: open the panel, and the label arrives first with the card following it down.</p>
+        </li>
+      </ol>
+
+      <!-- Where it started, last: the block opens on the component, and the
+           lineage is a footnote to it. Same order notes.md has. -->
+      <dl class="demo__notes-meta demo__notes-meta--foot">
+        <div class="demo__notes-row">
+          <dt data-i18n="notes.inspiration">Inspiration</dt>
+          <dd><a href="https://x.com/renzobianchi_/status/2097400239162351924" target="_blank" rel="noopener noreferrer">x.com/renzobianchi_</a></dd>
+        </div>
+      </dl>
+
+      <p class="demo__notes-foot">
+        <a href="notes.md">notes.md</a>
+        <span data-i18n="notes.full">&mdash; the full record, including what was tried and dropped</span>
+      </p>
+    </div>
+  </details>
 
   <!--
     Language. Self-contained on purpose: the folder has to survive being copied
@@ -2257,7 +2586,7 @@
   -->
   <script>
     (function () {
-      var STORE_KEY = 'ui-reference-base:lang';
+      var STORE_KEY = 'interface-studies:lang';
 
       /*
         The template's block, with one change: the prose on this page carries
@@ -2266,8 +2595,12 @@
         no user input anywhere near it.
       */
       var DA = {
+        'notes.title': 'Beslutninger',
+        'notes.type': 'Type',
+        'notes.inspiration': 'Inspiration',
+        'notes.full': '\u2014 hele optegnelsen, ogs\u00e5 det der blev pr\u00f8vet og forkastet',
         'back':
-          'Alle referencer',
+          'Alle studier',
         'type':
           'Navigation',
         'heading':
@@ -2321,11 +2654,11 @@
         'panel.3t':
           'Aktivitet, ikke Notifikationer.',
         'panel.3b':
-          'Notifikationer lover levering. De fire rækker er en log — og navnet forhindrer, at komponenten læses som en alarmcentral.',
+          'Notifikationer lover levering. De fire rækker er en log over trufne beslutninger — og navnet forhindrer, at komponenten læses som en alarmcentral.',
         'panel.4t':
           'Den udvidede visning blotter materialet.',
         'panel.4b':
-          'Fire rækker lille tekst over en flade, man kan læse siden igennem. Intet i panelet kender sit tema.',
+          'Fire rækker lille tekst over en flade, man kan læse siden igennem, hver anført af en prøve på den beslutning, rækken noterer — ikke af et ansigt. Intet i panelet kender sit tema.',
         'motion.title':
           'Bevægelse',
         'motion.note':
@@ -2345,7 +2678,7 @@
         'materials.title':
           'Materialer',
         'materials.note':
-          'Intet under variabelblokken ændrer sig for nogen af dem. Alle fem står på Home med vilje: et sæt kan kun sammenlignes som den samme tilstand fem gange.',
+          'Intet under variabelblokken ændrer sig for nogen af dem. Alle fem står på Base med vilje: et sæt kan kun sammenlignes som den samme tilstand fem gange.',
         'materials.1t':
           'Et materiale er en hel palet.',
         'materials.1b':
@@ -2365,7 +2698,7 @@
         'narrow.title':
           'Smal',
         'narrow.note':
-          'Fem mål på 48px, fire mellemrum og fladens egen padding kræver omkring 264px. Under det klippede den sin sidste handling væk frem for at blive trang.',
+          'Fem mål på 48px, mellemrummene mellem dem og fladens egen padding kræver omkring 264px — men linjen har også en etiket åben, når den hviler, så den reelle grænse er omkring 390px. Skiftet sker ved 25rem.',
         'narrow.1t':
           'Skalér, klem ikke.',
         'narrow.1b':
@@ -2373,11 +2706,11 @@
         'narrow.2t':
           'En container-forespørgsel, ikke en media-forespørgsel.',
         'narrow.2b':
-          'Boksen nedenfor er 15rem; forespørgslen læser den boks, så linjen i fuld størrelse længere oppe er uberørt. At læse vinduet er forkert i det øjeblik, den lander i en sidebjælke.',
+          'Boksen ovenfor er 15rem; forespørgslen læser den boks, så en linje i en bredere spalte er uberørt. At læse vinduet er forkert i det øjeblik, den lander i en sidebjælke. På en telefon ligger alle scener på siden inden for forespørgslen, og det er netop pointen.',
         'narrow.3t':
           'Etiketten er det, der ryger.',
         'narrow.3b':
-          'Der er ikke plads til den, så udfoldningen forbliver lukket, og den oplyste pille bærer markeringen alene.',
+          'Der er ikke plads til den, så udfoldningen forbliver lukket, og den oplyste pille bærer markeringen alene. Søgefeltet er undtagelsen og gør det modsatte: et felt, der ikke er der, er ikke en søgning, så de fire andre handlinger trækker sig, og feltet åbner sig hen over fladen.',
         'clock.reveal':
           'Etiketsporet og pillens afsluttende padding. Cirka 60px bevægelse.',
         'clock.morph':
@@ -2400,6 +2733,12 @@
           var key = el.getAttribute('data-i18n');
           el.innerHTML = table && table[key] ? table[key] : english[i];
         });
+
+        // The tab follows the heading rather than keeping its own copy of it,
+        // so the study's name is the same string in both places and in both
+        // languages. The <title> in the markup is the no-script fallback.
+        var head = document.querySelector('.demo__heading');
+        if (head) document.title = head.textContent.trim() + ' \u2014 Interface Studies';
 
         document.documentElement.lang = lang;
         buttons.forEach(function (b) {

@@ -1,20 +1,18 @@
 type: navigation
 
-Source: https://x.com/renzobianchi_/status/2097400239162351924 — three frames of a
-liquid-glass toolbar: a labelled Home pill at rest, the search item opened into
-a field, and the whole bar opened downward into an activity panel.
+A floating toolbar on one pane of glass. Four items sit together and a fifth is
+set apart; exactly one of them carries its label, and it is the one you are on.
+The search item opens into a field and the activity item opens the pane
+downward into a panel — neither is a second sheet sliding out from underneath,
+the one surface changes shape, and the corner it does that around never moves.
 
-`ref.png` is the resting frame — the labelled Home pill over a rendered scene of
-grey and slate planes. The other two frames, the opened search field and the
-opened panel, are described above rather than kept, since the decisions they
-carry are named below.
-
-What is not being captured: the Memoji avatars, the product copy, the cool grey
-render the glass sits on, and the icon set. The ground in `demo.html` and
-`preview.html` owes the reference nothing: it is the index's own recipe, warm
-paper with the same two washes at the same strength, so a reference sitting in
-the rail does not arrive louder than the page around it. It is page scaffolding,
-not part of the component.
+The set is a working surface rather than an operating system: Base, search,
+Versions, Activity, Display. Each item is named for what its glyph can actually
+do — two sliders are display controls, not a settings screen; two drawers are
+versions of a thing, not a mailbox — so the bar says what it is for before a
+label opens. It is also why the labelled item is *Base* and not Home: a toolbar
+that floats over work has no front door to return to, it has a datum to measure
+from, and that is what its glyph draws — a benchmark standing on a rule.
 
 It is as dull as it can afford to be, and finding that floor is the point. Glass
 has no look of its own — a blur over one flat fill is indistinguishable from a
@@ -28,26 +26,34 @@ frame above and below it in the thumbnail — but a ground whose whole colour ma
 sat in the lower third read as bottom-heavy, and a thing centred in a
 bottom-heavy frame looks like it is floating high.
 
-The icons are drawn rather than borrowed, and all but one are deliberately not
-the reference's: a doorway instead of a house, two drawers instead of a lidded
-box, four bars instead of a bell, two sliders instead of a cog. The
-magnifier is the exception, and it is the exception for a reason — it is the one
-glyph in a toolbar with no synonym. Every other function has several ways to be
-drawn, so the set is a place to have an opinion; search is not.
+The icons are drawn rather than borrowed: a benchmark on a rule, a magnifier,
+two drawers, four bars, two sliders. The magnifier is the one glyph in a
+toolbar with no synonym — every other function has several ways to be drawn, so
+the set is a place to have an opinion; search is not.
+
+Base was an arched doorway first, and the doorway was drawing the word *home*
+rather than the word it sits under. Five were rendered at real size in the bar
+to replace it: a square on a baseline, three courses of a plinth, a diamond
+resting on a rule, a circle overshooting one, and a block on a ground plane in
+axonometric. The plinth read as an align-left control, the circle read as a
+second magnifier, and the axonometric block turned to mush at 24px. The
+benchmark won because it is the only triangle in the set — nothing else here
+has a diagonal — and because it says what Base means: the mark everything else
+is measured from.
 
 The panel item is called Activity, not Notifications, and the icon is four bars
-of uneven height. Notifications is a promise about delivery — it says
-these are things that were pushed at you. What the four rows actually are is a
-log: somebody commented, a build finished, a review was asked for, an invoice
-cleared. Naming it for the content rather than for the transport also stops the
-component being read as an alert centre, which is a different thing with
-different rules about badges and dismissal.
+of uneven height. Notifications is a promise about delivery — it says these are
+things that were pushed at you. What the four rows actually are is a log of
+what was decided: a type pair set, a tint thinned, a spacing rhythm fixed, a
+radius made proportional. Naming it for the content rather than for the
+transport also stops the component being read as an alert centre, which is a
+different thing with different rules about badges and dismissal.
 
 The bars were picked against four other drafts rendered at real size in the bar
 — broadcast rings, a clock, a bulleted timeline, a one-sided ripple. Two of them
-failed on the same thing: an arch, a magnifier, two drawers and two sliders are
-all rectilinear or horizontal, so a timeline read as more drawers and a clock
-read as a second magnifier. The bars are the only glyph in the set standing on
+failed on the same thing: a magnifier, two drawers and two sliders are all
+rectilinear or horizontal, so a timeline read as more drawers and a clock read
+as a second magnifier. The bars are the only glyph in the set standing on
 vertical strokes, which is most of why they are legible at 24px. The heights go
 up, up, up, then down — a monotonic rise would read as signal strength rather
 than as something recorded.
@@ -55,9 +61,37 @@ than as something recorded.
 Drawing a set by hand means centring it by hand. The pill centres the icon's
 *box*, so a glyph that does not centre in its own 24-unit box is off-centre in
 every pill it lands in, and it is invisible in the source — the numbers look
-tidy. Three of the five were out: the arch and the bars sat 0.70 units low, the
-magnifier 0.40 low and 0.40 right. Measured as the ink bounds plus half a stroke
+tidy. Three of the five were out: the benchmark and the bars sat 0.70 units
+low, the magnifier 0.40 low and 0.40 right. Measured as the ink bounds plus half a stroke
 on each side, which is what the eye reads and what `getBBox()` leaves out.
+
+- **Every row in the panel carries a specimen, not an avatar.** The four
+  entries are decisions that were taken — a type pair, a tint, a spacing
+  rhythm, a radius — so the thing at the head of each is a drawing of the
+  *kind* of decision: a three-step ramp whose bars lose weight as they lose
+  length, a disc filled to half, a gap measured between two rules, a corner
+  filleted over the square corner it replaced, left in at 0.42 behind it so
+  the chip shows what the radius did. A face or a bell says only who or what
+  delivered the row; a diagram says what it is about before the line beside it
+  is read, which is the one job something 19px wide can do.
+
+  The frame moved with the content. A round frame around a technical diagram
+  reads as an avatar with a picture in it, so the chip is a squircle — the
+  plate the specimen is printed on. The class is `__chip` and the bold lead is
+  `__topic`, because `__avatar` and `__who` in the contract file would be
+  describing a component that no longer exists.
+
+- **The unread mark is a rule under the glyph, not a dot on its corner.** A
+  corner dot is the platform idiom and it is the wrong object on this bar: it
+  is opaque, it is round, and it sits *on* a surface whose whole argument is
+  that everything is either the material or seen through it. Set under the
+  glyph it reads as part of the item instead, and it is the lozenge's own shape
+  at a fifth of the size — the bar already says *current* with a stadium, so it
+  can say *unread* with one too. It is 0.75 of the glyph long, centred on it
+  rather than pinned to a corner, so it travels with the icon instead of being
+  left behind when one collapses to zero width, and it stops a hair short of
+  full strength, because an accent at 1 would be the only thing on the bar not
+  under the surface.
 
 - **One reveal mechanism, two payloads.** Every morph in the bar is the same
   `grid-template-columns: 0fr -> 1fr` column with `overflow: hidden` over it.
@@ -137,7 +171,10 @@ on each side, which is what the eye reads and what `getBBox()` leaves out.
   gap says the last item is a different kind of thing, before any label appears
   to explain it. It is also the component's only slack: it is the first thing to
   give when the bar is squeezed, so a label opening or a narrow column eats into
-  empty space before it starts clipping text.
+  empty space before it starts clipping text. First is a claim that has to be
+  enforced, though, not just declared with a big shrink factor: flex shrink is
+  proportional, not ordered, and a split with six times the factor still handed
+  a third of an overflow to the item beside it. See the search field below.
 
   It gives in the other direction too, and that took a second round to notice.
   The bar stretches to the surface, and the surface is not always the width the
@@ -354,9 +391,9 @@ squeeze back to squares, the open label clips, the feed lines ellipsise, and the
 page does not scroll sideways.
 
 Below about 264px of container, though, no amount of shrinking helps: five
-targets at `--hit`, four gaps and the surface's own padding do not fit, and
-because the surface clips, what went missing was the trailing action. The
-component quietly lost its last item rather than getting tight. Nothing here
+targets at `--hit`, the gaps between them and the surface's own padding do not
+fit, and because the surface clips, what went missing was the trailing action.
+The component quietly lost its last item rather than getting tight. Nothing here
 squeezes its way out of that — the actions hold a min-width so they stay
 tappable, and their padding is not a flex length, so an action forced narrower
 just spills its icon into its neighbour. So there is one container query, and it
@@ -370,6 +407,21 @@ width comes from its own contents then resolves to zero, so the root takes
 `width: 100%` and centres the surface inside it rather than shrinking to fit
 around it.
 
+The query fires at 25rem, and the gap between that and the 264px above is the
+correction this reference needed most. 264px is what the *collapsed* row costs,
+and this bar is never collapsed: one action always carries its label, and the
+label is the widest thing in the component. Five squares, the split and an open
+"Activity" come to about 390px, so every phone held upright sat in the band
+between the two numbers — wide enough to stay at full scale, too narrow to show
+the word. The surface clipped "Base" to its first letter rather than the
+component standing down to the scale that fits, which is the same failure as the
+missing trailing action, one step further in. A breakpoint has to be measured
+against the state the component is actually in, not against the state its parts
+add up to. 25rem clears the widest label with the split still off zero at the
+boundary, and it is a literal because a container query condition cannot read a
+custom property: a caller that moves `--hit` far from 3rem moves the width this
+should switch at, and has to move this with it.
+
 Worth knowing what the narrow scale gives up: at 320px there is no room for a
 label at all, so the reveal stays shut and the lit pill is the only thing saying
 which item you are on. That is the right thing to lose — the label was never the
@@ -382,6 +434,32 @@ label in exactly the way a truncated word is worse than an icon. So the narrow
 block repeats the three open-state selectors at `0fr` and takes the trailing pad
 back with them, or the pill keeps the air it was given to sit beside a word that
 is no longer there. Same weight, later in the file: source order decides it.
+
+The search field is the one payload that cannot stand down the same way — an
+input that is not there is not a search — so it does the opposite: at the narrow
+scale the row clears out for it. The other four actions take their icons to zero
+width and their padding with them, and the field opens across the surface. It is
+the same trade the label makes, the other way round: there is room for one of the
+two, and while the caret is in the field the field is the one that matters. The
+alternative was arithmetic: five squares, their gaps and the padding leave about
+12px of a 320px column, which is a field in name only. Nothing animates `width`
+on the actions themselves, because that would be interpolating from `auto` and
+would not move — an action is auto-width around two lengths that do animate, its
+own padding and the icon's width, so it follows them down.
+
+At every scale the track itself is now a ceiling rather than a length. `14rem`
+was fixed inside a surface that clips, so under about 31rem of container the
+field was cut off mid-placeholder; it is capped at what the row has left once
+five squares, the gaps, the padding and the pill's trailing allowance are taken
+off `100cqi`. Two details make that hold. The floor of the clamp is `0px`,
+because a negative track would drop the declaration and leave the field in an
+`auto` column — wider than the one it was clipped out of. And the open field
+does not take part in the squeeze: flex shrink is proportional, not ordered, so
+a split with six times the shrink factor still absorbed only two thirds of an
+overflow and handed the rest back to the field. Frozen at `flex-shrink: 0`, the
+deficit lands on the split until it is at zero, and the other actions cannot
+take it either because their min-width floors them at one square. The label stays
+shrinkable on purpose: it is the thing that should give at the boundary.
 
 Almost nothing here is spent on hover, which is what makes it survive a touch
 device: the morph runs on taps and on focus. The two things that are hover —
@@ -401,7 +479,8 @@ with the state that proves it: the anatomy of the bar, the reveal, the extended
 view, the motion, the five materials, the narrow scale. The prose is page
 scaffolding like the background is — it says what the thing in front of it is
 doing, so the page can be read as well as poked at, and it is where the numbers
-that are not visible in a screenshot live: 220 against 300, 264px, 4:1.
+that are not visible in a screenshot live: 220 against 300, 25rem against 264px,
+4:1.
 
 Two things came out of writing it down. The motion section needed the two clocks
 drawn rather than described — three bars on a 400ms track, because "220 and 300"
@@ -419,7 +498,7 @@ rather than page prose.
 The card shows all five materials stacked, which is a deliberate departure from
 this repo's rule that a thumbnail holds one instance and no second copy. The rule
 is there to stop a thumbnail turning into a small demo page, and it is the right
-rule — but what this reference offers is a construction that comes in five
+rule — but what this study offers is a construction that comes in five
 materials, and one bar cannot advertise that. So the card is the set, with no
 captions and no state labels, and the variant dots step into a single bar where
 a panel has somewhere to open. The stagger down the stack costs nothing to add
@@ -484,3 +563,8 @@ can promise. The search field is the better thumbnail: one line of shape change,
 legible at any scale, and its width is a number the preview sets rather than
 something the copy decides. The panel is still a click away in quick look and a
 dot away in the variant row, where there is room for it.
+
+Inspiration: https://x.com/renzobianchi_/status/2097400239162351924 — three
+frames of a glass toolbar, of which `ref.png` is the resting one. What it
+supplies is the material and the morph; the item set, the naming, the marks and
+the ground are this build's.

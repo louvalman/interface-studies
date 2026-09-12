@@ -1,15 +1,15 @@
 # CLAUDE.md
 
-This repo is a UI reference base: interface components built in code and kept as
-self-contained references, so the decisions behind them can be lifted into
-another project later. Some are recreations of interfaces found elsewhere;
-others are built from scratch against original Figma designs.
+This repo is Interface Studies: interface components built in code and kept as
+self-contained studies, so the decisions behind each one stay legible and it
+survives being copied out on its own. Some start from an interface found
+elsewhere; others are built from scratch against original Figma designs.
 
 Read these rules before adding to or editing anything in this repo.
 
 ## Folder structure
 
-Every reference lives in its own folder, named `YYYY-MM-slug`:
+Every study lives in its own folder, named `YYYY-MM-slug`:
 
 ```
 2026-09-brutalist-price-card/
@@ -25,7 +25,7 @@ Every reference lives in its own folder, named `YYYY-MM-slug`:
 **JavaScript** below.
 
 `_template/` holds a stubbed, commented copy of these files. Copy it when
-starting a new reference.
+starting a new study.
 
 ## notes.md
 
@@ -37,26 +37,57 @@ type: card
 
 Valid types: `card`, `button`, `layout`, `aesthetic`, `navigation`.
 
-Below that: the origin, then 2–5 bullets naming the *specific* decisions the
-build captures. For a recreation the origin is the source URL; for a component
-built from an original design, say so (`Source: original design`).
+Below that, the component in its own terms: a short opening paragraph saying
+what it is and what it does, then 2–5 bullets naming the *specific* decisions
+the build captures.
 
 Type scale. Spacing rhythm. Border treatment. Hover behaviour. Name the actual
 decision, not a general impression — "48px/16px type pair with the label at 11px
 uppercase, letter-spaced 0.08em" is useful; "clean and modern typography" is
 not.
 
-## Recreation means extraction, not pixel-matching
+### Inspiration goes at the bottom
 
-This applies when the reference comes from someone else's interface. Take the
-handful of decisions that make it work, and ignore its content and its branding
-— the copy, the logo, the product name, the photography are not what is being
-captured. A version that is 80% visually faithful but isolates the right four
-decisions is correct. A pixel-perfect clone carrying someone else's brand is
-not.
+Where a study started is a footnote, not its subject. So the last line of the
+file is an `Inspiration:` line — a URL for something seen elsewhere,
+`Inspiration: none — original design` for a build of your own — with at most a
+sentence or two after it if there is something worth saying about what was
+taken.
 
-A component built from an original Figma design has no such constraint: build
-what the design specifies.
+It sits at the bottom because the file opens on the component, not on a
+lineage. A reader who wants to know where the idea came from can go looking;
+a reader who wants to know what the thing *is* should not have to read past a
+paragraph of provenance to find out.
+
+Do not write the disclaimer. Earlier versions of these files opened with a
+paragraph of "this is an extraction, not a copy" and then an inventory of what
+was left behind — the brand, the copy, the photography, the product name. That
+is the repo's standing rule (below), stated once there; restating it per study
+argues with a charge nobody made, and it spends the top of the file on the
+reference instead of on the build. Name a specific departure only where it is
+itself a decision — a construction that was changed on purpose, a mechanism the
+reference has that this one does not — and name it in a bullet, where the other
+decisions are.
+
+## Extraction, not pixel-matching
+
+The standing rule, and it does not need restating per study. When a reference
+comes from someone else's interface, take the handful of decisions that make it
+work and leave its content and its branding — the copy, the logo, the product
+name, the photography are not what is being captured. A version that is 80%
+visually faithful but isolates the right four decisions is correct. A
+pixel-perfect clone carrying someone else's brand is not.
+
+The bar is higher than swapping the palette. If the item set, the lockup, the
+silhouette and the sample copy all still map one-to-one onto the reference,
+what has been built is the reference in different colours — the decisions were
+copied along with everything else, which is the failure this rule exists to
+prevent. Take the construction and then have an opinion of your own with it:
+change what the component is *for*, what it is made of, or how it behaves, and
+let the borrowed part be the technique rather than the object.
+
+A component built from an original design has no such constraint: build what
+the design specifies.
 
 ## `type:` scopes the output
 
@@ -68,7 +99,7 @@ what the design specifies.
 | `aesthetic` | a token block plus 2–3 sample elements that demonstrate it |
 | `navigation` | just that component |
 
-Don't build more than the type calls for. A `layout` reference does not get a
+Don't build more than the type calls for. A `layout` study does not get a
 beautifully styled card sitting inside it; it gets a grey box.
 
 ## component.css
@@ -105,7 +136,7 @@ beautifully styled card sitting inside it; it gets a grey box.
 
 ## A component has to survive a phone
 
-Two rules, and they hold for every reference regardless of `type:`.
+Two rules, and they hold for every study regardless of `type:`.
 
 **Narrow containers.** A component may say what width it wants, but never
 insist on it. Any element that sets a width carries `max-width: 100%` beside
@@ -150,11 +181,58 @@ All page-level context lives here, and only here:
 - background and centering
 - font loading (`<link>` to a font service is fine *here*)
 - a link to `component.css`
+- an `<h1>` naming the study, with the type and a one-sentence lede
 - 2–3 states of the component: default, hover, and a content variant
+- `notes.md`, rendered — see below
 
 demo.html links `component.css`; it never redefines it. If the demo needs a
 style, that style belongs in a `<style>` block scoped to the demo page's own
 scaffolding — never a rule that reaches into the component's classes.
+
+Its `<title>` is the study's name, not the folder slug — the tab, the bookmark
+and the history entry are read by a person. The language script writes it from
+the page's own `<h1>` so the name is one string rather than two, and the tag in
+the markup is the no-script fallback.
+
+It also carries `og:` tags, because a demo page is the link that gets pasted
+somewhere. Title and description come from the page's own `<h1>` and lede;
+`og:image` is `../og.png`, the index's card, from the same place up a level
+that the favicon and the back link already come from. A folder copied out
+loses the picture and keeps the words.
+
+### The demo page renders notes.md
+
+The decisions are the study. A page that shows five states and names none
+of them is a gallery, and the one artefact worth lifting stays in a file the
+site never opens. So every demo carries a `Decisions` block: the `type:`, the
+opening paragraph, one entry per decision bullet, and the `Inspiration:` line
+last — the same shape and the same order `notes.md` has, so the two read side
+by side.
+
+It is a `<details>`, closed. The states are what the page is for; the decisions
+are what you open when you want to know why one of them is the way it is. A
+`<details>` rather than a scripted panel, because disclosure is what the
+element already is — keyboard, screen reader and find-in-page included — and no
+demo page should need script for it.
+
+Kept in step with `notes.md` by hand, like the language table and
+`preview.html`'s markup. There is no build step to read the file, and fetching
+it fails over `file://`, where each document gets an opaque origin. Edit the
+one, edit the other.
+
+The decision prose stays in the language `notes.md` was written in. It is a
+record, not page copy — the same reason component sample copy is left alone by
+the language switch. Only the labels around it (`Decisions`, `Type`,
+`Inspiration`) carry `data-i18n`.
+
+A `notes.md` that has grown past the contract's 2–5 bullets renders the bullets
+in its first group — the decisions the build captures — and links the file for
+the rest.
+
+The inspiration row sits below the decisions, beside that link, and not in the
+meta list at the top. The block opens on what the component is; where it came
+from is the last thing in it, for the same reason it is the last line of
+`notes.md`.
 
 ## preview.html
 
@@ -179,12 +257,12 @@ position:
 
 ```js
 // index -> preview
-{ source: 'ui-reference-base', type: 'preview', active: true | false }
-{ source: 'ui-reference-base', type: 'preview:variant', index: n }
-{ source: 'ui-reference-base', type: 'preview:scale', scale: n }
+{ source: 'interface-studies', type: 'preview', active: true | false }
+{ source: 'interface-studies', type: 'preview:variant', index: n }
+{ source: 'interface-studies', type: 'preview:scale', scale: n }
 
 // preview -> index, once its listener is live
-{ source: 'ui-reference-base', type: 'preview:ready',
+{ source: 'interface-studies', type: 'preview:ready',
   variants: [{ id, label }] }        // variants optional
 ```
 
@@ -204,6 +282,23 @@ itself. Beware toggling a variant's element with the `hidden` attribute — if
 `component.css` gives that element a `display`, the author rule beats the UA
 `[hidden]` rule and it will not hide. Add and remove the node instead.
 
+`preview:key` is the fourth, and it goes the other way — preview to index. An
+iframe is its own document: keys pressed inside it fire against that document
+and never reach the index. Quick look runs the preview with pointer events
+live, which is the whole point of it, so a click on the component moves focus
+into the frame — and from there `Escape` stopped closing the overlay, because
+the handler that closes it is on the index's document. The preview hands that
+one key back:
+
+```js
+// preview -> index
+{ source: 'interface-studies', type: 'preview:key', key: 'Escape' }
+```
+
+Escape and nothing else. Arrow keys are the component's — it may hold a field
+with a caret in it — and a preview that relays them would have the overlay
+change variant while someone is typing.
+
 `preview:scale` is the third message and the only one about pixels rather than
 state: how much the preview's own pixels are being shrunk on screen. A card
 lays the preview out at `--preview-w` and shows it at `--preview-scale`, and
@@ -221,13 +316,13 @@ for; it is still not a rule written against a component class.
 
 The block is optional. A preview that ignores the messages still renders; it
 just sits still, and quick look shows it without dots. A preview opened on its own does nothing, because the script only
-posts back when it is framed. This is the one place a reference folder may carry
+posts back when it is framed. This is the one place a study folder may carry
 script without meeting the JavaScript bar below — it is thumbnail scaffolding,
 not component behaviour, and it never goes in `component.js`.
 
 ## JavaScript
 
-Vanilla HTML and CSS by default. Add JavaScript only when the reference
+Vanilla HTML and CSS by default. Add JavaScript only when the study
 genuinely depends on interaction — a disclosure, a carousel, a drag. Hover,
 focus, and transitions are CSS. When JS is needed, it goes in a plain
 `component.js` with no framework and no build step.
@@ -235,20 +330,25 @@ focus, and transitions are CSS. When JS is needed, it goes in a plain
 ## Folders are independent
 
 Never edit or refactor across folders. Never extract a shared stylesheet, a
-shared token file, or a shared anything. Two references that solve the same
+shared token file, or a shared anything. Two studies that solve the same
 problem the same way should contain the same code twice — the duplication is
 intentional, because each folder has to survive being copied out on its own.
 
-When asked to add a reference, touch that folder and nothing else — with the
+When asked to add a study, touch that folder and nothing else — with the
 single exception below.
+
+The one thing that legitimately sweeps every folder is an identity change —
+the site was renamed, and each `demo.html` carries its own copy of the back
+link's strings. That is a rename, not a refactor: it touches the strings and
+nothing structural, and a folder still owns its own copy afterwards.
 
 ## The landing page
 
 `index.html`, `index.css` and `index.js` at the repo root are the index: a
-carousel of every reference, each card linking to that folder's `demo.html`.
-This is site chrome, not a reference — it has its own class names and its own
-stylesheet, and it never links a `component.css` or reaches into a reference's
-classes. A reference folder must keep working with the index deleted.
+carousel of every study, each card linking to that folder's `demo.html`.
+This is site chrome, not a study — it has its own class names and its own
+stylesheet, and it never links a `component.css` or reaches into a study's
+classes. A study folder must keep working with the index deleted.
 
 Each card iframes that folder's `preview.html` — so the index shows the live
 component, not `ref.png`. The reference image stays in the folder as the record
@@ -260,6 +360,32 @@ events *on*, so there the component's real `:hover` does the work and no message
 is involved. Both routes load the same file — there is no second thumbnail to
 keep in step.
 
+`og.png` at the root is the social card: a 1200x630 render of the masthead,
+kept as a file because no scraper runs the page, and as a PNG because none of
+them will rasterise an SVG. The paths in the tags are relative — Slack, Discord
+and iMessage resolve those against the page they fetched. Facebook and LinkedIn
+want absolute ones, so when this gets a host, prefix them with it and add a
+matching `og:url` and `<link rel="canonical">`.
+
+`og.html` is what that PNG is a photograph of. It is not a page anyone visits
+and nothing links to it; it exists so that changing the card is an edit rather
+than a rebuild-by-eye, which is what the first two versions were. Its head
+carries the render command. The masthead's copy is in it by hand — the h1 and the
+lede — so a headline change means editing `index.html`, then `og.html`, then
+re-rendering, and skipping the last two leaves a link that pastes as one page
+and opens as another.
+
+Its meta row is the exception, and deliberately not a copy: the masthead's row
+is the newest study's date, read off the cards at runtime, and baked into a PNG
+that is wrong from the next study onward. The card states three things about
+the set that do not move instead.
+
+The rail ends on its own rule: `.rail__progress` is both the scroll position
+and the line under the cards, so its track is always drawn and only the fill is
+conditional. The footer has no `border-top` of its own — it used to, 98px below
+the progress track, which was the page drawing the same line twice with nothing
+in between.
+
 The preview iframe renders at a fixed logical viewport (`--preview-w` /
 `--preview-h`) and is scaled down to the card by `--preview-scale`. That factor
 must equal `--card-w / --preview-w` exactly, at every breakpoint, or the
@@ -268,7 +394,7 @@ thumbnail will not fill its frame.
 The index is bilingual (EN/DA). Every translatable string in `index.html`
 carries a `data-i18n` key — or `data-i18n-aria` / `data-i18n-title` for the
 attribute — and `index.js` holds the Danish table; English is the markup itself,
-so it needs no entry. A new reference's card copy needs its keys adding there
+so it needs no entry. A new study's card copy needs its keys adding there
 too, or it stays English when the page is switched. Quick look shows variant labels
 in whatever language the preview reports them, since those strings belong to the
 folder.
@@ -281,7 +407,7 @@ each document gets its own opaque origin and does not share it. `_template/`
 holds the block to copy. Translate the page's own prose only — component sample
 copy and class-name hints stay as they are.
 
-The card list is hand-maintained in `index.html`. Adding a reference means
+The card list is hand-maintained in `index.html`. Adding a study means
 adding one `<article class="piece">` block to it, pointing at the new folder's
 `demo.html` and `preview.html`, and carrying a `data-date` — `index.js` sorts
 the rail by that, newest first, so where the block is pasted does not matter.
@@ -297,4 +423,36 @@ The card is an `<article>` with a stretched link on the title rather than an
 `<a>` wrapping everything, because the quick-look button lives inside the card
 and an anchor may not contain a button. Everything the overlay shows is read
 back out of that block, so no title, note or path is written twice. That is the
-only file outside the reference folder that a new reference may touch.
+only file outside the study folder that a new study may touch.
+
+The preview iframe carries its path in `data-src`, not `src`. Every card on the
+page is a live component — which is the point, and also what it costs: one
+thumbnail alone runs 289 dots on their own animations, on screen or not, and
+the rail drifts, so every card eventually arrives. `index.js` loads a preview
+when it comes within a card-width of the rail's scrollport and drops it again
+two card-widths past, so a long rail only ever has a handful alive. A card
+whose preview has been dropped shows its skeleton, not an empty frame. This
+does mean no previews at all without JavaScript; the index already needs it for
+the rail's order, its numbers and its counts.
+
+The type filter above the rail is built by `index.js` from the `type.*` key on
+each card's badge, so a study of a new type needs nothing added to it. Filtering
+hides cards with a class rather than the `hidden` attribute — `.piece` sets its
+own `display`, and the warning about `[hidden]` in the preview contract applies
+here for the same reason. The rail counts what it is showing and the footer
+counts what exists — the masthead states neither, because the rail's own
+"Study 01 / 05" is where a reader takes the total from.
+
+### The type is stated twice, and that is the best available
+
+`notes.md` declares `type:` and the card's badge declares `type.card`. They have
+to agree, and nothing enforces it. The obvious fix — have the index read the
+folder's `notes.md` — cannot work: `fetch` fails over `file://`, where each
+document gets an opaque origin, which is the same wall the demo page's rendered
+notes run into. The alternatives are worse. A build step contradicts the whole
+repo. Having the preview report its type over the message contract only moves
+the second declaration into the folder and adds a third file to keep in step.
+
+So: two places, checked by hand, and the filter reads the one that is already
+there rather than introducing a third. If this ever gets a build step, this is
+the first thing to derive.
