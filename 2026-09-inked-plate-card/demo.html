@@ -489,10 +489,11 @@
       <p class="demo__kicker">2026-09 &middot; <span data-i18n="type">Card</span></p>
       <h1 class="demo__heading" data-i18n="heading">Inked plate card</h1>
       <p class="demo__lede" data-i18n="lede">
-        An artwork plate and a caption plate with their facing corners cut, over
-        a crop-marked dot grid. The line drawing inks itself on load in pure
-        CSS &mdash; every path declares a length of 1, so one keyframe pair
-        draws all of them without measuring any.
+        A drawing plate and a narrower caption plate under it, cut at the
+        corners that face each other across the seam, over a crop-marked dot
+        grid. The line drawing inks itself on load in pure CSS &mdash; every
+        path declares a length of 1, so one keyframe pair draws all of them
+        without measuring any.
       </p>
     </header>
 
@@ -546,7 +547,7 @@
               </span>
 
               <span class="inked-plate-card__caption">
-                <span class="inked-plate-card__note">Fastlægger sagens rammer: omfang, frister og parter.</span>
+                <span class="inked-plate-card__note">Rammer for sagen: omfang og frister.</span>
                 <span class="inked-plate-card__count">13 paths</span>
               </span>
             </a>
@@ -591,7 +592,7 @@
               </span>
 
               <span class="inked-plate-card__caption">
-                <span class="inked-plate-card__note">Fastlægger sagens rammer: omfang, frister og parter.</span>
+                <span class="inked-plate-card__note">Rammer for sagen: omfang og frister.</span>
                 <span class="inked-plate-card__count">13 paths</span>
               </span>
             </a>
@@ -643,7 +644,7 @@
             </span>
 
             <span class="inked-plate-card__caption">
-              <span class="inked-plate-card__note">Fastlægger sagens rammer: omfang, frister og parter.</span>
+              <span class="inked-plate-card__note">Rammer for sagen: omfang og frister.</span>
               <span class="inked-plate-card__count">13 paths</span>
             </span>
           </a>
@@ -687,7 +688,7 @@
               </span>
 
               <span class="inked-plate-card__caption">
-                <span class="inked-plate-card__note">Fælles løft og samdrift skaber resultater på tværs af organisationens teams.</span>
+                <span class="inked-plate-card__note">Samdrift på tværs af teams.</span>
                 <span class="inked-plate-card__count">9 paths</span>
               </span>
             </a>
@@ -802,7 +803,7 @@
               </span>
 
               <span class="inked-plate-card__caption">
-                <span class="inked-plate-card__note">Viser relationer mellem parter, sager og forløb.</span>
+                <span class="inked-plate-card__note">Relationer mellem parter og sager.</span>
                 <span class="inked-plate-card__count">48 paths</span>
               </span>
             </a>
@@ -854,7 +855,7 @@
             </span>
 
             <span class="inked-plate-card__caption">
-              <span class="inked-plate-card__note">Samler frister, parter og seneste handlinger på én flade, så sagsbehandleren kan se status uden at åbne hver enkelt sag.</span>
+              <span class="inked-plate-card__note">Samler frister, parter og seneste handlinger på én flade.</span>
               <span class="inked-plate-card__count">13 paths</span>
             </span>
           </a>
@@ -885,13 +886,19 @@
         </div>
       </dl>
 
-      <p class="demo__notes-lede">One card as two plates: a drawing plate and a caption plate, 6px apart, with the two corners facing that gap cut at 45° so each reads as a piece of cut sheet rather than as half of a rounded box. The drawing field sits on a dot grid inside crop marks, and the line drawing inks itself on load — every path draws at the same rate, in an order the markup declares, with no script anywhere. The plates carry a title and a note, and the only other thing printed on them is the number of paths the drawing took.</p>
+      <p class="demo__notes-lede">One card as two plates: a drawing plate, and a narrower caption plate under it starting at the same left edge, 6px apart. A corner that has a plate across that gap from it is cut at 45° rather than rounded, so the pair reads as two pieces of cut sheet — a plate and its label — rather than as one rounded box with a line through it. The drawing field sits on a dot grid inside crop marks, and the line drawing inks itself on load — every path draws at the same rate, in an order the markup declares, with no script anywhere. The plates carry a title and a note, and the only other thing printed on them is the number of paths the drawing took.</p>
       <p class="demo__notes-lede">The drawings are three of my own: concentric squares rotating into a vortex, a waterfall of drifting ridgelines, and a nephroid drawn as 47 straight chords across a circle. Surfaces are porcelain, <code>--acid</code> (lime plate, ink lines) and <code>--graphite</code> (dark plate, lime lines).</p>
 
       <ol class="demo__notes-list">
         <li>
           <h3 class="demo__notes-head">The card is two plates, and the seam is the point.</h3>
-          <p>Not one box with a rule across it: an artwork plate and a caption plate, 6px apart, and the two corners facing that gap are cut at 45° while the outer four stay at a 14px radius — each plate reads as a piece of cut sheet rather than half of a rounded box. The cut is <code>mask-image</code> with two <code>linear-gradient</code>s and <code>mask-composite: intersect</code>; <strong>intersect</strong> is load-bearing, because mask layers union by default and the union of two corner cuts removes nothing at all. Hover widens the seam to 13px and pushes the crop marks 3px outward, so the two plates separate a little rather than the card lifting.</p>
+          <p>Not one box with a rule across it: a drawing plate and a caption plate, 6px apart, with the corners that face that gap cut at 45° while the rest stay at a 14px radius — each plate reads as a piece of cut sheet rather than half of a rounded box. The cut is <code>mask-image</code> with a <code>linear-gradient</code> per corner, and where a plate cuts two of them they are <code>mask-composite: intersect</code>ed rather than added; <strong>intersect</strong> is load-bearing, because mask layers union by default and the union of two corner cuts removes nothing at all. Hover widens the seam to 13px and pushes the crop marks 3px outward, so the two plates separate a little rather than the card lifting.</p>
+        </li>
+        <li>
+          <h3 class="demo__notes-head">The caption plate is the narrower one, and that is what stops the pair reading as a split box.</h3>
+          <p>Two plates of the same width stacked with a gap are a box with a line through it, whatever the corners do; at 72% the lower one is a label attached to a plate, and the step on the right — around 94px at the card's own width — is large enough to read as a decision rather than as a misalignment. It starts at the same left edge as the plate above, so the title and the note stay in one type column. Aligned the other way, with the right edges flush, the two blocks of type start at different places and the card reads as broken; that was the version that settled it.</p>
+          <p>The width decides the corners, and the rule is <em>a corner is cut when there is a plate directly across the gap from it</em>. Three of the four qualify: the caption's top two, because the drawing plate spans past both of them, and the drawing plate's bottom left. Its bottom right has nothing under it any more, and a chamfer there is a cut with nothing to explain it — measured against the alternative at 4x, it reads as a nick in the silhouette rather than as part of the seam. It keeps its radius.</p>
+          <p>Two things had to move with the width. The note's measure drops by nearly a third, so the sample copy is label-length now — a caption plate that needs four lines is not a label — and <code>--…-caption-min</code> goes up to three lines plus padding, because the floor is only worth having if it is above the longest ordinary note. The caption is also a grid rather than a flex row now, for one reason: with a floor the text usually does not fill the plate, and <code>align-content: center</code> centres the row in a grid and does nothing at all in a single-line flex box. The count still sits on the note's first baseline.</p>
         </li>
         <li>
           <h3 class="demo__notes-head">The plate is annotated with what the drawing is made of.</h3>
@@ -953,11 +960,11 @@
         'notes.full': '\u2014 hele optegnelsen, ogs\u00e5 det der blev pr\u00f8vet og forkastet',
         'type': 'Kort',
         'heading': 'Kort med tegnede plader',
-        'lede': 'En billedplade og en tekstplade med afskårne hjørner mod '
-          + 'hinanden, over et punktgitter med snitmærker. Stregtegningen '
-          + 'tegner sig selv ved indlæsning i ren CSS — hver streg angiver en '
-          + 'længde på 1, så ét sæt keyframes tegner dem alle uden at måle '
-          + 'nogen af dem.',
+        'lede': 'En tegneplade og en smallere tekstplade under den, skåret i '
+          + 'de hjørner der vender mod hinanden over samlingen, på et '
+          + 'punktgitter med snitmærker. Stregtegningen tegner sig selv ved '
+          + 'indlæsning i ren CSS — hver streg angiver en længde på 1, så ét '
+          + 'sæt keyframes tegner dem alle uden at måle nogen af dem.',
         'back': 'Alle studier',
         'replay': 'Tegn igen',
         'state.default': 'Standard, med fladen --graphite ved siden af',

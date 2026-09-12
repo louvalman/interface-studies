@@ -1,27 +1,57 @@
 type: card
 
-One card as two plates: a drawing plate and a caption plate, 6px apart, with
-the two corners facing that gap cut at 45° so each reads as a piece of cut
-sheet rather than as half of a rounded box. The drawing field sits on a dot
-grid inside crop marks, and the line drawing inks itself on load — every path
-draws at the same rate, in an order the markup declares, with no script
-anywhere. The plates carry a title and a note, and the only other thing printed
-on them is the number of paths the drawing took.
+One card as two plates: a drawing plate, and a narrower caption plate under it
+starting at the same left edge, 6px apart. A corner that has a plate across
+that gap from it is cut at 45° rather than rounded, so the pair reads as two
+pieces of cut sheet — a plate and its label — rather than as one rounded box
+with a line through it. The drawing field sits on a dot grid inside crop marks,
+and the line drawing inks itself on load — every path draws at the same rate,
+in an order the markup declares, with no script anywhere. The plates carry a
+title and a note, and the only other thing printed on them is the number of
+paths the drawing took.
 
 The drawings are three of my own: concentric squares rotating into a vortex, a
 waterfall of drifting ridgelines, and a nephroid drawn as 47 straight chords
 across a circle. Surfaces are porcelain, `--acid` (lime plate, ink lines) and
 `--graphite` (dark plate, lime lines).
 
-- **The card is two plates, and the seam is the point.** Not one box with a rule
-  across it: an artwork plate and a caption plate, 6px apart, and the two
-  corners facing that gap are cut at 45° while the outer four stay at a 14px
-  radius — each plate reads as a piece of cut sheet rather than half of a
-  rounded box. The cut is `mask-image` with two `linear-gradient`s and
-  `mask-composite: intersect`; **intersect** is load-bearing, because mask
-  layers union by default and the union of two corner cuts removes nothing at
-  all. Hover widens the seam to 13px and pushes the crop marks 3px outward, so
-  the two plates separate a little rather than the card lifting.
+- **The card is two plates, and the seam is the point.** Not one box with a
+  rule across it: a drawing plate and a caption plate, 6px apart, with the
+  corners that face that gap cut at 45° while the rest stay at a 14px radius —
+  each plate reads as a piece of cut sheet rather than half of a rounded box.
+  The cut is `mask-image` with a `linear-gradient` per corner, and where a
+  plate cuts two of them they are `mask-composite: intersect`ed rather than
+  added; **intersect** is load-bearing, because mask layers union by default
+  and the union of two corner cuts removes nothing at all. Hover widens the
+  seam to 13px and pushes the crop marks 3px outward, so the two plates
+  separate a little rather than the card lifting.
+
+- **The caption plate is the narrower one, and that is what stops the pair
+  reading as a split box.** Two plates of the same width stacked with a gap
+  are a box with a line through it, whatever the corners do; at 72% the lower
+  one is a label attached to a plate, and the step on the right is large
+  enough — around 94px at the card's own width — to read as a decision rather
+  than as a misalignment. It starts at the same left edge as the plate above,
+  so the title and the note stay in one type column. Aligned the other way,
+  with the right edges flush, the two blocks of type start at different places
+  and the card reads as broken; that was the version that settled it.
+
+  The width decides the corners, and the rule is *a corner is cut when there
+  is a plate directly across the gap from it*. Three of the four qualify: the
+  caption's top two, because the drawing plate spans past both of them, and
+  the drawing plate's bottom left. Its bottom right has nothing under it any
+  more, and a chamfer there is a cut with nothing to explain it — measured
+  against the alternative at 4x, it reads as a nick in the silhouette rather
+  than as part of the seam. It keeps its radius.
+
+  Two things had to move with the width. The note's measure drops by nearly a
+  third, so the sample copy is label-length now — a caption plate that needs
+  four lines is not a label — and `--…-caption-min` goes up to three lines plus
+  padding, because the floor is only worth having if it is above the longest
+  ordinary note. The caption is also a grid rather than a flex row now, for one
+  reason: with a floor the text usually does not fill the plate, and
+  `align-content: center` centres the row in a grid and does nothing at all in
+  a single-line flex box. The count still sits on the note's first baseline.
 
 - **The plate is annotated with what the drawing is made of.** The caption
   plate's right-hand slot says `13 paths`, `9 paths`, `48 paths` — a fact about
@@ -115,10 +145,12 @@ card advertises a modifier rather than the unmodified default, and that this is
 the loudest card on the page; porcelain is one quick-look dot behind it, and it
 is still what `demo.html` opens on.
 
-`--…-caption-min` gives the caption plate a floor, so a two-line and a
-three-line note leave the card the same height. Let the caption size to its own
-text and a row of these cards has a ragged bottom edge — they look like a set
-until you look at where they end.
+`--…-caption-min` gives the caption plate a floor of three lines plus its
+padding, so a one, two or three line note leaves the card exactly the same
+height. Let the caption size to its own text and a row of these cards has a
+ragged bottom edge — they look like a set until you look at where they end. A
+note longer than that is the one state the floor cannot level, which is what
+the demo's last card is there to show.
 
 Inspiration: https://aesthetic-cards.vercel.app/ — a feature-card row, for the
 two-plate construction and the cut facing corners. `ref.png` is a redrawing of
