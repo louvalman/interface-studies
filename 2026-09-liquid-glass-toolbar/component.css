@@ -64,7 +64,11 @@
   --liquid-glass-toolbar-row-radius: 1rem;
   --liquid-glass-toolbar-avatar: 2.375rem;
   --liquid-glass-toolbar-dot: 0.5rem;
-  --liquid-glass-toolbar-badge: 0.4375rem;
+  /* The unread mark. A rule under the glyph, not a dot on its corner — see
+     the badge rule below for why the shape matters on a translucent bar. */
+  --liquid-glass-toolbar-badge: 1.125rem;        /* its length: 0.75 of the glyph */
+  --liquid-glass-toolbar-badge-weight: 0.125rem;
+  --liquid-glass-toolbar-badge-drop: 0.25rem;    /* clear of the glyph's box */
 
   /* --- glass ----------------------------------------------------------- */
   /* Moss, not grey. The tint is the only thing carrying the hue: the rim, the
@@ -348,16 +352,32 @@
   height: 100%;
 }
 
+/*
+  The unread mark is a rule beneath the glyph, not a dot on its corner.
+
+  A corner dot is the platform idiom and it is the wrong object here: it is
+  opaque, it is round, and it sits *on* the surface — the one thing on a bar
+  whose whole argument is that everything is either the material or seen
+  through it. Set under the glyph it reads as part of the item instead, and it
+  is the lozenge's own shape at a fifth of the size: the bar already says
+  "current" with a stadium, so it can say "unread" with one too.
+
+  Centred on the glyph rather than pinned to a corner, so it travels with the
+  icon instead of being left behind when one collapses to zero width.
+*/
 .liquid-glass-toolbar__badge {
   position: absolute;
-  top: -1px;
-  right: -1px;
+  left: 50%;
+  bottom: calc(-1 * var(--liquid-glass-toolbar-badge-drop));
   width: var(--liquid-glass-toolbar-badge);
-  height: var(--liquid-glass-toolbar-badge);
-  border-radius: 50%;
+  height: var(--liquid-glass-toolbar-badge-weight);
+  transform: translateX(-50%);
+  border-radius: 999px;
   background: var(--liquid-glass-toolbar-accent);
-  /* It is positioned off the icon's corner, so an icon collapsing to zero would
-     leave the dot behind on its own. */
+  /* Slightly short of full strength: the mark is under the surface with
+     everything else, and an accent at 1 is the only thing on the bar that
+     would not be. */
+  opacity: 0.88;
   transition: opacity var(--liquid-glass-toolbar-fade);
 }
 

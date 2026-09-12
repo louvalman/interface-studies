@@ -77,7 +77,9 @@
       --liquid-glass-toolbar-row-h: 3.625rem;
       --liquid-glass-toolbar-avatar: 2.5rem;
       --liquid-glass-toolbar-dot: 0.5rem;
-      --liquid-glass-toolbar-badge: 0.4375rem;
+      /* The unread mark is a rule 0.75 of the glyph long, so it scales with
+         the icon rather than staying the size a dot used to be. */
+      --liquid-glass-toolbar-badge: 1.1875rem;
     }
 
     /*
@@ -116,7 +118,7 @@
                 </svg>
               </span>
               <span class="liquid-glass-toolbar__reveal">
-                <span class="liquid-glass-toolbar__label">Home</span>
+                <span class="liquid-glass-toolbar__label">Desk</span>
               </span>
             </a>
 
@@ -147,7 +149,7 @@
                 </svg>
               </span>
               <span class="liquid-glass-toolbar__reveal">
-                <span class="liquid-glass-toolbar__label">Archive</span>
+                <span class="liquid-glass-toolbar__label">Versions</span>
               </span>
             </a>
 
@@ -176,7 +178,7 @@
                 </svg>
               </span>
               <span class="liquid-glass-toolbar__reveal">
-                <span class="liquid-glass-toolbar__label">Settings</span>
+                <span class="liquid-glass-toolbar__label">Display</span>
               </span>
             </a>
 
@@ -275,7 +277,7 @@
                 </svg>
               </span>
               <span class="liquid-glass-toolbar__reveal">
-                <span class="liquid-glass-toolbar__label">Home</span>
+                <span class="liquid-glass-toolbar__label">Desk</span>
               </span>
             </a>
 
@@ -303,7 +305,7 @@
                 </svg>
               </span>
               <span class="liquid-glass-toolbar__reveal">
-                <span class="liquid-glass-toolbar__label">Archive</span>
+                <span class="liquid-glass-toolbar__label">Versions</span>
               </span>
             </a>
 
@@ -332,7 +334,7 @@
                 </svg>
               </span>
               <span class="liquid-glass-toolbar__reveal">
-                <span class="liquid-glass-toolbar__label">Settings</span>
+                <span class="liquid-glass-toolbar__label">Display</span>
               </span>
             </a>
 
@@ -428,7 +430,7 @@
                 </svg>
               </span>
               <span class="liquid-glass-toolbar__reveal">
-                <span class="liquid-glass-toolbar__label">Home</span>
+                <span class="liquid-glass-toolbar__label">Desk</span>
               </span>
             </a>
 
@@ -459,7 +461,7 @@
                 </svg>
               </span>
               <span class="liquid-glass-toolbar__reveal">
-                <span class="liquid-glass-toolbar__label">Archive</span>
+                <span class="liquid-glass-toolbar__label">Versions</span>
               </span>
             </a>
 
@@ -488,7 +490,7 @@
                 </svg>
               </span>
               <span class="liquid-glass-toolbar__reveal">
-                <span class="liquid-glass-toolbar__label">Settings</span>
+                <span class="liquid-glass-toolbar__label">Display</span>
               </span>
             </a>
 
@@ -587,7 +589,7 @@
                 </svg>
               </span>
               <span class="liquid-glass-toolbar__reveal">
-                <span class="liquid-glass-toolbar__label">Home</span>
+                <span class="liquid-glass-toolbar__label">Desk</span>
               </span>
             </a>
 
@@ -618,7 +620,7 @@
                 </svg>
               </span>
               <span class="liquid-glass-toolbar__reveal">
-                <span class="liquid-glass-toolbar__label">Archive</span>
+                <span class="liquid-glass-toolbar__label">Versions</span>
               </span>
             </a>
 
@@ -647,7 +649,7 @@
                 </svg>
               </span>
               <span class="liquid-glass-toolbar__reveal">
-                <span class="liquid-glass-toolbar__label">Settings</span>
+                <span class="liquid-glass-toolbar__label">Display</span>
               </span>
             </a>
 
@@ -746,7 +748,7 @@
                 </svg>
               </span>
               <span class="liquid-glass-toolbar__reveal">
-                <span class="liquid-glass-toolbar__label">Home</span>
+                <span class="liquid-glass-toolbar__label">Desk</span>
               </span>
             </a>
 
@@ -777,7 +779,7 @@
                 </svg>
               </span>
               <span class="liquid-glass-toolbar__reveal">
-                <span class="liquid-glass-toolbar__label">Archive</span>
+                <span class="liquid-glass-toolbar__label">Versions</span>
               </span>
             </a>
 
@@ -806,7 +808,7 @@
                 </svg>
               </span>
               <span class="liquid-glass-toolbar__reveal">
-                <span class="liquid-glass-toolbar__label">Settings</span>
+                <span class="liquid-glass-toolbar__label">Display</span>
               </span>
             </a>
 
@@ -926,7 +928,7 @@
       // whole set. The rest step into one sheet, where a panel can open.
       var VARIANTS = [
         { id: 'materials', label: 'Materials', stack: true, current: 0, classes: [] },
-        { id: 'home', label: 'Home', stack: false, current: 0, classes: [] },
+        { id: 'desk', label: 'Desk', stack: false, current: 0, classes: [] },
         { id: 'search', label: 'Search', stack: false, current: null, classes: ['searching'] },
         { id: 'activity', label: 'Activity', stack: false, current: null, classes: ['open'] }
       ];

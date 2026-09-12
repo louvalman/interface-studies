@@ -44,13 +44,13 @@
   --raster-pulse-headline-size: 8cqw;
   --raster-pulse-headline-leading: 1.06;
   --raster-pulse-headline-tracking: -0.03em;
-  --raster-pulse-wordmark-size: 4.5cqw;
-  --raster-pulse-wordmark-tracking: -0.02em;
-  --raster-pulse-mark-size: 4.6cqw;
+  --raster-pulse-spec-size: 3.1cqw;
+  --raster-pulse-spec-tracking: 0.16em;
+  --raster-pulse-spec-gap: 2.6cqw;
+  --raster-pulse-spec-rule: 0.7cqw;     /* the dot between two spec items */
 
   --raster-pulse-foot-pad: 6.4cqw;
   --raster-pulse-foot-gap: 7.2cqw;
-  --raster-pulse-brand-gap: 1.9cqw;
 
   --raster-pulse-bracket-size: 2.6cqw;
   --raster-pulse-bracket-weight: 1.5px;
@@ -93,10 +93,15 @@
   --raster-pulse-arms: 5;
   --raster-pulse-twist: 44deg;
   --raster-pulse-arm-cut: 0.3;
-  /* --halftone: disc radius in cells, and the corner clusters — dots whose
-     distance from the centre axis exceeds this on *both* axes. */
+  /* --halftone: the disc's radius in cells, and how wide a band of it is
+     screened rather than solid — see the pattern below. */
   --raster-pulse-disc: 7.7;
-  --raster-pulse-cluster: 6.5;
+  --raster-pulse-rim: 2.4;
+
+  /* --moire: two ring systems, their sources this far either side of the
+     centre, at this many rings per cell. */
+  --raster-pulse-moire-sep: 5.5;
+  --raster-pulse-moire-pitch: 0.35;
   /* -------------------------------------------------------------------- */
 
   container-type: inline-size;
@@ -239,17 +244,6 @@
   }
 }
 
-/* --- the mark --------------------------------------------------------- */
-
-/* The footer is the only place it appears. Nothing sits on the field: every
-   shape there is derived from a coordinate, and an emblem knocked into the
-   middle was the one thing on it the grid did not draw. */
-.raster-pulse__glyph {
-  display: block;
-  max-width: 100%;
-  fill: currentColor;
-}
-
 /* --- the footer band -------------------------------------------------- */
 
 .raster-pulse__foot {
@@ -261,24 +255,43 @@
   color: var(--raster-pulse-ink);
 }
 
-.raster-pulse__brand {
+/*
+  The spec line. Not a lockup: the footer says what the field is made of —
+  its pitch, its cell count, and that one formula decides all of them — which
+  is true whichever pattern the root is wearing, where a name and a mark would
+  only ever be true of the poster they were drawn for.
+
+  Set in the same tracked, lowercase register as the registration marks so it
+  reads as an annotation on a plate rather than as a line of copy, and wrapping
+  is allowed: at 272px the three items break to two lines rather than pushing
+  the poster wider than its column.
+*/
+.raster-pulse__spec {
+  margin: 0;
   display: flex;
-  align-items: center;
-  gap: var(--raster-pulse-brand-gap);
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--raster-pulse-spec-gap);
   min-width: 0;
-}
-
-.raster-pulse__brand .raster-pulse__glyph {
-  flex: none;
-  width: var(--raster-pulse-mark-size);
-  height: auto;
-}
-
-.raster-pulse__wordmark {
-  font-size: var(--raster-pulse-wordmark-size);
+  font-size: var(--raster-pulse-spec-size);
   font-weight: 500;
-  letter-spacing: var(--raster-pulse-wordmark-tracking);
-  line-height: 1;
+  letter-spacing: var(--raster-pulse-spec-tracking);
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+/* The separator is a dot on the field's own terms — a circle at the pitch the
+   artwork uses, drawn by the line rather than typed into it, so the copy stays
+   three plain words and the punctuation stays a decision. */
+.raster-pulse__spec > * + *::before {
+  content: "";
+  display: inline-block;
+  width: var(--raster-pulse-spec-rule);
+  height: var(--raster-pulse-spec-rule);
+  margin-inline-end: var(--raster-pulse-spec-gap);
+  border-radius: 50%;
+  background: currentColor;
+  vertical-align: middle;
 }
 
 .raster-pulse__headline {
@@ -370,10 +383,22 @@
   --phase: calc(var(--r) / var(--raster-pulse-diag));
 }
 
-/* Halftone disc, on the light theme, with a 2x2 dot cluster in each corner —
-   dots that fall outside the disc but past --cluster on both axes.
-   `clamp(0, v * 1000, 1)` is a step function: any positive v resolves to 1,
-   anything else to 0. max() is OR, min() is AND. */
+/*
+  Halftone disc on the light theme, and the edge is the pattern rather than the
+  disc. A circle of dots with a hard boundary is a circle; what makes a screen
+  read as a screen is that it *runs out* — so the outer --rim cells of the disc
+  are dropped to every other cell, and the shape dissolves into the field
+  instead of stopping at a rasterised edge.
+
+  The screen is one parity: `mod(|x| + |y|, 2)`, which is a checkerboard,
+  because |x| and x agree modulo 2 for whole numbers. Half the cells in the
+  band, in the one arrangement that never puts two dropped cells side by side —
+  a random-looking gap pattern would read as damage, and a radial one would
+  draw a second ring.
+
+  `clamp(0, v * 1000, 1)` is a step function: any positive v resolves to 1,
+  anything else to 0. max() is OR, min() is AND.
+*/
 .raster-pulse--halftone {
   --raster-pulse-art-bg: #f3f0f7;
   --raster-pulse-tone-a: #ff2e7e;
@@ -382,15 +407,56 @@
 }
 
 .raster-pulse--halftone .raster-pulse__dot {
-  --on: max(
-    clamp(0, calc((var(--raster-pulse-disc) - var(--r)) * 1000), 1),
-    min(
-      clamp(0, calc((var(--adx) - var(--raster-pulse-cluster)) * 1000), 1),
-      clamp(0, calc((var(--ady) - var(--raster-pulse-cluster)) * 1000), 1)
-    )
-  );
+  /* solid inside the disc less its rim */
+  --core: clamp(0, calc((var(--raster-pulse-disc) - var(--raster-pulse-rim) - var(--r)) * 1000), 1);
+  /* inside the disc at all */
+  --disc: clamp(0, calc((var(--raster-pulse-disc) - var(--r)) * 1000), 1);
+  /* the checkerboard that screens the band */
+  --screen: mod(calc(var(--adx) + var(--ady)), 2);
+
+  --on: max(var(--core), min(var(--disc), var(--screen)));
   --tone: 0;
   --phase: calc(var(--r) / var(--raster-pulse-diag));
+}
+
+/*
+  Two ring systems, one either side of the centre, and the pattern is what
+  happens between them: a dot is on where exactly one of the two systems has a
+  ring there, off where both do or neither does. That is XOR, and in this
+  arithmetic it is `max(a, b) - min(a, b)` — the same two functions doing OR
+  and AND everywhere else in the file.
+
+  It is the pattern that could not have been a shape. Every other one here is a
+  region tested against a rule — inside this disc, on this arm, past this ring
+  — and this one has no region at all: it is the disagreement between two
+  fields, so nothing in the file knows what it looks like until the cells are
+  laid out. Which is the whole thesis stated once: the formula is the artwork.
+
+  The tone says which source a dot belongs to — whichever of the two it is
+  nearer — and that is what keeps the field from reading as noise. Tone by ring
+  parity was the first version and it was the wrong question: the colours then
+  alternate along with the fringes, so every dot changes colour as often as it
+  changes state and the eye has nothing steady to hold. Split by ownership
+  instead, the field is two colours meeting down the middle and the fringes are
+  drawn in both. The pulse radiates from whichever source is nearer as well, so
+  the two waves break in from opposite sides and meet there too.
+
+  A moiré wants resolution, and 17 cells is not much of it: at a pitch of 0.8
+  the rings fall a cell apart and the XOR scatters into confetti. At 0.35 the
+  rings are three cells wide, the interference has room to be a shape, and what
+  the field shows is two arcs facing each other across the fringes they make.
+*/
+.raster-pulse--moire .raster-pulse__dot {
+  --ra: hypot(calc(var(--x) + var(--raster-pulse-moire-sep)), var(--y));
+  --rb: hypot(calc(var(--x) - var(--raster-pulse-moire-sep)), var(--y));
+
+  --ring-a: mod(round(calc(var(--ra) * var(--raster-pulse-moire-pitch))), 2);
+  --ring-b: mod(round(calc(var(--rb) * var(--raster-pulse-moire-pitch))), 2);
+
+  --on: calc(max(var(--ring-a), var(--ring-b)) - min(var(--ring-a), var(--ring-b)));
+  /* nearest source owns the dot */
+  --tone: clamp(0, calc((var(--ra) - var(--rb)) * 1000), 1);
+  --phase: calc(min(var(--ra), var(--rb)) / var(--raster-pulse-diag));
 }
 
 /* Not in the reference: the same machinery with the pulse axis turned
