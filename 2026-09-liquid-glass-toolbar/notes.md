@@ -484,6 +484,20 @@ on the actions themselves, because that would be interpolating from `auto` and
 would not move — an action is auto-width around two lengths that do animate, its
 own padding and the icon's width, so it follows them down.
 
+"Across the surface" took two values, not one, and for a while it only had the
+first. The track is `clamp(0px, --search-max, --search-w)`: the sum of what the
+row still owes is the *ceiling*, and the width the field wants is the upper
+bound. The narrow scale restated the ceiling for a cleared row — one square
+instead of five — and left the want at the wide layout's 14rem, which is the
+smaller of the two and therefore the one clamp returns. So the row cleared a
+whole bar and the field took 224px of it: 15px short on a 390px phone, 51px
+short on a 430px one, with the shell hugging the field rather than the surface
+it had been told to fill. At this scale the field wants everything and the
+ceiling is the only thing that should trim it, so `--search-w` comes up to
+`100cqi` alongside it. Restating one half of a clamp is the bug that hides,
+because nothing overflows and nothing errors — it just quietly stops at the
+other half.
+
 At every scale the track itself is now a ceiling rather than a length. `14rem`
 was fixed inside a surface that clips, so under about 31rem of container the
 field was cut off mid-placeholder; it is capped at what the row has left once

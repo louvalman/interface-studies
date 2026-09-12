@@ -1109,6 +1109,16 @@
       5 * var(--liquid-glass-toolbar-gap) +
       2 * var(--liquid-glass-toolbar-pad) +
       var(--liquid-glass-toolbar-label-trail)));
+
+    /* And the width it *wants* has to come up with the ceiling, or the ceiling
+       never gets read. The track is `clamp(0px, --search-max, --search-w)`, so
+       --search-w is the upper bound: restating only the sum above left the
+       field pinned at the wide layout's 14rem while the row had already cleared
+       a whole bar for it — 224px of field in 239px of room on a 390px phone,
+       and the shell hugging 15px short of the surface it was told to open
+       across. At this scale the field wants everything and --search-max is the
+       only thing that should trim it. */
+    --liquid-glass-toolbar-search-w: 100cqi;
   }
 
   /*
