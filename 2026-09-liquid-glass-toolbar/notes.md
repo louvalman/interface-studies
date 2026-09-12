@@ -26,16 +26,17 @@ frame above and below it in the thumbnail — but a ground whose whole colour ma
 sat in the lower third read as bottom-heavy, and a thing centred in a
 bottom-heavy frame looks like it is floating high.
 
-That argument is about the stage, and the thumbnail does not get it. Every
-other study's preview sits on a flat #f3f2ef, and this one arrived in the rail
-on its own darker, warmer paper — at 0.7 scale beside three near-white
-neighbours the card read as a different kind of object before it read as a
-component, which is the opposite of what a thumbnail is for. So preview.html
-takes the shared paper and demo.html's stage keeps the ramps. The glass
-survives the trade because the thumbnail is not showing one sheet: it stacks
-six, four of them dark, and each carries its own rim, sheen and drop shadow.
-A single alabaster sheet on flat paper would be the failure above; six
-materials on it are still six materials.
+The ground under the component is page scaffolding in both files rather than
+part of it, which is what lets the two differ at all. That argument is about
+the stage, and the thumbnail does not get it. Every other study's preview sits
+on a flat #f3f2ef, and this one arrived in the rail on its own darker, warmer
+paper — at 0.7 scale beside three near-white neighbours the card read as a
+different kind of object before it read as a component, which is the opposite
+of what a thumbnail is for. So preview.html takes the shared paper and
+demo.html's stage keeps the ramps. The glass survives the trade because the
+thumbnail is not showing one sheet: it stacks six, four of them dark, and each
+carries its own rim, sheen and drop shadow. A single alabaster sheet on flat
+paper would be the failure above; six materials on it are still six materials.
 
 The icons are drawn rather than borrowed: a dot inside a ring, a magnifier, two
 drawers, a ruled ledger, two sliders. The magnifier is the one glyph in a

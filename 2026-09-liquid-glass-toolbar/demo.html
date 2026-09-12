@@ -29,7 +29,7 @@
   <meta property="og:type" content="article" />
   <meta property="og:site_name" content="Interface Studies" />
   <meta property="og:title" content="Liquid glass toolbar &mdash; Interface Studies" />
-  <meta property="og:description" content="One glass surface that changes shape: a bar that opens into a search field, and then into a panel. Five materials, one construction." />
+  <meta property="og:description" content="One glass surface that changes shape: a bar that opens into a search field, and then into a panel. Six materials, one construction." />
   <meta property="og:image" content="../og.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
@@ -44,7 +44,19 @@
        with no shared stylesheet, so the value is repeated rather than shared —
        but it has to be the same number, or the language control and the content
        edge shift on every trip between them. */
-    :root { --demo-gutter: clamp(1.5rem, 6vw, 6rem); }
+    :root {
+      --demo-gutter: clamp(1.5rem, 6vw, 6rem);
+
+      /* Three widths, and the page had seven before — 46rem, 52ch, 56ch, 62ch,
+         54rem, 36rem, 42rem, on two unit systems, so no two blocks starting at
+         the left margin ended at the same place. Every run of prose is one
+         measure now, the stages are the one thing allowed to be wider than it,
+         and the read-out is the one thing allowed to be narrower. Anything that
+         wants a fourth width needs a reason that can be written down. */
+      --demo-measure: 44rem;   /* every run of text: the intro, the steps, the notes */
+      --demo-figure: 54rem;    /* a stage, wide enough to give the bar air */
+      --demo-readout: 36rem;   /* the motion clocks: a table of three, not prose */
+    }
 
     body {
       margin: 0;
@@ -125,7 +137,7 @@
 
     /* --- the document ---------------------------------------------------- */
 
-    .demo__intro { max-width: 46rem; }
+    .demo__intro { max-width: var(--demo-measure); }
 
     .demo__kicker {
       margin: 0 0 0.75rem;
@@ -146,7 +158,7 @@
 
     .demo__lede {
       margin: 1.25rem 0 0;
-      max-width: 52ch;
+      max-width: var(--demo-measure);
       font-size: 1.0625rem;
       line-height: 1.6;
       color: #56514a;
@@ -188,7 +200,7 @@
     .demo__steps {
       margin: clamp(1.75rem, 4vw, 2.5rem) 0 0;
       padding: 0;
-      max-width: 62ch;
+      max-width: var(--demo-measure);
       list-style: none;
       counter-reset: step;
     }
@@ -251,7 +263,7 @@
       box-sizing: border-box;
       /* Wide enough to give the bar air, capped so it does not strand itself in
          the middle of a large monitor. */
-      width: min(54rem, 100%);
+      width: min(var(--demo-figure), 100%);
       border-radius: 1.25rem;
       overflow: hidden;
 
@@ -304,7 +316,7 @@
       margin: 0 0 1.25rem;
       display: grid;
       gap: 0.75rem;
-      max-width: 36rem;
+      max-width: var(--demo-readout);
       padding: 1.1rem 1.25rem;
       border-radius: 0.875rem;
       background: rgba(255, 253, 249, 0.55);
@@ -387,7 +399,7 @@
       border-top: 1px solid rgba(33, 30, 25, 0.14);
       /* Prose measure, not the page's. The states above lay out as wide as
          they need; a paragraph does not. */
-      max-width: 42rem;
+      max-width: var(--demo-measure);
     }
 
     .demo__notes-title {
@@ -567,7 +579,7 @@
     <h1 class="demo__heading" data-i18n="heading">Liquid glass toolbar</h1>
     <p class="demo__lede" data-i18n="lede">
       One glass surface that changes shape: a bar that opens into a search
-      field, and then into a panel. Five materials, one construction.
+      field, and then into a panel. Six materials, one construction.
     </p>
   </header>
 
@@ -2043,6 +2055,86 @@
                       </a>
 
                     </div>
+
+                        <div class="liquid-glass-toolbar__panel">
+                      <ul class="liquid-glass-toolbar__feed">
+
+                        <li>
+                          <a class="liquid-glass-toolbar__row liquid-glass-toolbar__row--unread" href="#">
+                            <span class="liquid-glass-toolbar__chip">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                                   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M4.6 7.4h14.8" stroke-width="2.8" />
+                                <path d="M4.6 13h9.6" stroke-width="1.8" />
+                                <path d="M4.6 17.6h5.8" stroke-width="1.2" />
+                              </svg>
+                            </span>
+                            <span class="liquid-glass-toolbar__line">
+                              <strong class="liquid-glass-toolbar__topic">Type</strong>
+                              48/16 pair, label at 11px
+                            </span>
+                            <span class="liquid-glass-toolbar__time">2m</span>
+                          </a>
+                        </li>
+
+                        <li>
+                          <a class="liquid-glass-toolbar__row liquid-glass-toolbar__row--unread" href="#">
+                            <span class="liquid-glass-toolbar__chip">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                                   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <circle cx="12" cy="12" r="7.4" />
+                                <path d="M12 4.6a7.4 7.4 0 0 1 0 14.8z" fill="currentColor" stroke="none" />
+                              </svg>
+                            </span>
+                            <span class="liquid-glass-toolbar__line">
+                              <strong class="liquid-glass-toolbar__topic">Tint</strong>
+                              28% over an 8px blur
+                            </span>
+                            <span class="liquid-glass-toolbar__time">14m</span>
+                          </a>
+                        </li>
+
+                        <li>
+                          <a class="liquid-glass-toolbar__row" href="#">
+                            <span class="liquid-glass-toolbar__chip">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                                   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M5.6 5.6v12.8M18.4 5.6v12.8" />
+                                <path d="M8.6 12h6.8" />
+                                <path d="M10.4 10.2 8.6 12l1.8 1.8M13.6 10.2 15.4 12l-1.8 1.8" />
+                              </svg>
+                            </span>
+                            <span class="liquid-glass-toolbar__line">
+                              <strong class="liquid-glass-toolbar__topic">Spacing</strong>
+                              8px rhythm, 4px at the label
+                            </span>
+                            <span class="liquid-glass-toolbar__time">1h</span>
+                          </a>
+                        </li>
+
+                        <li>
+                          <a class="liquid-glass-toolbar__row" href="#">
+                            <span class="liquid-glass-toolbar__chip">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                                   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M3.9 20.1V10.2A6.3 6.3 0 0 1 10.2 3.9H20.1" />
+                                <path d="M3.9 9.1V3.9h5.2" stroke-opacity="0.42" />
+                              </svg>
+                            </span>
+                            <span class="liquid-glass-toolbar__line">
+                              <strong class="liquid-glass-toolbar__topic">Radius</strong>
+                              12% of the tile, not 12px
+                            </span>
+                            <span class="liquid-glass-toolbar__time">3h</span>
+                          </a>
+                        </li>
+
+                      </ul>
+                    </div>
+
+                  </div>
+                </nav>
+              </div>
               <div class="demo__sheet">
                 <span class="demo__tag">--carnelian</span>
                 <nav class="liquid-glass-toolbar liquid-glass-toolbar--carnelian" aria-label="Primary, carnelian">
@@ -2386,7 +2478,7 @@
     <section class="demo__group">
       <div class="demo__group-head">
         <h2 class="demo__group-title" data-i18n="narrow.title">Narrow</h2>
-        <p class="demo__group-note" data-i18n="narrow.note">Five 48px targets, the gaps between them and the surface&rsquo;s own padding need about 264px &mdash; but the resting bar also has a label open, so the real floor is about 390px. The switch is at 25rem.</p>
+        <p class="demo__group-note" data-i18n="narrow.note">Five 48px targets, the gaps between them and the surface&rsquo;s own padding need about 264px &mdash; but the resting bar also has a label open, and the longest is <em>Versions</em> at 63px, so the real floor is about 400px. The switch is at 25rem, where the split compresses rather than the label clipping.</p>
       </div>
 
       <div class="demo__stage">
@@ -2592,9 +2684,8 @@
 
       <p class="demo__notes-lede">A floating toolbar on one pane of glass. Four items sit together and a fifth is set apart; exactly one of them carries its label, and it is the one you are on. The search item opens into a field and the log item opens the pane downward into a panel — neither is a second sheet sliding out from underneath, the one surface changes shape, and the corner it does that around never moves.</p>
       <p class="demo__notes-lede">The set is a working surface rather than an operating system: Origin, search, Versions, Log, Display. Each item is named for what its glyph can actually do — two sliders are display controls, not a settings screen; two drawers are versions of a thing, not a mailbox — so the bar says what it is for before a label opens. It is also why the labelled item is <em>Origin</em> and not Home: a toolbar that floats over work has no front door to return to, it has a point it measures from, and that is what its glyph draws — a dot inside a ring.</p>
-      <p class="demo__notes-lede">The ground in <code>demo.html</code> and <code>preview.html</code> is page scaffolding, not part of the component: the index's own recipe, warm paper with the same two washes at the same strength, so a study sitting in the rail does not arrive louder than the page around it.</p>
       <p class="demo__notes-lede">It is as dull as it can afford to be, and finding that floor is the point. Glass has no look of its own — a blur over one flat fill is indistinguishable from a translucent rectangle, and the whole component disappears. But what it actually needs is <em>range</em>, not incident: two soft cross-lit ramps with no edges anywhere give the rim something to sit against and the blur something to carry, and an earlier version with hard-cut clay and sage planes turned out to be buying that at the cost of a backdrop that upstaged the thing in front of it. An even ground settles the vertical centring too. The component is centred exactly — 262.5px of frame above and below it in the thumbnail — but a ground whose whole colour mass sat in the lower third read as bottom-heavy, and a thing centred in a bottom-heavy frame looks like it is floating high.</p>
-      <p class="demo__notes-lede">That argument is about the stage, and the thumbnail does not get it. Every other study's preview sits on a flat #f3f2ef, and this one arrived in the rail on its own darker, warmer paper — at 0.7 scale beside three near-white neighbours the card read as a different kind of object before it read as a component, which is the opposite of what a thumbnail is for. So preview.html takes the shared paper and demo.html's stage keeps the ramps. The glass survives the trade because the thumbnail is not showing one sheet: it stacks six, four of them dark, and each carries its own rim, sheen and drop shadow. A single alabaster sheet on flat paper would be the failure above; six materials on it are still six materials.</p>
+      <p class="demo__notes-lede">The ground under the component is page scaffolding in both files rather than part of it, which is what lets the two differ at all. That argument is about the stage, and the thumbnail does not get it. Every other study's preview sits on a flat #f3f2ef, and this one arrived in the rail on its own darker, warmer paper — at 0.7 scale beside three near-white neighbours the card read as a different kind of object before it read as a component, which is the opposite of what a thumbnail is for. So preview.html takes the shared paper and demo.html's stage keeps the ramps. The glass survives the trade because the thumbnail is not showing one sheet: it stacks six, four of them dark, and each carries its own rim, sheen and drop shadow. A single alabaster sheet on flat paper would be the failure above; six materials on it are still six materials.</p>
       <p class="demo__notes-lede">The icons are drawn rather than borrowed: a dot inside a ring, a magnifier, two drawers, a ruled ledger, two sliders. The magnifier is the one glyph in a toolbar with no synonym — every other function has several ways to be drawn, so the set is a place to have an opinion; search is not.</p>
       <p class="demo__notes-lede">Origin was an arched doorway first, then a benchmark triangle. The doorway was drawing the word <em>home</em> rather than the word it sits under, and five were rendered at real size in the bar to replace it: a square on a baseline, three courses of a plinth, a diamond resting on a rule, a circle overshooting one, and a block on a ground plane in axonometric. The plinth read as an align-left control, the circle read as a second magnifier, and the axonometric block turned to mush at 24px. The benchmark won that round for being the only triangle in the set. It was also the only hard corner in a component built entirely of stadiums, and that is what eventually lost it: the glyph was stern where nothing else is. What stands there now is the station mark a survey measures from — a dot inside a ring — which is the idea the benchmark was drawing, without the diagonal. The circle that failed the first round failed as a bare circle beside a magnifier; what separates these two is the centre dot and the absence of a stem, and at 24px in the bar they do not trade. The cost is that the set gives up its only diagonal, so the magnifier's stem is the one oblique left in it.</p>
       <p class="demo__notes-lede">The panel item is called Log, not Notifications, and the icon is a margin rule with three entries set beside it. Notifications is a promise about delivery — it says these are things that were pushed at you. What the four rows actually are is a record of what was decided: a type pair set, a tint thinned, a spacing rhythm fixed, a radius made proportional. Naming it for the content rather than for the transport also stops the component being read as an alert centre, which is a different thing with different rules about badges and dismissal.</p>
@@ -2697,7 +2788,7 @@
         'heading':
           'Liquid glass toolbar',
         'lede':
-          'Én glasflade, der skifter form: en linje, der folder ud til et søgefelt og derfra til et panel. Fem materialer, én konstruktion.',
+          'Én glasflade, der skifter form: en linje, der folder ud til et søgefelt og derfra til et panel. Seks materialer, én konstruktion.',
         'rest.title':
           'I hvile',
         'rest.note':
@@ -2789,7 +2880,7 @@
         'narrow.title':
           'Smal',
         'narrow.note':
-          'Fem mål på 48px, mellemrummene mellem dem og fladens egen padding kræver omkring 264px — men linjen har også en etiket åben, når den hviler, så den reelle grænse er omkring 390px. Skiftet sker ved 25rem.',
+          'Fem mål på 48px, mellemrummene mellem dem og fladens egen padding kræver omkring 264px — men linjen har også en etiket åben, når den hviler, og den længste er <em>Versions</em> på 63px, så den reelle grænse er omkring 400px. Skiftet sker ved 25rem, hvor mellemrummet trykkes sammen i stedet for at etiketten beskæres.',
         'narrow.1t':
           'Skalér, klem ikke.',
         'narrow.1b':
