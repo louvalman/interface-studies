@@ -1,14 +1,15 @@
 type: card
 
-One card as two plates: a drawing plate, and a narrower caption plate under it
-starting at the same left edge, 6px apart. A corner that has a plate across
-that gap from it is rounded harder than the rest — 30px against 14px — so the
-two plates turn towards each other and the pair reads as a plate and its label
-rather than as one box with a line through it. The drawing field sits on a dot
-grid inside a bracketed frame, and the line drawing inks itself on load — every
-path draws at the same rate, in an order the markup declares, with no script
-anywhere. The plates carry a title and a note, and the only other thing printed
-on them is the number of paths the drawing took.
+One card as two plates: a drawing plate and a caption plate under it, the same
+width, 6px apart. The four corners that face each other across that gap are
+rounded harder than the rest — 30px against 14px — so the two plates turn
+towards each other at the seam and away from it everywhere else, which is what
+keeps the pair reading as two plates rather than as one box with a line through
+it. The drawing field sits on a dot grid inside a bracketed frame, and the line
+drawing inks itself on load — every path draws at the same rate, in an order
+the markup declares, with no script anywhere. The plates carry a title and a
+note, and the only other thing printed on them is the number of paths the
+drawing took.
 
 Six drawings, all of them constructions rather than pictures: concentric
 squares rotating into a vortex, a waterfall of drifting ridgelines, a nephroid
@@ -20,8 +21,8 @@ brightness: porcelain, `--acid`, `--graphite`, `--ochre`, `--indigo` and
 
 - **The card is two plates, and the seam is the point.** Not one box with a
   rule across it: a drawing plate and a caption plate, 6px apart, and the
-  corners facing that gap are rounded to 30px while the rest stay at 14px, so
-  each plate turns towards the other at the seam and away from it everywhere
+  four corners facing that gap are rounded to 30px while the rest stay at 14px,
+  so each plate turns towards the other at the seam and away from it everywhere
   else. Hover widens the seam to 13px and pushes the bracket frame 3px
   outward, so the two plates separate a little rather than the card lifting.
 
@@ -35,31 +36,22 @@ brightness: porcelain, `--acid`, `--graphite`, `--ochre`, `--indigo` and
   says it in one property. The whole mask apparatus came out with it, which is
   the rare change that is both a design decision and less code.
 
-- **The caption plate is the narrower one, and that is what stops the pair
-  reading as a split box.** Two plates of the same width stacked with a gap
-  are a box with a line through it, whatever the corners do; at 72% the lower
-  one is a label attached to a plate, and the step on the right is large
-  enough — around 94px at the card's own width — to read as a decision rather
-  than as a misalignment. It starts at the same left edge as the plate above,
-  so the title and the note stay in one type column. Aligned the other way,
-  with the right edges flush, the two blocks of type start at different places
-  and the card reads as broken; that was the version that settled it.
+- **Both plates are the same width, and the seam is what separates them.**
+  Two plates of equal width stacked with a gap can read as one box with a line
+  through it, and the first answer to that was to narrow the caption to 72% —
+  a label under a plate, with the step all on the right. Built, looked at,
+  dropped: once the facing corners round towards each other the pair reads as
+  two plates at any width, and the narrowing was solving a problem the corners
+  had already solved. It cost more than it looked, too — a third off the note's
+  measure, so the copy had to shorten and the caption's floor had to go up to
+  three lines to keep the cards level.
 
-  The width decides the corners, and the rule is *a corner takes the seam
-  radius when there is a plate directly across the gap from it*. Three of the
-  four qualify: the caption's top two, because the drawing plate spans past
-  both of them, and the drawing plate's bottom left. Its bottom right has
-  nothing under it any more, so it keeps the card's own 14px — a seam corner
-  facing the page is a corner answering something that is not there.
-
-  Two things had to move with the width. The note's measure drops by nearly a
-  third, so the sample copy is label-length now — a caption plate that needs
-  four lines is not a label — and `--…-caption-min` goes up to three lines plus
-  padding, because the floor is only worth having if it is above the longest
-  ordinary note. The caption is also a grid rather than a flex row now, for one
-  reason: with a floor the text usually does not fill the plate, and
-  `align-content: center` centres the row in a grid and does nothing at all in
-  a single-line flex box. The count still sits on the note's first baseline.
+  `--…-caption-w` keeps it one value away, and the corner rule follows the
+  width on its own: *a corner takes the seam radius when there is a plate
+  directly across the gap from it*. At 100% that is all four. Narrow the
+  caption and the drawing plate's bottom right faces the page instead, so it
+  wants the card's own radius back — a seam corner answering something that is
+  not there is the one thing this rule is for.
 
 - **The frame around the drawing is a bracket, not a crop mark.** Four corner
   ticks around a field is a printer's registration device, and it was the most
@@ -72,11 +64,18 @@ brightness: porcelain, `--acid`, `--graphite`, `--ochre`, `--indigo` and
   background bars: eight straight bars cannot turn a corner, and that
   construction is exactly why they were sharp in the first place. Draw the
   whole rounded rectangle, then let four mask squares decide how much of it
-  shows. The radius is a little tighter than the plate's, so the frame reads
-  as something sitting inside the plate rather than as a second outline of it,
-  and each mask square is wider than that radius, so a bracket is the arc plus
-  a short straight run on both arms. It still moves: hover pushes the whole
-  box 3px outward, which is one `inset` rather than eight positions.
+  shows. Each mask square is wider than the radius, so a bracket is the arc
+  plus a short straight run on both arms. It still moves: hover pushes the
+  whole box 3px outward, which is one `inset` rather than eight positions.
+
+  And it sits 8px *outside* the dot field rather than flush with it. Flush,
+  the arc runs straight over the outermost row of dots and both lose: the line
+  picks up the dots' rhythm and reads as broken, the dots pick up the line and
+  read as a smudge, and at a rounded corner the two cross at every angle at
+  once. Clear of the field the frame is a frame and the field keeps its own
+  edge. Further out again — past about 11px — it starts to parallel the
+  plate's own rounded corner and reads as a second outline of the plate, which
+  is the other way to get this wrong.
 
 - **The plate is annotated with what the drawing is made of.** The caption
   plate's right-hand slot says `13 paths`, `9 paths`, `48 paths` — a fact about
@@ -212,12 +211,13 @@ card advertises a modifier rather than the unmodified default, and that this is
 the loudest card on the page; porcelain is one quick-look dot behind it, and it
 is still what `demo.html` opens on.
 
-`--…-caption-min` gives the caption plate a floor of three lines plus its
-padding, so a one, two or three line note leaves the card exactly the same
-height. Let the caption size to its own text and a row of these cards has a
-ragged bottom edge — they look like a set until you look at where they end. A
-note longer than that is the one state the floor cannot level, which is what
-the demo's last card is there to show.
+`--…-caption-min` gives the caption plate a floor of two lines plus its
+padding, so a one or two line note leaves the card exactly the same height.
+Let the caption size to its own text and a row of these cards has a ragged
+bottom edge — they look like a set until you look at where they end. The floor
+tracks the measure rather than being a constant: it went to three lines while
+the plate was narrowed and came back down with the width, and set above the
+longest ordinary note it levels nothing and leaves the note floating in air.
 
 Inspiration: https://aesthetic-cards.vercel.app/ — a feature-card row, for the
 two-plate construction and the cut facing corners. `ref.png` is a redrawing of

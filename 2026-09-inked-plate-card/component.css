@@ -13,15 +13,15 @@
      each other, and the seam reads as a pair of plates rather than as one
      rounded box split in half.
 
-     The caption is the narrower of the two and starts at the same left edge,
-     which is what keeps the pair reading as a plate and its label instead of
-     as a box with a line through it. It also decides which corners get the
-     seam radius: three of the four are across from something, and the drawing
-     plate's bottom right — with nothing under it — keeps the card's. */
+     The two are the same width, so all four corners at the seam are across
+     from a plate and all four take the seam radius. Set --caption-w below
+     100% and the caption narrows to a label under the plate; the corner rule
+     still holds, but the drawing plate's bottom right then faces the page and
+     wants the card's radius rather than the seam's. */
   --inked-plate-card-seam: 0.375rem;
   --inked-plate-card-seam-open: 0.8125rem;
   --inked-plate-card-seam-radius: 1.875rem;
-  --inked-plate-card-caption-w: 72%;
+  --inked-plate-card-caption-w: 100%;
 
   --inked-plate-card-plate: #e8ebe4;
   --inked-plate-card-ink: #14181a;
@@ -42,20 +42,26 @@
   --inked-plate-card-count-size: 0.625rem;
   --inked-plate-card-count-tracking: 0.14em;
 
-  /* The caption plate has a floor of three lines plus its padding, so a one,
-     two or three line note leaves the card exactly the same height. Without it
-     a row of these has a ragged bottom edge: they look like a set until you
-     look at where they end. The floor moved up with the narrowing — a plate at
-     72% fits fewer words per line, so the note that used to run to two lines
-     now runs to three, and a floor set for the old measure levels nothing. */
-  --inked-plate-card-caption-min: 5.8125rem;
+  /* The caption plate has a floor of two lines plus its padding, so a one or
+     two line note leaves the card exactly the same height. Without it a row of
+     these has a ragged bottom edge: they look like a set until you look at
+     where they end. The floor tracks the measure — it went up to three lines
+     while the plate was at 72% and fewer words fitted on a line, and came back
+     down with the width. Set above the longest ordinary note it levels
+     nothing and leaves the note floating in air. */
+  --inked-plate-card-caption-min: 4.625rem;
 
   --inked-plate-card-art-ratio: 1;
   --inked-plate-card-crop-len: 1.15rem;   /* the masked square at each corner */
-  --inked-plate-card-crop-radius: 0.75rem;
+  --inked-plate-card-crop-radius: 0.9rem;
   --inked-plate-card-crop-w: 1px;
-  --inked-plate-card-crop-inset: 0px;
-  --inked-plate-card-crop-inset-open: -3px;
+  /* Negative: the frame sits outside the dot field, in the plate's own margin.
+     Flush with the field, a 1px line runs straight over the outermost row of
+     dots and both get muddy — the line picks up the dots' rhythm and the dots
+     lose theirs. Clear of it by 8px, the field keeps its edge and the frame is
+     a frame. */
+  --inked-plate-card-crop-inset: -8px;
+  --inked-plate-card-crop-inset-open: -11px;
 
   /* Stroke width is in viewBox units, not px, so the line weight scales with
      the drawing instead of getting heavier as the card gets smaller. */
@@ -107,24 +113,22 @@
   background: var(--inked-plate-card-plate);
 }
 
-/* Corner by corner: top pair and bottom right are the card's own radius, and
-   the bottom left — the one across the seam from the caption — is the seam's.
-   It used to be a 45deg chamfer cut out with a mask, which is a sharper idea
-   than this card wants and cost a stack of mask layers to say. */
+/* Corner by corner: the top pair is the card's own radius and the bottom pair
+   is the seam's, because the caption is across the gap from both. It used to
+   be a 45deg chamfer cut out with a mask, which is a sharper idea than this
+   card wants and cost a stack of mask layers to say. */
 .inked-plate-card__plate {
   display: grid;
   gap: var(--inked-plate-card-plate-gap);
   border-radius:
     var(--inked-plate-card-radius) var(--inked-plate-card-radius)
-    var(--inked-plate-card-radius) var(--inked-plate-card-seam-radius);
+    var(--inked-plate-card-seam-radius) var(--inked-plate-card-seam-radius);
 }
 
 .inked-plate-card__caption {
-  /* Narrower than the plate above it, and starting at the same left edge, so
-     the title and the note stay in one type column and the step is all on the
-     right. Aligned the other way the two blocks of type start at different
-     places, which is the one thing that made this read as broken rather than
-     as deliberate. */
+  /* The plate's width by default, and anchored left, so a caller who narrows
+     it with --caption-w gets a label under a plate rather than a box shifting
+     around under one. */
   width: var(--inked-plate-card-caption-w);
   justify-self: start;
 
@@ -141,8 +145,8 @@
   align-items: baseline;
   column-gap: 1.25rem;
   min-height: var(--inked-plate-card-caption-min);
-  /* Both top corners take the seam radius: the drawing plate spans past both
-     of them, so both are across the gap from it. */
+  /* Both top corners take the seam radius: the drawing plate is across the
+     gap from both of them. */
   border-radius:
     var(--inked-plate-card-seam-radius) var(--inked-plate-card-seam-radius)
     var(--inked-plate-card-radius) var(--inked-plate-card-radius);
