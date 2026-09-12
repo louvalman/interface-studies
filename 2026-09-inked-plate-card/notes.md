@@ -2,13 +2,13 @@ type: card
 
 One card as two plates: a drawing plate, and a narrower caption plate under it
 starting at the same left edge, 6px apart. A corner that has a plate across
-that gap from it is cut at 45° rather than rounded, so the pair reads as two
-pieces of cut sheet — a plate and its label — rather than as one rounded box
-with a line through it. The drawing field sits on a dot grid inside crop marks,
-and the line drawing inks itself on load — every path draws at the same rate,
-in an order the markup declares, with no script anywhere. The plates carry a
-title and a note, and the only other thing printed on them is the number of
-paths the drawing took.
+that gap from it is rounded harder than the rest — 30px against 14px — so the
+two plates turn towards each other and the pair reads as a plate and its label
+rather than as one box with a line through it. The drawing field sits on a dot
+grid inside a bracketed frame, and the line drawing inks itself on load — every
+path draws at the same rate, in an order the markup declares, with no script
+anywhere. The plates carry a title and a note, and the only other thing printed
+on them is the number of paths the drawing took.
 
 Six drawings, all of them constructions rather than pictures: concentric
 squares rotating into a vortex, a waterfall of drifting ridgelines, a nephroid
@@ -19,15 +19,21 @@ brightness: porcelain, `--acid`, `--graphite`, `--ochre`, `--indigo` and
 `--chalk`.
 
 - **The card is two plates, and the seam is the point.** Not one box with a
-  rule across it: a drawing plate and a caption plate, 6px apart, with the
-  corners that face that gap cut at 45° while the rest stay at a 14px radius —
-  each plate reads as a piece of cut sheet rather than half of a rounded box.
-  The cut is `mask-image` with a `linear-gradient` per corner, and where a
-  plate cuts two of them they are `mask-composite: intersect`ed rather than
-  added; **intersect** is load-bearing, because mask layers union by default
-  and the union of two corner cuts removes nothing at all. Hover widens the
-  seam to 13px and pushes the crop marks 3px outward, so the two plates
-  separate a little rather than the card lifting.
+  rule across it: a drawing plate and a caption plate, 6px apart, and the
+  corners facing that gap are rounded to 30px while the rest stay at 14px, so
+  each plate turns towards the other at the seam and away from it everywhere
+  else. Hover widens the seam to 13px and pushes the bracket frame 3px
+  outward, so the two plates separate a little rather than the card lifting.
+
+  Those corners were a 45° chamfer first, cut out of each plate with a
+  `mask-image` per corner and `mask-composite: intersect` — intersect being
+  load-bearing there, since mask layers union by default and the union of two
+  corner cuts removes nothing at all. It is a sharper idea than this card
+  wants: a chamfer is a cut edge, which says *sheet stock*, and everything
+  else here — the plotter drawing, the soft plate, the annotation — is calmer
+  than that. Rounding the same corners says the same thing about the seam and
+  says it in one property. The whole mask apparatus came out with it, which is
+  the rare change that is both a design decision and less code.
 
 - **The caption plate is the narrower one, and that is what stops the pair
   reading as a split box.** Two plates of the same width stacked with a gap
@@ -39,13 +45,12 @@ brightness: porcelain, `--acid`, `--graphite`, `--ochre`, `--indigo` and
   with the right edges flush, the two blocks of type start at different places
   and the card reads as broken; that was the version that settled it.
 
-  The width decides the corners, and the rule is *a corner is cut when there
-  is a plate directly across the gap from it*. Three of the four qualify: the
-  caption's top two, because the drawing plate spans past both of them, and
-  the drawing plate's bottom left. Its bottom right has nothing under it any
-  more, and a chamfer there is a cut with nothing to explain it — measured
-  against the alternative at 4x, it reads as a nick in the silhouette rather
-  than as part of the seam. It keeps its radius.
+  The width decides the corners, and the rule is *a corner takes the seam
+  radius when there is a plate directly across the gap from it*. Three of the
+  four qualify: the caption's top two, because the drawing plate spans past
+  both of them, and the drawing plate's bottom left. Its bottom right has
+  nothing under it any more, so it keeps the card's own 14px — a seam corner
+  facing the page is a corner answering something that is not there.
 
   Two things had to move with the width. The note's measure drops by nearly a
   third, so the sample copy is label-length now — a caption plate that needs
@@ -55,6 +60,23 @@ brightness: porcelain, `--acid`, `--graphite`, `--ochre`, `--indigo` and
   reason: with a floor the text usually does not fill the plate, and
   `align-content: center` centres the row in a grid and does nothing at all in
   a single-line flex box. The count still sits on the note's first baseline.
+
+- **The frame around the drawing is a bracket, not a crop mark.** Four corner
+  ticks around a field is a printer's registration device, and it was the most
+  borrowed thing left on this card — a piece of furniture that arrives with
+  the construction and stays because nobody asks what it is for. The brackets
+  have a rounded elbow now, which is the same frame in this card's own
+  language rather than in a plate-maker's.
+
+  It is one bordered box masked down to a square at each corner, not eight
+  background bars: eight straight bars cannot turn a corner, and that
+  construction is exactly why they were sharp in the first place. Draw the
+  whole rounded rectangle, then let four mask squares decide how much of it
+  shows. The radius is a little tighter than the plate's, so the frame reads
+  as something sitting inside the plate rather than as a second outline of it,
+  and each mask square is wider than that radius, so a bracket is the arc plus
+  a short straight run on both arms. It still moves: hover pushes the whole
+  box 3px outward, which is one `inset` rather than eight positions.
 
 - **The plate is annotated with what the drawing is made of.** The caption
   plate's right-hand slot says `13 paths`, `9 paths`, `48 paths` — a fact about
@@ -128,7 +150,7 @@ brightness: porcelain, `--acid`, `--graphite`, `--ochre`, `--indigo` and
   getting heavier as the card gets smaller — a card at 320px is the same
   drawing, only smaller. The type does not scale: 18px/500 title, 13px note,
   and a 10px mono count at 0.14em tracking, three sizes with nothing in
-  between. The crop marks and the dot grid stay in px for the same reason a
+  between. The bracket frame and the dot grid stay in px for the same reason a
   hairline does.
 
 Where there is no pointer, nothing is lost, because the draw is a load event
