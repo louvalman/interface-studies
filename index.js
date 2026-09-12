@@ -869,12 +869,17 @@
   // step would stop halfway. Driving it ourselves means a recycle mid-step
   // shifts both ends of the animation and it lands where it was always going.
   const STEP_MS = 420;
+  // A released drag lands faster than a button step: the hand has already done
+  // the travel, so the rail only has to close the gap it was let go in.
+  const RELEASE_MS = 240;
+
   let stepFrame = 0;
   let stepFrom = 0;
   let stepTarget = 0;
   let stepStart = 0;
+  let stepMs = STEP_MS;
 
-  function stepTo(target) {
+  function stepTo(target, ms) {
     cancelAnimationFrame(stepFrame);
     stepFrame = 0;
 
@@ -887,6 +892,7 @@
     stepFrom = track.scrollLeft;
     stepTarget = target;
     stepStart = 0;
+    stepMs = ms || STEP_MS;
     track.classList.add('is-stepping');
     stepFrame = requestAnimationFrame(stepTick);
   }
@@ -894,7 +900,7 @@
   function stepTick(now) {
     if (!stepStart) stepStart = now;
 
-    const t = Math.min(1, (now - stepStart) / STEP_MS);
+    const t = Math.min(1, (now - stepStart) / stepMs);
     const eased = 1 - Math.pow(1 - t, 3);
     track.scrollLeft = stepFrom + (stepTarget - stepFrom) * eased;
 
@@ -934,10 +940,11 @@
     const target = real()[activeIndex()];
     if (!target) return;
     const inset = parseFloat(getComputedStyle(track).scrollPaddingLeft) || 0;
-    track.scrollTo({
-      left: target.offsetLeft - inset,
-      behavior: reduced.matches ? 'auto' : 'smooth'
-    });
+    // Through stepTo rather than scrollTo, so every movement of this rail has
+    // the same timing, and so the track never sits for a frame with snap back
+    // on and the scroll still between two cards — which is the gap that made
+    // a released drag jump before it animated.
+    stepTo(target.offsetLeft - inset, RELEASE_MS);
   }
 
   if (prev) prev.addEventListener('click', () => { driftStop(); scrollBy(-1); });
@@ -1060,14 +1067,20 @@
   // the rail means it stays stopped, while a viewport that grew wide enough to
   // hold every card has only run out of room, and shrinking it back should set
   // the rail going again rather than leave a dead control behind.
-  function driftStop(byUser) {
+  //
+  // settleAfter is false where a gesture is taking the rail over: a drag, a
+  // wheel, a swipe. Those move the scroll themselves and decide where it ends,
+  // and settling here would start a smooth scroll back to the nearest card
+  // that runs underneath the whole gesture — which is what made a drag of any
+  // length come back to the card it started on.
+  function driftStop(byUser, settleAfter) {
     clearTimeout(holdTimer);
     cancelAnimationFrame(driftFrame);
     const wasRunning = drift !== 'off';
     drift = 'off';
     if (byUser !== false) taken = true;
     track.classList.remove('is-drifting');
-    if (wasRunning) settle();
+    if (wasRunning && settleAfter !== false) settle();
     syncDriftBtn();
     renderNav();
   }
@@ -1093,8 +1106,10 @@
   // Touch and wheel both scroll the track natively, with nothing for the drag
   // handler to catch — so they are hooked here rather than left to fight the
   // drift over the same scrollLeft.
-  track.addEventListener('touchstart', driftStop, { passive: true });
-  track.addEventListener('wheel', driftStop, { passive: true });
+  // Both scroll the track natively, and snap comes back the moment the drift
+  // lets go of it, so the browser lands them on a card without help.
+  track.addEventListener('touchstart', () => driftStop(true, false), { passive: true });
+  track.addEventListener('wheel', () => driftStop(true, false), { passive: true });
 
   if (driftBtn) {
     driftBtn.addEventListener('click', () => {
@@ -1129,10 +1144,26 @@
   // so the one-shot click swallower below stayed armed and ate the user's
   // next tap on a card.
   const DRAG_SLOP = 4;   // below this it is a click, not a drag
+
+  // Where a released drag lands. Nearest-card is the obvious rule and the
+  // wrong one: it sends a drag of two fifths of a card back to the card it
+  // came from, which reads as the rail refusing the gesture rather than
+  // answering it. A fifth of a card is enough to mean "the next one", and a
+  // flick means the next one whatever distance it covered.
+  const SNAP_FRACTION = 0.2;    // of a card
+  const FLICK_SPEED = 0.35;     // px per ms
+
   let dragging = false;
   let moved = false;
   let originX = 0;
   let originScroll = 0;
+
+  // The last sample of the gesture, for the flick test. One sample is enough:
+  // it is the speed the pointer was let go at that says whether this was a
+  // flick, not the average over the whole drag.
+  let lastX = 0;
+  let lastT = 0;
+  let speed = 0;
 
   track.addEventListener('pointerdown', (event) => {
     if (event.button !== 0) return;
@@ -1141,6 +1172,9 @@
     moved = false;
     originX = event.clientX;
     originScroll = track.scrollLeft;
+    lastX = event.clientX;
+    lastT = event.timeStamp;
+    speed = 0;
     // Capture is taken only once a drag is real. Taking it here would
     // retarget the click, and the quick-look button would stop firing.
   });
@@ -1154,11 +1188,16 @@
       // card's link, its quick-look button — has not moved the rail and should
       // not end the drift; the pointer being over the track is already holding
       // it, and it picks up again when that pointer leaves.
-      driftStop();
+      driftStop(true, false);
       track.classList.add('is-dragging');
       track.setPointerCapture(event.pointerId);
     }
     if (moved) {
+      const dt = event.timeStamp - lastT;
+      if (dt > 0) speed = (event.clientX - lastX) / dt;
+      lastX = event.clientX;
+      lastT = event.timeStamp;
+
       track.scrollLeft = originScroll - delta;
       // A recycle under the drag moves the scroll out from under the origin
       // this is measured against; without this the next frame would drag the
@@ -1170,20 +1209,49 @@
   function endDrag(event) {
     if (!dragging) return;
     dragging = false;
-    track.classList.remove('is-dragging');
     if (track.hasPointerCapture(event.pointerId)) {
       track.releasePointerCapture(event.pointerId);
     }
+
     // Swallow the click the drag would otherwise fire on a card link.
     if (moved) {
       track.addEventListener('click', (click) => {
         click.preventDefault();
         click.stopPropagation();
       }, { capture: true, once: true });
-      // Re-snap to whatever ended up in the read position.
-      settle();
+      release();
     }
+
+    // After release(), not before. Dropping .is-dragging hands the track back
+    // to mandatory snap, which snaps to the nearest card the moment the class
+    // goes — so reading the scroll after it would measure a gesture the
+    // browser had already undone, and every drag under half a card came back
+    // to the card it started on. release() puts .is-stepping on first, so the
+    // track is never left for a frame with neither.
+    track.classList.remove('is-dragging');
     moved = false;
+  }
+
+  // originScroll is the scroll the drag started from, kept in step with every
+  // recycle underneath it — so counting cards from there is counting them from
+  // where the hand started, whatever the row did on the way.
+  function release() {
+    const w = step();
+    if (w <= 0) { settle(); return; }
+
+    const covered = (track.scrollLeft - originScroll) / w;
+    const whole = Math.trunc(covered);
+    const rest = covered - whole;
+    const flick = Math.abs(speed) > FLICK_SPEED;
+
+    let cards = whole;
+    if (Math.abs(rest) >= SNAP_FRACTION) cards += Math.sign(rest);
+    // A flick that covered almost nothing still means the next one, in the
+    // direction the hand was travelling — which is the opposite sign to the
+    // pointer, since dragging left walks the rail forwards.
+    if (cards === 0 && flick) cards = -Math.sign(speed);
+
+    stepTo(originScroll + cards * w, RELEASE_MS);
   }
 
   track.addEventListener('pointerup', endDrag);
