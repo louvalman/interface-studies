@@ -985,9 +985,27 @@
     (function () {
       var CHANNEL = 'interface-studies';
       var MIX = 'drawn-gradients__surface--mix';
-      /* What the field settles to. Set as the component's own tunable, from
-         outside, which is what that block is for. */
-      var GROUND = '#f3f2ef';
+      /* What the field settles to, and the ink the sample type is set in —
+         both handed to the component as its own tunables, from outside, which
+         is what that block is for. This file still writes no rule against a
+         component class.
+
+         The pair moves with the page. An aesthetic study is its samples, and
+         a sample block sits on the ground rather than on a surface of its
+         own: left at the paper ink on a dark rail, its three labels were
+         invisible and its read-out was a grey smear. The dark values are the
+         component's own — the ones its --night surface declares — so nothing
+         here invents a colour. */
+      var TONES = {
+        light: { base: '#f3f2ef', ink: '#1b1c1f', inkSoft: '#55565a' },
+        dark:  { base: '#191b1e', ink: '#f4f4f6', inkSoft: '#a7a9b0' }
+      };
+
+      function tone() {
+        return document.documentElement.getAttribute('data-theme') === 'dark'
+          ? TONES.dark
+          : TONES.light;
+      }
 
       var stage = document.querySelector('[data-stage]');
       if (!stage || !stage.firstElementChild) return;
@@ -1070,7 +1088,10 @@
       }
 
       function dress(node) {
-        node.style.setProperty('--drawn-gradients-base', GROUND);
+        var t = tone();
+        node.style.setProperty('--drawn-gradients-base', t.base);
+        node.style.setProperty('--drawn-gradients-ink', t.ink);
+        node.style.setProperty('--drawn-gradients-ink-soft', t.inkSoft);
         applyScale(node);
         // Only the resting composition carries the drift's three tinted
         // copies; everywhere else there is one drawing per surface.
@@ -1203,6 +1224,9 @@
           } else {
             document.documentElement.removeAttribute('data-theme');
           }
+          // The tunables above are written onto the mounted composition, so
+          // they are restated rather than waiting for the next switch.
+          if (root) dress(root);
         }
 
         if (data.type === 'preview:variant') {
