@@ -21,6 +21,16 @@
   --inked-plate-card-seam: 0.375rem;
   --inked-plate-card-seam-open: 0.8125rem;
   --inked-plate-card-seam-radius: 1.875rem;
+  /* The drawing plate's foot: the extra margin under the field, and derived
+     rather than chosen. The plate's bottom corners carry the seam radius, so
+     their curve starts further in from the corner than the top pair's does and
+     eats into exactly the margin the frame's bottom brackets sit in. Giving
+     the foot back the difference between the two radii restores the clearance
+     the brackets have everywhere else — and a field matted deeper at the
+     bottom than at the sides is what framing has always done, because a field
+     centred by measurement sits low by eye. */
+  --inked-plate-card-plate-foot:
+    calc(var(--inked-plate-card-seam-radius) - var(--inked-plate-card-radius));
   --inked-plate-card-caption-w: 100%;
 
   --inked-plate-card-plate: #e8ebe4;
@@ -129,6 +139,7 @@
 .inked-plate-card__plate {
   display: grid;
   gap: var(--inked-plate-card-plate-gap);
+  padding-bottom: calc(var(--inked-plate-card-pad) + var(--inked-plate-card-plate-foot));
   border-radius:
     var(--inked-plate-card-radius) var(--inked-plate-card-radius)
     var(--inked-plate-card-seam-radius) var(--inked-plate-card-seam-radius);
@@ -233,6 +244,17 @@
       var(--inked-plate-card-dot) 99%,
       #0000 0);
   background-size: var(--inked-plate-card-dot-pitch) var(--inked-plate-card-dot-pitch);
+  /* `round`, not `repeat`, and it is not a nicety. A tiled background is cut
+     off wherever the box ends, so unless the field happens to be a whole
+     number of cells wide the last column and the bottom row are half a dot —
+     a flat-sided dot against round ones, which is exactly the kind of defect
+     that is invisible in a mock-up and obvious on a screen. The card is 300px
+     of field at its own width and lands clean; at 348, which is what the
+     thumbnail asks for, it is 3px over and every edge dot is shaved.
+     `round` scales the tile a hair so a whole number fits — 4.971px instead of
+     5 at that width — which is a pitch nobody can see moving and a clipped dot
+     anybody can. */
+  background-repeat: round;
 }
 
 /*
@@ -262,12 +284,22 @@
   --inked-plate-card-crop-run:
     calc(var(--inked-plate-card-crop-arm) * var(--inked-plate-card-dot-pitch));
 
+  /* The tile draws in `currentColor` rather than reading the variable
+     directly, and that is the whole mechanism for the inking below: a custom
+     property cannot be transitioned without registering it, and `color` has
+     been animatable since forever. */
+  color: var(--inked-plate-card-crop);
   background-image:
     radial-gradient(
       circle var(--inked-plate-card-dot-size) at 50% 50%,
-      var(--inked-plate-card-crop) 99%,
+      currentColor 99%,
       #0000 0);
   background-size: var(--inked-plate-card-dot-pitch) var(--inked-plate-card-dot-pitch);
+  /* Rounded to whole cells, same as the field — and the two stay in step
+     because both tiles start at their own left edge and the frame's box is a
+     whole number of pitches wider, so the rounding lands them within a tenth
+     of a pixel of each other. */
+  background-repeat: round;
 
   -webkit-mask-image:
     var(--inked-plate-card-crop-bar), var(--inked-plate-card-crop-bar),
@@ -311,8 +343,31 @@
      and never leaves the lattice. */
   transition:
     -webkit-mask-size var(--inked-plate-card-transition),
-    mask-size var(--inked-plate-card-transition);
+    mask-size var(--inked-plate-card-transition),
+    color var(--inked-plate-card-transition);
+
+  /* The frame inks with the drawing. While the plotter is running the
+     brackets are the line's colour, and they settle back to the field's as it
+     finishes — the grid holding the drawing's ink for exactly as long as there
+     is drawing going on. Under the pointer they hold it outright, because the
+     drawing is re-inking for as long as you are there.
+
+     No fill mode on the animation: when it ends the declared `color` above
+     takes over at the same value it landed on, which is what leaves the hover
+     rule free to override it. A second, re-inking copy of these keyframes was
+     the first attempt at the hover half and it fought the held colour — ink,
+     fade to grey, snap back to ink. A transition does the same job in one
+     direction at a time. */
+  animation:
+    inked-plate-card-crop-ink var(--inked-plate-card-draw)
+    var(--inked-plate-card-draw-ease);
 }
+
+@keyframes inked-plate-card-crop-ink {
+  from { color: var(--inked-plate-card-line); }
+  to   { color: var(--inked-plate-card-crop); }
+}
+
 
 .inked-plate-card__ink {
   position: absolute;
@@ -383,6 +438,7 @@
 .inked-plate-card:focus-visible .inked-plate-card__crop,
 .inked-plate-card--live .inked-plate-card__crop {
   --inked-plate-card-crop-arm: var(--inked-plate-card-crop-arm-open);
+  color: var(--inked-plate-card-line);
 }
 
 .inked-plate-card:hover .inked-plate-card__line,
@@ -403,6 +459,7 @@
 
   .inked-plate-card:active .inked-plate-card__crop {
     --inked-plate-card-crop-arm: var(--inked-plate-card-crop-arm-open);
+    color: var(--inked-plate-card-line);
   }
 
   .inked-plate-card:active .inked-plate-card__line {
