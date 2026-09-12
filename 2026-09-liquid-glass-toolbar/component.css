@@ -992,11 +992,17 @@
   finding out. Red has the least chroma to spare of any hue in the set, so it
   gets the most alpha, and the two facts are the same fact.
 
-  It is also the one material whose accent had to leave warm. Every other sheet
-  marks unread with a clay or an amber, and a warm mark on a warm ground is not
-  a mark. Jade is the complement, and the only cool value anywhere in the
-  component — spent, like every other accent here, on the two things that mean
-  unread and nothing else.
+  Its accent is the set's only one that cannot separate by hue. Every other
+  sheet marks unread with a clay or an amber against a ground nowhere near it;
+  here the ground *is* that hue, and the set's own amber measured to within
+  0.004 of the sheet's luminance — a mark the same brightness as what it sits on
+  is not a mark, whatever its hue. A jade read cleanly and read alien: it was the
+  only cool value in the component and it announced itself as an exception.
+
+  So this one separates on lightness instead, and stays in the family: the same
+  amber walked up until it clears the sheet, and no further. Past about #ffd992
+  it stops being a colour and starts being a highlight, which loses the thing
+  the accent is for.
 */
 .liquid-glass-toolbar--carnelian {
   --liquid-glass-toolbar-tint: rgba(196, 72, 18, 0.44);
@@ -1021,7 +1027,7 @@
   --liquid-glass-toolbar-fg: rgba(255, 243, 237, 0.97);
   --liquid-glass-toolbar-muted: rgba(250, 230, 222, 0.64);
   --liquid-glass-toolbar-dim: rgba(250, 230, 222, 0.46);
-  --liquid-glass-toolbar-accent: #46c6a4;
+  --liquid-glass-toolbar-accent: #f8cb72;
 }
 
 .liquid-glass-toolbar--crystal {

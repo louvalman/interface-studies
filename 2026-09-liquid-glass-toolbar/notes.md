@@ -332,7 +332,14 @@ side, which is what the eye reads and what `getBBox()` leaves out.
   a light ground a near-black sheet has plenty of contrast at its face and none
   at all at its edge, so without the hairline it stops reading as glass and
   starts reading as a hole. And the accent moves with each — the warm mark that
-  reads on moss is not the warm that reads on a near-black.
+  reads on moss is not the warm that reads on a near-black, and carnelian is the
+  one that cannot move by hue at all: its ground *is* that hue, so the set's
+  amber measured to within 0.004 of the sheet's own luminance and disappeared
+  into it. A mark the same brightness as what it sits on is not a mark, whatever
+  its hue. A jade fixed it and read alien — the only cool value in the component,
+  announcing itself as an exception — so it separates on lightness instead, the
+  same amber walked up until it clears the sheet and no further. Past about
+  `#ffd992` it stops being a colour and starts being a highlight.
 
 - **Thin the tint, and the filter has to take the work.** The first version of
   the set carried its colour in the tint, at 42–64% opacity. That is a coloured
