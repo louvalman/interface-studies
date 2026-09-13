@@ -225,25 +225,37 @@ enough. The last row is the only one that is not about looking: it holds the
 two states that are about behaviour, the re-ink and a note longer than the
 caption plate's floor.
 
-`preview.html` takes the light `#f3f2ef` every study in this repo shares,
-because the rail has to read as one set of cards and a dark frame among light
-ones reads as a hole rather than a card. What makes a porcelain plate work on
-that ground is that the plotter grid belongs to the page and not to the plate:
-the grid runs up to the plate and stops, and that stop is the plate's edge,
-which is why a fill four percent lighter than what it sits on still reads as an
-object. Take the grid away and the same pairing needs a hairline.
+`preview.html` takes the bare `#f3f2ef` every study in this repo shares, and
+the `#191b1e` they all take on a dark rail — the ground and nothing on top of
+it. The plotter grid stays on `demo.html`, where it is this study's own
+staging, and it does not come to the rail. It used to, on the argument that
+the grid is the component's context rather than the page's, and that argument
+loses to the one the ground is there to make: the rail is five studies side by
+side, and a card with a surface under it while the other four have none reads
+as a different kind of card before it reads as this one. Every folder repeats
+those two literals precisely so the row holds together, which is an argument
+about the index and not about any study in it — `2026-09-liquid-glass-toolbar`
+leaves its cross-lit stage on the demo page for the same reason.
 
-It holds at thumbnail size too — the card lays the preview out at
-`--preview-w` and shows it at `--preview-scale`, and at 0.7 the edge and the
-vortex both survive. What does not survive is being noticed: porcelain plate on
-porcelain ground inside the index's own light rail is three near-whites
+What that costs is the porcelain plate's edge. The grid used to draw it: the
+grid ran up to the plate and stopped, and the stop was the edge, which is why a
+fill four percent lighter than what it sits on read as an object at all. On the
+bare ground the pairing is #e8ebe4 on #f3f2ef and nothing else, so the edge is
+carried by the fill alone — legible at full size, faint at 0.7, and the one
+place the shared ground is paid for rather than free. Left as a fill rather
+than answered with a hairline, because a border the component does not
+otherwise have would be the preview reaching into the plate, and quick look
+opens porcelain at full size where the two near-whites have room to separate.
+
+It is not the resting variant in any case, and for a separate reason: porcelain
+plate on porcelain ground inside the index's own light rail is two near-whites
 stacked, and a thumbnail's one job is to be picked out of a row of them. So the
-preview rests on `--acid` with the waterfall instead — the one surface with
-presence in that rail that does not go dark and read as a hole, and 9 curves
-that carry further than 13 nested squares at any scale. The cost is that the
-card advertises a modifier rather than the unmodified default, and that this is
-the loudest card on the page; porcelain is one quick-look dot behind it, and it
-is still what `demo.html` opens on.
+preview rests on `--acid` with the waterfall — the one surface with presence in
+that rail that does not go dark and read as a hole, and 9 curves that carry
+further than 13 nested squares at any scale. The cost is that the card
+advertises a modifier rather than the unmodified default, and that this is the
+loudest card on the page; porcelain is one quick-look dot behind it, and it is
+still what `demo.html` opens on.
 
 `--…-caption-min` gives the caption plate a floor of two lines plus its
 padding, so a one or two line note leaves the card exactly the same height.

@@ -15,25 +15,30 @@
   study's card, whichever way round the page is. demo.html's ink is
   demo.html's, and it keeps it.
 
-  The plotter grid does come along, because that is the component's context
-  rather than the page's: in ink on the paper, in chalk on the dark ground.
+  The plotter grid does not come along, and that is the point of the ground
+  being the rail's. demo.html stages this card on drawing paper because the
+  study is about a plotter; the index stages five studies side by side, and a
+  card with a surface under it while the other four have none reads as a
+  different kind of card before it reads as this one. So the grid stays on the
+  demo page, where it is that study's own staging, and the thumbnail sits on
+  the same bare ground every other thumbnail here sits on.
 
   Which theme arrives over the message contract: `?theme=` on the src this is
   loaded with, and a `preview:theme` message if the index is switched while it
   is on screen.
 
   The surface: the demo leads with the porcelain default, this page leads with
-  --acid and the waterfall. Not because porcelain fails at thumbnail size — at
-  0.7 the grid still stops at the plate, the edge still holds, and the vortex
-  still reads. It is that porcelain on the light ground inside the index's own
-  light rail is three near-whites stacked, and a thumbnail has to be picked out
-  of a row of them. Lime is the one surface that does that without going dark and
-  reading as a hole, and the waterfall's 9 curves carry further than 13 nested
-  squares at any size.
+  --acid and the waterfall. Porcelain on the light ground inside the index's
+  own light rail is two near-whites stacked — #e8ebe4 on #f3f2ef, and with the
+  grid gone there is nothing else drawing the plate's edge — so it is the one
+  variant the bare ground costs something. Lime picks itself out of a row
+  without going dark and reading as a hole, and the waterfall's 9 curves carry
+  further than 13 nested squares at any size. Porcelain is one quick-look dot
+  behind it, at full size, where the near-whites have room to separate.
 
   The cost, stated: the card in the rail now advertises a modifier rather than
   the component's unmodified default, and it is the loudest card on the page.
-  Porcelain is one quick-look dot behind it, which is where the demo opens.
+  The demo opens on porcelain, which is where the unmodified component is.
 -->
 <html lang="da">
 <head>
@@ -68,19 +73,13 @@
 
        Both grounds are tokens, and both are the rail's rather than this
        study's: the dark one is the #191b1e every other thumbnail here takes,
-       not demo.html's ink. The plotter grid is the part that belongs to the
-       component, and it comes along — in ink on the paper, in chalk on the
-       dark. The script at the foot of this file sets data-theme from what the
-       index tells it. */
-    :root {
-      --preview-ground: #f3f2ef;
-      --preview-grid: rgba(20, 24, 26, 0.05);
-    }
-
-    :root[data-theme="dark"] {
-      --preview-ground: #191b1e;
-      --preview-grid: rgba(232, 235, 228, 0.05);
-    }
+       not demo.html's ink. Nothing is painted on top of either — the plotter
+       grid is demo.html's staging and it stays there, because a card with a
+       surface under it in a row of cards with none reads as a different kind
+       of card first and as this study second. The script at the foot of this
+       file sets data-theme from what the index tells it. */
+    :root { --preview-ground: #f3f2ef; }
+    :root[data-theme="dark"] { --preview-ground: #191b1e; }
 
     html { background-color: var(--preview-ground); }
 
@@ -100,16 +99,6 @@
       box-sizing: border-box;
 
       background-color: var(--preview-ground);
-      /* The plotter grid the demo page uses — in ink on the light ground, in
-         chalk on the dark one. It places the card on a drawing surface, and it
-         is also what draws the edge of the porcelain plate when quick look
-         steps to it: the grid runs up to the plate and stops. The lime plate
-         this page rests on needs no such help. */
-      background-image:
-        linear-gradient(var(--preview-grid) 1px, transparent 1px),
-        linear-gradient(90deg, var(--preview-grid) 1px, transparent 1px);
-      background-size: 44px 44px;
-
       font-family: "Plus Jakarta Sans", system-ui, sans-serif;
     }
 

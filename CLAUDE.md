@@ -304,11 +304,27 @@ the index into dark rather than staying lit under it. A card that kept the
 paper while the others went dark would read as a different kind of thing rather
 than as that study's card.
 
-What sits on the ground is still the folder's own: `2026-09-inked-plate-card`
-brings its plotter grid along, in ink on the paper and in chalk on the dark.
-The component is never touched by any of it, and `demo.html`'s ground is a
-separate decision — that page may be ink in both themes while its thumbnail is
-neither.
+Nothing is painted on top of it. The ground is the two literals and the
+component standing on them — no grid, no stage, no wash, whatever the folder's
+own `demo.html` does. A card with a surface under it in a row of cards with
+none reads as a different kind of card before it reads as that study, which
+defeats the thing the shared ground is for. `2026-09-inked-plate-card` keeps
+its plotter grid on the demo page and `2026-09-liquid-glass-toolbar` keeps its
+cross-lit stage there; neither comes to the rail.
+
+`demo.html`'s ground is a separate decision and always was — that page may be
+ink in both themes while its thumbnail is neither, and it may stage the
+component however the study wants. The component itself is never touched by any
+of it in either file.
+
+The bill for this lands on a component whose edge is carried by the ground
+rather than by its own fill, and it is paid rather than worked around: the
+inked plate's porcelain surface is #e8ebe4 with the grid no longer stopping at
+it, so the edge is a four percent step and nothing else. Adding a border in the
+preview to make up the difference would be the thumbnail reaching into the
+component, which is the rule this whole contract keeps. A study in that
+position picks a resting variant that does not need the help — see that
+folder's `notes.md`.
 
 `preview:key` is the fifth, and it goes the other way — preview to index. An
 iframe is its own document: keys pressed inside it fire against that document
