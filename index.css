@@ -1590,6 +1590,64 @@ body.is-locked {
   border-radius: 0.2rem;
 }
 
+/* Byline and tip jar share the bar's left end, so the bar still reads as two
+   things rather than three spread across it. Wraps rather than shrinking,
+   because both halves are set in mono at a size that has no give. */
+.foot__credit {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.25rem;
+}
+
+/* Set like .foot__top: the bar's type is mono micro-caps and a second
+   treatment down here would read as a different kind of link. The cup lifts
+   on hover the way the arrow does, and the steam is what carries it. */
+.foot__coffee {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  transition: color 240ms var(--ease);
+}
+
+.foot__coffee:hover,
+.foot__coffee:active { color: var(--accent); }
+
+.foot__coffee:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 4px;
+  border-radius: 0.25rem;
+}
+
+.foot__coffee svg {
+  width: 0.95rem;
+  height: 0.95rem;
+  overflow: visible;
+}
+
+/* The steam is the whole of the hover: it sits on the cup at rest and rises
+   off it, so the state is a movement rather than a second colour. :active
+   carries it where there is no pointer to hover with. */
+.foot__steam {
+  opacity: 0.45;
+  transition:
+    transform 320ms var(--ease),
+    opacity 320ms var(--ease);
+}
+
+.foot__coffee:hover .foot__steam,
+.foot__coffee:active .foot__steam,
+.foot__coffee:focus-visible .foot__steam {
+  opacity: 1;
+  transform: translateY(-1.5px);
+}
+
 .foot__top {
   display: inline-flex;
   align-items: center;
