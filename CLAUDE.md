@@ -263,6 +263,7 @@ position:
 { source: 'interface-studies', type: 'preview:variant', index: n }
 { source: 'interface-studies', type: 'preview:scale', scale: n }
 { source: 'interface-studies', type: 'preview:theme', theme: 'light' | 'dark' }
+{ source: 'interface-studies', type: 'preview:pause', paused: true | false }
 
 // preview -> index, once its listener is live
 { source: 'interface-studies', type: 'preview:ready',
@@ -340,6 +341,43 @@ a preview does with it is the folder's business — usually restating one tunabl
 against it, inline, so it beats the stylesheet's own media queries. That is a
 custom property being set from outside, which is what the property block is
 for; it is still not a rule written against a component class.
+
+`preview:pause` is the sixth, and it is the only one a preview may not ignore.
+A same-origin iframe shares the index's main thread, so a thumbnail that keeps
+animating while the rail is being dragged is animating against the drag, on the
+thread the drag needs — and a live component is the whole of what this index
+shows, so every card on screen is doing it at once. The index sends `true` when
+the rail starts moving under a finger or steps to a card, and `false` when it
+lands. The preview stamps `data-preview-paused` on its own root, and the one
+rule that goes with it stops every animation in the document:
+
+```css
+:root[data-preview-paused] *,
+:root[data-preview-paused] *::before,
+:root[data-preview-paused] *::after {
+  animation-play-state: paused !important;
+}
+```
+
+Global, and in `preview.html`'s own style block rather than in `component.css`
+— it has to reach the component without naming one of its classes, which is
+the same rule the rest of the file keeps. Transitions are deliberately left
+out: stopping those mid-gesture makes states snap instead of settle, and they
+are not what costs.
+
+Measured across the rail on a throttled phone profile, the same two-card drag
+runs 446 style recalcs with the pause defeated and 175 with it working. One
+study accounted for nearly all of it — `2026-09-raster-pulse`,
+whose 289 dots are past Chromium's composited-animation budget and so fall back
+to the main thread — but the message is the contract's rather than that
+folder's, because the next study to animate three hundred things would do the
+same.
+
+Pausing is not `active: false`. That puts a preview in its resting state, and a
+resting state still animates; sending it to all five changed nothing measurable.
+Nor is it unloading: the document stays, so the animations pick up where they
+were instead of starting over, which is what a card that has been dropped and
+re-loaded does.
 
 The block is optional. A preview that ignores the messages still renders; it
 just sits still, and quick look shows it without dots. A preview opened on its own does nothing, because the script only
