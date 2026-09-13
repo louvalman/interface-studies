@@ -429,8 +429,26 @@
           </div>
         </article>
 
-        <article class="piece" data-piece data-date="2026-09-10T10:52">
+        <!-- A still card. This one study's field is 289 elements on their own
+             animations, and measured on a throttled phone it costs what all
+             five previews together cost: a drag beside it runs a 50ms frame
+             against 16.7ms for every other card. So the rail shows a render of
+             the component instead of running it, and quick look still opens the
+             live thing — one document, full size, with nothing else moving.
+             still.png is a photograph of preview.html, the way og.png is one of
+             the masthead, and it is rendered on a transparent ground so the
+             rail's own ground shows through it in both themes. The frame stays
+             in the markup, never loaded: it is where the path lives, and quick
+             look, the theme rewrite and the date fallback all read it. -->
+        <article class="piece" data-piece data-still data-date="2026-09-10T10:52">
           <div class="piece__frame">
+            <img
+              class="piece__still"
+              src="2026-09-raster-pulse/still.png"
+              width="480"
+              height="600"
+              alt=""
+              decoding="async" />
             <iframe
               class="piece__preview"
               data-src="2026-09-raster-pulse/preview.html"
