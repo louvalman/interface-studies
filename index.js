@@ -674,6 +674,7 @@
   // on a browser with no IntersectionObserver. A `let` declared after this
   // point would be a ReferenceError on that path.
   let landing = false;
+  let landTimer = 0;
 
   function gesturing() {
     return touching || dragging || landing || stepFrame !== 0;
@@ -694,7 +695,6 @@
   }
 
   function settleWork() {
-    endLanding();
     // Where the rail actually stopped, not where it was when the step was
     // planned. sync is coalesced onto a frame, so currentActive can still be
     // the card the gesture started from — which is how a card a third on screen
@@ -1428,25 +1428,75 @@
     settleWork();
   }
 
-  // A touch release: the rail picks the card, the platform runs the animation.
+  // A touch release: the rail picks the card, the compositor moves the row.
   //
-  // Three things have to be true at once, and each previous attempt had two.
-  // The animation must not run on this thread — a rAF loop writing scrollLeft
-  // for 240ms is what "laggy between cards" was. The rail must land on the
-  // mark, left-aligned, every time. And one swipe must be one study.
+  // Three things have to be true at once and every attempt at this had two.
+  // The rail must land on the mark. One swipe must be one study. And the
+  // animation must be long enough to see, at a duration this file chooses.
   //
-  // Leaving it all to momentum and snap gave the first two and lost the third:
-  // scroll-snap-stop only governs a fling if snap is on when the browser plans
-  // it, and snap is off for the length of the gesture so that a finger landing
-  // on a drifting rail is not yanked. The fling is planned unconstrained, so it
-  // stops on a snap point but not on the next one.
+  // scrollTo's smooth behaviour gives the first two and not the third: its
+  // duration is the browser's and nothing exposes it, and over one card it is
+  // finished before it reads as motion. Driving scrollLeft from rAF gives all
+  // three on paper and fails in practice — every write is a main-thread scroll
+  // update, and on a phone that is two or three visible hitches in a landing
+  // however quiet the thread is. A throttled Chromium shows none of them, which
+  // is why this one took so long to place: the harness could not see the bug.
   //
-  // So the card is chosen here and the travelling is the platform's. The fling
-  // is cancelled first — an instant write aborts what the browser had in
-  // flight, which is the step the previous attempt was missing, and why a
-  // smooth scroll aimed at a target used to land wherever it met the momentum.
-  // Snap stays off until it arrives, because by then the rail is already on a
-  // snap position and giving the class back moves nothing.
+  // So the scroll is not what moves. The row is translated instead — one style
+  // write per card, a CSS transition, and the compositor runs it with no
+  // further main-thread work at all — and the duration and the curve are ours
+  // because they are ours to declare. When it arrives the transform is dropped
+  // and the real scroll takes the same distance over, in one task, so the frame
+  // that loses the translate is the frame that gains the scroll.
+  let glideTo = 0;        // the scroll position the row is travelling toward
+  let glideEnd = null;
+
+  function commitGlide() {
+    if (!landing) return;
+    landing = false;
+    clearTimeout(landTimer);
+    if (glideEnd) { track.removeEventListener('transitionend', glideEnd); glideEnd = null; }
+
+    // All of it in one task. A frame that painted between dropping the
+    // transform and taking the scroll would show a jump of the whole distance.
+    track.classList.remove('is-gliding');
+    laidOut().forEach((el) => { el.style.translate = ''; });
+    // Absolute, not a delta: if a fling leaked past the cancel in land() and
+    // moved the scroll while the row was travelling, this still arrives on the
+    // mark instead of accumulating the error.
+    track.scrollLeft = glideTo;
+
+    track.classList.remove('is-dragging');
+    recycle();
+    settleWork();
+  }
+
+  function startGlide(target, ms) {
+    const row = laidOut();
+    const delta = target - track.scrollLeft;
+
+    glideTo = target;
+    landing = true;
+
+    if (reduced.matches || !delta || !row.length) { commitGlide(); return; }
+
+    track.style.setProperty('--glide-ms', ms + 'ms');
+    track.classList.add('is-gliding');
+    // The row moves the way the scroll would have: forward means cards go left.
+    row.forEach((el) => { el.style.translate = (-delta) + 'px'; });
+
+    // Transitions bubble, so one listener on the track catches the first card
+    // to finish; they are all running the same one.
+    glideEnd = (event) => {
+      if (event.propertyName === 'translate') commitGlide();
+    };
+    track.addEventListener('transitionend', glideEnd);
+    // A transition that never gets to run sends no event — a card filtered out
+    // mid-flight, a backgrounded tab. This is the backstop.
+    clearTimeout(landTimer);
+    landTimer = setTimeout(commitGlide, ms + 140);
+  }
+
   // The lattice the cards actually sit on. A gesture that began on a drifting
   // rail began between two of them, and every target has to be one of them
   // whatever the arithmetic started from.
@@ -1458,24 +1508,14 @@
     return base + Math.round((at - base) / w) * w;
   }
 
-  // The step that land() starts ends in settleWork, which is where this is
-  // called from: one place where the rail has stopped, whatever started it.
-  function endLanding() {
-    if (!landing) return;
-    landing = false;
-    // Snap comes back now. The step landed on a snap position, so this moves
-    // nothing — which is the whole reason it waits until here.
-    track.classList.remove('is-dragging');
-  }
-
   function land() {
     const w = step();
-    if (w <= 0) { landing = true; settleWork(); return; }
+    if (w <= 0) { landing = true; commitGlide(); return; }
 
     const here = track.scrollLeft;
-    // Finger travel only: momentum has not happened yet at touchend, so this is
-    // a clean measure of what was asked for rather than of what the platform
-    // was about to add to it.
+    // Finger travel only: momentum has not happened yet at touchend, so this
+    // measures what was asked for rather than what the platform was about to
+    // add to it.
     const covered = (here - touchFrom) / w;
     let cards = 0;
     if (Math.abs(covered) >= SNAP_FRACTION) {
@@ -1485,25 +1525,14 @@
       cards = Math.sign(covered) * Math.max(1, Math.round(Math.abs(covered)));
     }
 
-    const target = snapPos(touchFrom) + cards * w;
-    landing = true;
+    // Stop the fling before the row starts travelling, or the two move the same
+    // card twice over. A programmatic scroll is what aborts one.
+    track.scrollTo({ left: Math.round(here), behavior: 'auto' });
 
-    // Driven here rather than by scrollTo's smooth behaviour, for one reason:
-    // that animation's duration is the browser's and nothing exposes it. Over a
-    // card it is over almost before it starts, which reads as no transition at
-    // all.
-    //
-    // The cost is that this runs on the main thread, which is what made the
-    // first version of this feel laggy. Two things changed since: the one study
-    // that was taking 50ms frames is a still now, so a landing has the thread
-    // largely to itself, and the fling is no longer being fought — the first
-    // frame's write aborts it, and after that the animation is the only thing
-    // moving the rail.
-    //
     // Further is slower, but not proportionally: two cards away should not feel
     // twice as far.
     const reach = Math.max(1, Math.abs(cards));
-    stepTo(target, RELEASE_MS * (1 + 0.3 * (reach - 1)));
+    startGlide(snapPos(touchFrom) + cards * w, RELEASE_MS * (1 + 0.3 * (reach - 1)));
   }
 
   function scrollBy(direction) {
@@ -1979,6 +2008,9 @@
                           // the gesture records: how far the finger took it
 
   track.addEventListener('touchstart', () => {
+    // A finger arriving mid-landing takes it over, and the row has to hand the
+    // distance back to the scroll before anything reads scrollLeft again.
+    if (landing) commitGlide();
     touching = true;
     touchFrom = track.scrollLeft;
     // Snap comes off for the length of the gesture only, so a finger landing on
