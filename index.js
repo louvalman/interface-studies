@@ -468,6 +468,40 @@
     );
   }
 
+  // Every animation in every loaded preview stops for the length of a gesture.
+  //
+  // A same-origin iframe shares this page's main thread, so a thumbnail that
+  // keeps animating while the rail is being dragged is animating against the
+  // drag, on the thread the drag needs. Measured on a throttled phone profile,
+  // a two-card drag with the pause taking effect against the same drag with it
+  // defeated: 446 style recalcs against 175. The frame-timing half of that
+  // measurement stopped reproducing on the machine it was taken on, so the
+  // recalc count is what this claim rests on, and a real phone is the test.
+  //
+  // Telling a preview it is inactive does not do this and never did — that
+  // puts it in its resting state, and a resting state still animates. Measured
+  // the same way, sending active:false to all five changed nothing.
+  //
+  // Pausing rather than unloading is what keeps a card's animation from
+  // starting over every time it comes back: the document is still there and
+  // the animations pick up where they were.
+  let pausedAll = false;
+
+  function pausePreview(piece, paused) {
+    const frame = piece.querySelector('[data-preview]');
+    if (!frame || !frame.contentWindow) return;
+    frame.contentWindow.postMessage(
+      { source: CHANNEL, type: 'preview:pause', paused: paused },
+      '*'
+    );
+  }
+
+  function pauseAll(paused) {
+    if (paused === pausedAll) return;
+    pausedAll = paused;
+    real().forEach((piece) => pausePreview(piece, paused));
+  }
+
   // A preview may not have parsed its listener yet when the pointer arrives,
   // so re-send once it announces itself.
   window.addEventListener('message', (event) => {
@@ -511,6 +545,10 @@
     if (held && held.dataset.loaded !== 'true') return;
     piece.classList.add('is-ready');
     tellScale(piece.querySelector('[data-preview]'), cardScale());
+    // Loads drain when the hand lifts, so one can arrive while the step that
+    // follows is still running. It joins the others paused rather than being
+    // the one card animating through the landing.
+    if (pausedAll) pausePreview(piece, true);
     if (piece.dataset.active === 'true') tell(piece, true);
   }
 
@@ -600,6 +638,7 @@
   }
 
   function settleWork() {
+    pauseAll(false);
     handoff();
     drainWork();
   }
@@ -913,7 +952,12 @@
     metrics = {
       step: first ? first.getBoundingClientRect().width + gap : track.clientWidth,
       inset: parseFloat(cs.scrollPaddingLeft) || 0,
-      client: track.clientWidth
+      client: track.clientWidth,
+      // The row's width does not move under a gesture either — the ring keeps
+      // the same cards in it, only in a different order — so this is cached
+      // with the rest. recycle() reads it on every frame of a drag, and
+      // scrollWidth is a forced layout every time it is asked for.
+      max: Math.max(0, track.scrollWidth - track.clientWidth)
     };
     return metrics;
   }
@@ -926,7 +970,27 @@
   }
 
   function maxScroll() {
-    return Math.max(0, track.scrollWidth - track.clientWidth);
+    return sized().max;
+  }
+
+  // Where the recycle parks the rail: the middle of the row.
+  //
+  // It used to park one card in, which left a card and a quarter of row behind
+  // the rail and three and a half in front. Touch is the half of this that
+  // cannot recycle mid-gesture — writing scrollLeft under a native scroll is
+  // writing underneath the thing doing the scrolling, and takes the momentum
+  // with it — so a swipe has only the row that is already there to spend, and
+  // backwards it ran out after a card and a quarter. Past that the rail hits
+  // scrollLeft 0, rubber-bands against a wall it is not supposed to have, and
+  // the recycle that was waiting for the gesture to end lands all at once.
+  // That is the jump at the seam.
+  //
+  // The band is a card wide and any w-periodic lattice has exactly one point
+  // in it, so parking it on the middle lands the rail on the snap position
+  // nearest the middle without this having to know where the snap positions
+  // are. Same slack either way, and about twice what a backwards swipe had.
+  function homePos() {
+    return maxScroll() / 2;
   }
 
   // --- the loop ---------------------------------------------------------
@@ -974,9 +1038,9 @@
     return m.step > 0 && (ring.length - 1) * m.step - m.client >= m.step;
   }
 
-  // scrollLeft is held within half a card either side of one card in, so there
-  // is always row to the left to scroll back into and the rest of it to the
-  // right. Returns the distance the scroll was moved, because anything holding
+  // scrollLeft is held within half a card either side of the middle of the row
+  // (see homePos), so there is as much row to scroll back into as there is to
+  // scroll forward through. Returns the distance the scroll was moved, because anything holding
   // a scroll position of its own — a drag's origin, a step's two ends — has to
   // move with it or it will fight the recycle on the next frame.
   // `at` is the position the caller has just put the scroll at. Reading it back
@@ -990,11 +1054,12 @@
     if (!loopable()) return 0;
 
     const w = step();
+    const home = homePos();
     let pos = at === undefined ? track.scrollLeft : at;
     let shifted = 0;
     let guard = ring.length * 2;
 
-    while (guard-- > 0 && pos >= w * 1.5) {
+    while (guard-- > 0 && pos >= home + w * 0.5) {
       rotate(1);
       pos -= w;
       track.scrollLeft = pos;
@@ -1002,7 +1067,7 @@
     }
 
     guard = ring.length * 2;
-    while (guard-- > 0 && pos < w * 0.5) {
+    while (guard-- > 0 && pos < home - w * 0.5) {
       rotate(-1);
       pos += w;
       track.scrollLeft = pos;
@@ -1203,6 +1268,7 @@
       return;
     }
 
+    pauseAll(true);
     stepFrom = track.scrollLeft;
     stepTarget = target;
     stepStart = 0;
@@ -1309,7 +1375,7 @@
   // snap yanks the scroll back to a card every time it is written, and with
   // scroll-behavior inherited smooth the writes would queue animations against
   // each other. .is-drifting turns both off, the way .is-dragging already does.
-  const DRIFT_SPEED = 22;      // px per second
+  const DRIFT_SPEED = 26;      // px per second
   const DRIFT_DELAY = 1400;    // ms before it sets off, so the previews land first
   const DRIFT_RESUME = 900;    // ms after the pointer leaves
 
@@ -1323,12 +1389,53 @@
   let driftFrame = 0;
   let driftLast = 0;
   let driftPos = 0;            // the exact position, unrounded, carried between frames
+  let nudged = 0;              // the sub-pixel part of it, currently paid out on the cards
   let holdTimer = 0;
   let boxOpen = false;         // quick look, which must not resume behind itself
   let taken = false;           // the reader has stopped it; it does not come back on its own
 
   function driftable() {
     return !reduced.matches && loopable();
+  }
+
+  // scrollLeft is handed 0.43 of a pixel a frame at this speed, and its getter
+  // reports whole pixels — so read back, the rail looks frozen for two frames
+  // in three and then jumping a whole one. That reading is the getter's, not
+  // the rendering's: Chromium keeps the scroll offset fractional underneath,
+  // and a card's measured position there moves the full 0.43 every frame with
+  // none of this. Measured both ways on the same frame: rendered position 0%
+  // frozen, scrollLeft getter 63%.
+  //
+  // So this is here for the engine that does not, which is the one it was
+  // reported on and the one that cannot be checked from here — only Chromium
+  // is installed. scrollLeft takes the whole pixels and the remainder is paid
+  // out as a translate on the cards, where sub-pixel positions are what the
+  // compositor is for. On an engine that already renders the fraction it is a
+  // no-op that costs nothing measurable: 200 frames of drift on a throttled
+  // phone profile came back at the same 16.7ms median, 0 dropped against 1.
+  //
+  // `translate` rather than `transform`, because .piece already uses transform
+  // for its hover lift and the two compose independently instead of one
+  // clobbering the other.
+  function nudge(frac) {
+    nudged = frac;
+    const px = frac ? `${-frac}px` : '';
+    ring.forEach((el) => { el.style.translate = px; });
+  }
+
+  // Off, and off every card rather than only the ring's, so nothing is left
+  // holding a fraction after a filter change swapped the set underneath it.
+  // The rail moves by under a pixel when this lands, which is the point.
+  function unnudge() {
+    if (!nudged) return;
+    nudged = 0;
+    pieces().forEach((el) => { el.style.translate = ''; });
+  }
+
+  function place(pos) {
+    const whole = Math.floor(pos);
+    track.scrollLeft = whole;
+    nudge(pos - whole);
   }
 
   function driftTick(now) {
@@ -1352,18 +1459,16 @@
     // forced layout on every frame the rail drifts. Holding the exact position
     // ourselves keeps the rate just as honest and asks the browser nothing.
     driftPos += DRIFT_SPEED * dt;
-
-    // scrollLeft takes whole pixels and rounds the rest away, so at this speed
-    // it is handed 0.37 of one a frame and most frames it does not move at all.
-    // Carried as a float here so the rate stays honest across the rounding —
-    // what the rounding costs in smoothness is a separate question, and an
-    // open one: paying the fraction out as a translate instead fixes the
-    // motion exactly and doubles this page's dropped frames, because it moves
-    // the live thumbnails every frame rather than every third.
-    track.scrollLeft = driftPos;
+    place(driftPos);
 
     // The reason there is no longer anything to see at the end of the row.
-    driftPos += recycle(driftPos);
+    // A rotation moves the scroll by a card, and a card is not necessarily a
+    // whole number of pixels, so the split has to be taken again after it.
+    const shifted = recycle(driftPos);
+    if (shifted) {
+      driftPos += shifted;
+      place(driftPos);
+    }
   }
 
   function driftRun() {
@@ -1388,6 +1493,7 @@
     if (drift !== 'on') return;
     drift = 'held';
     cancelAnimationFrame(driftFrame);
+    unnudge();
     renderNav();
   }
 
@@ -1417,6 +1523,8 @@
     drift = 'off';
     if (byUser !== false) taken = true;
     track.classList.remove('is-drifting');
+    // Before the settle, so snap measures the cards where they actually are.
+    unnudge();
     if (wasRunning && settleAfter !== false) settle();
     syncDriftBtn();
     renderNav();
@@ -1566,6 +1674,7 @@
       // it, and it picks up again when that pointer leaves.
       driftStop(true, false);
       hush();
+      pauseAll(true);
       track.setPointerCapture(event.pointerId);
     }
     if (moved) {
@@ -1669,6 +1778,7 @@
     track.classList.add('is-dragging');
     driftStop(true, false);
     hush();
+    pauseAll(true);
   }, { passive: true });
 
   // Sampled off the scroll rather than off the touch, because the scroll is

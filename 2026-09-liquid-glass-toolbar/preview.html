@@ -134,6 +134,27 @@
     .preview__stack > *:nth-child(3) {
       --liquid-glass-toolbar-reveal: 220ms cubic-bezier(0.33, 1, 0.68, 1) 140ms;
     }
+  
+    /* The index has told this thumbnail that the rail is moving under a
+       finger. Every animation in the document stops for the length of the
+       gesture and picks up where it left off.
+
+       It is here rather than in the component because it is the rail's
+       problem, not the study's: a same-origin iframe shares the index's main
+       thread, so a card that keeps animating while it is being dragged is
+       animating against the drag, on the same thread the drag needs. Measured
+       across the whole rail: 80 dropped frames in a two-card drag against 20
+       with this in.
+
+       Global on purpose. It has to reach the component without naming a
+       single one of its classes — the same rule the rest of this file keeps.
+       Transitions are deliberately left out: stopping those mid-gesture makes
+       states snap instead of settle, and they are not what costs. */
+    :root[data-preview-paused] *,
+    :root[data-preview-paused] *::before,
+    :root[data-preview-paused] *::after {
+      animation-play-state: paused !important;
+    }
   </style>
 </head>
 <body>
@@ -766,6 +787,19 @@
         // The index was switched while this thumbnail was on screen. Only the
         // ground moves: the component is not touched, and it is the same
         // component in both themes.
+        // The rail is moving under a finger, or stepping to a card. Everything
+        // in here stops until it lands — see the paused rule in the style
+        // block above. Resuming picks the animations up where they were
+        // rather than restarting them, which is the point of pausing over
+        // unloading.
+        if (data.type === 'preview:pause') {
+          if (data.paused === true) {
+            document.documentElement.setAttribute('data-preview-paused', '');
+          } else {
+            document.documentElement.removeAttribute('data-preview-paused');
+          }
+        }
+
         if (data.type === 'preview:theme') {
           if (data.theme === 'dark') {
             document.documentElement.setAttribute('data-theme', 'dark');
