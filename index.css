@@ -239,12 +239,7 @@ body.is-locked {
    it. Positioned against the initial containing block rather than a wrapper,
    so it still hangs off the page's top-right corner; the masthead's own top
    padding is deeper than the cluster, which is what keeps it clear of the
-   eyebrow at every width.
-
-   It sits inside the eyebrow in the markup even so, because that is where it
-   lands on a phone — see the narrow block at the foot of this file. Nothing
-   between it and the initial containing block is positioned, so the nesting
-   costs the desktop placement nothing. */
+   eyebrow at every width. */
 .controls {
   position: absolute;
   top: clamp(1.25rem, 3vw, 2.25rem);
@@ -1835,27 +1830,20 @@ body.is-locked {
 }
 
 @media (max-width: 40rem) {
-  /* The two page controls come down into the masthead's own top line: the
-     site mark at the left of it, language and theme at the right. On a phone
-     the cluster floating above the header cost a line nothing else could use
-     — the header's 3.5rem of top padding existed to clear it — and on the one
-     screen where the fold is scarce that line is the first card's. Static, so
-     the eyebrow's own flex row places it; margin-left auto is what keeps the
-     two ends apart once it does. */
-  .controls {
-    position: static;
-    margin-left: auto;
-  }
+  /* The cluster keeps its own corner rather than joining the masthead's top
+     line, but it stops crowding it. At 1.25rem its bottom edge crossed the
+     site mark's cap line by six pixels — near-tangency, which reads as a
+     header that has come apart rather than as two things one above the other.
 
-  .head { padding-top: 2rem; }
+     So it drops a little and the masthead opens to meet it: the mark now has
+     the same air above it as below, 1.5rem either side, which is what makes
+     the offset read as placed rather than missed. The padding is that sum —
+     the cluster's inset, its touch-sized height (2.65rem), and the eyebrow's
+     own bottom margin. It costs 42px of the fold on a phone, which is the
+     price of the corner not being shared. */
+  .controls { top: 2rem; }
 
-  /* Sharing the line is what costs the tracking. 0.18em over seventeen
-     characters is 30px of pure letter-spacing, and at 320px the whole row is
-     272px wide with a 130px cluster already in it. */
-  .head__eyebrow {
-    gap: 0.5rem;
-    letter-spacing: 0.1em;
-  }
+  .head { padding-top: 6.125rem; }
 
   .foot__bar {
     flex-direction: column;
@@ -1869,22 +1857,6 @@ body.is-locked {
   }
 
   .rail__filter { padding-bottom: 0.625rem; }
-}
-
-/* The narrowest supported width, where the top line gets tight. At 320px the
-   row is 272px across and the control cluster takes 130 of it; the mark is
-   left with 105px for a word it draws in 131 at the size above, so it wraps
-   to two lines beside the logo. One step down in type, tracking and mark size
-   buys the 26px back — a smaller lockup on the smallest screen, rather than a
-   two-line one. */
-@media (max-width: 22.5rem) {
-  .head__eyebrow {
-    gap: 0.4rem;
-    font-size: 0.625rem;
-    letter-spacing: 0.05em;
-  }
-
-  .head__eyebrow .logo { --logo-size: 1.1rem; }
 }
 
 /* --- the switch itself -------------------------------------------------- */
