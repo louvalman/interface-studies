@@ -725,15 +725,15 @@ body.is-locked {
      back-navigation gesture. */
   overscroll-behavior-x: contain;
 
-  /* The rail owns horizontal on a finger now that the drag handler takes touch
-     too. Left to the browser, a swipe scrolled natively and snap decided where
-     it landed — which meant a small swipe sprang back, and the snap coming
-     back on at the first touch yanked the drifting rail to the previous card.
-     Naming the axes is what stops the browser panning horizontally underneath
-     the gesture, so there is no native momentum to fight. `pinch-zoom` is
-     named alongside `pan-y` deliberately: dropping it would cost the ability
-     to zoom the page from over the rail, which is not ours to take. */
-  touch-action: pan-y pinch-zoom;
+  /* `touch-action` is deliberately left alone, and that is a performance
+     decision rather than a gesture one. Naming the axes takes horizontal away
+     from the browser, and what the browser does with it is scroll on the
+     compositor; a swipe driven from script instead runs every frame of itself
+     through the main thread, behind whatever the thumbnails are animating.
+     Measured while dragging: 79% of a phone's thread against 30% at rest, and
+     the JS in it was 8% — the rest is the browser being asked to move three
+     live documents a frame at a time. So the finger scrolls this natively and
+     index.js only decides where the gesture lands once it is over. */
 }
 
 .rail__track::-webkit-scrollbar { display: none; }

@@ -523,8 +523,11 @@ The preview iframe carries its path in `data-src`, not `src`. Every card on the
 page is a live component — which is the point, and also what it costs: one
 thumbnail alone runs 289 dots on their own animations, on screen or not, and
 the rail drifts, so every card eventually arrives. `index.js` loads a preview
-when it comes within a card-width of the rail's scrollport and drops it again
-two card-widths past, so a long rail only ever has a handful alive. A card
+when it comes within a quarter of the rail's scrollport and drops it again
+three quarters past, so only what is on screen and its immediate neighbour is
+ever alive. Those margins are tight because an unseen preview is not a cheaper
+one: a same-origin iframe shares this page's main thread, so a thumbnail
+animating off screen costs what one under your eyes costs. A card
 whose preview has been dropped shows its skeleton, not an empty frame. This
 does mean no previews at all without JavaScript; the index already needs it for
 the rail's order, its numbers and its counts.

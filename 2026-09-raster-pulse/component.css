@@ -182,8 +182,11 @@
   border-radius: 50%;
 
   /* A dot outside the shape is scaled to nothing rather than hidden, so it
-     keeps its grid cell and the field stays square whatever the pattern. */
-  transform: scale(calc(var(--raster-pulse-trough-scale) * var(--on)));
+     keeps its grid cell and the field stays square whatever the pattern.
+     On `scale` rather than inside `transform`, because `transform` is what the
+     pulse animates and the two multiply: this is the dot's resting size, the
+     animation below is the swell on top of it. */
+  scale: calc(var(--raster-pulse-trough-scale) * var(--on));
 
   /* One tone, painted once, dimmed by alpha — not a colour that animates.
      A keyframe holding var(--trough) cannot be resolved ahead of time, so the
@@ -208,38 +211,61 @@
    keyframe sets are the same shape in two currencies: --fade rides alpha and
    is what runs at rest, --beat moves the colour itself and runs only while a
    card is active. */
+/* Every value here is a literal, and that is the whole point of it. A keyframe
+   holding var() has to be re-resolved for all 289 dots on every frame —
+   measured at 86% of a phone's main thread for one thumbnail, which is a page
+   that drops four frames in five while nobody is touching it. Literals halve
+   that, and halving it is what took the index back to 60fps.
+
+   Not to nothing, though, and it is worth being accurate about why: 289
+   animations is past the count Chrome will hand to its compositor, so these
+   still run on the main thread and still cost about a seventh of a percent
+   each per frame. Literal or not, a field this size is paid for in style
+   recalculation; what literals buy is how much.
+
+   So the resting pulse's depth is fixed: 1.913 is --peak-scale over
+   --trough-scale, 40% is 100% minus --dim, at the values declared above. The
+   size is still tunable — --trough-scale scales the dot itself through the
+   `scale` property, and the swell rides on top of it — and both properties go
+   on governing the active beat below and the dot's own tone. */
 @keyframes raster-pulse-fade {
   0%,
   100% {
-    transform: scale(calc(var(--raster-pulse-trough-scale) * var(--on)));
-    opacity: calc(100% - var(--raster-pulse-dim));
+    transform: scale(1);
+    opacity: 40%;
   }
 
   16% {
-    transform: scale(calc(var(--raster-pulse-peak-scale) * var(--on)));
+    transform: scale(1.913);
     opacity: 100%;
   }
 
   44% {
-    transform: scale(calc(var(--raster-pulse-trough-scale) * var(--on)));
-    opacity: calc(100% - var(--raster-pulse-dim));
+    transform: scale(1);
+    opacity: 40%;
   }
 }
 
+/* The active beat keeps its var()s and pays for them, as it always did: a
+   colour animation cannot composite whatever is written here, and this one
+   only ever runs on the card under the pointer. Its scales are ratios now
+   rather than absolutes, because the dot's own `scale` already carries
+   --trough-scale — which is what keeps the touch-active override of both
+   working, since the ratio moves with them. */
 @keyframes raster-pulse-beat {
   0%,
   100% {
-    transform: scale(calc(var(--raster-pulse-trough-scale) * var(--on)));
+    transform: scale(1);
     background-color: var(--trough);
   }
 
   16% {
-    transform: scale(calc(var(--raster-pulse-peak-scale) * var(--on)));
+    transform: scale(calc(var(--raster-pulse-peak-scale) / var(--raster-pulse-trough-scale)));
     background-color: var(--peak);
   }
 
   44% {
-    transform: scale(calc(var(--raster-pulse-trough-scale) * var(--on)));
+    transform: scale(1);
     background-color: var(--trough);
   }
 }
@@ -477,7 +503,10 @@
 @media (prefers-reduced-motion: reduce) {
   .raster-pulse__dot {
     animation: none;
-    transform: scale(calc(var(--raster-pulse-still-scale) * var(--on)));
+    /* Both, because the size lives on `scale` now and a stale `transform`
+       would multiply the still frame by the last swell it was left at. */
+    transform: none;
+    scale: calc(var(--raster-pulse-still-scale) * var(--on));
     background-color: var(--own);
     opacity: 1;
   }

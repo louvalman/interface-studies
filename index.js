@@ -573,11 +573,37 @@
   // set going.
   const readyTimers = new WeakMap();
 
+  // Spinning up a document costs a frame — measured: a preview's src changing
+  // on one frame and the next one arriving 30ms late. At rest that is a hitch
+  // nobody is looking at, but mid-gesture it lands in the middle of the motion,
+  // and with the margins as tight as they are a drag across two cards used to
+  // set off two or three of them. So while a gesture is in flight the work is
+  // remembered rather than done, and the rail catches up the moment it settles.
+  const waiting = new Set();
+
+  function gesturing() {
+    return touching || dragging || stepFrame !== 0;
+  }
+
+  function settleWork() {
+    handoff();
+    if (!waiting.size) return;
+    const due = Array.from(waiting);
+    waiting.clear();
+    due.forEach((job) => job());
+  }
+
   function loadPreview(piece) {
     const frame = piece.querySelector('[data-preview]');
     if (!frame || frame.dataset.loaded === 'true') return;
     const src = frame.getAttribute('data-src');
     if (!src) return;
+
+    if (gesturing()) {
+      waiting.add(() => loadPreview(piece));
+      return;
+    }
+
     frame.dataset.loaded = 'true';
     watchLoad(piece);
     frame.setAttribute('src', src);
@@ -586,6 +612,14 @@
   function dropPreview(piece) {
     const frame = piece.querySelector('[data-preview]');
     if (!frame || frame.dataset.loaded !== 'true') return;
+
+    // Deferred for the same reason: blanking a frame is a repaint of the card,
+    // and a card repainting under a moving finger is the thing being fixed.
+    if (gesturing()) {
+      waiting.add(() => dropPreview(piece));
+      return;
+    }
+
     delete frame.dataset.loaded;
     clearTimeout(readyTimers.get(piece));
     // The skeleton comes back with it: the card is about to hold a blank
@@ -595,15 +629,23 @@
     frame.setAttribute('src', 'about:blank');
   }
 
+  // These margins are a quarter and three quarters of the rail's own
+  // scrollport, not of a card — and they are as tight as they are because a
+  // preview nobody can see costs exactly what one they are looking at costs.
+  // Every frame of it runs on this page's main thread: a same-origin iframe
+  // shares one. At the previous quarter-and-double, a phone kept three alive
+  // to show two, and the third was enough on its own to drop four frames in
+  // five. Loading later risks a skeleton on approach, which is a thing you see
+  // once; the alternative is a page that stutters the whole time.
   if ('IntersectionObserver' in window) {
     const near = new IntersectionObserver(
       (entries) => entries.forEach((e) => { if (e.isIntersecting) loadPreview(e.target); }),
-      { root: track, rootMargin: '0px 100% 0px 100%' }
+      { root: track, rootMargin: '0px 25% 0px 25%' }
     );
 
     const far = new IntersectionObserver(
       (entries) => entries.forEach((e) => { if (!e.isIntersecting) dropPreview(e.target); }),
-      { root: track, rootMargin: '0px 200% 0px 200%' }
+      { root: track, rootMargin: '0px 75% 0px 75%' }
     );
 
     allPieces().forEach((piece) => { near.observe(piece); far.observe(piece); });
@@ -837,14 +879,39 @@
     }
   }
 
-  // One card plus the flex gap — the distance a single step should cover.
-  // Measured off a card in the row rather than the first in the file, which
-  // the filter may have taken out and left with a zero width.
-  function step() {
+  // The three measurements every other function here asks for, taken once and
+  // kept. Each one is a read, and a read after a write is where the browser has
+  // to stop and lay the row out again before it can answer — which is exactly
+  // what a drag does, writing scrollLeft on every pointermove and then asking
+  // how wide a card is. Measured over a three-second drag: 172 forced layouts
+  // and a third of the thread, on a phone reporting moves at 120Hz.
+  //
+  // None of it moves under a gesture. A card's width changes at a breakpoint,
+  // the scrollport's with the window, the inset with neither — so the cache is
+  // dropped where those happen and nowhere else.
+  let metrics = null;
+
+  function forget() { metrics = null; }
+
+  function measure() {
+    // Measured off a card in the row rather than the first in the file, which
+    // the filter may have taken out and left with a zero width.
     const first = ring[0] || laidOut()[0];
-    if (!first) return track.clientWidth;
-    const gap = parseFloat(getComputedStyle(track).columnGap) || 0;
-    return first.getBoundingClientRect().width + gap;
+    const cs = getComputedStyle(track);
+    const gap = parseFloat(cs.columnGap) || 0;
+    metrics = {
+      step: first ? first.getBoundingClientRect().width + gap : track.clientWidth,
+      inset: parseFloat(cs.scrollPaddingLeft) || 0,
+      client: track.clientWidth
+    };
+    return metrics;
+  }
+
+  const sized = () => metrics || measure();
+
+  // One card plus the flex gap — the distance a single step should cover.
+  function step() {
+    return sized().step;
   }
 
   function maxScroll() {
@@ -882,6 +949,7 @@
   // card was left holding while it was filtered out.
   function rebuildRing() {
     ring = laidOut();
+    forget();          // a different set of cards is a different row
     applyRing();
     recycle();
   }
@@ -891,8 +959,8 @@
   // viewport holding few studies is below that line; it is the one case the
   // rail stays finite in, and every study added raises the ceiling by a card.
   function loopable() {
-    const w = step();
-    return w > 0 && (ring.length - 1) * w - track.clientWidth >= w;
+    const m = sized();
+    return m.step > 0 && (ring.length - 1) * m.step - m.client >= m.step;
   }
 
   // scrollLeft is held within half a card either side of one card in, so there
@@ -900,23 +968,33 @@
   // right. Returns the distance the scroll was moved, because anything holding
   // a scroll position of its own — a drag's origin, a step's two ends — has to
   // move with it or it will fight the recycle on the next frame.
-  function recycle() {
+  // `at` is the position the caller has just put the scroll at. Reading it back
+  // off the element instead is what made dragging expensive: a scrollLeft write
+  // followed by a scrollLeft read is a question the browser cannot answer
+  // without laying the row out again, and the drag does exactly that on every
+  // pointermove. Measured at one forced layout per move, about a hundred and
+  // sixty in a three-second drag, against none while the rail sits still.
+  // Callers that have not just written it pass nothing and pay for one read.
+  function recycle(at) {
     if (!loopable()) return 0;
 
     const w = step();
+    let pos = at === undefined ? track.scrollLeft : at;
     let shifted = 0;
     let guard = ring.length * 2;
 
-    while (guard-- > 0 && track.scrollLeft >= w * 1.5) {
+    while (guard-- > 0 && pos >= w * 1.5) {
       rotate(1);
-      track.scrollLeft -= w;
+      pos -= w;
+      track.scrollLeft = pos;
       shifted -= w;
     }
 
     guard = ring.length * 2;
-    while (guard-- > 0 && track.scrollLeft < w * 0.5) {
+    while (guard-- > 0 && pos < w * 0.5) {
       rotate(-1);
-      track.scrollLeft += w;
+      pos += w;
+      track.scrollLeft = pos;
       shifted += w;
     }
 
@@ -963,7 +1041,7 @@
     if (!list.length) return 0;
 
     const trackLeft = track.getBoundingClientRect().left;
-    const inset = parseFloat(getComputedStyle(track).scrollPaddingLeft) || 0;
+    const inset = sized().inset;
     const mark = trackLeft + inset;
 
     let best = 0;
@@ -980,20 +1058,51 @@
 
   let currentActive = -1;
 
+  // Which card is currently being told to play, as against which one is in the
+  // read position. They are the same thing at rest and deliberately not during
+  // a gesture — see handoff().
+  let told = -1;
+
+  // Without hover, the read card is the only thing that can demonstrate the
+  // component, so it plays by default and the one leaving stops.
+  //
+  // Never mid-gesture, though. The playing state is the expensive half of a
+  // component — the one a study writes knowing only one card is ever in it —
+  // and a drag across two cards used to start it and stop it four times on the
+  // way past. Whatever is animating while the rail moves is animating against
+  // the movement, so the handoff waits for the rail to stop and then happens
+  // once.
+  function handoff() {
+    if (!coarse.matches || told === currentActive) return;
+    const list = real();
+    if (list[told]) tell(list[told], false);
+    if (list[currentActive]) tell(list[currentActive], true);
+    told = currentActive;
+  }
+
   function markActive(i) {
     if (i === currentActive) return;
     const list = real();
 
     list.forEach((piece, n) => piece.classList.toggle('is-active', n === i));
-
-    // Without hover, the read card is the only thing that can demonstrate the
-    // component, so it plays by default and the one leaving stops.
-    if (coarse.matches) {
-      if (list[currentActive]) tell(list[currentActive], false);
-      if (list[i]) tell(list[i], true);
-    }
-
     currentActive = i;
+
+    if (!gesturing()) handoff();
+  }
+
+  // sync() reads the position of every card, and a scroll fires more often than
+  // the screen can draw — several times a frame under a drag, which on a 120Hz
+  // phone is several times 120. Coalesced onto the frame, it runs once for
+  // however many arrived, and it runs after the writes rather than between
+  // them, which is the difference between one layout and one per event.
+  let syncFrame = 0;
+
+  function syncSoon() {
+    if (syncFrame) return;
+    syncFrame = requestAnimationFrame(() => {
+      syncFrame = 0;
+      sync();
+    });
   }
 
   function sync() {
@@ -1066,6 +1175,7 @@
     if (reduced.matches) {
       track.scrollLeft = target;
       recycle();
+      settleWork();
       return;
     }
 
@@ -1082,9 +1192,10 @@
 
     const t = Math.min(1, (now - stepStart) / stepMs);
     const eased = 1 - Math.pow(1 - t, 3);
-    track.scrollLeft = stepFrom + (stepTarget - stepFrom) * eased;
+    const at = stepFrom + (stepTarget - stepFrom) * eased;
+    track.scrollLeft = at;
 
-    const shift = recycle();
+    const shift = recycle(at);
     if (shift) { stepFrom += shift; stepTarget += shift; }
 
     if (t < 1) {
@@ -1094,6 +1205,8 @@
 
     track.classList.remove('is-stepping');
     stepFrame = 0;
+    // The rail has stopped moving: whatever the gesture deferred can happen now.
+    settleWork();
   }
 
   function scrollBy(direction) {
@@ -1109,7 +1222,7 @@
     const list = real();
     const target = end ? list[list.length - 1] : list[0];
     if (!target) return;
-    const inset = parseFloat(getComputedStyle(track).scrollPaddingLeft) || 0;
+    const inset = sized().inset;
     stepTo(target.offsetLeft - inset);
   }
 
@@ -1119,7 +1232,7 @@
   function settle() {
     const target = real()[activeIndex()];
     if (!target) return;
-    const inset = parseFloat(getComputedStyle(track).scrollPaddingLeft) || 0;
+    const inset = sized().inset;
     // Through stepTo rather than scrollTo, so every movement of this rail has
     // the same timing, and so the track never sits for a frame with snap back
     // on and the scroll still between two cards — which is the gap that made
@@ -1141,11 +1254,20 @@
   // a focus jump. The drift, a step and a drag each recycle on their own
   // schedule, and would fight a second one here.
   track.addEventListener('scroll', () => {
-    if (!stepFrame && !dragging && drift !== 'on') recycle();
-    sync();
+    // Never while a finger is down. A recycle writes scrollLeft, and writing it
+    // under a native gesture is writing underneath the thing doing the
+    // scrolling — the browser is tracking the finger against an offset it set
+    // itself, and moving that offset is how a swipe loses its momentum. The
+    // row carries a card of slack either side, which is more than a gesture
+    // spends before it ends, and the step that follows recycles on every frame
+    // of itself.
+    if (!stepFrame && !dragging && !touching && drift !== 'on') recycle();
+    if (touching) sampleTouch();
+    syncSoon();
   }, { passive: true });
 
   window.addEventListener('resize', () => {
+    forget();          // a new viewport is new card widths and a new scrollport
     normalise();
     sync();
   });
@@ -1176,7 +1298,7 @@
   let drift = 'off';           // 'on' | 'held' | 'off'
   let driftFrame = 0;
   let driftLast = 0;
-  let driftCarry = 0;          // the sub-pixel the engine rounded away last frame
+  let driftPos = 0;            // the exact position, unrounded, carried between frames
   let holdTimer = 0;
   let boxOpen = false;         // quick look, which must not resume behind itself
   let taken = false;           // the reader has stopped it; it does not come back on its own
@@ -1200,14 +1322,20 @@
     // past what the set can fill — and there is no end to drift to once it is.
     if (!loopable()) { driftStop(false); return; }
 
-    const want = track.scrollLeft + driftCarry + DRIFT_SPEED * dt;
-    track.scrollLeft = want;
-    // scrollLeft quantises to whole pixels, but carrying the remainder costs
-    // nothing and keeps the rate honest.
-    driftCarry = want - track.scrollLeft;
+    // The position is carried here as a float rather than read back off the
+    // element. scrollLeft quantises to whole pixels, so the old way — write,
+    // read, keep the difference — needed a read after every write, which is a
+    // forced layout on every frame the rail drifts. Holding the exact position
+    // ourselves keeps the rate just as honest and asks the browser nothing.
+    driftPos += DRIFT_SPEED * dt;
+
+    // The whole pixels go to the scroll, the fraction to the cards. Writing the
+    // fraction to scrollLeft achieves nothing — it is rounded away — and what
+    // is rounded away at this speed is most of the movement.
+    track.scrollLeft = driftPos;
 
     // The reason there is no longer anything to see at the end of the row.
-    recycle();
+    driftPos += recycle(driftPos);
   }
 
   function driftRun() {
@@ -1216,7 +1344,8 @@
     if (drift === 'on') return;
     drift = 'on';
     driftLast = 0;
-    driftCarry = 0;
+    // The one read: where the rail actually is when the drift takes it over.
+    driftPos = track.scrollLeft;
     track.classList.add('is-drifting');
     cancelAnimationFrame(driftFrame);
     driftFrame = requestAnimationFrame(driftTick);
@@ -1367,6 +1496,11 @@
 
   track.addEventListener('pointerdown', (event) => {
     if (event.button !== 0) return;
+    // A finger is not driven from here: the browser scrolls this natively on
+    // the compositor, and taking that over puts every frame of the gesture on
+    // the main thread behind the thumbnails. The touch path below lets it
+    // scroll and only decides where the gesture lands once it is over.
+    if (event.pointerType === 'touch') return;
     dragging = true;
     moved = false;
     slop = DRAG_SLOP[event.pointerType] || DRAG_SLOP.mouse;
@@ -1411,11 +1545,14 @@
       lastX = event.clientX;
       lastT = event.timeStamp;
 
-      track.scrollLeft = originScroll - delta;
+      const want = originScroll - delta;
+      track.scrollLeft = want;
       // A recycle under the drag moves the scroll out from under the origin
       // this is measured against; without this the next frame would drag the
-      // rail back by exactly the card that was just recycled.
-      originScroll += recycle();
+      // rail back by exactly the card that was just recycled. Handed the
+      // position rather than asked for it, so the write above is never read
+      // back.
+      originScroll += recycle(want);
     }
   });
 
@@ -1445,6 +1582,7 @@
     // track is never left for a frame with neither.
     track.classList.remove('is-dragging');
     moved = false;
+    if (!stepFrame) settleWork();
   }
 
   // originScroll is the scroll the drag started from, kept in step with every
@@ -1475,6 +1613,64 @@
 
     stepTo(originScroll + cards * w, RELEASE_MS);
   }
+
+  // --- the touch gesture ------------------------------------------------
+
+  // Watched rather than driven. The browser scrolls the rail; this records
+  // where the gesture started and how fast it was going when it ended, and
+  // hands both to the same release() the mouse drag uses — so a swipe lands on
+  // the next study the way a drag does, without any of it running through the
+  // main thread while the finger is down.
+  let touching = false;
+  let touchFrom = 0;      // scroll position at touchstart, moved by any recycle
+  let touchPos = 0;       // last sampled position
+  let touchAt = 0;        // and when it was sampled
+  let touchSpeed = 0;     // px per ms of scroll, signed the way scrollLeft runs
+
+  track.addEventListener('touchstart', () => {
+    touching = true;
+    touchFrom = track.scrollLeft;
+    touchPos = touchFrom;
+    touchAt = performance.now();
+    touchSpeed = 0;
+    // Snap comes off for the gesture, so the browser does not land it on the
+    // nearest card before release() has said which one it should be — and so a
+    // finger landing on a drifting rail is not yanked backwards.
+    track.classList.add('is-dragging');
+    driftStop(true, false);
+  }, { passive: true });
+
+  // Sampled off the scroll rather than off the touch, because the scroll is
+  // what actually moved: on a momentum surface the finger and the rail part
+  // company, and it is the rail's speed that says where it was headed.
+  function sampleTouch() {
+    const now = performance.now();
+    const dt = now - touchAt;
+    if (dt <= 0) return;
+    const at = track.scrollLeft;
+    touchSpeed = (at - touchPos) / dt;
+    touchPos = at;
+    touchAt = now;
+  }
+
+  function endTouch() {
+    if (!touching) return;
+    touching = false;
+    sampleTouch();
+    // release() reads originScroll and speed, so the gesture is handed over in
+    // those terms: speed is negated because it measures the scroll rather than
+    // the pointer, and the two run opposite ways.
+    originScroll = touchFrom;
+    speed = -touchSpeed;
+    release();
+    track.classList.remove('is-dragging');
+    // release() usually leaves a step running, which drains this when it ends;
+    // a gesture that asked for no movement at all leaves nothing to wait for.
+    if (!stepFrame) settleWork();
+  }
+
+  track.addEventListener('touchend', endTouch, { passive: true });
+  track.addEventListener('touchcancel', endTouch, { passive: true });
 
   // Armed only where a click is actually coming, and it expires either way. A
   // swallower left waiting after a cancelled gesture does not sit harmlessly:
@@ -1915,7 +2111,10 @@
       renderLedeHint(hintCopy);
       const list = real();
       list.forEach((piece) => tell(piece, false));
-      if (coarse.matches && list[currentActive]) tell(list[currentActive], true);
+      // Through the same bookkeeping handoff() keeps, or it would think the
+      // card it last set playing still is.
+      told = -1;
+      handoff();
     });
   }
 

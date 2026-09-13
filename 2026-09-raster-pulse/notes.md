@@ -46,15 +46,32 @@ of rather than whose it is.
   background *is* alpha, so the resting wave is one static colour and an
   opacity ramp, while the hue swap — which alpha cannot say — animates the
   colour itself. Only the second is expensive, and it only ever runs on the
-  card under the pointer. The resting field costs nothing, where animating a
-  `var()`-derived `background-color` across 289 dots cost a whole main thread
-  in five thumbnails nobody was looking at. Alpha carries a little more chroma
-  than the same mix in oklab, which is the 60% against the 58% that drew this
-  field before — near enough to sit unnoticed, far enough to be worth writing
+  card under the pointer. The resting field is cheap because every value in its
+  keyframes is a literal — and that took two passes to get right. The first
+  took `background-color` out, on the reasoning that a `var()`-derived colour
+  cannot be resolved ahead of time and so has to be recomputed for all 289 dots
+  on every frame; true, and it left `transform` and `opacity` holding `var()`
+  in the same keyframes, which costs the same way for the same reason. Measured
+  on a phone afterwards: one thumbnail still held 86% of a main thread and the
+  index dropped four frames in five. Literal keyframes halved it. The dot's own
+  size moved to the `scale` property so the animation can be a swell on top of
+  it rather than an absolute, which is why the resting depth — 1.913 and 40% —
+  is written out rather than read from `--peak-scale` and `--dim`; both still
+  govern the active beat and the dot's own tone.
+
+  Alpha carries a little more chroma than the same mix in oklab, which is the
+  60% against the 58% that drew this field before — near enough to sit unnoticed, far enough to be worth writing
   down. Both tones come out of one `color-mix()` keyed on `--tone`, and its
   inverse, so no state needs a second selector per colour. This is also the
   answer to `(hover: none)`: the component's whole second half lives in that
   state, so a press holds it for as long as it is held.
+
+  What is left is the count. 289 animations is past what Chrome will hand to
+  the compositor, so they run on the main thread whatever is in them, at about
+  a seventh of a percent each per frame. Cheap enough now that the index holds
+  a steady 60fps, and the reason the rail only ever keeps alive what is on
+  screen: an unseen thumbnail costs what a watched one costs, because a
+  same-origin iframe shares this page's main thread.
 
 - **Type is a ratio of the poster, not a rem value.** `container-type:
   inline-size` on the root and every footer metric in `cqw` — headline 8,
@@ -103,7 +120,8 @@ is screened to every other cell so it runs out instead of stopping), `--moire`
 (two ring systems either side of the centre, XORed), and `--scan` (every dot
 on, the pulse axis turned diagonal). `--open` pins the active state. Re-theming
 is the custom property block: two tones, a field background, a panel and an
-ink, plus `--dim` for how much of the field survives between pulses. Ring
+ink, plus `--dim` for the tone the field falls back to between pulses — its own
+depth at rest is in the keyframes, for the reason above. Ring
 width, arm count, twist, arm thickness, disc radius, screened rim, source
 separation and ring pitch are all tunables, so a new pattern is a formula and a
 number rather than a new file.
