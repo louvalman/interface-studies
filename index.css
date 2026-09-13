@@ -507,7 +507,12 @@ body.is-locked {
 
 .rail__bar {
   display: flex;
-  align-items: flex-end;
+  /* Centred, not flex-end. The count is a 13px line of mono and the controls
+     are 44px circles, so bottom-aligning them put the label's optical centre
+     15.5px below theirs — measured — and the row read as two things at two
+     heights rather than one bar. Nothing else in the bar sits on a baseline
+     worth sharing, so the centre is the line. */
+  align-items: center;
   justify-content: space-between;
   gap: 1.5rem;
   padding: 0 var(--gutter) 1.25rem;
