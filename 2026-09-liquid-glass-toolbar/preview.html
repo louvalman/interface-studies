@@ -5,26 +5,32 @@
   A deviation from the usual "one instance, no second copy", and a deliberate
   one: what this study offers is one surface that changes shape, and a component
   whose argument is a transition cannot make it standing still in a single frame.
-  So the card is one bar, in the material it ships in, at three points in its own
-  behaviour — at rest on Origin, with the search field open, with the log panel
-  open — and the variant dots step into one of them at full size, where a panel
-  has room to be read rather than recognised. No captions and no state labels
-  either way: the states are the picture.
+  So the card is one bar, in the material it ships in, at the two points in its
+  behaviour that cannot be guessed from a picture of the other — the search field
+  open, and the log panel open. The variant dots step into one state at full
+  size, where a panel has room to be read rather than recognised. No captions and
+  no state labels either way: the states are the picture.
+
+  Two, and the sheet dropped to get there is the resting bar. It was the one a
+  reader could already infer: both of the others are visibly a bar that has
+  opened, so the closed one is implied by either of them, while a field where an
+  icon was and a panel unfolding out of the same corner are implied by nothing.
+  Three sheets ran 488px of the 600px frame with 56px of air and a silhouette
+  that grew downward; two run 394px with 103px, and the pair reads as one surface
+  shown twice rather than as a row of specimens. Origin is still a dot — see the
+  note on VARIANTS at the foot of the file.
 
   States rather than the material set, which is what this card showed first. Six
-  bars at rest filled 492px of the 600px frame with six near-identical rows, and
+  bars at rest filled 492px of the frame with six near-identical rows, and
   cutting it to three tints fixed the density while leaving the card answering
-  the wrong question — six tints of one bar say what the component is made of,
-  and a rail of thumbnails is asking what it does. The six are still in
-  component.css and still shown in demo.html, which is the page enumerating a
-  palette. What it costs: the bar is 62px and the open panel is 300px, so the
-  stack is bottom-heavy at rest, a triangle growing downward. That reads as the
-  escalation it is.
+  the wrong question — tints of one bar say what the component is made of, and a
+  rail of thumbnails is asking what it does. The six are still in component.css
+  and still shown in demo.html, which is the page enumerating a palette.
 
   Kept in step with component.html by hand: each sheet below is that file's
-  markup, unedited apart from its aria-label. The material class is gone from all
-  three — every sheet is the default now, and what separates them is the state
-  the script dresses them in.
+  markup, unedited apart from its aria-label. The material class is gone from
+  both — each sheet is the default, and what separates them is the state the
+  script dresses them in.
 -->
 <html lang="en">
 <head>
@@ -135,9 +141,6 @@
     .preview__stack > *:nth-child(2) {
       --liquid-glass-toolbar-reveal: 220ms cubic-bezier(0.33, 1, 0.68, 1) 70ms;
     }
-    .preview__stack > *:nth-child(3) {
-      --liquid-glass-toolbar-reveal: 220ms cubic-bezier(0.33, 1, 0.68, 1) 140ms;
-    }
   
     /* The index has told this thumbnail that the rail is moving under a
        finger. Every animation in the document stops for the length of the
@@ -164,168 +167,6 @@
 <body>
   <div class="preview__stack" data-stack>
 
-      <nav class="liquid-glass-toolbar" aria-label="Primary">
-        <div class="liquid-glass-toolbar__shell">
-
-          <div class="liquid-glass-toolbar__bar">
-
-            <a class="liquid-glass-toolbar__action" href="#" aria-current="page">
-              <span class="liquid-glass-toolbar__icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
-                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <circle cx="12" cy="12" r="7.2" />
-                  <circle cx="12" cy="12" r="1.9" fill="currentColor" stroke="none" />
-                </svg>
-              </span>
-              <span class="liquid-glass-toolbar__reveal">
-                <span class="liquid-glass-toolbar__label">Origin</span>
-              </span>
-            </a>
-
-            <!-- The search item is a <label>, so a click anywhere on the icon focuses
-                 the input and `:focus-within` opens the field. No JavaScript decides
-                 this one. -->
-            <label class="liquid-glass-toolbar__action liquid-glass-toolbar__action--search">
-              <span class="liquid-glass-toolbar__icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
-                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <circle cx="10.4" cy="10.4" r="6.4" />
-                  <path d="M15.2 15.2 20 20" />
-                </svg>
-              </span>
-              <span class="liquid-glass-toolbar__reveal">
-                <input class="liquid-glass-toolbar__input" type="text"
-                       placeholder="Search…" aria-label="Search" />
-              </span>
-            </label>
-
-            <a class="liquid-glass-toolbar__action" href="#" aria-current="false">
-              <span class="liquid-glass-toolbar__icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
-                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <rect x="3.4" y="4.4" width="17.2" height="6.2" rx="1.7" />
-                  <rect x="3.4" y="13.4" width="17.2" height="6.2" rx="1.7" />
-                  <path d="M9.9 7.5h4.2M9.9 16.5h4.2" />
-                </svg>
-              </span>
-              <span class="liquid-glass-toolbar__reveal">
-                <span class="liquid-glass-toolbar__label">Versions</span>
-              </span>
-            </a>
-
-            <button class="liquid-glass-toolbar__action liquid-glass-toolbar__action--panel"
-                    type="button" aria-expanded="false">
-              <span class="liquid-glass-toolbar__icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
-                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M4.8 4.8v14.4" />
-                  <path d="M9.2 8h10M9.2 12h7M9.2 16h8.8" />
-                </svg>
-                <span class="liquid-glass-toolbar__badge" aria-hidden="true"></span>
-              </span>
-              <span class="liquid-glass-toolbar__reveal">
-                <span class="liquid-glass-toolbar__label">Log</span>
-              </span>
-            </button>
-
-            <a class="liquid-glass-toolbar__action liquid-glass-toolbar__action--trailing" href="#" aria-current="false">
-              <span class="liquid-glass-toolbar__icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
-                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <path d="M3.6 8.2h5.6M14.8 8.2h5.6" />
-                  <circle cx="12" cy="8.2" r="2.5" />
-                  <path d="M3.6 15.8h2.6M11.8 15.8h8.6" />
-                  <circle cx="9" cy="15.8" r="2.5" />
-                </svg>
-              </span>
-              <span class="liquid-glass-toolbar__reveal">
-                <span class="liquid-glass-toolbar__label">Display</span>
-              </span>
-            </a>
-
-          </div>
-
-          <!-- The panel is inside the same glass surface as the bar. Opening it does
-               not slide a second sheet out from underneath — the one surface changes
-               shape. -->
-          <div class="liquid-glass-toolbar__panel">
-            <ul class="liquid-glass-toolbar__feed">
-
-              <li>
-                <a class="liquid-glass-toolbar__row liquid-glass-toolbar__row--unread" href="#">
-                  <span class="liquid-glass-toolbar__chip">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
-                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                      <path d="M4.6 7.4h14.8" stroke-width="2.8" />
-                      <path d="M4.6 13h9.6" stroke-width="1.8" />
-                      <path d="M4.6 17.6h5.8" stroke-width="1.2" />
-                    </svg>
-                  </span>
-                  <span class="liquid-glass-toolbar__line">
-                    <strong class="liquid-glass-toolbar__topic">Type</strong>
-                    48/16 pair, label at 11px
-                  </span>
-                  <span class="liquid-glass-toolbar__time">2m</span>
-                </a>
-              </li>
-
-              <li>
-                <a class="liquid-glass-toolbar__row liquid-glass-toolbar__row--unread" href="#">
-                  <span class="liquid-glass-toolbar__chip">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
-                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                      <circle cx="12" cy="12" r="7.4" />
-                      <path d="M12 4.6a7.4 7.4 0 0 1 0 14.8z" fill="currentColor" stroke="none" />
-                    </svg>
-                  </span>
-                  <span class="liquid-glass-toolbar__line">
-                    <strong class="liquid-glass-toolbar__topic">Tint</strong>
-                    28% over an 8px blur
-                  </span>
-                  <span class="liquid-glass-toolbar__time">14m</span>
-                </a>
-              </li>
-
-              <li>
-                <a class="liquid-glass-toolbar__row" href="#">
-                  <span class="liquid-glass-toolbar__chip">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
-                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                      <path d="M5.6 5.6v12.8M18.4 5.6v12.8" />
-                      <path d="M8.6 12h6.8" />
-                      <path d="M10.4 10.2 8.6 12l1.8 1.8M13.6 10.2 15.4 12l-1.8 1.8" />
-                    </svg>
-                  </span>
-                  <span class="liquid-glass-toolbar__line">
-                    <strong class="liquid-glass-toolbar__topic">Spacing</strong>
-                    8px rhythm, 4px at the label
-                  </span>
-                  <span class="liquid-glass-toolbar__time">1h</span>
-                </a>
-              </li>
-
-              <li>
-                <a class="liquid-glass-toolbar__row" href="#">
-                  <span class="liquid-glass-toolbar__chip">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
-                         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                      <path d="M3.9 20.1V10.2A6.3 6.3 0 0 1 10.2 3.9H20.1" />
-                      <path d="M3.9 9.1V3.9h5.2" stroke-opacity="0.42" />
-                    </svg>
-                  </span>
-                  <span class="liquid-glass-toolbar__line">
-                    <strong class="liquid-glass-toolbar__topic">Radius</strong>
-                    12% of the tile, not 12px
-                  </span>
-                  <span class="liquid-glass-toolbar__time">3h</span>
-                </a>
-              </li>
-
-            </ul>
-          </div>
-
-        </div>
-      </nav>
       <nav class="liquid-glass-toolbar" aria-label="Primary, search open">
         <div class="liquid-glass-toolbar__shell">
 
@@ -680,32 +521,46 @@
       var lead = sheets[0];
 
       /*
-        The three states the stack holds, one per sheet, in the order the sheets
-        are in the markup. This is what the card is: one bar, the material it
-        ships in, photographed at three points in its own behaviour — at rest on
-        Origin, with the search field open, and with the log panel open. It used
-        to be one state in six materials, which showed what the component is
-        made of and nothing about what it does.
+        Every state this preview can show, and REST is the component's own: the
+        bar sitting on Origin with nothing open.
 
         `current` is an index into the sheet's items that carry `aria-current`;
         null means none of them is the current place, because the sheet is
         morphing and the label belongs to the morph.
       */
-      var STATES = [
-        { id: 'origin', label: 'Origin', current: 0, classes: [] },
-        { id: 'search', label: 'Search', current: null, classes: ['searching'] },
-        { id: 'log', label: 'Log', current: null, classes: ['open'] }
-      ];
+      var REST = { id: 'origin', label: 'Origin', current: 0, classes: [] };
+      var SEARCH = { id: 'search', label: 'Search', current: null, classes: ['searching'] };
+      var LOG = { id: 'log', label: 'Log', current: null, classes: ['open'] };
 
       /*
-        First entry is the resting state, and it is what the card shows: the
-        three states stacked. The rest step into one sheet at full size, which is
-        where a panel has the room to be read rather than just recognised. The
-        dots are the same three states plus the stack, so nothing quick look can
-        reach is absent from the card and nothing on the card is unreachable.
+        What the stack holds, one per sheet, in the order the sheets are in the
+        markup. Two rather than three, and the one dropped is the resting bar:
+        it is the state a reader can already infer from either of the other two,
+        because both of them are visibly a bar that has opened. Search and log
+        are the two that are not inferable from anything — a field where an icon
+        was, and a panel unfolding out of the same corner — and they are the
+        study.
+
+        Keeping the rest sheet cost the card its balance. Three sheets ran 488px
+        of the 600px frame with 56px of air; two run 394px with 103px, and the
+        pair reads as one surface shown twice rather than as a row of specimens.
+      */
+      var STATES = [SEARCH, LOG];
+
+      /*
+        First entry is the resting state of the *card*, and it is what the
+        thumbnail shows: the two states stacked. The rest step into one sheet at
+        full size, which is where a panel has the room to be read rather than
+        just recognised.
+
+        Origin is in this list and not in the stack, which is the one asymmetry
+        here and is deliberate. Quick look is the full-size viewer, and the bar
+        the component actually ships as is worth being able to see in it; the
+        card is 336px wide and has to spend its rows on what cannot be inferred.
+        The contract asks only that the first entry be what the thumbnail shows.
       */
       var VARIANTS = [{ id: 'states', label: 'States', stack: true }].concat(
-        STATES.map(function (st) {
+        [REST, SEARCH, LOG].map(function (st) {
           return { id: st.id, label: st.label, stack: false, state: st };
         })
       );
@@ -791,20 +646,21 @@
         re-dressed on the way back in.
 
         Hover rotates the assignment by one rather than morphing a sheet into a
-        state the stack is already showing. The card at rest is three endpoints;
+        state the stack is already showing. The card at rest is two endpoints;
         what it cannot say standing still is that they are the *same surface*
-        changing shape rather than three components in a row, and one rotation
-        says it — every sheet moves at once, each along the leg the sheet below
-        it was already holding, so the states are unchanged and only which sheet
-        wears which has moved. The stagger in the style block spends 70ms a row
-        on it, which turns the rotation into a roll down the stack.
+        changing shape rather than two components in a row, and one rotation
+        says it. With two states the rotation is a swap: the sheet holding the
+        field opens its panel, the sheet holding the panel closes into the
+        field, and they trade places without either state leaving the frame. The
+        stagger in the style block spends 70ms on the lower row, so the two do
+        not move in lockstep.
 
         It costs the stack's height nothing over the move: the panel closing on
-        one sheet is the panel opening on another, and the two cross. What the
+        one sheet is the panel opening on the other, and the two cross. What the
         old rule did instead was add `searching` to whichever sheet was not
         already morphing, which was defensible when the stack was one state in
         six materials and is not now — it would put a second search field next
-        to the one on sheet two and leave the panel untouched.
+        to the one already on the card and leave the panel untouched.
       */
       function apply(variant, active) {
         setStack(variant.stack);
