@@ -524,7 +524,9 @@
   function wantPaused(piece) {
     if (pausedAll) return true;                        // the rail is moving
     if (piece.dataset.active === 'true') return false; // hovered, focused, handed off
-    return !piece.classList.contains('is-active');     // the card at the read mark
+    // At the mark, not merely nearest it: nearest flips halfway between two
+    // cards, and half a card in is not being read.
+    return !(onMark && piece.classList.contains('is-active'));
   }
 
   function syncPause(piece) {
@@ -686,8 +688,17 @@
   }
 
   function settleWork() {
+    // Where the rail actually stopped, not where it was when the step was
+    // planned. sync is coalesced onto a frame, so currentActive can still be
+    // the card the gesture started from — which is how a card a third on screen
+    // and a full card off the mark ended up being told to perform, and stayed
+    // that way at rest. Reading it again here costs one layout per settle.
+    sync();
+    // handoff before the unpause: it is what stops the card being left behind
+    // and starts the one that landed, and unpausing first would let the old
+    // card — still holding dataset.active — run for the frames in between.
+    if (onMark) handoff();
     pauseAll(false);
-    handoff();
     drainWork();
   }
 
@@ -1167,10 +1178,16 @@
   }
 
   // The card sitting in the read position: the one whose left edge is nearest
-  // the track's scroll-padding edge.
+  // the track's scroll-padding edge, and how far off the mark it still is.
+  //
+  // Nearest and arrived are two different questions, and they were being
+  // answered by one number. Nearest flips at the halfway point — the moment the
+  // incoming card's edge is closer than the outgoing one's — which is the right
+  // answer for the counter and the progress bar, and the wrong one for whether
+  // a component should start performing. A card half in is not being read.
   function activeIndex() {
     const list = real();
-    if (!list.length) return 0;
+    if (!list.length) return { index: 0, off: Infinity };
 
     const trackLeft = track.getBoundingClientRect().left;
     const inset = sized().inset;
@@ -1185,10 +1202,16 @@
         best = i;
       }
     });
-    return best;
+    return { index: best, off: bestDistance };
   }
 
+  // How close to the mark counts as arrived, as a fraction of a card. Snap
+  // lands exactly, so this only has to absorb the last pixels of a settle — it
+  // is not a halfway line, which is the whole point of it.
+  const ON_MARK = 0.1;
+
   let currentActive = -1;
+  let onMark = false;
 
   // Which card is currently being told to play, as against which one is in the
   // read position. They are the same thing at rest and deliberately not during
@@ -1225,19 +1248,32 @@
     told = currentActive;
   }
 
-  function markActive(i) {
-    if (i === currentActive) return;
+  function markActive(i, arrived) {
+    const moved = i !== currentActive;
+    const landed = arrived !== onMark;
+    if (!moved && !landed) return;
+
     const list = real();
+    const leaving = moved ? list[currentActive] : null;
 
-    const leaving = list[currentActive];
-    list.forEach((piece, n) => piece.classList.toggle('is-active', n === i));
-    currentActive = i;
-    // The mark decides which preview runs, so the two cards it moved between
-    // are the two that have to hear about it.
+    if (moved) {
+      list.forEach((piece, n) => piece.classList.toggle('is-active', n === i));
+      currentActive = i;
+    }
+    onMark = arrived;
+
+    // Arriving is what starts a preview, so both facts have to reach the cards
+    // that changed: the one the mark left, and the one it is on.
     if (leaving) syncPause(leaving);
-    if (list[i]) syncPause(list[i]);
+    if (list[currentActive]) syncPause(list[currentActive]);
 
-    if (!gesturing()) handoff();
+    // Only once it has actually arrived. handoff is what tells a component to
+    // perform, and a component whose performance is a transition rather than an
+    // animation — the toolbar that morphs its search field — cannot be held by
+    // the pause at all, because animation-play-state does not touch
+    // transitions. The pause stops a card that is running; this is what stops
+    // one from being started.
+    if (onMark && !gesturing()) handoff();
   }
 
   // sync() reads the position of every card, and a scroll fires more often than
@@ -1277,8 +1313,16 @@
       metaLatest.textContent = key ? key.slice(0, 7).replace('-', ' · ') : '—';
     }
 
-    const active = activeIndex();
-    markActive(active);
+    const read = activeIndex();
+    const active = read.index;
+    const w = step();
+    // The drift is the exception, and it has to be: it never rests, so a rule
+    // that waits for rest would leave the index permanently still. While the
+    // rail is moving on its own the nearest card is the one being shown. The
+    // arrival test governs the rail under a reader's hand, which is where the
+    // complaint lives — and the first touch stops the drift for good anyway.
+    const arrived = drift === 'on' || !(w > 0) || read.off <= w * ON_MARK;
+    markActive(active, arrived);
     if (indexOut) indexOut.textContent = pad(Math.min(count, active + 1));
 
     if (progress) {
@@ -1329,6 +1373,13 @@
       return;
     }
 
+    // The card being left stops now, not when the rail arrives. A touch gesture
+    // already does this at first contact; a button step and a settle had no
+    // equivalent, so the outgoing card went on performing for the length of the
+    // step — and a component whose performance is a transition rather than an
+    // animation is not held by the pause at all, so the toolbar morphed its way
+    // out of the read position and a card or two past it.
+    hush();
     pauseAll(true);
     stepFrom = track.scrollLeft;
     stepTarget = target;
@@ -1381,7 +1432,7 @@
   // paths that turn it off — a drag, and the drift — where the scroll can stop
   // anywhere.
   function settle() {
-    const target = real()[activeIndex()];
+    const target = real()[activeIndex().index];
     if (!target) return;
     const inset = sized().inset;
     // Through stepTo rather than scrollTo, so every movement of this rail has

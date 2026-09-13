@@ -352,7 +352,29 @@ Paused is the default, and running is the exception: a preview runs only while
 its card is the one at the read mark, or while a pointer is on it. It is sent
 `true` on load, whenever the rail starts moving, and whenever the mark leaves
 its card; `false` when the mark arrives, when a pointer does, and when the rail
-lands. The preview stamps `data-preview-paused` on its own root, and the one
+lands.
+
+At the mark means arrived, not nearest. Nearest flips at the halfway point
+between two cards, which is the right answer for the counter and the progress
+bar and the wrong one for whether a component should start performing — a card
+half in is not being read. `ON_MARK` is how close counts, as a fraction of a
+card; snap lands exactly, so it only has to absorb the last pixels of a settle.
+The drift is the one exception, and has to be: it never rests, so a rule that
+waits for rest would leave the index permanently still, and while the rail is
+moving on its own the nearest card is the one being shown.
+
+The pause is not the only thing holding a card, and cannot be. A component
+whose performance is a transition rather than an animation —
+`2026-09-liquid-glass-toolbar`, which has nine transitions and no keyframes at
+all — is not touched by `animation-play-state`, so nothing stops it once it has
+been told to perform. What holds it is never being told: the mark starts a
+card, `hush()` stops the one being left at the moment the rail starts moving
+rather than when it arrives, and `settleWork` re-reads the position before
+handing off, because `sync` is coalesced onto a frame and the read position it
+would otherwise use is the one the gesture started from. Measured by stepping
+the rail eight times and sampling through each step: 47 samples of a visible
+card performing off the mark, worst a full card and a fifth away, against none
+— and every card told to perform sitting exactly on it. The preview stamps `data-preview-paused` on its own root, and the one
 rule that goes with it stops every animation in the document:
 
 ```css
