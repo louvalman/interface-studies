@@ -34,9 +34,10 @@ paper — at 0.7 scale beside three near-white neighbours the card read as a
 different kind of object before it read as a component, which is the opposite
 of what a thumbnail is for. So preview.html takes the shared paper and
 demo.html's stage keeps the ramps. The glass survives the trade because the
-thumbnail is not showing one sheet: it stacks six, four of them dark, and each
+thumbnail is not showing one sheet: it stacks three, two of them dark, and each
 carries its own rim, sheen and drop shadow. A single alabaster sheet on flat
-paper would be the failure above; six materials on it are still six materials.
+paper would be the failure above; a near-black, a moss and a paper sheet on it
+are still three materials.
 
 The icons are drawn rather than borrowed: a dot inside a ring, a magnifier, two
 drawers, a ruled ledger, two sliders. The magnifier is the one glyph in a
@@ -588,25 +589,43 @@ table are static strings in the file. Material names are not translated — they
 are shown as the class that selects them, which makes them class-name hints
 rather than page prose.
 
-The card shows all six materials stacked, which is a deliberate departure from
-this repo's rule that a thumbnail holds one instance and no second copy. The rule
-is there to stop a thumbnail turning into a small demo page, and it is the right
-rule — but what this study offers is a construction that comes in six
-materials, and one bar cannot advertise that. So the card is the set, with no
+The card shows three of the six materials stacked, which is a deliberate
+departure from this repo's rule that a thumbnail holds one instance and no second
+copy. The rule is there to stop a thumbnail turning into a small demo page, and
+it is the right rule — but what this study offers is a construction that comes in
+six materials, and one bar cannot advertise that. So the card is the set, with no
 captions and no state labels, and the variant dots step into a single bar where
 a panel has somewhere to open. The stagger down the stack costs nothing to add
 from outside, because the motion is a custom property whose value is a whole
 shorthand: a delay goes on the end of it without the component knowing. The
 sheets are added and removed rather than hidden — `component.css` gives the root
 a `display`, and an author rule beats the user-agent `[hidden]` one, which would
-have left all six on screen.
+have left all three on screen.
 
-Darkest at the top, and that is the thumbnail's order rather than the demo's. The stack used to run lightest first, which put the two palest sheets against the card's own near-white paper at the moment the eye lands — two faint outlines and then the weight arriving underneath, so the card read as empty at the top and heavy at the bottom. Reversed, the mass is where the eye starts and the sheets fade out of it. demo.html keeps its own order, default first, because that page is making a different argument: moss is what the component ships as, and the rest are shown against it.
+Three rather than all six, and the cut is what the card needed rather than what
+the set wanted. Six sheets at a 1.5rem gap filled 492px of the 600px frame, and
+a card 336px wide showing six near-identical bars is a swatch chart — the eye
+counts rows before it reads a toolbar, which is the same failure as a thumbnail
+turning into a demo page, arrived at from the other side. Three still says
+*materials*, plural, and the three chosen are the ends and the middle: basalt,
+moss, alabaster. The claim the stack is making is that one construction takes a
+whole palette rather than a hue rotation, and a lightness ramp from near-black
+to paper states it in three sheets; carnelian, slate and crystal are further
+points on a line already drawn. Crystal is the one that most wanted dropping
+from the card in any case — at a 7% tint it is carried by its rim, and beside
+alabaster at 0.7 scale the two read as one sheet drawn twice. The full six are
+still in `component.css` and still shown in `demo.html`, which is the page that
+is making that argument. The gap opened to 2rem with the cut: each sheet's drop
+is `0 1.5rem 3rem -1rem`, so at 24px the shadow was landing on the sheet below
+and the stack read as one ridged slab, and with three sheets there is frame to
+spend on giving each of them its own ground.
+
+Darkest at the top, and that is the thumbnail's order rather than the demo's. The stack used to run lightest first, which put the palest sheets against the card's own near-white paper at the moment the eye lands — faint outlines and then the weight arriving underneath, so the card read as empty at the top and heavy at the bottom. Reversed, the mass is where the eye starts and the sheets fade out of it. demo.html keeps its own order, default first, because that page is making a different argument: moss is what the component ships as, and the rest are shown against it.
 
 Which makes rebuilding the stack a thing that has to be done sparingly, and
-getting the order right is what got that wrong. Appending all six in order is
-the tidy way to both restore the missing sheets and sort them, and it is also a
-*move* for the five already in place — a move is a removal and an insertion, and
+getting the order right is what got that wrong. Appending the whole list in order
+is the tidy way to both restore the missing sheets and sort them, and it is also
+a *move* for the ones already in place — a move is a removal and an insertion, and
 a re-inserted element has no before-change style, so every transition on it is
 cancelled and the next one never starts. Hover runs through the same function,
 and on hover the stack is already built, so the card went dead: the search field
@@ -616,8 +635,9 @@ which is why it looked like a CSS problem. `getAnimations()` is what settled it
 the repair is to touch only the sheets that are actually out of place.
 
 They run darkest to lightest — basalt, moss, carnelian, slate, crystal,
-alabaster — and the sequence had to be measured rather than reasoned even
-though the direction was chosen. Brightness and tint pull
+alabaster, of which the card takes the first, the second and the last — and the
+sequence had to be measured rather than reasoned even though the direction was
+chosen. Brightness and tint pull
 opposite ways: alabaster's `brightness: 1.02` makes it lighter than the page it
 sits on, while crystal's 7% tint leaves it near enough the page itself. Sampled
 off a render, moss and slate come out identical to four decimal places, so which
