@@ -239,7 +239,12 @@ body.is-locked {
    it. Positioned against the initial containing block rather than a wrapper,
    so it still hangs off the page's top-right corner; the masthead's own top
    padding is deeper than the cluster, which is what keeps it clear of the
-   eyebrow at every width. */
+   eyebrow at every width.
+
+   It sits inside the eyebrow in the markup even so, because that is where it
+   lands on a phone — see the narrow block at the foot of this file. Nothing
+   between it and the initial containing block is positioned, so the nesting
+   costs the desktop placement nothing. */
 .controls {
   position: absolute;
   top: clamp(1.25rem, 3vw, 2.25rem);
@@ -1830,6 +1835,28 @@ body.is-locked {
 }
 
 @media (max-width: 40rem) {
+  /* The two page controls come down into the masthead's own top line: the
+     site mark at the left of it, language and theme at the right. On a phone
+     the cluster floating above the header cost a line nothing else could use
+     — the header's 3.5rem of top padding existed to clear it — and on the one
+     screen where the fold is scarce that line is the first card's. Static, so
+     the eyebrow's own flex row places it; margin-left auto is what keeps the
+     two ends apart once it does. */
+  .controls {
+    position: static;
+    margin-left: auto;
+  }
+
+  .head { padding-top: 2rem; }
+
+  /* Sharing the line is what costs the tracking. 0.18em over seventeen
+     characters is 30px of pure letter-spacing, and at 320px the whole row is
+     272px wide with a 130px cluster already in it. */
+  .head__eyebrow {
+    gap: 0.5rem;
+    letter-spacing: 0.1em;
+  }
+
   .foot__bar {
     flex-direction: column;
     align-items: flex-start;
@@ -1842,6 +1869,22 @@ body.is-locked {
   }
 
   .rail__filter { padding-bottom: 0.625rem; }
+}
+
+/* The narrowest supported width, where the top line gets tight. At 320px the
+   row is 272px across and the control cluster takes 130 of it; the mark is
+   left with 105px for a word it draws in 131 at the size above, so it wraps
+   to two lines beside the logo. One step down in type, tracking and mark size
+   buys the 26px back — a smaller lockup on the smallest screen, rather than a
+   two-line one. */
+@media (max-width: 22.5rem) {
+  .head__eyebrow {
+    gap: 0.4rem;
+    font-size: 0.625rem;
+    letter-spacing: 0.05em;
+  }
+
+  .head__eyebrow .logo { --logo-size: 1.1rem; }
 }
 
 /* --- the switch itself -------------------------------------------------- */
