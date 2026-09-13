@@ -20,6 +20,12 @@
   shown twice rather than as a row of specimens. Origin is still a dot — see the
   note on VARIANTS at the foot of the file.
 
+  On hover the top sheet closes its field and steps along to Versions; nothing
+  moves position and the panel below is not touched. The rest state is where the
+  card says these are two shapes of one surface, and hover is where it says the
+  surface goes places — which is one item moving inside one bar, not the card
+  rearranging itself. See the note on HOVER.
+
   States rather than the material set, which is what this card showed first. Six
   bars at rest filled 492px of the frame with six near-identical rows, and
   cutting it to three tints fixed the density while leaving the card answering
@@ -533,6 +539,15 @@
       var LOG = { id: 'log', label: 'Log', current: null, classes: ['open'] };
 
       /*
+        The same resting bar as REST, moved along one destination. `current` is
+        an index into the items that carry `aria-current` — Origin, Versions,
+        Display — so 1 is Versions, the drawers. Search and Log are not in that
+        list and cannot be: search is a `<label>` and the log button carries
+        `aria-expanded` instead, because neither of them is a place you can be.
+      */
+      var VERSIONS = { id: 'versions', label: 'Versions', current: 1, classes: [] };
+
+      /*
         What the stack holds, one per sheet, in the order the sheets are in the
         markup. Two rather than three, and the one dropped is the resting bar:
         it is the state a reader can already infer from either of the other two,
@@ -546,6 +561,23 @@
         pair reads as one surface shown twice rather than as a row of specimens.
       */
       var STATES = [SEARCH, LOG];
+
+      /*
+        And what it holds while the card is being looked at. Only the top sheet
+        moves, and it moves the way a person would: the field it is holding
+        closes, and the bar steps along to the next destination. The panel below
+        it is left alone — it is the slower, larger state, and having it reshuffle
+        under a passing pointer was the thing that made the earlier rotation feel
+        like a card trick rather than like a toolbar.
+
+        The sheets keep their positions through it. An earlier version had them
+        trade, which showed that the two states belong to one surface but did it
+        by moving the surfaces, and a thumbnail that rearranges itself on
+        approach reads as a shuffle. Moving one item along inside one sheet says
+        the same thing more quietly: the bar you are looking at is a bar that
+        goes places.
+      */
+      var HOVER = [VERSIONS, LOG];
 
       /*
         First entry is the resting state of the *card*, and it is what the
@@ -596,7 +628,7 @@
         if (!lead.parentNode) stack.appendChild(lead);
       }
 
-      function dress(el, state, active) {
+      function dress(el, state) {
         MODIFIERS.forEach(function (m) { el.classList.remove(BASE + m); });
         state.classes.forEach(function (m) { el.classList.add(BASE + m); });
 
@@ -645,33 +677,26 @@
         document — so they keep whatever they were last dressed in and are
         re-dressed on the way back in.
 
-        Hover rotates the assignment by one rather than morphing a sheet into a
-        state the stack is already showing. The card at rest is two endpoints;
-        what it cannot say standing still is that they are the *same surface*
-        changing shape rather than two components in a row, and one rotation
-        says it. With two states the rotation is a swap: the sheet holding the
-        field opens its panel, the sheet holding the panel closes into the
-        field, and they trade places without either state leaving the frame. The
-        stagger in the style block spends 70ms on the lower row, so the two do
-        not move in lockstep.
+        Hover swaps the whole list for HOVER, which differs from STATES in one
+        entry: the top sheet closes its search field and steps along to Versions.
+        Nothing changes position and the lower sheet is not touched.
 
-        It costs the stack's height nothing over the move: the panel closing on
-        one sheet is the panel opening on the other, and the two cross. What the
-        old rule did instead was add `searching` to whichever sheet was not
-        already morphing, which was defensible when the stack was one state in
-        six materials and is not now — it would put a second search field next
-        to the one already on the card and leave the panel untouched.
+        It costs the frame nothing, which is the point of picking this move over
+        the two earlier ones. A bar at rest and a bar with its search field open
+        are both 62px — only the pill's width changes — so the stack is 394px
+        before, during and after, and no thumbnail on the rail resizes under a
+        pointer that is only passing over it.
       */
       function apply(variant, active) {
         setStack(variant.stack);
         if (variant.stack) {
-          var shift = active ? 1 : 0;
+          var list = active ? HOVER : STATES;
           sheets.forEach(function (el, i) {
-            dress(el, STATES[(i + shift) % STATES.length], active);
+            dress(el, list[i] || list[list.length - 1]);
           });
           return;
         }
-        dress(lead, variant.state, active);
+        dress(lead, variant.state);
       }
 
       window.addEventListener('message', function (event) {
