@@ -585,12 +585,23 @@
     return touching || dragging || stepFrame !== 0;
   }
 
-  function settleWork() {
-    handoff();
+  // The two halves settle at different moments, because they are waiting on
+  // different things. A load only has to be off the finger: started when the
+  // hand lifts, it runs under the step that follows and the card is ready
+  // before it has finished arriving — where waiting for the step to end left
+  // the landed card showing its skeleton for a quarter of a second, all of it
+  // after the movement had stopped. Playing waits for the step, because that
+  // is the expensive one and the step is still motion.
+  function drainWork() {
     if (!waiting.size) return;
     const due = Array.from(waiting);
     waiting.clear();
     due.forEach((job) => job());
+  }
+
+  function settleWork() {
+    handoff();
+    drainWork();
   }
 
   function loadPreview(piece) {
@@ -1584,6 +1595,7 @@
     // Swallow the click the drag would otherwise fire on a card link.
     if (moved) {
       if (event.type === 'pointerup') swallowNextClick();
+      drainWork();
       release();
     } else {
       // A tap, not a drag — but snap has been off since the contact, and the
@@ -1676,6 +1688,8 @@
     if (!touching) return;
     touching = false;
     sampleTouch();
+    // Before release(), which starts the step and would defer these again.
+    drainWork();
     // release() reads originScroll and speed, so the gesture is handed over in
     // those terms: speed is negated because it measures the scroll rather than
     // the pointer, and the two run opposite ways.
