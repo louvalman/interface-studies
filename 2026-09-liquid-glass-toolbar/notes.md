@@ -700,19 +700,29 @@ and became wrong the moment the stack was the states themselves — it would hav
 put a second search field beside the one already on the card and left the panel
 alone.
 
-So hover rotates the assignment by one instead. With two sheets that is a swap:
-the one holding the field opens its panel, the one holding the panel closes into
-the field, and they trade without either state leaving the frame. It changes
-nothing about which states are on screen and everything about what the card is
-saying — standing still it is two endpoints, and one swap says they are the same
-surface changing shape rather than two components in a row. The stagger spends
-70ms on the lower row, so the two do not move in lockstep.
+Then it rotated the assignment by one, which with two sheets was a swap: the one
+holding the field opened its panel, the one holding the panel closed into the
+field, and they traded without either state leaving the frame. That said the
+right thing — these are one surface, not two components in a row — and said it by
+moving both surfaces at once, which on a rail of thumbnails reads as a shuffle. A
+card that rearranges itself when a pointer crosses it is asking to be watched
+rather than read.
+
+So hover moves one item inside one bar instead. The top sheet closes its search
+field and steps along to the next destination, Versions; nothing changes
+position, and the panel below is left alone — it is the slower, larger state, and
+it has nothing to gain from reshuffling under a passing pointer. The rest state
+is where the card says these are two shapes of one surface. Hover is where it
+says the surface goes places, which is a smaller claim and the one a thumbnail
+can actually make.
 
 It costs the frame nothing, which is the part that had to be measured rather than
-hoped for. The panel closing on one sheet is the panel opening on the other and
-the two cross: the stack is 394px tall at rest, 394px at every frame of the swap,
-and 394px settled. Nothing below it reflows, and the card does not resize under a
-pointer that is only passing over it.
+hoped for, and this version costs it less than the swap did: a bar at rest and a
+bar with its search field open are both 62px, only the pill's width differing, so
+neither sheet changes height at all. 394px at rest, 394px at every frame, 394px
+settled, with the individual sheets holding 62 and 300 throughout. Nothing below
+it reflows and the card does not resize under a pointer that is only passing over
+it.
 
 Inspiration: https://x.com/renzobianchi_/status/2097400239162351924 — three
 frames of a glass toolbar, of which `ref.png` is the resting one. What it
