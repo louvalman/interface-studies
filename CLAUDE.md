@@ -594,6 +594,42 @@ the question is how something feels on a phone, the phone is the instrument, and
 a green harness is not evidence. Note also that Chrome on iOS is WebKit: "tested
 in Chrome" means two different engines depending on the device.
 
+### What stops the drift, and what only holds it
+
+The rail drifts on its own until a reader takes it, and the two are different
+things. `driftStop(byUser)` is final — only the play control brings it back —
+while `driftHold`/`driftRelease` is the rail deferring to someone who is there
+and picking up again when they are not. Reading a gesture as the first when it
+was the second is how the carousel ends up dead on a page nobody has touched.
+
+Both of those went wrong the same way, by taking a proxy for the thing.
+
+**A wheel is only the rail's if it is sideways.** Any wheel over the track used
+to stop the drift for good, and a vertical wheel over the track scrolls the page
+past it and leaves `scrollLeft` exactly where it was — measured. So scrolling
+down the page to reach the rail killed the carousel on the way. On a 1440x810
+laptop the track's box is 86% of the fold, which makes that the ordinary way to
+arrive rather than an edge case: the drift was off before the rail had been
+looked at. Predominantly horizontal, or shift held, is the rail being taken;
+anything else is the page moving past it, and the pointer being there already
+holds the drift and lets go again on the way out.
+
+**A pointer holds the rail by moving, not by being there.** Presence was the
+proxy, and at 86% of the fold "on the rail" is indistinguishable from "on the
+page": a cursor parked mid-screen held the drift for as long as the tab stayed
+open. So movement holds it and stillness lets it go, after `POINTER_IDLE`. Any
+move re-holds at once, which is what keeps the rail from travelling out from
+under a reader — they need only have moved within that window, not be moving
+now. Measured on a 1440x810 viewport: parked, the rail is held for the first
+2.5s and drifting again by 6.5s; nudged every 700ms, it stays put throughout.
+
+The rail loops, and so drifts, while the row can cover the viewport with a card
+to spare: `client <= (ring - 2) * step`, which at eight cards and a 336px card
+is 2184px. Past that it is finite and the drift control hides itself — the one
+case documented under `loopable()`, and the ceiling rises by a card with every
+study added. A wider screen than that needs a wider card, and the pair to keep
+in step is `--card-w` and `--preview-scale`.
+
 The pointer path still steps itself, through `stepTo`, and keeps the old
 arithmetic. There is nothing native to defer to there: the drag is scripted from
 `pointermove`, there is no momentum, and a recycle mid-step has to move both
