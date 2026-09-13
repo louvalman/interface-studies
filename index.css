@@ -796,6 +796,11 @@ body.is-locked {
   flex: 0 0 var(--card-w);
   min-width: 0;
   scroll-snap-align: start;
+  /* A flick stops at the next card rather than running through several. The
+     landing is the browser's now — momentum carries it and snap picks the card
+     — and this is where "one swipe, one study" is stated, in place of the
+     arithmetic that used to work it out from the speed at touchend. */
+  scroll-snap-stop: always;
   display: flex;
   flex-direction: column;
   color: inherit;
