@@ -346,8 +346,12 @@ for; it is still not a rule written against a component class.
 A same-origin iframe shares the index's main thread, so a thumbnail that keeps
 animating while the rail is being dragged is animating against the drag, on the
 thread the drag needs — and a live component is the whole of what this index
-shows, so every card on screen is doing it at once. The index sends `true` when
-the rail starts moving under a finger or steps to a card, and `false` when it
+shows, so every card on screen would be doing it at once.
+
+Paused is the default, and running is the exception: a preview runs only while
+its card is the one at the read mark, or while a pointer is on it. It is sent
+`true` on load, whenever the rail starts moving, and whenever the mark leaves
+its card; `false` when the mark arrives, when a pointer does, and when the rail
 lands. The preview stamps `data-preview-paused` on its own root, and the one
 rule that goes with it stops every animation in the document:
 
@@ -560,28 +564,35 @@ only file outside the study folder that a new study may touch.
 The preview iframe carries its path in `data-src`, not `src`. Every card on the
 page is a live component — which is the point, and also what it costs: one
 thumbnail alone runs 289 dots on their own animations, and the rail drifts, so
-every card eventually arrives. `index.js` works three bands against the rail's
-own scrollport: a preview loads and wakes a scrollport-width before it arrives,
-is parked once it is two widths past, and is unloaded only six out — which in
-the current set is never.
+every card eventually arrives. So two things are decided separately: whether a
+preview's document exists, and whether it animates.
 
-Parked is `preview:pause`, and it replaced unloading because unloading was
-visible. Navigating the frame to `about:blank` and back brought the skeleton
-with it, so a card you had already seen flashed its ground as it came into
-view and then played its entry animation from the top, introducing itself
-again; and it put an iframe navigation into roughly every third drag. Measured
-over eight drags through the set: thirteen navigations and six of those
-flashes, against one and none once parking replaced it.
+**Whether it animates is the read mark.** The card the rail is sitting on runs;
+every other card is paused, however much of it is on screen. A pointer on a card
+runs it too, which is what hover has always meant here. Nothing else does.
 
-The margins could widen because the cost was animation rather than existence. A
-same-origin iframe shares this page's main thread, so a preview animating off
-screen cost exactly what one under your eyes cost — which is what made the old
-margins as tight as a quarter and three quarters, and what made a load land a
-third of a card before the card did, where you could watch it happen. A parked
-document animates nothing, so the number of live documents stopped being the
-thing to minimise, and a load can start far enough out to be finished before it
-is looked at. Unloading stays as a ceiling: five studies is a handful of
-documents and that is fine to hold, five hundred would not be.
+Proximity used to decide this, and it was the wrong rule. A preview woke a
+scrollport before it arrived, so a card a third of the way onto the screen was
+already running its open state, and a component that introduces itself on load —
+the plate that inks its own line drawing — did the introducing off to the side.
+By the time the card was yours to look at, the thing worth seeing had already
+happened next to it. Pausing holds an animation at its first frame, so entries
+now play on arrival.
+
+**Whether the document exists is two bands**, and they only load and unload.
+Loading starts a full scrollport out, where it used to start a quarter of one —
+a quarter put the load a third of a card before the card did, where you could
+watch it happen. A load has to finish before it is looked at, so it has to start
+well before, and it can afford to: an off-mark preview is paused, so a document
+that exists early costs nothing but its memory.
+
+Unloading is a ceiling rather than a routine, at a margin the current set never
+reaches. It used to be routine and it was visible: navigating the frame to
+`about:blank` and back brought the skeleton with it, so a card you had already
+seen flashed its ground as it came into view and then played its entry animation
+from the top, introducing itself again — and it put an iframe navigation into
+roughly every third drag. Measured over eight drags through the set: thirteen
+navigations and six of those flashes, against one and none after.
 
 A card whose preview has not loaded yet shows its skeleton, not an empty frame.
 This does mean no previews at all without JavaScript; the index already needs it

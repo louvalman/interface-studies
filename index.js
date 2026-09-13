@@ -468,10 +468,15 @@
     if (!frame || !frame.contentWindow) return;
     if (active) piece.dataset.active = 'true';
     else delete piece.dataset.active;
+    // Before the message when starting, after it when stopping: the preview has
+    // to be running to play its open state, and has to still be running to play
+    // its way back out of it.
+    if (active) syncPause(piece);
     frame.contentWindow.postMessage(
       { source: CHANNEL, type: 'preview', active: active },
       '*'
     );
+    if (!active) syncPause(piece);
   }
 
   // Every animation in every loaded preview stops for the length of a gesture.
@@ -502,12 +507,24 @@
     );
   }
 
-  // Two reasons a preview is paused, and either on its own is enough: the rail
-  // is moving, or the card is parked — far enough out of the scrollport that
-  // animating it is work nobody can see. Held per card and posted only on a
-  // change, so a gesture starting over a parked card sends nothing.
+  // A preview animates when it is the card being read, or when a pointer is on
+  // it. Everything else is paused, however close to the scrollport it sits.
+  //
+  // Proximity used to be the rule, and it was the wrong one: a preview woke a
+  // scrollport before it arrived, so a card a third of the way onto the screen
+  // was already running its open state, and a component that introduces itself
+  // on load — the plate that inks its own line drawing — did the introducing
+  // while it was still off to the side. By the time it was yours to look at,
+  // the thing worth seeing had happened next to it.
+  //
+  // Loading is still early, and deliberately: the document has to exist and be
+  // parsed before the card lands, or you watch it arrive instead. It just
+  // arrives stopped. A paused animation holds at its first frame, so the entry
+  // plays on arrival rather than having played on approach.
   function wantPaused(piece) {
-    return pausedAll || piece.dataset.parked === 'true';
+    if (pausedAll) return true;                        // the rail is moving
+    if (piece.dataset.active === 'true') return false; // hovered, focused, handed off
+    return !piece.classList.contains('is-active');     // the card at the read mark
   }
 
   function syncPause(piece) {
@@ -523,31 +540,6 @@
     if (paused === pausedAll) return;
     pausedAll = paused;
     real().forEach(syncPause);
-  }
-
-  // Parking is what a card well past the scrollport gets now, in place of
-  // being unloaded.
-  //
-  // Unloading meant navigating the frame to about:blank and back, and the way
-  // back was the visible fault: the skeleton returned, so the card flashed its
-  // ground as it came into view, then the document parsed and the component
-  // played its entry animation from the top — a card you had already seen,
-  // introducing itself again. It also put an iframe navigation in the middle
-  // of roughly every third drag, which is the chop that survived pausing.
-  //
-  // A parked preview keeps its document and stops animating, which is nearly
-  // all of what unloading bought and none of what it cost. The frame still
-  // composites while the card moves, but a paused document is a picture.
-  function parkPreview(piece) {
-    if (piece.dataset.parked === 'true') return;
-    piece.dataset.parked = 'true';
-    syncPause(piece);
-  }
-
-  function wakePreview(piece) {
-    if (piece.dataset.parked !== 'true') return;
-    delete piece.dataset.parked;
-    syncPause(piece);
   }
 
   // A preview may not have parsed its listener yet when the pointer arrives,
@@ -736,39 +728,23 @@
     frame.setAttribute('src', 'about:blank');
   }
 
-  // Three bands, measured against the rail's own scrollport rather than against
-  // a card. A preview loads and wakes a scrollport-width before it arrives,
-  // parks once it is two scrollport-widths past, and is only unloaded four out
-  // past that.
+  // Two bands now, and neither decides whether a preview animates — the read
+  // mark does that, in wantPaused. These only decide whether the document
+  // exists.
   //
-  // The near margin is wide where it used to be a quarter, and that is the
-  // point: a quarter put the load a third of a card-width before the card
-  // arrived, so you watched it happen — the frame flashed its ground and the
-  // component introduced itself, right as you were dragging onto it. A load has
-  // to finish before it is looked at, so it has to start well before.
+  // Loading starts a full scrollport out, where it used to start a quarter of
+  // one. A quarter put the load a third of a card before the card arrived, so
+  // you watched it happen. A load has to finish before it is looked at, which
+  // means starting well before, and it can afford to: an off-mark preview is
+  // paused, so a document that exists early costs nothing but its memory.
   //
-  // It can afford to now. The cost that made these margins tight was animation,
-  // not existence: a same-origin iframe shares this page's main thread, so a
-  // preview animating off screen cost what one under your eyes cost. Parking
-  // takes that away without taking the document, so the number of live
-  // documents stopped being the thing to minimise.
-  //
-  // Unloading is still here, as a ceiling rather than a routine: five studies
-  // is six documents and that is fine to hold, five hundred would not be. At
-  // this margin nothing in the current set ever reaches it.
+  // Unloading is a ceiling rather than a routine — a handful of documents is
+  // fine to hold, five hundred would not be. At this margin nothing in the
+  // current set ever reaches it.
   if ('IntersectionObserver' in window) {
     const near = new IntersectionObserver(
-      (entries) => entries.forEach((e) => {
-        if (!e.isIntersecting) return;
-        loadPreview(e.target);
-        wakePreview(e.target);
-      }),
+      (entries) => entries.forEach((e) => { if (e.isIntersecting) loadPreview(e.target); }),
       { root: track, rootMargin: '0px 100% 0px 100%' }
-    );
-
-    const far = new IntersectionObserver(
-      (entries) => entries.forEach((e) => { if (!e.isIntersecting) parkPreview(e.target); }),
-      { root: track, rootMargin: '0px 200% 0px 200%' }
     );
 
     const gone = new IntersectionObserver(
@@ -776,11 +752,7 @@
       { root: track, rootMargin: '0px 600% 0px 600%' }
     );
 
-    allPieces().forEach((piece) => {
-      near.observe(piece);
-      far.observe(piece);
-      gone.observe(piece);
-    });
+    allPieces().forEach((piece) => { near.observe(piece); gone.observe(piece); });
   } else {
     // No observer: load the lot, which is what the page did before.
     allPieces().forEach(loadPreview);
@@ -1257,8 +1229,13 @@
     if (i === currentActive) return;
     const list = real();
 
+    const leaving = list[currentActive];
     list.forEach((piece, n) => piece.classList.toggle('is-active', n === i));
     currentActive = i;
+    // The mark decides which preview runs, so the two cards it moved between
+    // are the two that have to hear about it.
+    if (leaving) syncPause(leaving);
+    if (list[i]) syncPause(list[i]);
 
     if (!gesturing()) handoff();
   }
