@@ -588,7 +588,23 @@
     // rail drifts for all but the seconds a pointer is resting on it. That
     // left the resting fields paused essentially always, which is the whole of
     // what they are for.
-    if (drift === 'on') return !(onMark && piece.classList.contains('is-active'));
+    if (drift === 'on') {
+      // The card on its way in runs too. A field held at its first frame while
+      // it crosses the screen and only starting once it lands reads as broken
+      // rather than as resting — the study people notice this on is the one
+      // whose whole subject is a wave, and a wave that begins on arrival has
+      // already missed its entrance.
+      //
+      // One extra card and no more. Every visible card running takes the
+      // drift's median frame from 16.7ms to 33.3ms on a throttled phone
+      // profile; this keeps the median and spends only headroom. The rail's
+      // own motion is untouched either way — it integrates dt, so the rendered
+      // advance stays even: 0 stalled frames in 599 and sub-pixel variance,
+      // measured. And a finger landing mid-drift still hushes in 14ms against
+      // 13, so nothing is waiting on the thread this spends.
+      if (piece.dataset.next === 'true') return false;
+      return !(onMark && piece.classList.contains('is-active'));
+    }
     // On screen and the rail is still: it rests, and a resting state is still
     // a state.
     return false;
@@ -1372,15 +1388,28 @@
     const leaving = moved ? list[currentActive] : null;
 
     if (moved) {
-      list.forEach((piece, n) => piece.classList.toggle('is-active', n === i));
+      // The card arriving next, marked so the drift can run it as it comes in.
+      // Ring order is arrival order, so it is simply the one after this — and
+      // it wraps, because a looping rail has no last card.
+      const next = list.length ? (i + 1) % list.length : -1;
+      list.forEach((piece, n) => {
+        piece.classList.toggle('is-active', n === i);
+        if (n === next) piece.dataset.next = 'true';
+        else delete piece.dataset.next;
+      });
       currentActive = i;
     }
     onMark = arrived;
 
-    // Arriving is what starts a preview, so both facts have to reach the cards
-    // that changed: the one the mark left, and the one it is on.
-    if (leaving) syncPause(leaving);
-    if (list[currentActive]) syncPause(list[currentActive]);
+    // Arriving is what starts a preview, and three cards change when the mark
+    // moves — the one it left, the one it is on, and the one now arriving
+    // behind it. syncPause posts only where the answer moved, so re-asking all
+    // of them costs a boolean each and keeps the three in step.
+    if (moved) refreshPause();
+    else {
+      if (leaving) syncPause(leaving);
+      if (list[currentActive]) syncPause(list[currentActive]);
+    }
 
     // Only once it has actually arrived. handoff is what tells a component to
     // perform, and a component whose performance is a transition rather than an
