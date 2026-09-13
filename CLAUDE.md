@@ -317,6 +317,47 @@ ink in both themes while its thumbnail is neither, and it may stage the
 component however the study wants. The component itself is never touched by any
 of it in either file.
 
+**A card has to work in both themes, and that is the preview's job to see to.**
+The ground moves under every study whether or not the study asked, so every
+thumbnail is going to be drawn on `#191b1e` at some point and has to be worth
+looking at there. Not merely legible — a card that survives dark by being a
+white plate on it is fine, because that is what the component is; a card whose
+type has gone to a grey smear is not a card. The check is both themes, every
+variant the preview reports, at the rail's scale as well as at full size, and
+it is the last thing to do before a study is finished.
+
+What it takes depends on where the component's colours live, and there are two
+shapes of answer. A component that stands on its own surface needs nothing: it
+sits as a lit plate on the dark ground, the same way it does on a dark
+`demo.html`, and that is the intended result rather than an oversight to
+correct. A component whose type sits on the *ground* — which an `aesthetic`
+study's sample block does by construction — inherits an ink colour that can
+only be right in one of the two, and something has to move it.
+
+The move is the component's own re-theming channel, from outside, never a rule
+written against a component class. `2026-09-drawn-gradients` is the worked
+example: left at the paper ink on a dark rail its three labels were invisible
+and its read-out was a grey smear, so its preview hands
+`--drawn-gradients-base`, `--drawn-gradients-ink` and `-ink-soft` in per theme
+— and hands in the values the component's own `--night` surface already
+declares, so the preview invents no colour of its own.
+
+Where the study has a whole dark version of the component rather than a
+corrected palette, it declares it as a modifier in `component.css`, as a
+decision of the study, and the preview applies the modifier. That is worth
+separating from the correction above: `2026-09-detail-reveal-card` carries a
+dark card because a dark card is one of the things it is, and it reports both
+as quick-look variants — so the dark one shows on a light rail and the light
+one on a dark rail, which is the point of them being variants rather than a
+theme. Answering the ground is the preview's job; having two versions is the
+study's.
+
+None of this reaches `component.css` from the preview, and none of it is a
+`prefers-color-scheme` query. The theme the card sits *in* is the index's,
+which can be dark under a light desktop and light under a dark one, so
+`[data-theme]` is the only thing to answer — the same attribute the ground
+reads.
+
 The bill for this lands on a component whose edge is carried by the ground
 rather than by its own fill, and it is paid rather than worked around: the
 inked plate's porcelain surface is #e8ebe4 with the grid no longer stopping at
