@@ -747,12 +747,22 @@ preview's document exists, and whether it animates.
 while the rail is stopped; everything pauses the moment it moves, and a card
 with none of it on screen is paused whatever the rail is doing.
 
-The drift counts as moving. It writes `scrollLeft` from a frame callback, so a
-field animating under it is animating on the thread it needs — measured on a
-throttled phone profile, the drift's median frame goes 16.7ms to 33.3ms with
-the resting fields live, and 25 dropped frames in 700 becomes 457. So the rail
-is alive between gestures and still while it travels, which is the same bargain
-the pause was introduced to make: nothing animates against the motion.
+While the rail drifts, the card at the mark runs and the rest do not. The drift
+writes `scrollLeft` from a frame callback, so a field animating under it is
+animating on the thread it needs, and five at once cost it plainly: measured on
+a throttled phone profile, the drift's median frame went 16.7ms to 33.3ms with
+every resting field live, and 25 dropped frames in 700 became 457. One field is
+free — 20 and 22 dropped against main's 29.
+
+Holding *all* of them during the drift was the first answer and it was too much,
+for a reason that is easy to miss: `handoff` is a coarse-pointer path — it is
+what stands in for hover where there is none — so on a desktop no card is ever
+`active` from the mark. Every preview therefore fell through to the drift test
+and was paused, and since the rail drifts for all but the seconds a pointer
+rests on it, the resting fields were paused essentially always. Measured on a
+desktop with the pointer off the rail: 0 running samples in 250, the card at the
+mark included. What a reader saw was the field animating for the 1400ms before
+the drift sets off and then stopping dead.
 
 **What the read mark governs is performing**, which is a different question and
 `active` is what carries it. The card at the mark is told to perform; a pointer

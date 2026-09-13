@@ -575,13 +575,23 @@
     // running its field forever for nobody, which is the whole of what this
     // saves once the rail is still.
     if (offScreen(piece)) return true;
-    // On screen, and not the card being read: it rests, and a resting state is
-    // still a state. What holds it is the rail moving, and the drift is the
-    // rail moving — it writes scrollLeft from a frame callback, so a field
-    // animating under it is animating on the thread it needs. Measured on a
-    // throttled phone profile: the drift's median frame goes 16.7ms to 33.3ms
-    // with the resting fields live, 25 dropped frames in 700 against 457.
-    return drift === 'on';
+    // While the rail drifts, the card at the mark runs and the rest do not.
+    // The drift writes scrollLeft from a frame callback, so a field animating
+    // under it is animating on the thread it needs, and five of them at once
+    // cost it plainly: measured on a throttled phone profile, the drift's
+    // median frame went 16.7ms to 33.3ms with every resting field live, 25
+    // dropped frames in 700 against 457.
+    //
+    // Holding all of them was the first answer and it was too much. `handoff`
+    // is a coarse-pointer path — it is what stands in for hover where there is
+    // none — so on a desktop no card is ever `active` from the mark, and the
+    // rail drifts for all but the seconds a pointer is resting on it. That
+    // left the resting fields paused essentially always, which is the whole of
+    // what they are for.
+    if (drift === 'on') return !(onMark && piece.classList.contains('is-active'));
+    // On screen and the rail is still: it rests, and a resting state is still
+    // a state.
+    return false;
   }
 
   function syncPause(piece) {
