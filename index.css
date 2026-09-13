@@ -28,17 +28,30 @@
   --hairline-strong: rgba(23, 24, 26, 0.22);
   --accent: #ac512d;
 
-  /* The page's ground: a wash of two corner lights over the base, and the same
-     grain film in both themes — the tile is one construction and only its
-     alpha moves, like every other token here.
+  /* The page's ground: a wash of two corner lights over the base, and a grain
+     film over both. Each theme draws the same noise at the scale its ground
+     can hold, and the two differ in more than alpha.
 
-     It is thinner on paper than on ink. The speckle is dark either way, so on
-     a dark ground it reads as light tooth against the ground and on a light
-     one it reads as dirt if it is pushed as far; 0.26 is where the tooth is
-     plainly there and the paper is still paper. On a light ground it is not
-     doing the dark theme's other job — an 8-bit wash on paper has nowhere
-     near the banding one on ink does — so this half is texture and nothing
-     else.
+     The speckle is dark in both. On ink that is light tooth against the
+     ground and a single pixel of it is plainly visible, which is why the dark
+     tile is fine — baseFrequency 0.8, a feature about a pixel across. On
+     paper the same tile disappears: a one-pixel dark speck on an off-white
+     ground is below what the eye resolves at reading distance, so a thousand
+     of them average into a flat tint and the page reads as slightly grey
+     rather than as textured. So the paper's grain is the same drawing at
+     twice the wavelength — baseFrequency 0.4 on a 320px tile, a feature about
+     two pixels across — which survives the averaging and reads as tooth.
+     Measured, not guessed: sampled at two CSS pixels, the paper's grain now
+     carries the same amplitude the ink's does.
+
+     Alpha differs too, and the other way round from what that suggests: 0.26
+     on paper against 0.18 on ink, because a dark speck on a dark ground shows
+     more of itself than one on paper does.
+
+     On this side the grain is only texture. The dark theme's is also doing a
+     second job — an 8-bit wash across two thousand pixels bands on ink, and
+     fine noise dithers the rings out — and a wash on paper has nowhere near
+     that problem.
 
      --page-base is --paper, lightened by the seven units of luminance the
      grain takes back out of it, so the page still renders at --paper. Only
@@ -49,7 +62,7 @@
     radial-gradient(58% 46% at 12% 0%, rgba(180, 85, 47, 0.07), transparent 68%),
     radial-gradient(46% 38% at 92% 4%, rgba(78, 110, 190, 0.06), transparent 70%);
   --page-grain:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.26'/%3E%3C/svg%3E");
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.4' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='320' height='320' filter='url(%23n)' opacity='0.26'/%3E%3C/svg%3E");
 
   /* Chips. --chip-bg is the one that sits on the page (the language and theme
      controls); --chip-over-preview and its -strong pair sit on a thumbnail,
@@ -138,6 +151,8 @@
   --page-wash:
     radial-gradient(58% 46% at 12% 0%, rgba(224, 132, 83, 0.07), transparent 68%),
     radial-gradient(46% 38% at 92% 4%, rgba(108, 140, 220, 0.055), transparent 70%);
+  /* Fine, and staying fine: a pixel of dark speck reads on ink, and the
+     banding this also has to dither needs the high frequencies. */
   --page-grain:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.18'/%3E%3C/svg%3E");
 
