@@ -1202,14 +1202,20 @@
 
     let best = 0;
     let bestDistance = Infinity;
+    let bestSigned = Infinity;
     list.forEach((piece, i) => {
-      const distance = Math.abs(piece.getBoundingClientRect().left - mark);
+      const signed = piece.getBoundingClientRect().left - mark;
+      const distance = Math.abs(signed);
       if (distance < bestDistance) {
         bestDistance = distance;
+        bestSigned = signed;
         best = i;
       }
     });
-    return { index: best, off: bestDistance };
+    // Signed as well as absolute, because which side of the mark a card is on
+    // is the difference between arriving and leaving. A card still to the right
+    // of the mark has not been read yet however near it is.
+    return { index: best, off: bestDistance, signed: bestSigned };
   }
 
   // How close to the mark counts as arrived, as a fraction of a card. Snap
@@ -1328,7 +1334,17 @@
     // rail is moving on its own the nearest card is the one being shown. The
     // arrival test governs the rail under a reader's hand, which is where the
     // complaint lives — and the first touch stops the drift for good anyway.
-    const arrived = drift === 'on' || !(w > 0) || read.off <= w * ON_MARK;
+    // Arrival, not nearness — and during the drift that distinction needs the
+    // sign. Nearest flips at the halfway point, which is half a card *before*
+    // the card reaches the mark, so a drifting rail had every card start
+    // performing on its way in: the pulse ran while the card was still coming
+    // onto the screen. Reading the signed distance instead starts it when it
+    // arrives and leaves it running as it travels past, until the next one
+    // arrives in its turn — which is what the drift needs, since it never rests
+    // and a rule that waited for rest would leave the index permanently still.
+    const arrived = !(w > 0)
+      ? true
+      : (drift === 'on' ? read.signed <= w * ON_MARK : read.off <= w * ON_MARK);
     markActive(active, arrived);
     if (indexOut) indexOut.textContent = pad(Math.min(count, active + 1));
 
