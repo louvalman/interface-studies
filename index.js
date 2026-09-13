@@ -468,6 +468,40 @@
     );
   }
 
+  // Every animation in every loaded preview stops for the length of a gesture.
+  //
+  // A same-origin iframe shares this page's main thread, so a thumbnail that
+  // keeps animating while the rail is being dragged is animating against the
+  // drag, on the thread the drag needs. Measured on a throttled phone profile,
+  // a two-card drag with the pause taking effect against the same drag with it
+  // defeated: 446 style recalcs against 175. The frame-timing half of that
+  // measurement stopped reproducing on the machine it was taken on, so the
+  // recalc count is what this claim rests on, and a real phone is the test.
+  //
+  // Telling a preview it is inactive does not do this and never did — that
+  // puts it in its resting state, and a resting state still animates. Measured
+  // the same way, sending active:false to all five changed nothing.
+  //
+  // Pausing rather than unloading is what keeps a card's animation from
+  // starting over every time it comes back: the document is still there and
+  // the animations pick up where they were.
+  let pausedAll = false;
+
+  function pausePreview(piece, paused) {
+    const frame = piece.querySelector('[data-preview]');
+    if (!frame || !frame.contentWindow) return;
+    frame.contentWindow.postMessage(
+      { source: CHANNEL, type: 'preview:pause', paused: paused },
+      '*'
+    );
+  }
+
+  function pauseAll(paused) {
+    if (paused === pausedAll) return;
+    pausedAll = paused;
+    real().forEach((piece) => pausePreview(piece, paused));
+  }
+
   // A preview may not have parsed its listener yet when the pointer arrives,
   // so re-send once it announces itself.
   window.addEventListener('message', (event) => {
@@ -511,6 +545,10 @@
     if (held && held.dataset.loaded !== 'true') return;
     piece.classList.add('is-ready');
     tellScale(piece.querySelector('[data-preview]'), cardScale());
+    // Loads drain when the hand lifts, so one can arrive while the step that
+    // follows is still running. It joins the others paused rather than being
+    // the one card animating through the landing.
+    if (pausedAll) pausePreview(piece, true);
     if (piece.dataset.active === 'true') tell(piece, true);
   }
 
@@ -600,6 +638,7 @@
   }
 
   function settleWork() {
+    pauseAll(false);
     handoff();
     drainWork();
   }
@@ -913,7 +952,12 @@
     metrics = {
       step: first ? first.getBoundingClientRect().width + gap : track.clientWidth,
       inset: parseFloat(cs.scrollPaddingLeft) || 0,
-      client: track.clientWidth
+      client: track.clientWidth,
+      // The row's width does not move under a gesture either — the ring keeps
+      // the same cards in it, only in a different order — so this is cached
+      // with the rest. recycle() reads it on every frame of a drag, and
+      // scrollWidth is a forced layout every time it is asked for.
+      max: Math.max(0, track.scrollWidth - track.clientWidth)
     };
     return metrics;
   }
@@ -926,7 +970,27 @@
   }
 
   function maxScroll() {
-    return Math.max(0, track.scrollWidth - track.clientWidth);
+    return sized().max;
+  }
+
+  // Where the recycle parks the rail: the middle of the row.
+  //
+  // It used to park one card in, which left a card and a quarter of row behind
+  // the rail and three and a half in front. Touch is the half of this that
+  // cannot recycle mid-gesture — writing scrollLeft under a native scroll is
+  // writing underneath the thing doing the scrolling, and takes the momentum
+  // with it — so a swipe has only the row that is already there to spend, and
+  // backwards it ran out after a card and a quarter. Past that the rail hits
+  // scrollLeft 0, rubber-bands against a wall it is not supposed to have, and
+  // the recycle that was waiting for the gesture to end lands all at once.
+  // That is the jump at the seam.
+  //
+  // The band is a card wide and any w-periodic lattice has exactly one point
+  // in it, so parking it on the middle lands the rail on the snap position
+  // nearest the middle without this having to know where the snap positions
+  // are. Same slack either way, and about twice what a backwards swipe had.
+  function homePos() {
+    return maxScroll() / 2;
   }
 
   // --- the loop ---------------------------------------------------------
@@ -974,9 +1038,9 @@
     return m.step > 0 && (ring.length - 1) * m.step - m.client >= m.step;
   }
 
-  // scrollLeft is held within half a card either side of one card in, so there
-  // is always row to the left to scroll back into and the rest of it to the
-  // right. Returns the distance the scroll was moved, because anything holding
+  // scrollLeft is held within half a card either side of the middle of the row
+  // (see homePos), so there is as much row to scroll back into as there is to
+  // scroll forward through. Returns the distance the scroll was moved, because anything holding
   // a scroll position of its own — a drag's origin, a step's two ends — has to
   // move with it or it will fight the recycle on the next frame.
   // `at` is the position the caller has just put the scroll at. Reading it back
@@ -990,11 +1054,12 @@
     if (!loopable()) return 0;
 
     const w = step();
+    const home = homePos();
     let pos = at === undefined ? track.scrollLeft : at;
     let shifted = 0;
     let guard = ring.length * 2;
 
-    while (guard-- > 0 && pos >= w * 1.5) {
+    while (guard-- > 0 && pos >= home + w * 0.5) {
       rotate(1);
       pos -= w;
       track.scrollLeft = pos;
@@ -1002,7 +1067,7 @@
     }
 
     guard = ring.length * 2;
-    while (guard-- > 0 && pos < w * 0.5) {
+    while (guard-- > 0 && pos < home - w * 0.5) {
       rotate(-1);
       pos += w;
       track.scrollLeft = pos;
@@ -1203,6 +1268,7 @@
       return;
     }
 
+    pauseAll(true);
     stepFrom = track.scrollLeft;
     stepTarget = target;
     stepStart = 0;
@@ -1608,6 +1674,7 @@
       // it, and it picks up again when that pointer leaves.
       driftStop(true, false);
       hush();
+      pauseAll(true);
       track.setPointerCapture(event.pointerId);
     }
     if (moved) {
@@ -1711,6 +1778,7 @@
     track.classList.add('is-dragging');
     driftStop(true, false);
     hush();
+    pauseAll(true);
   }, { passive: true });
 
   // Sampled off the scroll rather than off the touch, because the scroll is
