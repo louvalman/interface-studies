@@ -669,8 +669,16 @@
   // remembered rather than done, and the rail catches up the moment it settles.
   const waiting = new Set();
 
+  // Declared here rather than beside glide(), which is far below: gesturing()
+  // is called from loadPreview, and loadPreview runs synchronously during setup
+  // on a browser with no IntersectionObserver. A `let` declared after this
+  // point would be a ReferenceError on that path.
+  let gliding = false;
+  let glideTimer = 0;
+  let glideEnd = null;
+
   function gesturing() {
-    return touching || dragging || stepFrame !== 0;
+    return touching || dragging || gliding || stepFrame !== 0;
   }
 
   // The two halves settle at different moments, because they are waiting on
@@ -1416,6 +1424,57 @@
     settleWork();
   }
 
+  // A touch release is landed by the browser, not by a rAF loop.
+  //
+  // The gesture itself is scrolled natively — on the compositor, off this
+  // thread — and then the rail used to take the landing back and animate
+  // scrollLeft itself for 240ms. On a phone that swaps the platform's own
+  // momentum for an imitation of it, running on the one thread everything else
+  // is on, and that swap is what "not smooth between cards" was. Desktop never
+  // showed it because the drag there is already driven from script, so a
+  // scripted settle matches what came before it; on touch it replaces
+  // something better.
+  //
+  // scrollTo with behavior: smooth is the same animation the platform uses for
+  // its own snapping, and it runs where the scrolling runs. What it costs is
+  // that it cannot be steered mid-flight — a scrollLeft write cancels it — so
+  // the recycle holds off until it lands. The row carries three cards of slack
+  // either side, which is more than one settle can spend.
+  function endGlide() {
+    if (!gliding) return;
+    gliding = false;
+    clearTimeout(glideTimer);
+    if (glideEnd) { track.removeEventListener('scrollend', glideEnd); glideEnd = null; }
+    // Snap comes back only now. It is mandatory, so restoring it mid-flight
+    // would yank the scroll to the nearest card instead of letting it arrive —
+    // the same reason release() has always run before this class comes off.
+    track.classList.remove('is-dragging');
+    recycle();
+    settleWork();
+  }
+
+  function glide(target) {
+    // Nothing to travel: a tap, or a gesture that asked for the card it was
+    // already on. Finishing here rather than waiting on a scrollend that will
+    // never fire, because no scroll is about to happen.
+    if (Math.abs(target - track.scrollLeft) < 1) {
+      track.classList.remove('is-dragging');
+      recycle();
+      settleWork();
+      return;
+    }
+
+    gliding = true;
+    clearTimeout(glideTimer);
+    glideEnd = () => endGlide();
+    track.addEventListener('scrollend', glideEnd);
+    // scrollend is not everywhere yet, and a smooth scroll that is interrupted
+    // may never send one. The timeout is the backstop.
+    glideTimer = setTimeout(endGlide, 700);
+
+    track.scrollTo({ left: target, behavior: reduced.matches ? 'auto' : 'smooth' });
+  }
+
   function scrollBy(direction) {
     const w = step();
     if (w <= 0) return;
@@ -1468,7 +1527,9 @@
     // row carries a card of slack either side, which is more than a gesture
     // spends before it ends, and the step that follows recycles on every frame
     // of itself.
-    if (!stepFrame && !dragging && !touching && drift !== 'on') recycle();
+    // Never under a glide either: a scrollLeft write cancels a native smooth
+    // scroll, and the recycle would stop it halfway.
+    if (!stepFrame && !dragging && !touching && !gliding && drift !== 'on') recycle();
     if (touching) sampleTouch();
     syncSoon();
   }, { passive: true });
@@ -1844,9 +1905,13 @@
   // originScroll is the scroll the drag started from, kept in step with every
   // recycle underneath it — so counting cards from there is counting them from
   // where the hand started, whatever the row did on the way.
-  function release() {
+  function release(native) {
     const w = step();
-    if (w <= 0) { settle(); return; }
+    if (w <= 0) {
+      if (native) { track.classList.remove('is-dragging'); settleWork(); }
+      else settle();
+      return;
+    }
 
     const covered = (track.scrollLeft - originScroll) / w;
     const whole = Math.trunc(covered);
@@ -1867,7 +1932,9 @@
       cards = -Math.sign(speed);
     }
 
-    stepTo(originScroll + cards * w, RELEASE_MS);
+    const target = originScroll + cards * w;
+    if (native) glide(target);
+    else stepTo(target, RELEASE_MS);
   }
 
   // --- the touch gesture ------------------------------------------------
@@ -1922,11 +1989,8 @@
     // the pointer, and the two run opposite ways.
     originScroll = touchFrom;
     speed = -touchSpeed;
-    release();
-    track.classList.remove('is-dragging');
-    // release() usually leaves a step running, which drains this when it ends;
-    // a gesture that asked for no movement at all leaves nothing to wait for.
-    if (!stepFrame) settleWork();
+    // The browser lands it. .is-dragging comes off when it has — see glide().
+    release(true);
   }
 
   track.addEventListener('touchend', endTouch, { passive: true });

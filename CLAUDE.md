@@ -512,6 +512,32 @@ Each card iframes that folder's `preview.html` — so the index shows the live
 component, not `ref.png`. The reference image stays in the folder as the record
 of what the build was based on; it is not what gets displayed.
 
+A touch release is landed by the browser, not by the rail. The gesture itself
+is scrolled natively — on the compositor, off the main thread — and the rail
+used to take the landing back on `touchend` and animate `scrollLeft` itself for
+240ms. On a phone that swaps the platform's own momentum for an imitation of
+it, running on the one thread everything else is on, and that swap is what
+"not smooth between cards" was. Desktop never showed it, because the drag there
+is already driven from script and a scripted settle matches what came before
+it; on touch it replaced something better.
+
+`glide()` hands the landing to `scrollTo({ behavior: 'smooth' })` — the same
+animation the platform uses for its own snapping, running where the scrolling
+runs. What it costs is that it cannot be steered mid-flight: a `scrollLeft`
+write cancels a native smooth scroll, so the recycle and the scroll handler
+both hold off until it lands, and `gesturing()` counts a glide as the rail
+still moving. The row carries three cards of slack either side, which is more
+than one settle can spend. Snap comes back only when it has arrived, because
+mandatory snap restored mid-flight yanks the scroll to the nearest card instead
+of letting it land — the same reason the release has always run before
+`.is-dragging` comes off. `scrollend` ends it, with a timeout as the backstop
+where that event is missing or the scroll is interrupted.
+
+The pointer path still steps itself, through `stepTo`. There is nothing native
+to defer to there: the drag is scripted from `pointermove`, so the settle is
+consistent with it, and a recycle mid-step has to be able to move both ends of
+the animation underneath it.
+
 Cards run their preview in place, via the message contract above. The quick-look
 overlay iframes the same `preview.html` again at full logical size with pointer
 events *on*, so there the component's real `:hover` does the work and no message
