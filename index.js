@@ -703,6 +703,11 @@
   }
 
   function loadPreview(piece) {
+    // A still card never runs its preview in the rail. Its frame is in the
+    // markup only because the path lives there — quick look, the theme rewrite
+    // and the date fallback all read it — and loading it would be the whole
+    // cost the still exists to avoid.
+    if (piece.dataset.still !== undefined) return;
     const frame = piece.querySelector('[data-preview]');
     if (!frame || frame.dataset.loaded === 'true') return;
     const src = frame.getAttribute('data-src');

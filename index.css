@@ -861,6 +861,23 @@ body.is-locked {
   transition: opacity 420ms var(--ease);
 }
 
+/* A still card shows a render of the component instead of running it. The
+   frame stays in the markup because the path lives on it, but it is taken out
+   of the layout entirely — a same-origin iframe takes part in this page's style
+   and layout passes whether or not it animates, which is the cost being
+   avoided. The image carries no skeleton: there is nothing to wait for. */
+.piece__still {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  object-fit: cover;
+}
+
+.piece[data-still] .piece__preview { display: none; }
+.js .piece[data-still] .piece__frame::after { content: none; }
+
 /* Hidden-until-ready and the skeleton over it are both behind .js: only the
    script can clear them, so without it the preview must render plainly
    rather than sit under a box nothing will ever lift. */
