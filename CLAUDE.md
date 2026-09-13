@@ -295,6 +295,21 @@ back. The index rewrites `data-src` rather than `src`, so the two places that
 load a preview (the rail on approach, quick look on open) never learn about any
 of this.
 
+Three times over, in fact, and the third is the one that was missing. Between
+the two above sits the case neither covers: a document that is loading at the
+moment the switch happens. Its src was written before the switch, so it carries
+the old theme, and the message that would correct it lands in a document that
+has not parsed its listener yet — dropped, and the card stays on the old ground
+for as long as it stays loaded, which at the current unload margin is the rest
+of the session. Toggling during the page's own first pass strands the whole
+rail that way; toggling later strands whichever card the drift happened to be
+loading, which is why it read as *some* cards rather than all of them. So the
+theme joins the scale and the pause as state the index re-states on
+`preview:ready` — the one moment a preview is known to be listening — from
+`<html>`'s own attribute, where the theme module has already resolved the
+stored choice, the query string and the system preference into one answer. Both
+`preview:ready` handlers do it: the rail's and quick look's.
+
 Every preview takes it, and takes it the same way: `--preview-ground` is
 `#f3f2ef` on a light rail and `#191b1e` on a dark one, two literals repeated in
 every folder. That ground is the rail's rather than the component's — it is
