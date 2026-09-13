@@ -5,26 +5,25 @@
   A deviation from the usual "one instance, no second copy", and a deliberate
   one: what this study offers is one surface that changes shape, and a component
   whose argument is a transition cannot make it standing still in a single frame.
-  So the card is one bar, in the material it ships in, at the two points in its
-  behaviour that cannot be guessed from a picture of the other — the search field
-  open, and the log panel open. The variant dots step into one state at full
-  size, where a panel has room to be read rather than recognised. No captions and
-  no state labels either way: the states are the picture.
+  So the card is one bar, in the material it ships in, twice: shut on Versions,
+  and with its log panel open. The variant dots step into one state at full size,
+  where a panel has room to be read rather than recognised. No captions and no
+  state labels either way: the states are the picture.
 
-  Two, and the sheet dropped to get there is the resting bar. It was the one a
-  reader could already infer: both of the others are visibly a bar that has
-  opened, so the closed one is implied by either of them, while a field where an
-  icon was and a panel unfolding out of the same corner are implied by nothing.
-  Three sheets ran 488px of the 600px frame with 56px of air and a silhouette
-  that grew downward; two run 394px with 103px, and the pair reads as one surface
-  shown twice rather than as a row of specimens. Origin is still a dot — see the
-  note on VARIANTS at the foot of the file.
+  Shut on top, and that is the resting picture on purpose. A thumbnail is looked
+  at before it is chosen, and a card whose every surface is already open has
+  spent what it had to show — the bar has to be closed before opening it means
+  anything. So at rest the card is a shut bar over an open panel, the component's
+  own resting shape and its largest move in one frame, and on hover the shut one
+  opens its search field. Nothing changes position and the panel is not touched;
+  what moves is one item inside one bar. See the note on HOVER.
 
-  On hover the top sheet closes its field and steps along to Versions; nothing
-  moves position and the panel below is not touched. The rest state is where the
-  card says these are two shapes of one surface, and hover is where it says the
-  surface goes places — which is one item moving inside one bar, not the card
-  rearranging itself. See the note on HOVER.
+  Two sheets rather than three, which is what the frame wanted: three ran 488px
+  of the 600px frame with 56px of air and a silhouette that grew downward, two
+  run 394px with 103px, and the pair reads as one surface shown twice rather than
+  as a row of specimens. The third was a duplicate of whichever state the top
+  sheet was not holding. Origin is still a dot — see the note on VARIANTS at the
+  foot of the file.
 
   States rather than the material set, which is what this card showed first. Six
   bars at rest filled 492px of the frame with six near-identical rows, and
@@ -173,7 +172,7 @@
 <body>
   <div class="preview__stack" data-stack>
 
-      <nav class="liquid-glass-toolbar" aria-label="Primary, search open">
+      <nav class="liquid-glass-toolbar" aria-label="Primary">
         <div class="liquid-glass-toolbar__shell">
 
           <div class="liquid-glass-toolbar__bar">
@@ -548,36 +547,43 @@
       var VERSIONS = { id: 'versions', label: 'Versions', current: 1, classes: [] };
 
       /*
-        What the stack holds, one per sheet, in the order the sheets are in the
-        markup. Two rather than three, and the one dropped is the resting bar:
-        it is the state a reader can already infer from either of the other two,
-        because both of them are visibly a bar that has opened. Search and log
-        are the two that are not inferable from anything — a field where an icon
-        was, and a panel unfolding out of the same corner — and they are the
-        study.
+        What the stack holds at rest: a closed bar sitting on Versions, and the
+        same bar with its log panel open. Two sheets rather than three, and the
+        one dropped was a duplicate of whichever state the top sheet was not
+        holding.
 
-        Keeping the rest sheet cost the card its balance. Three sheets ran 488px
-        of the 600px frame with 56px of air; two run 394px with 103px, and the
-        pair reads as one surface shown twice rather than as a row of specimens.
+        Closed on top, and that is the resting picture on purpose. A thumbnail
+        is looked at before it is chosen, and a card whose every surface is
+        already open has spent what it had to show — the bar has to be shut
+        before opening it means anything. So the card at rest is a shut bar over
+        an open panel, which is the component's own resting shape and its
+        largest move in one frame, and hover is where the shut one opens.
+
+        Two rather than three is also what the frame wanted. Three sheets ran
+        488px of the 600px frame with 56px of air; two run 394px with 103px, and
+        the pair reads as one surface shown twice rather than as a row of
+        specimens.
       */
-      var STATES = [SEARCH, LOG];
+      var STATES = [VERSIONS, LOG];
 
       /*
-        And what it holds while the card is being looked at. Only the top sheet
-        moves, and it moves the way a person would: the field it is holding
-        closes, and the bar steps along to the next destination. The panel below
-        it is left alone — it is the slower, larger state, and having it reshuffle
-        under a passing pointer was the thing that made the earlier rotation feel
-        like a card trick rather than like a toolbar.
+        And what it holds while the card is being looked at: the top sheet opens
+        its search field. That is the direction the component actually goes — a
+        pointer arrives and a bar opens — and it puts the card's one genuinely
+        unguessable picture, a text field where an icon was, on the frame a
+        reader is already looking at rather than on the one they are leaving.
+
+        The panel below is left alone. It is the slower, larger state, and having
+        it reshuffle under a passing pointer was what made the earlier rotation
+        feel like a card trick rather than like a toolbar.
 
         The sheets keep their positions through it. An earlier version had them
         trade, which showed that the two states belong to one surface but did it
         by moving the surfaces, and a thumbnail that rearranges itself on
-        approach reads as a shuffle. Moving one item along inside one sheet says
-        the same thing more quietly: the bar you are looking at is a bar that
-        goes places.
+        approach reads as a shuffle. Opening one item inside one sheet says the
+        same thing more quietly.
       */
-      var HOVER = [VERSIONS, LOG];
+      var HOVER = [SEARCH, LOG];
 
       /*
         First entry is the resting state of the *card*, and it is what the
@@ -673,13 +679,13 @@
 
       /*
         In the stack every sheet takes its own state, by position. On a single
-        sheet the lead takes the variant's, and the other two are out of the
-        document — so they keep whatever they were last dressed in and are
-        re-dressed on the way back in.
+        sheet the lead takes the variant's, and the other is out of the document
+        — so it keeps whatever it was last dressed in and is re-dressed on the
+        way back in.
 
         Hover swaps the whole list for HOVER, which differs from STATES in one
-        entry: the top sheet closes its search field and steps along to Versions.
-        Nothing changes position and the lower sheet is not touched.
+        entry: the top sheet, shut on Versions, opens its search field. Nothing
+        changes position and the lower sheet is not touched.
 
         It costs the frame nothing, which is the point of picking this move over
         the two earlier ones. A bar at rest and a bar with its search field open
