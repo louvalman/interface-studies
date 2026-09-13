@@ -171,7 +171,12 @@
     </header>
 
     <section class="rail">
-      <div class="rail__bar">
+      <!-- One grid rather than a bar and a row beneath it: the count sits on
+         the top line, the type filter on the one below, and the carousel
+         controls span both and land on the filter chips' own bottom edge. On a
+         narrow viewport the chips need the full width, so the areas restack
+         and the controls go back up beside the count - see index.css. -->
+      <div class="rail__head">
         <p class="rail__count">
           <span data-i18n="rail.study">Study</span>
           <span id="rail-index">01</span>
@@ -250,7 +255,6 @@
             </svg>
           </button>
         </nav>
-      </div>
 
       <!-- Type filter. The buttons are written by index.js from the types the
          cards actually declare, so this row is empty markup until it runs and
@@ -264,6 +268,7 @@
         data-i18n-aria="a11y.filter"
         aria-label="Filter by type"
         hidden></div>
+      </div>
 
       <!-- Add a study: copy one <article class="piece"> block and point the
          iframe at the new folder's preview.html and the title link at its

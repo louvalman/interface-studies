@@ -858,6 +858,26 @@ to. Three rather than one because the row reads as a set and a single trailing
 placeholder reads as an accident. When a study lands, replace the slot whose
 month it is.
 
+The rail's head is one grid — `.rail__head` — holding the count, the type
+filter and the carousel controls, rather than a bar with a row beneath it. The
+controls span both rows and sit in the right column, so they land on the filter
+chips' own bottom edge instead of floating on a line that is otherwise empty for
+a thousand pixels. It takes 31px off the header, which is 31px more of the first
+card above the fold.
+
+Bottom-aligned rather than centred, because the chips and the circles are
+different heights and the chips' bottom edge is the line the eye already has;
+the nav's bottom padding matches the filter's so the circles finish on the chips
+rather than on the scroller's box. Right-aligned to the page gutter, the same
+one the masthead and the cards use.
+
+Side by side only above 52rem, which is where all four chips still fit beside
+the controls. Below it the areas restack to what they were — controls up beside
+the count, chips full width underneath — because the chips lose more than they
+gain: measured at 320px with the drift control showing, the scroller is left
+132px and one chip of four. The grid restacks with `grid-template-areas`, so
+nothing moves in the DOM and the nav is one element in both layouts.
+
 The type filter above the rail is built by `index.js` from the `type.*` key on
 each card's badge, so a study of a new type needs nothing added to it. Filtering
 hides cards with a class rather than the `hidden` attribute — `.piece` sets its
