@@ -760,24 +760,6 @@ body.is-locked {
    in between would yank a drifting rail to the previous card before the hand
    had gone anywhere. Nothing is committed by it — a press that turns out to be
    a tap settles on release. */
-/* The landing after a touch release, and the reason it is a transform rather
-   than a scroll: a scroll animated from script is a main-thread update every
-   frame, which on a phone is two or three visible hitches in every landing
-   however little else is running. A transform is the compositor's, and the
-   duration and curve are still declared here rather than left to whatever
-   scrollTo's smooth behaviour happens to use — which is nothing anyone can
-   set, and over one card is too quick to read as motion at all.
-
-   index.js writes the distance onto each card and drops it again when the real
-   scroll takes over, in the same task, so no frame sees both or neither. */
-.rail__track.is-gliding .piece {
-  transition: translate var(--glide-ms, 460ms) cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .rail__track.is-gliding .piece { transition: none; }
-}
-
 .rail__track.is-dragging {
   cursor: grabbing;
   scroll-snap-type: none;
