@@ -34,10 +34,11 @@ paper — at 0.7 scale beside three near-white neighbours the card read as a
 different kind of object before it read as a component, which is the opposite
 of what a thumbnail is for. So preview.html takes the shared paper and
 demo.html's stage keeps the ramps. The glass survives the trade because the
-thumbnail is not showing one sheet: it stacks three, two of them dark, and each
-carries its own rim, sheen and drop shadow. A single alabaster sheet on flat
-paper would be the failure above; a near-black, a moss and a paper sheet on it
-are still three materials.
+thumbnail is not showing one sheet: it stacks three, and the third has its panel
+open, so there is a 300px plate of tinted glass on that paper with its own rim,
+sheen and drop shadow. A single sheet at rest on flat paper would be the failure
+above; a bar, an open field and an open panel on it are a component doing
+something.
 
 The icons are drawn rather than borrowed: a dot inside a ring, a magnifier, two
 drawers, a ruled ledger, two sliders. The magnifier is the one glyph in a
@@ -589,38 +590,45 @@ table are static strings in the file. Material names are not translated — they
 are shown as the class that selects them, which makes them class-name hints
 rather than page prose.
 
-The card shows three of the six materials stacked, which is a deliberate
-departure from this repo's rule that a thumbnail holds one instance and no second
-copy. The rule is there to stop a thumbnail turning into a small demo page, and
-it is the right rule — but what this study offers is a construction that comes in
-six materials, and one bar cannot advertise that. So the card is the set, with no
-captions and no state labels, and the variant dots step into a single bar where
-a panel has somewhere to open. The stagger down the stack costs nothing to add
-from outside, because the motion is a custom property whose value is a whole
-shorthand: a delay goes on the end of it without the component knowing. The
-sheets are added and removed rather than hidden — `component.css` gives the root
-a `display`, and an author rule beats the user-agent `[hidden]` one, which would
-have left all three on screen.
+The card stacks one bar three times, in one material, at three points in its own
+behaviour: at rest on Origin, with the search field open, and with the log panel
+open. That is a deliberate departure from this repo's rule that a thumbnail holds
+one instance and no second copy. The rule is there to stop a thumbnail turning
+into a small demo page, and it is the right rule — but what this study offers is
+one surface that changes shape, and a component whose whole argument is a
+transition cannot make it standing still in a single frame. So the card is the
+sequence, with no captions and no state labels, and the variant dots step into a
+single bar at full size where each state has room to be read rather than
+recognised. The stagger down the stack costs nothing to add from outside, because
+the motion is a custom property whose value is a whole shorthand: a delay goes on
+the end of it without the component knowing. The sheets are added and removed
+rather than hidden — `component.css` gives the root a `display`, and an author
+rule beats the user-agent `[hidden]` one, which would have left all three on
+screen.
 
-Three rather than all six, and the cut is what the card needed rather than what
-the set wanted. Six sheets at a 1.5rem gap filled 492px of the 600px frame, and
-a card 336px wide showing six near-identical bars is a swatch chart — the eye
+States rather than materials, and it took two passes to get there. The card
+showed the material set first — one bar at rest, in all six — which filled 492px
+of the 600px frame with six near-identical rows. That is a swatch chart: the eye
 counts rows before it reads a toolbar, which is the same failure as a thumbnail
-turning into a demo page, arrived at from the other side. Three still says
-*materials*, plural, and the three chosen are the ends and the middle: basalt,
-moss, alabaster. The claim the stack is making is that one construction takes a
-whole palette rather than a hue rotation, and a lightness ramp from near-black
-to paper states it in three sheets; carnelian, slate and crystal are further
-points on a line already drawn. Crystal is the one that most wanted dropping
-from the card in any case — at a 7% tint it is carried by its rim, and beside
-alabaster at 0.7 scale the two read as one sheet drawn twice. The full six are
-still in `component.css` and still shown in `demo.html`, which is the page that
-is making that argument. The gap opened to 2rem with the cut: each sheet's drop
-is `0 1.5rem 3rem -1rem`, so at 24px the shadow was landing on the sheet below
-and the stack read as one ridged slab, and with three sheets there is frame to
-spend on giving each of them its own ground.
+turning into a demo page, arrived at from the other side. Cutting to three
+materials fixed the density and left the card still answering the wrong
+question. What a rail of thumbnails is being asked is *what is this thing*, and
+six tints of one bar answer what it is made of. The states answer what it does,
+and they are the reason to open the study.
 
-Darkest at the top, and that is the thumbnail's order rather than the demo's. The stack used to run lightest first, which put the palest sheets against the card's own near-white paper at the moment the eye lands — faint outlines and then the weight arriving underneath, so the card read as empty at the top and heavy at the bottom. Reversed, the mass is where the eye starts and the sheets fade out of it. demo.html keeps its own order, default first, because that page is making a different argument: moss is what the component ships as, and the rest are shown against it.
+So one material — moss, the one the component ships as — and the three legs of
+its behaviour. The full six are still in `component.css` and still shown in
+`demo.html`, which is the page making that argument; the card is not the place
+to enumerate a palette. The heights are the cost and they are worth it: the bar
+is 62px and the open panel is 300px, so the stack is 488px of the 600px frame
+and the composition is bottom-heavy at rest, a triangle growing downward. That
+reads as the escalation it is — rest, then a field, then a panel — which a
+balanced arrangement of the same three would not.
+
+The gap is 2rem rather than the 1.5rem the six had. Each sheet's drop is
+`0 1.5rem 3rem -1rem`, so at 24px the shadow landed on the sheet below and the
+stack read as one ridged slab; three sheets leave frame to spend on giving each
+of them its own ground.
 
 Which makes rebuilding the stack a thing that has to be done sparingly, and
 getting the order right is what got that wrong. Appending the whole list in order
@@ -635,9 +643,8 @@ which is why it looked like a CSS problem. `getAnimations()` is what settled it
 the repair is to touch only the sheets that are actually out of place.
 
 They run darkest to lightest — basalt, moss, carnelian, slate, crystal,
-alabaster, of which the card takes the first, the second and the last — and the
-sequence had to be measured rather than reasoned even though the direction was
-chosen. Brightness and tint pull
+alabaster — and the sequence had to be measured rather than reasoned even though
+the direction was chosen. Brightness and tint pull
 opposite ways: alabaster's `brightness: 1.02` makes it lighter than the page it
 sits on, while crystal's 7% tint leaves it near enough the page itself. Sampled
 off a render, moss and slate come out identical to four decimal places, so which
@@ -670,15 +677,30 @@ where the preview runs at full size. It is a custom property set from outside,
 which is what the property block is for, and no rule in the preview names a
 component class.
 
-Which of the two morphs the card plays on hover is a thumbnail decision, not a
-component one, and it went the other way at first. The panel is the headline
-move, so `active` opened the panel — but a card 336px wide unfolding into four
-rows of small type is a lot of small type, and the state's width depends on how
-long the selected item's label happens to be, which is not a thing a fixed frame
-can promise. The search field is the better thumbnail: one line of shape change,
-legible at any scale, and its width is a number the preview sets rather than
-something the copy decides. The panel is still a click away in quick look and a
-dot away in the variant row, where there is room for it.
+What the card plays on hover is a thumbnail decision, not a component one, and it
+has been three things. It opened the panel first, because the panel is the
+headline move — but a card 336px wide unfolding into four rows of small type is a
+lot of small type, and the state's width depended on how long the selected item's
+label happened to be, which is not a thing a fixed frame can promise. Then it
+opened the search field on whichever sheet was not already morphing: one line of
+shape change, legible at any scale, and a width the preview sets rather than one
+the copy decides. That was right while the stack was one state in six materials
+and became wrong the moment the stack was the states themselves — it would have
+put a second search field beside the one already on sheet two and left the panel
+alone.
+
+So hover rotates the assignment by one instead. Each sheet takes the state of the
+sheet below it, which changes nothing about which three states are on screen and
+everything about what the card is saying: standing still it is three endpoints,
+and one rotation says they are the same surface changing shape rather than three
+components in a row. The stagger spends 70ms a row on it, so the rotation arrives
+as a roll down the stack rather than as three things moving at once.
+
+It costs the frame nothing, which is the part that had to be measured rather than
+hoped for. The panel closing on one sheet is the panel opening on another and the
+two cross: the stack is 488px tall at rest, 488px at every frame of the rotation,
+and 488px settled. Nothing below it reflows, and the card does not resize under a
+pointer that is only passing over it.
 
 Inspiration: https://x.com/renzobianchi_/status/2097400239162351924 — three
 frames of a glass toolbar, of which `ref.png` is the resting one. What it
