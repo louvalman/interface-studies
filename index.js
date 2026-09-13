@@ -1873,9 +1873,33 @@
     renderNav();
   }
 
-  // A pointer resting on the rail is someone reading it, so the rail waits.
-  track.addEventListener('pointerenter', driftHold);
-  track.addEventListener('pointerleave', () => driftRelease(DRIFT_RESUME));
+  // A pointer on the rail is someone reading it, so the rail waits — but only
+  // while there is someone there. Presence alone is not the signal it looks
+  // like: on a 1440x810 laptop the track's box is 86% of the fold, so a cursor
+  // left anywhere in the middle of the screen is "on the rail" and the drift
+  // was held for as long as the page stayed open. A pointer that has moved
+  // recently is a reader; one that has not is furniture.
+  //
+  // So movement holds it and stillness lets it go. Any move re-holds at once,
+  // which is what keeps the rail from travelling out from under someone who is
+  // actually there — they need only have moved within POINTER_IDLE, not be
+  // moving now.
+  const POINTER_IDLE = 4000;
+  let idleTimer = 0;
+
+  function pointerAwake() {
+    if (drift === 'off') return;        // taken for good; nothing to hold
+    clearTimeout(idleTimer);
+    driftHold();
+    idleTimer = setTimeout(() => driftRelease(0), POINTER_IDLE);
+  }
+
+  track.addEventListener('pointerenter', pointerAwake);
+  track.addEventListener('pointermove', pointerAwake);
+  track.addEventListener('pointerleave', () => {
+    clearTimeout(idleTimer);
+    driftRelease(DRIFT_RESUME);
+  });
 
   // Arriving by keyboard is taking control of the rail — one that drifted
   // between two tab presses would be hostile — so that stops it for good. A
@@ -1896,7 +1920,25 @@
   // and no longer does: pointerdown covers a finger now, and stopping the
   // drift from two places for one gesture is what stopped the rail before it
   // had been given anywhere to stop.
-  track.addEventListener('wheel', () => driftStop(true, false), { passive: true });
+  //
+  // Only a wheel that is actually moving the rail, though. A vertical wheel
+  // over the track scrolls the page past it and leaves scrollLeft exactly
+  // where it was — measured — so reading it as the reader taking the rail
+  // stopped the drift for good on the way down to it. On a 13in laptop the rail
+  // is most of the viewport, so scrolling the page to reach the rail is enough
+  // to put the pointer over it, and the carousel was dead before it had been
+  // looked at. The pointer being there already holds the drift and lets go
+  // again on the way out; that is the right answer for passing through.
+  //
+  // Predominantly horizontal, or shift held, which is the conventional way to
+  // ask a vertical wheel for a horizontal scroll. Equal deltas are the
+  // diagonal start of a two-finger swipe and count as vertical: a gesture that
+  // means the rail resolves into one within a frame or two.
+  track.addEventListener('wheel', (event) => {
+    const sideways = event.shiftKey || Math.abs(event.deltaX) > Math.abs(event.deltaY);
+    if (!sideways) return;
+    driftStop(true, false);
+  }, { passive: true });
 
   if (driftBtn) {
     driftBtn.addEventListener('click', () => {
