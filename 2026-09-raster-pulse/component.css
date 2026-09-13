@@ -76,6 +76,14 @@
   /* --- motion --------------------------------------------------------- */
   --raster-pulse-dur: 6.4s;
   --raster-pulse-dur-active: 1.9s;
+  /* The resting field's colour drift: how far the whole field rotates off its
+     own hue, and how long a round trip takes. Negative carries tone A toward
+     tone B — pink to magenta — rather than the other way, which is toward red
+     and belongs to neither tone. Slow against --dur on purpose: the ring is
+     the thing travelling and this is the ground it travels over, so a drift
+     that kept pace with it would read as a second wave. */
+  --raster-pulse-hue-drift: -20deg;
+  --raster-pulse-hue-dur: calc(var(--raster-pulse-dur) * 2.5);
   /* Rings visible at once. 1 puts exactly one wave across the field; above 1
      the pattern repeats within it. */
   --raster-pulse-spread: 1;
@@ -204,6 +212,35 @@
      -1 offset makes the delay negative, so the field is already mid-pulse on
      the first frame instead of sitting dark for a cycle. */
   animation-delay: calc((var(--phase) - 1) * var(--raster-pulse-spread) * var(--raster-pulse-dur));
+}
+
+/* The resting field's colour life, and the whole of why it is on this element
+   rather than on the dots.
+
+   A dot's own hue cannot move at rest without paying for it: a keyframe holding
+   a var()-derived colour is re-resolved for all 289 of them on every frame,
+   which is what drove the resting wave onto alpha in the first place. Stacking
+   a second tone per dot and cross-fading it is worse again — measured, style
+   recalc goes from 949ms to 5822ms over three seconds and 177 frames in 180
+   drop — because it doubles the animated element count past what Chromium will
+   composite.
+
+   So the hue moves under the field instead of inside each dot. One element, one
+   filter, composited: measured at +10% recalc and no dropped frames. The ring
+   still travels in each dot's own alpha; what this adds is the ground moving
+   colour beneath it. A var() in these keyframes costs nothing — only one
+   element resolves it — which is why the drift stays a token when the dots'
+   own keyframes could not.
+
+   filter rather than a colour animation for the same reason it is on one
+   element: filter composites, background-color does not. */
+.raster-pulse__field {
+  animation: raster-pulse-hue var(--raster-pulse-hue-dur) linear infinite;
+}
+
+@keyframes raster-pulse-hue {
+  0%, 100% { filter: hue-rotate(0deg); }
+  50% { filter: hue-rotate(var(--raster-pulse-hue-drift)); }
 }
 
 /* Narrow bright window, long recovery — that is what makes the wave read as a
@@ -501,6 +538,13 @@
    is the whole field at full tone rather than a frozen wave — a frozen wave
    would read as a half-drawn pattern. */
 @media (prefers-reduced-motion: reduce) {
+  /* The drift is motion too, and a field left mid-rotation would be the study
+     in a colour it does not own. */
+  .raster-pulse__field {
+    animation: none;
+    filter: none;
+  }
+
   .raster-pulse__dot {
     animation: none;
     /* Both, because the size lives on `scale` now and a stale `transform`

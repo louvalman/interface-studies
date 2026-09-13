@@ -36,7 +36,7 @@ of rather than whose it is.
   Because the wave lives entirely in `--phase`, `--scan` is that one formula
   turned diagonal — same field, same keyframe, and the shape becomes motion.
 
-- **At rest the pulse moves brightness; active, it moves hue.** Resting, a dot
+- **At rest the pulse moves brightness over a field that drifts hue; active, the pulse moves hue itself.** Resting, a dot
   cycles between its own tone pulled 60% toward the field background and full
   strength, at 6.4s. On hover, `--open`, or `:active`, the pair swaps: the
   trough becomes the dot's own tone and the peak becomes the *other* tone, at
@@ -58,6 +58,24 @@ of rather than whose it is.
   it rather than an absolute, which is why the resting depth — 1.913 and 40% —
   is written out rather than read from `--peak-scale` and `--dim`; both still
   govern the active beat and the dot's own tone.
+
+  What alpha cannot give the resting field is any colour of its own, and a
+  field that only breathes brightness reads as one colour lit and dimmed. So
+  the hue moves under it rather than inside it: `.raster-pulse__field` carries
+  a single `hue-rotate` that takes the whole field 20 degrees off its own tone
+  and back over 16s — negative, so tone A travels toward tone B, pink to
+  magenta, rather than toward a red that belongs to neither. The ring still
+  travels in each dot's alpha; this is the ground it travels over, which is why
+  the drift is slow against the 6.4s pulse rather than in step with it.
+
+  It is one element because it cannot be 289. A dot's own hue at rest costs
+  what the first pass cost — a `var()` colour recomputed per dot per frame —
+  and stacking a second tone per dot to cross-fade is worse again: measured,
+  style recalc over three seconds goes from 949ms to 5822ms and 177 frames in
+  180 drop, because it doubles the animated element count past what Chromium
+  will composite. One filter on the field measures +10% recalc and nothing
+  dropped. It is also why the drift stays a token when the dots' keyframes
+  could not: only one element resolves that `var()`.
 
   Alpha carries a little more chroma than the same mix in oklab, which is the
   60% against the 58% that drew this field before — near enough to sit unnoticed, far enough to be worth writing
