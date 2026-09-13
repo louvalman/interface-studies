@@ -512,88 +512,62 @@ Each card iframes that folder's `preview.html` — so the index shows the live
 component, not `ref.png`. The reference image stays in the folder as the record
 of what the build was based on; it is not what gets displayed.
 
-A touch release is landed by the browser, not by the rail. The gesture itself
-is scrolled natively — on the compositor, off the main thread — and the rail
-used to take the landing back on `touchend` and animate `scrollLeft` itself for
-240ms. On a phone that swaps the platform's own momentum for an imitation of
-it, running on the one thread everything else is on, and that swap is what
-"not smooth between cards" was. Desktop never showed it, because the drag there
-is already driven from script and a scripted settle matches what came before
-it; on touch it replaced something better.
+A touch release is the platform's, end to end — its momentum, its snap, its
+deceleration curve. Nothing in `index.js` animates the landing.
 
-Three things have to be true at once, and each attempt at this had two of them.
-The animation must not run on this thread. The rail must land on the mark, left
-aligned, every time. And one swipe must be one study.
+Four attempts got here, and each failed for a reason that only made sense once
+the next one failed too. Driving `scrollLeft` from rAF is a main-thread scroll
+update per frame: two or three visible hitches in every landing on a phone.
+Handing it to `scrollTo({behavior:'smooth'})` is smooth but its duration is the
+browser's, nothing exposes it, and over one card it is finished before it reads
+as motion. Translating the row instead is smooth and the duration is ours — but
+the fling is still running underneath, so the two distances add up, the rail
+travels much too far, and committing the real scroll snaps it back. And a fling
+cannot reliably be cancelled from script: the write meant to stop it is a no-op
+when it asks for the position the scroll is already at.
 
-Leaving the whole landing to momentum and snap gave the first two and lost the
-third. `scroll-snap-stop: always` only governs a fling if snap is on when the
-browser *plans* it, and snap is off for the length of the gesture so a finger
-landing on a drifting rail is not yanked — so the fling is planned
-unconstrained and stops on a snap point, but not on the next one. It went too
-far, and nothing made a small drag advance at all.
+What was wrong sat upstream of all of it. `scroll-snap-stop: always` makes a
+fling stop at the next card rather than running through several — but only if
+snap is on when the browser *plans* the fling, and snap was off for the whole
+gesture so that a finger landing on a drifting rail is not yanked to the nearest
+card. It was off at exactly the moment it needed to be on.
 
-Aiming a `scrollTo` at a computed target gave the first and third and lost the
-second, because momentum is still running when the finger lifts: an animation
-started against it lands where the two happen to meet, which is a card in the
-middle of the scrollport.
+It only has to be off while the rail is **still**. Mandatory snap applies at the
+end of a scroll, not during one, so giving the class back on the first
+`touchmove` yanks nothing — the scroll is live by then — and the fling that
+follows is planned with snap and snap-stop in hand. One swipe, one study,
+landing on the mark, and not a line of it on this thread.
 
-So `land()` chooses the card and `stepTo` travels. `snapPos()` puts the target
-on the lattice the cards actually sit on, because a gesture that began on a
-drifting rail began between two of them. Snap stays off until it arrives, by
-which point the rail is on a snap position and giving the class back moves
-nothing.
+`endTouch` then only picks which of two things is true. A flick: hands off
+entirely, `landFlung` waits for `scrollend` and the platform does the rest. A
+slow drag: there is no fling to fight, and snap on its own would return a short
+drag to the card it started on — right for a stray touch, wrong for the
+deliberate short drag this rail is mostly used with — so `landWalked` scrolls it
+one card on, smoothly, as the only thing moving. `FLICK_SPEED` over the last two
+`touchmove` samples is the whole of the distinction; the full velocity sampling
+this replaced ran on every scroll event of a gesture to feed arithmetic that
+decided the target, and that arithmetic is what used to land cards off the mark.
 
-**The scroll is not what moves.** The row is translated instead: one style write
-per card, a CSS transition, and the compositor runs it with no further
-main-thread work. When it arrives the transform is dropped and the real scroll
-takes the same distance over, in one task, so the frame that loses the translate
-is the frame that gains the scroll. `commitGlide` writes the target absolutely
-rather than as a delta, so a fling that leaked past the cancel still lands on
-the mark instead of accumulating the error.
+A press that never moved takes the same walked path, because snap is still held
+off and giving it back to a rail standing between two cards is the yank.
 
-Everything else was tried first and each attempt had two of the three
-properties. `scrollTo({behavior:'smooth'})` lands right and advances right, but
-its duration is the browser's, nothing exposes it, and over a card it is
-finished before it reads as motion. Driving `scrollLeft` from rAF has all three
-on paper: it gives two or three visible hitches in every landing on a phone,
-because every write is a main-thread scroll update, and no amount of quieting
-the thread removes them.
+`gesturing()` counts the landing as the rail still moving, so the recycle holds
+off and the read mark does not start a card until it has arrived.
 
-That last one matters beyond this rail. **A throttled Chromium shows none of
-it** — every frame at 16.7ms, nothing dropped, on the same code that stutters
-plainly on an iPhone. The harness could not see the bug, which is why it took
-several rounds to place. Where a question is about how something feels on a
-phone, the phone is the instrument.
-
-`RELEASE_MS` is 460ms, up from the 240 it had while the hand's momentum was
-still doing the carrying: with the fling cancelled and the rail travelling the
-whole way itself there is nothing else moving to be quick relative to. Further
-is slower but not proportionally — two cards away should not feel twice as far.
-The curve is a `cubic-bezier(0.22, 1, 0.36, 1)` in `index.css`, a long tail on a
-quick start, because what makes a landing read as buttery is how it arrives.
-
-The `translate` property is shared with the drift's sub-pixel nudge. They never
-overlap — the drift is stopped at `touchstart`, before any landing — and a
-finger arriving mid-landing commits it first, so nothing reads `scrollLeft`
-while the row is still standing in for it.
-
-How far it goes is the finger's, never momentum's. `covered` is read at
-`touchend`, before momentum has added anything, so it measures what was asked
-for: past `SNAP_FRACTION` it is at least one card, and more only if the finger
-itself crossed more than one. That is what stops a flick running through three
-studies.
-
-Waiting matters as much as the choosing: `gesturing()` counts the landing as
-the rail still moving, so the recycle holds off — a write would cut the
-animation short — and the read mark does not start a card until it has arrived.
-`scrollend` ends it, with a timeout backstop for engines that do not send one.
+**On testing this.** A throttled Chromium reported the rAF version as flawless —
+every frame 16.7ms, nothing dropped — on code that stuttered plainly on an
+iPhone. It has no touch scrolling and no momentum, so the fling path cannot be
+exercised in it at all, and with snap live a synthetic `scrollLeft` write is
+undone before it counts. What a harness here can check is the rail's own
+decision — which branch, how many cards — and not how a platform lands it. Where
+the question is how something feels on a phone, the phone is the instrument, and
+a green harness is not evidence. Note also that Chrome on iOS is WebKit: "tested
+in Chrome" means two different engines depending on the device.
 
 The pointer path still steps itself, through `stepTo`, and keeps the old
-arithmetic — `SNAP_FRACTION`, the flick floor, all of it. There is nothing
-native to defer to there: the drag is scripted from `pointermove`, so a
-scripted settle is consistent with it, there is no momentum to fight, and a
-recycle mid-step has to be able to move both ends of the animation underneath
-it.
+arithmetic. There is nothing native to defer to there: the drag is scripted from
+`pointermove`, there is no momentum, and a recycle mid-step has to move both
+ends of the animation underneath it.
 
 Cards run their preview in place, via the message contract above. The quick-look
 overlay iframes the same `preview.html` again at full logical size with pointer
