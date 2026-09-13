@@ -20,8 +20,8 @@
   What moves when the card is looked at is the recipe and the colour. At rest
   the drawing is showing; looked at, it dissolves off and leaves the stop list
   underneath, in a colourway the card does not otherwise carry — a night field
-  under a light desktop, an ember one under a dark one. See the script at the
-  end of the file.
+  on the light rail, an ember one on the dark. See the script at the end of the
+  file.
 
   That is the card. Quick look is a different room, and it gets the rest of the
   folder: the composition above is the first of six, and the other five are
@@ -93,34 +93,40 @@
       font-family: "Plus Jakarta Sans", system-ui, sans-serif;
     }
 
-    /* The card's hover colourway, and the one thing on this page that reads
-       the viewer's OS theme. Two triples, one per --step block, out of one
-       family — the blocks have to stay different or the mirrored pair reads as
-       one object — and the family is the theme's answer: a night field under a
-       light desktop, an ember one under a dark desktop, so the card is always
-       the thing in the rail that is not the colour of the page around it.
+    /* The card's hover colourway. Two triples, one per --step block, out of
+       one family — the blocks have to stay different or the mirrored pair
+       reads as one object — and which family is the RAIL's answer, not the
+       desktop's: a night field on the light rail, an ember one on the dark,
+       so the card is always the thing in the rail that is not the colour of
+       the page around it.
 
-       Values here rather than in the script, so the query does the switching:
-       change the desktop theme under an open card and the field follows on the
-       next hover with no listener anywhere. The script only names them.
+       It hangs off the same [data-theme] the ground above does, and that is
+       the point. An earlier pass asked prefers-color-scheme, which is a
+       different question with the same name: the rail can be dark under a
+       light desktop, and there the night colourway landed dark on dark and
+       the card went muddy at exactly the moment it was being looked at. The
+       theme the card sits IN is the one worth answering.
+
+       Values here rather than in the script, so the selector does the
+       switching: the index sets the attribute before the first paint and
+       moves it on preview:theme, and the hover hues follow with no listener
+       of their own.
 
        Only two of the three stops are named. The stop recipe reads --hot at
        the pools and --warm twice — the wash and the settle — and never touches
        --cool, and the drawings carry their own hues in the markup. */
-    html {
+    :root {
       --preview-hover-a-hot: #23256e;
       --preview-hover-a-warm: #5a52c8;
       --preview-hover-b-hot: #4a1f6e;
       --preview-hover-b-warm: #8f4fc6;
     }
 
-    @media (prefers-color-scheme: dark) {
-      html {
-        --preview-hover-a-hot: #e4502a;
-        --preview-hover-a-warm: #f59a55;
-        --preview-hover-b-hot: #c62a4c;
-        --preview-hover-b-warm: #f06a45;
-      }
+    :root[data-theme="dark"] {
+      --preview-hover-a-hot: #e4502a;
+      --preview-hover-a-warm: #f59a55;
+      --preview-hover-b-hot: #c62a4c;
+      --preview-hover-b-warm: #f06a45;
     }
 
     /* The mount point, and the only element on this page that is not the
@@ -998,15 +1004,14 @@
 
     Two triples, one per block, out of one family: the blocks have to stay
     different or the mirrored pair reads as one object, which is the same
-    reason the drift steps them in pairs. And the family is the desktop's:
-    a night field under a light OS theme, an ember one under a dark one, so
-    the card is always the thing in the rail that is not the colour of the page
-    around it. The values live in this page's <style> behind a
-    prefers-color-scheme query and the script only names them, so the theme can
-    change under an open card and the next hover follows with no listener.
-    Nothing else here reads the OS theme: the index's chrome and this page's
-    ground are light either way, deliberately — the rail only reads as one set
-    of cards if the ground behind them never moves.
+    reason the drift steps them in pairs. And the family is the rail's: a night
+    field on the light rail, an ember one on the dark, so the card is always
+    the thing in the rail that is not the colour of the page around it. The
+    values live in this page's <style> against the same [data-theme] the ground
+    hangs off, and the script only names them, so a switch reaches the hover
+    hues with no listener of their own. It asked prefers-color-scheme first,
+    which is a different question wearing the same word: the rail can be dark
+    under a light desktop, and there the night colourway landed dark on dark.
 
     The base was where this started and it is not where it ended. A base off
     the page — sand, a paper tint — read as the card being slightly warmer

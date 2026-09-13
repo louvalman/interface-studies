@@ -710,14 +710,19 @@ or the surface-level hue would recolour the layer the cut is hiding under.
 Two triples, one per block, out of one family, for the same reason the drift
 steps its copies in pairs: one field reading two ways is the composition, and
 the same hue on both would flatten the mirrored pair into one object. Which
-family is the desktop's answer — a night field under a light OS theme, an
-ember one under a dark one — so the card is always the thing in the rail that
-is not the colour of the page around it. The values sit in `preview.html`'s own
-`<style>` behind a `prefers-color-scheme` query and the script only names them,
-so the theme can change under an open card and the next hover follows with no
-listener. Nothing else reads that query: the index's chrome and the preview's
-ground stay light either way, because the rail only reads as one set of cards
-if the ground behind them never moves.
+family is the *rail's* answer — a night field on the light rail, an ember one
+on the dark — so the card is always the thing in the rail that is not the
+colour of the page around it. The values sit in `preview.html`'s own `<style>`
+against the same `[data-theme]` the shared ground hangs off, and the script
+only names them, so a switch reaches the hover hues with no listener of their
+own.
+
+It asked `prefers-color-scheme` first, and that is a different question wearing
+the same word. The rail carries its own light and dark, and it can be dark
+under a light desktop — where the night colourway landed dark on a dark ground
+and the card went muddy at exactly the moment it was being looked at. The theme
+a card sits *in* is the one worth answering; the desktop's is the index's
+business, upstream of here.
 
 Ink was the first version of this: hover moving what the field settles *to*,
 from the page's ground to ink. It eases where the stops cannot — `--night`
