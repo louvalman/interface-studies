@@ -28,12 +28,28 @@
   --hairline-strong: rgba(23, 24, 26, 0.22);
   --accent: #ac512d;
 
-  /* The page's ground: a wash of two corner lights over --paper, and a grain
-     film the light theme has no use for. */
+  /* The page's ground: a wash of two corner lights over the base, and the same
+     grain film in both themes — the tile is one construction and only its
+     alpha moves, like every other token here.
+
+     It is thinner on paper than on ink. The speckle is dark either way, so on
+     a dark ground it reads as light tooth against the ground and on a light
+     one it reads as dirt if it is pushed as far; 0.26 is where the tooth is
+     plainly there and the paper is still paper. On a light ground it is not
+     doing the dark theme's other job — an 8-bit wash on paper has nowhere
+     near the banding one on ink does — so this half is texture and nothing
+     else.
+
+     --page-base is --paper, lightened by the seven units of luminance the
+     grain takes back out of it, so the page still renders at --paper. Only
+     the body's ground reads it: everywhere else --paper means the colour the
+     page ends up, not the colour it starts from. */
+  --page-base: #fefdfa;
   --page-wash:
     radial-gradient(58% 46% at 12% 0%, rgba(180, 85, 47, 0.07), transparent 68%),
     radial-gradient(46% 38% at 92% 4%, rgba(78, 110, 190, 0.06), transparent 70%);
-  --page-grain: none;
+  --page-grain:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.26'/%3E%3C/svg%3E");
 
   /* Chips. --chip-bg is the one that sits on the page (the language and theme
      controls); --chip-over-preview and its -strong pair sit on a thumbnail,
@@ -116,6 +132,9 @@
   /* Lifted off #ac512d, which is a 3:1 burnt orange against this ground. */
   --accent: #e08453;
 
+  /* No compensation on this side: the dark palette was picked with the grain
+     already over it, and a dark speckle on a dark ground barely moves it. */
+  --page-base: var(--paper);
   --page-wash:
     radial-gradient(58% 46% at 12% 0%, rgba(224, 132, 83, 0.07), transparent 68%),
     radial-gradient(46% 38% at 92% 4%, rgba(108, 140, 220, 0.055), transparent 70%);
@@ -164,7 +183,7 @@ body {
   min-height: 100vh;
   /* Grain over wash over ground. The grain tiles at its own size; the wash
      has no background-size of its own, so it covers. */
-  background-color: var(--paper);
+  background-color: var(--page-base);
   background-image: var(--page-grain), var(--page-wash);
   background-attachment: fixed;
   color: var(--ink);
