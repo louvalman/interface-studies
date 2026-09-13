@@ -2,15 +2,95 @@
    never reaches into any study folder. Nothing here names a component
    class; the previews are iframes, and they own their own styling. */
 
+/* Two themes, one token set. Every colour on this page is read from the
+   block below, so the dark theme further down is a re-declaration of the
+   same names and nothing else — no second stylesheet, no rule that exists
+   only in one theme, and no component class named anywhere near either. A
+   colour hardcoded past this point is a colour that will be wrong in one of
+   the two.
+
+   The previews are deliberately left out of it. A study's preview.html is
+   its own document with its own ground, and the repo's rule is that the
+   folder owns its styling — so on a dark page the cards read as lit plates
+   rather than inverting with the chrome. The chips that sit on top of a
+   thumbnail are the one place that has to be told about it: they are
+   painted against the preview, not against the page. */
 :root {
+  color-scheme: light;
+
   --paper: #f5f4f1;
   --surface: #fbfaf8;
   --ink: #17181a;
   --ink-soft: #55565a;
   --muted: #6c6b67;
+  --note: #61625f;
   --hairline: rgba(23, 24, 26, 0.1);
   --hairline-strong: rgba(23, 24, 26, 0.22);
   --accent: #ac512d;
+
+  /* The page's ground: a wash of two corner lights over the base, and a grain
+     film over both. Each theme draws the same noise at the scale its ground
+     can hold, and the two differ in more than alpha.
+
+     The speckle is dark in both. On ink that is light tooth against the
+     ground and a single pixel of it is plainly visible, which is why the dark
+     tile is fine — baseFrequency 0.8, a feature about a pixel across. On
+     paper the same tile disappears: a one-pixel dark speck on an off-white
+     ground is below what the eye resolves at reading distance, so a thousand
+     of them average into a flat tint and the page reads as slightly grey
+     rather than as textured. So the paper's grain is the same drawing at
+     twice the wavelength — baseFrequency 0.4 on a 320px tile, a feature about
+     two pixels across — which survives the averaging and reads as tooth.
+     Measured, not guessed: sampled at two CSS pixels, the paper's grain
+     carries 1.72 against the ink's 2.12 at 1x, and 1.60 against 1.62 at 2x.
+
+     Alpha differs too, and the other way round from what that suggests: 0.21
+     on paper against 0.18 on ink, because a dark speck on a dark ground shows
+     more of itself than one on paper does. It was 0.26 for a day, matched to
+     the ink's amplitude measured at 1x — and on a 2x screen, where the coarse
+     tile keeps more of itself than the fine one does, that put the paper's
+     grain above the ink's. The rule is that it never exceeds it at the density
+     the reader is on, which is this.
+
+     On this side the grain is only texture. The dark theme's is also doing a
+     second job — an 8-bit wash across two thousand pixels bands on ink, and
+     fine noise dithers the rings out — and a wash on paper has nowhere near
+     that problem.
+
+     --page-base is --paper, lightened by the seven units of luminance the
+     grain takes back out of it, so the page still renders at --paper. Re-measure
+     it if the alpha above moves: the two are one setting in two places. Only
+     the body's ground reads it: everywhere else --paper means the colour the
+     page ends up, not the colour it starts from. */
+  --page-base: #fcfbf8;
+  --page-wash:
+    radial-gradient(58% 46% at 12% 0%, rgba(180, 85, 47, 0.07), transparent 68%),
+    radial-gradient(46% 38% at 92% 4%, rgba(78, 110, 190, 0.06), transparent 70%);
+  --page-grain:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.4' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='320' height='320' filter='url(%23n)' opacity='0.21'/%3E%3C/svg%3E");
+
+  /* Chips. --chip-bg is the one that sits on the page (the language and theme
+     controls); --chip-over-preview and its -strong pair sit on a thumbnail,
+     which is why they are near-opaque and carry their own ink. */
+  --chip-bg: rgba(251, 250, 248, 0.72);
+  --chip-over-preview: rgba(251, 250, 248, 0.88);
+  --chip-over-preview-strong: rgba(251, 250, 248, 0.92);
+  --chip-over-preview-ink: #3a3b3e;
+  --chip-over-preview-ink-soft: #6c6b67;
+  /* No edge in light: the chip is paper on a light thumbnail and the tone
+     difference is the edge. */
+  --chip-over-preview-line: transparent;
+
+  /* The one inverted surface on the page: the filter chip that is pressed. */
+  --on-ink-bg: var(--ink);
+  --on-ink-fg: var(--paper);
+
+  --progress: var(--ink);
+  --scrim: rgba(23, 24, 26, 0.42);
+  --shimmer: rgba(23, 24, 26, 0.05);
+  --shadow-card: 0 1px 2px rgba(23, 24, 26, 0.04);
+  --shadow-lift: 0 22px 46px -20px rgba(23, 24, 26, 0.32);
+  --shadow-panel: 0 40px 80px -32px rgba(23, 24, 26, 0.5);
 
   --sans: "Plus Jakarta Sans", system-ui, sans-serif;
   --mono: "JetBrains Mono", ui-monospace, monospace;
@@ -34,6 +114,84 @@
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* The dark theme: the same names, and nothing else. It hangs off the
+   attribute alone, so there is one copy of it rather than one here and a
+   second inside a prefers-color-scheme query that the attribute would then
+   have to out-specify. index.js resolves which of the two applies — the
+   stored choice, or the system's when there is none — and writes the
+   attribute; a head script does the same before the first paint. That does
+   mean no dark theme with JavaScript off, which is the deal this page
+   already makes: without it there are no previews, no rail order and no
+   counts either. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Matte, and the whole palette is built to stay that way: no pure black to
+     sit under, no pure white to sit on, and elevation carried by the surface
+     getting lighter rather than by a shadow getting heavier. #121316 is a
+     warm-neutral graphite — the same slightly-warm cast --paper has, read
+     from the other end — so the ink can stay off-white without the page
+     turning blue under it.
+
+     A dark ground of this size bands: the wash below is a gradient across
+     2000-odd pixels with nowhere near enough steps to draw it, and 8-bit
+     colour puts visible rings in the corner light. The grain film is what
+     fixes it — a fractal-noise tile at an alpha low enough to read as paper
+     rather than as texture, which breaks the banding by dithering it. It is
+     also, not coincidentally, what makes the surface look matte. */
+  --paper: #121316;
+  --surface: #191b1e;
+  --ink: #e9e8e4;
+  --ink-soft: #a4a39f;
+  --muted: #7e7d79;
+  --note: #9a9995;
+  --hairline: rgba(233, 232, 228, 0.11);
+  --hairline-strong: rgba(233, 232, 228, 0.26);
+  /* Lifted off #ac512d, which is a 3:1 burnt orange against this ground. */
+  --accent: #e08453;
+
+  /* No compensation on this side: the dark palette was picked with the grain
+     already over it, and a dark speckle on a dark ground barely moves it. */
+  --page-base: var(--paper);
+  --page-wash:
+    radial-gradient(58% 46% at 12% 0%, rgba(224, 132, 83, 0.07), transparent 68%),
+    radial-gradient(46% 38% at 92% 4%, rgba(108, 140, 220, 0.055), transparent 70%);
+  /* Fine, and staying fine: a pixel of dark speck reads on ink, and the
+     banding this also has to dither needs the high frequencies. */
+  --page-grain:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.18'/%3E%3C/svg%3E");
+
+  --chip-bg: rgba(30, 32, 36, 0.72);
+  /* These two still sit on a light thumbnail, so they invert with the page
+     rather than against it: smoked glass over the plate, not a paper chip. */
+  --chip-over-preview: rgba(16, 17, 20, 0.82);
+  --chip-over-preview-strong: rgba(16, 17, 20, 0.88);
+  --chip-over-preview-ink: #dcdbd6;
+  /* Lifted off --muted, which is a 3:1 grey once the chip behind it is a
+     smoked panel rather than paper. */
+  --chip-over-preview-ink-soft: #a9a8a3;
+  /* The thumbnails go dark with the page, so a smoked chip on one has nothing
+     to sit against. A hairline gives it its edge back — inset, so the chip is
+     the same size in both themes. */
+  --chip-over-preview-line: rgba(233, 232, 228, 0.13);
+
+  /* Off-white rather than --ink: a chip filled with the text colour is a
+     small pool of glare at this contrast, and the point of the fill is that
+     it reads as pressed, not that it is the brightest thing on the page. */
+  --on-ink-bg: #dedcd6;
+  --on-ink-fg: #131417;
+
+  --progress: rgba(233, 232, 228, 0.72);
+  --scrim: rgba(6, 7, 9, 0.72);
+  --shimmer: rgba(233, 232, 228, 0.06);
+  /* Deeper and softer than the light pair. A shadow on a dark ground does
+     almost no work, so the card's separation comes from --surface and the
+     hairline; these only keep it from floating flat. */
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-lift: 0 26px 54px -22px rgba(0, 0, 0, 0.72);
+  --shadow-panel: 0 48px 96px -36px rgba(0, 0, 0, 0.82);
+}
+
 * { box-sizing: border-box; }
 
 /* For the footer's back-to-top link. The reduced-motion block below turns
@@ -43,10 +201,10 @@ html { scroll-behavior: smooth; }
 body {
   margin: 0;
   min-height: 100vh;
-  background:
-    radial-gradient(58% 46% at 12% 0%, rgba(180, 85, 47, 0.07), transparent 68%),
-    radial-gradient(46% 38% at 92% 4%, rgba(78, 110, 190, 0.06), transparent 70%),
-    var(--paper);
+  /* Grain over wash over ground. The grain tiles at its own size; the wash
+     has no background-size of its own, so it covers. */
+  background-color: var(--page-base);
+  background-image: var(--page-grain), var(--page-wash);
   background-attachment: fixed;
   color: var(--ink);
   font-family: var(--sans);
@@ -65,25 +223,34 @@ body.is-locked {
   overflow: hidden;
 }
 
-/* --- language selector -------------------------------------------------- */
+/* --- page controls ------------------------------------------------------ */
 
-/* Aligned to the page gutter, not to an inset of its own — everything else
+/* Language and theme, in one cluster at the top-right corner.
+
+   Aligned to the page gutter, not to an inset of its own — everything else
    on the page hangs off --gutter, and a control floating inside that margin
    reads as a browser extension rather than part of the layout.
 
-   Absolute, not fixed. Language is picked once on arrival and never again, so
-   the chip has no business riding the viewport for the rest of the page — and
-   while it did, it sat on top of the rail's next button: both are pinned to
-   the gutter's right edge, and at the scroll offset that puts the rail bar
-   near the top of the window the chip covered it. Positioned against the
-   initial containing block rather than a wrapper, so it still hangs off the
-   page's top-right corner; the masthead's own top padding is deeper than the
-   chip, which is what keeps it clear of the eyebrow at every width. */
-.lang {
+   Absolute, not fixed. Both choices are made once on arrival and then left
+   alone, so the cluster has no business riding the viewport for the rest of
+   the page — and while the language chip did, it sat on top of the rail's
+   next button: both are pinned to the gutter's right edge, and at the scroll
+   offset that puts the rail bar near the top of the window the chip covered
+   it. Positioned against the initial containing block rather than a wrapper,
+   so it still hangs off the page's top-right corner; the masthead's own top
+   padding is deeper than the cluster, which is what keeps it clear of the
+   eyebrow at every width. */
+.controls {
   position: absolute;
   top: clamp(1.25rem, 3vw, 2.25rem);
   right: var(--gutter);
   z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.lang {
   display: flex;
   align-items: center;
   gap: 0.1rem;
@@ -92,7 +259,7 @@ body.is-locked {
   /* Same chip the card badges use, so it belongs to the same family rather
      than introducing a third surface treatment. No backdrop-filter: it scrolls
      with the page now and the only thing ever behind it is the paper. */
-  background: rgba(251, 250, 248, 0.72);
+  background: var(--chip-bg);
 }
 
 .lang__btn {
@@ -131,6 +298,85 @@ body.is-locked {
   height: 0.7rem;
   background: var(--hairline);
 }
+
+/* --- theme toggle ------------------------------------------------------- */
+
+/* The same chip as the language group, round rather than a pill, because it
+   holds one mark instead of two words. It offers the state it would move to —
+   the rule the rail's drift button already follows — so the page reads as
+   light when there is a moon in the corner. */
+.theme {
+  flex: none;
+  width: 1.85rem;
+  height: 1.85rem;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--chip-bg);
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 240ms var(--ease), background 240ms var(--ease);
+}
+
+.theme:hover { color: var(--ink); }
+
+.theme:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.theme__icon {
+  width: 0.95rem;
+  height: 0.95rem;
+  overflow: visible;
+}
+
+/* One shape for both states: a disc with a bite taken out of it, and a ring
+   of rays around it. Dark moves the bite off the disc and brings the rays in;
+   light parks the bite over the disc's upper right and folds the rays away.
+   The bite is moved with a transform rather than by animating cx/cy — those
+   are CSS properties in every current engine, but a browser that does not
+   take them leaves the mark stuck in one state, where an unsupported
+   transform simply arrives without the tween. */
+.theme__cut {
+  fill: #000;
+  transform-box: fill-box;
+  transform-origin: center;
+  /* The bite, parked over the disc's upper-right shoulder — an offset of
+     just under a third of the diameter, which is a crescent thick enough to
+     hold at 15px. Dark slides it out along the same diagonal. */
+  transform: translate(30%, -30%);
+  transition: transform 520ms var(--ease);
+}
+
+.theme__disc {
+  fill: currentColor;
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scale(1);
+  transition: transform 520ms var(--ease);
+}
+
+.theme__rays {
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  transform-box: fill-box;
+  transform-origin: center;
+  opacity: 0;
+  transform: scale(0.55) rotate(-45deg);
+  transition:
+    opacity 320ms var(--ease),
+    transform 520ms var(--ease);
+}
+
+/* The sun: the bite slides off the disc, the disc gives up the room, and the
+   rays turn in. Hung off the same attribute the tokens are. */
+:root[data-theme="dark"] .theme__cut { transform: translate(125%, -125%); }
+:root[data-theme="dark"] .theme__disc { transform: scale(0.74); }
+:root[data-theme="dark"] .theme__rays { opacity: 1; transform: scale(1) rotate(0deg); }
 
 /* --- the site mark ----------------------------------------------------- */
 
@@ -298,16 +544,40 @@ body.is-locked {
   padding-bottom: clamp(1.5rem, 3vw, 2rem);
 }
 
-.rail__bar {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 1.5rem;
-  padding: 0 var(--gutter) 1.25rem;
+/* The count, the type filter and the carousel controls, as one grid rather
+   than a bar with a row under it.
+
+   The controls used to sit on their own line with only the count opposite them,
+   which left the right side floating: a cluster of circles on a line that was
+   otherwise empty for a thousand pixels. Spanning them down the grid puts them
+   beside the filter chips, so they land on something, and takes 31px off the
+   header — measured — which is 31px more of the first card above the fold.
+
+   Bottom-aligned rather than centred, because the chips and the circles are
+   different heights and the chips' bottom edge is the line the eye already has.
+   The nav's bottom padding matches the filter's, so the circles finish on the
+   chips' edge rather than on the scroller's box. */
+.rail__head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "count nav"
+    "filter nav";
+  align-items: end;
+}
+
+.rail__count { grid-area: count; }
+.rail__filter { grid-area: filter; }
+
+.rail__nav {
+  grid-area: nav;
+  align-self: end;
+  padding: 0 var(--gutter) 0.875rem 1rem;
 }
 
 .rail__count {
   margin: 0;
+  padding: 0 0 1.25rem var(--gutter);
   /* "Study 01 / 05" is one thing to read; a narrow bar may drop the buttons to
      their own line, but it may never break the label across two. */
   white-space: nowrap;
@@ -321,6 +591,22 @@ body.is-locked {
 .rail__nav {
   display: flex;
   gap: 0.5rem;
+}
+
+/* Side by side only where all four chips still fit beside the controls. Below
+   that the chips lose more than they gain — measured at 320px with the drift
+   control showing, the scroller is left 132px and one chip of four — so the
+   areas restack to what they were: controls up beside the count, chips full
+   width underneath. */
+@media (max-width: 52rem) {
+  .rail__head {
+    grid-template-areas:
+      "count nav"
+      "filter filter";
+    align-items: center;
+  }
+
+  .rail__nav { padding-bottom: 1.25rem; }
 }
 
 .rail__btn {
@@ -404,6 +690,9 @@ body.is-locked {
   gap: 0.4rem;
   padding: 0.375rem var(--gutter) 0.875rem;
   overflow-x: auto;
+  /* min-width so a grid column may shrink it: an auto track takes the
+     scroller's max-content width and the row stops scrolling at all. */
+  min-width: 0;
   overscroll-behavior-x: contain;
   scrollbar-width: none;
   scroll-padding-inline: var(--gutter);
@@ -483,9 +772,9 @@ body.is-locked {
 /* Filled, not underlined: this one is a state the rest of the rail is in, and
    it has to read as pressed from across the page rather than as a link. */
 .rail__filter-btn[aria-pressed="true"] {
-  background: var(--ink);
-  border-color: var(--ink);
-  color: var(--paper);
+  background: var(--on-ink-bg);
+  border-color: var(--on-ink-bg);
+  color: var(--on-ink-fg);
 }
 
 .rail__filter-btn:focus-visible {
@@ -515,10 +804,18 @@ body.is-locked {
   cursor: grab;
   /* A horizontal swipe that reaches either end stays in the rail. Without
      this the leftover movement chains to the browser and reads as a
-     back-navigation gesture. `touch-action` is deliberately left alone: the
-     browser scrolls this natively now that the drag handler is mouse-only,
-     and naming the axes here would cost pinch-to-zoom over the rail. */
+     back-navigation gesture. */
   overscroll-behavior-x: contain;
+
+  /* `touch-action` is deliberately left alone, and that is a performance
+     decision rather than a gesture one. Naming the axes takes horizontal away
+     from the browser, and what the browser does with it is scroll on the
+     compositor; a swipe driven from script instead runs every frame of itself
+     through the main thread, behind whatever the thumbnails are animating.
+     Measured while dragging: 79% of a phone's thread against 30% at rest, and
+     the JS in it was 8% — the rest is the browser being asked to move three
+     live documents a frame at a time. So the finger scrolls this natively and
+     index.js only decides where the gesture lands once it is over. */
 }
 
 .rail__track::-webkit-scrollbar { display: none; }
@@ -541,7 +838,10 @@ body.is-locked {
   scroll-behavior: auto;
 }
 
-/* Dragging suspends snap, or the track fights the pointer on release. */
+/* On from the first contact rather than from the first movement: snap left on
+   in between would yank a drifting rail to the previous card before the hand
+   had gone anywhere. Nothing is committed by it — a press that turns out to be
+   a tap settles on release. */
 .rail__track.is-dragging {
   cursor: grabbing;
   scroll-snap-type: none;
@@ -567,7 +867,7 @@ body.is-locked {
   inset: 0 auto 0 0;
   width: var(--rail-progress, 30%);
   border-radius: 2px;
-  background: var(--ink);
+  background: var(--progress);
   transition: width 200ms linear;
 }
 
@@ -578,6 +878,11 @@ body.is-locked {
   flex: 0 0 var(--card-w);
   min-width: 0;
   scroll-snap-align: start;
+  /* A flick stops at the next card rather than running through several. The
+     landing is the browser's now — momentum carries it and snap picks the card
+     — and this is where "one swipe, one study" is stated, in place of the
+     arithmetic that used to work it out from the speed at touchend. */
+  scroll-snap-stop: always;
   display: flex;
   flex-direction: column;
   color: inherit;
@@ -585,8 +890,21 @@ body.is-locked {
   transition: transform 520ms var(--ease);
 }
 
-.piece:hover,
 .piece:focus-within { transform: translateY(-6px); }
+
+/* The hover half of every card state is behind (hover: hover), and that is a
+   performance rule as much as a correctness one. A touch browser has no hover
+   to report, so it reports one anyway: iOS applies :hover to whatever is under
+   the finger and leaves it there. Dragging across the rail therefore ran five
+   transitions on every card the finger passed — this lift, the frame's shadow,
+   the quick-look button, the underline and its arrow — each of them starting
+   in the middle of the gesture and none of them asked for. The touch half of
+   these states is elsewhere and already answered: the read-position card plays
+   its component, and the quick-look button is permanently visible under
+   (hover: none) below. */
+@media (hover: hover) {
+  .piece:hover { transform: translateY(-6px); }
+}
 
 /* .is-active marks the card in the read position. It drives the counter and,
    on touch, which preview plays — but it is deliberately not painted: lifting
@@ -599,16 +917,22 @@ body.is-locked {
   border-radius: 1rem;
   background: var(--surface);
   border: 1px solid var(--hairline);
-  box-shadow: 0 1px 2px rgba(23, 24, 26, 0.04);
+  box-shadow: var(--shadow-card);
   transition:
     box-shadow 520ms var(--ease),
     border-color 520ms var(--ease);
 }
 
-.piece:hover .piece__frame,
 .piece:focus-within .piece__frame {
   border-color: var(--hairline-strong);
-  box-shadow: 0 22px 46px -20px rgba(23, 24, 26, 0.32);
+  box-shadow: var(--shadow-lift);
+}
+
+@media (hover: hover) {
+  .piece:hover .piece__frame {
+    border-color: var(--hairline-strong);
+    box-shadow: var(--shadow-lift);
+  }
 }
 
 .piece__preview {
@@ -636,7 +960,7 @@ body.is-locked {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(100deg, transparent 20%, rgba(23, 24, 26, 0.05) 50%, transparent 80%)
+    linear-gradient(100deg, transparent 20%, var(--shimmer) 50%, transparent 80%)
     var(--surface);
   background-size: 220% 100%;
   animation: piece-shimmer 1.5s linear infinite;
@@ -663,20 +987,21 @@ body.is-locked {
   z-index: 2;
   padding: 0.35em 0.75em;
   border-radius: 999px;
-  background: rgba(251, 250, 248, 0.88);
+  background: var(--chip-over-preview);
+  box-shadow: inset 0 0 0 1px var(--chip-over-preview-line);
   backdrop-filter: blur(6px);
   font-family: var(--mono);
   font-size: 0.625rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #3a3b3e;
+  color: var(--chip-over-preview-ink);
 }
 
 .piece__type { left: 0.875rem; }
 
 .piece__no {
   right: 0.875rem;
-  color: var(--muted);
+  color: var(--chip-over-preview-ink-soft);
 }
 
 /* Sits above the stretched link so it can take its own click. */
@@ -691,7 +1016,7 @@ body.is-locked {
   padding: 0.5em 0.85em;
   border: 1px solid var(--hairline);
   border-radius: 999px;
-  background: rgba(251, 250, 248, 0.92);
+  background: var(--chip-over-preview-strong);
   backdrop-filter: blur(6px);
   color: var(--ink);
   font-family: var(--mono);
@@ -707,11 +1032,17 @@ body.is-locked {
     border-color 320ms var(--ease);
 }
 
-.piece:hover .piece__expand,
 .piece:focus-within .piece__expand,
 .piece__expand:focus-visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+@media (hover: hover) {
+  .piece:hover .piece__expand {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .piece__expand:hover { border-color: var(--hairline-strong); }
@@ -789,7 +1120,7 @@ body.is-locked {
   margin: 0;
   font-size: 0.875rem;
   line-height: 1.55;
-  color: #61625f;
+  color: var(--note);
 }
 
 .piece__cta {
@@ -818,8 +1149,11 @@ body.is-locked {
   transition: background-size 420ms var(--ease);
 }
 
-.piece:hover .piece__cta-text,
 .piece:focus-within .piece__cta-text { background-size: 100% 1px; }
+
+@media (hover: hover) {
+  .piece:hover .piece__cta-text { background-size: 100% 1px; }
+}
 
 .piece__cta svg {
   width: 0.8rem;
@@ -828,10 +1162,13 @@ body.is-locked {
   transition: transform 420ms var(--ease);
 }
 
-.piece:hover .piece__cta svg,
 .piece:focus-within .piece__cta svg { transform: translate(2px, -2px); }
 
-/* --- the empty slot at the end ---------------------------------------- */
+@media (hover: hover) {
+  .piece:hover .piece__cta svg { transform: translate(2px, -2px); }
+}
+
+/* --- the forthcoming slots at the end ---------------------------------- */
 
 .piece--ghost .piece__frame {
   display: grid;
@@ -848,16 +1185,38 @@ body.is-locked {
   box-shadow: none;
 }
 
-.piece__ghost-text {
-  max-width: 14rem;
+/* The month is what tells the three apart, so it is what the frame holds, at a
+   size that survives the thumbnail. The year sits under it small: all three
+   share it, and it is not the part being read. */
+.piece__ghost-when {
+  display: grid;
+  justify-items: center;
+  gap: 0.35rem;
   padding: 1.5rem;
+  max-width: 100%;
   text-align: center;
   font-family: var(--mono);
-  font-size: 0.6875rem;
-  line-height: 1.9;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
   color: var(--muted);
+}
+
+.piece__ghost-month {
+  font-size: 1.125rem;
+  letter-spacing: 0.02em;
+}
+
+.piece__ghost-year {
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  color: var(--hairline-strong);
+}
+
+/* A title that is not a link and never will be: the title's size, the note's
+   weight of colour. It has to read as a card in the row without appearing to
+   offer anything to open. */
+.piece__title--ghost {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 400;
 }
 
 /* --- quick look -------------------------------------------------------- */
@@ -890,7 +1249,7 @@ body.is-locked {
 .lightbox__scrim {
   position: absolute;
   inset: 0;
-  background: rgba(23, 24, 26, 0.42);
+  background: var(--scrim);
   backdrop-filter: blur(3px);
   opacity: 0;
   transition: opacity 320ms var(--ease);
@@ -917,7 +1276,7 @@ body.is-locked {
   border-radius: 1.25rem;
   background: var(--surface);
   border: 1px solid var(--hairline);
-  box-shadow: 0 40px 80px -32px rgba(23, 24, 26, 0.5);
+  box-shadow: var(--shadow-panel);
   opacity: 0;
   transform: translateY(0.75rem) scale(0.985);
   transition:
@@ -1318,6 +1677,64 @@ body.is-locked {
   border-radius: 0.2rem;
 }
 
+/* Byline and tip jar share the bar's left end, so the bar still reads as two
+   things rather than three spread across it. Wraps rather than shrinking,
+   because both halves are set in mono at a size that has no give. */
+.foot__credit {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.25rem;
+}
+
+/* Set like .foot__top: the bar's type is mono micro-caps and a second
+   treatment down here would read as a different kind of link. The cup lifts
+   on hover the way the arrow does, and the steam is what carries it. */
+.foot__coffee {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  transition: color 240ms var(--ease);
+}
+
+.foot__coffee:hover,
+.foot__coffee:active { color: var(--accent); }
+
+.foot__coffee:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 4px;
+  border-radius: 0.25rem;
+}
+
+.foot__coffee svg {
+  width: 0.95rem;
+  height: 0.95rem;
+  overflow: visible;
+}
+
+/* The steam is the whole of the hover: it sits on the cup at rest and rises
+   off it, so the state is a movement rather than a second colour. :active
+   carries it where there is no pointer to hover with. */
+.foot__steam {
+  opacity: 0.45;
+  transition:
+    transform 320ms var(--ease),
+    opacity 320ms var(--ease);
+}
+
+.foot__coffee:hover .foot__steam,
+.foot__coffee:active .foot__steam,
+.foot__coffee:focus-visible .foot__steam {
+  opacity: 1;
+  transform: translateY(-1.5px);
+}
+
 .foot__top {
   display: inline-flex;
   align-items: center;
@@ -1379,6 +1796,11 @@ body.is-locked {
     min-height: 2.25rem;
   }
 
+  .theme {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+
   .lightbox__close {
     width: 2.75rem;
     height: 2.75rem;
@@ -1419,16 +1841,36 @@ body.is-locked {
     --preview-scale: 0.55;     /* 264 / 480 */
   }
 
-  /* The bar is a count and three buttons now, so it stays one row all the way
-     down — it used to stack, and then to be a small grid, only because a hint
-     line needed somewhere to go. */
-  .rail__bar {
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-  }
-
   .rail__filter { padding-bottom: 0.625rem; }
+}
+
+/* --- the switch itself -------------------------------------------------- */
+
+/* Flipping the token block repaints the whole page in one frame, which reads
+   as a cut rather than as a change of light. index.js hangs .is-theming on
+   <html> for the length of the crossfade and takes it off again, so the
+   transition exists only while the theme is actually moving — a page that
+   carries it permanently pays for it on every hover, and a rule this broad
+   would then be fighting every transition the chrome already owns.
+
+   The selector is one class plus a type, so it outranks the component rules
+   it is standing in for without !important — which means transform has to be
+   in the list rather than left to the rules it is overriding: the toggle's
+   own sun/moon morph is a transform, and it runs inside this exact window.
+   The reduced-motion block below cuts all of it to 1ms with the rest. */
+html.is-theming,
+html.is-theming *,
+html.is-theming *::before,
+html.is-theming *::after {
+  transition:
+    background-color 420ms var(--ease),
+    background-image 420ms var(--ease),
+    border-color 420ms var(--ease),
+    box-shadow 420ms var(--ease),
+    color 420ms var(--ease),
+    fill 420ms var(--ease),
+    stroke 420ms var(--ease),
+    transform 420ms var(--ease);
 }
 
 @media (prefers-reduced-motion: reduce) {

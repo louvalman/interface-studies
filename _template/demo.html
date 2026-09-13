@@ -42,7 +42,45 @@
        with no shared stylesheet, so the value is repeated rather than shared —
        but it has to be the same number, or the language control and the
        content edge shift on every trip between them. */
-    :root { --demo-gutter: clamp(1.5rem, 6vw, 6rem); }
+    :root {
+      --demo-gutter: clamp(1.5rem, 6vw, 6rem);
+
+      /* The page's own palette, and the only place a colour is written. Every
+         rule below reads a token, so the dark block underneath is this same
+         list with different values — not a second set of rules. The component
+         is not in it: component.css owns its colours in both themes, and this
+         page never reaches into them.
+
+         Three text tiers, not five: the greys this page had drifted a couple of
+         percent apart for no reason anyone could name. */
+      --demo-ground: #ddd9d0;
+      --demo-fg: #1c1812;
+      --demo-soft: #4a453d;
+      --demo-dim: #605a51;
+      --demo-accent: #ac512d;
+      --demo-chip: rgba(255, 255, 255, 0.72);
+      --demo-chip-soft: rgba(255, 255, 255, 0.6);
+      --demo-chip-hover: #fff;
+      --demo-line: rgba(28, 24, 18, 0.14);
+      --demo-fill: rgba(28, 24, 18, 0.07);
+    }
+
+    :root[data-theme="dark"] {
+      /* Matte: a warm graphite with no pure black under it and off-white ink on
+         top, the same construction the index uses. The component keeps its own
+         ground and sits on this as a lit plate, which is what it does on the
+         index cards too. */
+      --demo-ground: #161512;
+      --demo-fg: #eae8e3;
+      --demo-soft: #a8a49c;
+      --demo-dim: #86827a;
+      --demo-accent: #e08453;
+      --demo-chip: rgba(36, 34, 30, 0.72);
+      --demo-chip-soft: rgba(36, 34, 30, 0.6);
+      --demo-chip-hover: #2a2823;
+      --demo-line: rgba(234, 232, 227, 0.14);
+      --demo-fill: rgba(234, 232, 227, 0.07);
+    }
 
     body {
       margin: 0;
@@ -51,7 +89,8 @@
       place-items: center;
       padding: 4rem var(--demo-gutter);
       box-sizing: border-box;
-      background: #ddd9d0;
+      background: var(--demo-ground);
+      color: var(--demo-fg);
       font-family: system-ui, sans-serif;
     }
 
@@ -64,26 +103,33 @@
     /* Back to the index. Page chrome — the component never depends on it. */
     /* Aligned to the page's own padding, so it sits on the same edge as the
        content rather than floating inside the margin. */
-    /* Absolute, not fixed: the language is picked once and the chip has no
-       reason to ride the viewport down the page. */
-    .demo__lang {
+    /* Language and theme, in one cluster on the page's own edge. Absolute,
+       not fixed: both are picked once and neither has any reason to ride
+       the viewport down the page. */
+    .demo__controls {
       position: absolute;
       top: clamp(1.25rem, 3vw, 2.25rem);
       right: var(--demo-gutter);
       z-index: 20;
       display: flex;
       align-items: center;
+      gap: 0.4rem;
+    }
+
+    .demo__lang {
+      display: flex;
+      align-items: center;
       gap: 0.1rem;
       padding: 0.2rem 0.35rem;
       border-radius: 999px;
-      background: rgba(255, 255, 255, 0.72);
+      background: var(--demo-chip);
     }
 
     .demo__lang-btn {
       padding: 0.35em 0.5em;
       border: 0;
       background: transparent;
-      color: #575b62;
+      color: var(--demo-dim);
       font-family: "JetBrains Mono", ui-monospace, monospace;
       font-size: 0.625rem;
       letter-spacing: 0.16em;
@@ -92,18 +138,18 @@
       transition: color 240ms ease;
     }
 
-    .demo__lang-btn:hover { color: #14171c; }
+    .demo__lang-btn:hover { color: var(--demo-fg); }
 
     .demo__lang-btn[aria-pressed="true"] {
-      color: #14171c;
+      color: var(--demo-fg);
       text-decoration: underline;
-      text-decoration-color: #ac512d;
+      text-decoration-color: var(--demo-accent);
       text-decoration-thickness: 1px;
       text-underline-offset: 0.4em;
     }
 
     .demo__lang-btn:focus-visible {
-      outline: 2px solid #14171c;
+      outline: 2px solid var(--demo-fg);
       outline-offset: 2px;
       border-radius: 0.25rem;
     }
@@ -111,8 +157,82 @@
     .demo__lang-sep {
       width: 1px;
       height: 0.7rem;
-      background: rgba(20, 23, 28, 0.12);
+      background: var(--demo-line);
     }
+
+    /* --- theme toggle ---------------------------------------------------
+       The index's control, carried here rather than shared: this folder has
+       to survive being copied out, so the page owns its own copy the way it
+       owns its own language table. It offers the state it would move to. */
+    .demo__theme {
+      flex: none;
+      width: 1.85rem;
+      height: 1.85rem;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      background: var(--demo-chip);
+      color: var(--demo-dim);
+      cursor: pointer;
+      transition: color 240ms ease, background 240ms ease;
+    }
+
+    .demo__theme:hover { color: var(--demo-fg); }
+
+    .demo__theme:focus-visible {
+      outline: 2px solid var(--demo-fg);
+      outline-offset: 2px;
+    }
+
+    .demo__theme-icon {
+      width: 0.95rem;
+      height: 0.95rem;
+      overflow: visible;
+    }
+
+    /* One shape for both states: a disc with a bite out of it and a ring of
+       rays. Dark slides the bite off the disc and turns the rays in, so the
+       moon becomes the sun rather than being swapped for it. */
+    .demo__theme-cut {
+      fill: #000;
+      transform-box: fill-box;
+      transform-origin: center;
+      transform: translate(30%, -30%);
+      transition: transform 520ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .demo__theme-disc {
+      fill: currentColor;
+      transform-box: fill-box;
+      transform-origin: center;
+      transition: transform 520ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .demo__theme-rays {
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      transform-box: fill-box;
+      transform-origin: center;
+      opacity: 0;
+      transform: scale(0.55) rotate(-45deg);
+      transition:
+        opacity 320ms cubic-bezier(0.16, 1, 0.3, 1),
+        transform 520ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    :root[data-theme="dark"] .demo__theme-cut { transform: translate(125%, -125%); }
+    :root[data-theme="dark"] .demo__theme-disc { transform: scale(0.74); }
+    :root[data-theme="dark"] .demo__theme-rays { opacity: 1; transform: scale(1) rotate(0deg); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .demo__theme-cut,
+      .demo__theme-disc,
+      .demo__theme-rays { transition: none; }
+    }
+
 
     .demo__back {
       justify-self: start;
@@ -120,17 +240,17 @@
       align-items: center;
       gap: 0.5rem;
       padding: 0.5rem 0.9rem 0.5rem 0.75rem;
-      border: 1px solid rgba(20, 18, 15, 0.14);
+      border: 1px solid var(--demo-line);
       border-radius: 999px;
-      background: rgba(255, 255, 255, 0.6);
+      background: var(--demo-chip-soft);
       font-size: 0.6875rem;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: #4a453d;
+      color: var(--demo-soft);
       text-decoration: none;
     }
 
-    .demo__back:hover { background: #fff; }
+    .demo__back:hover { background: var(--demo-chip-hover); }
 
     .demo__back svg { width: 0.85rem; height: 0.85rem; }
 
@@ -154,7 +274,7 @@
       font-size: 0.6875rem;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      color: #605a51;
+      color: var(--demo-dim);
     }
 
     /* --- touch targets --- */
@@ -169,6 +289,11 @@
         place-items: center;
         min-width: 2.25rem;
         min-height: 2.25rem;
+      }
+
+      .demo__theme {
+        width: 2.25rem;
+        height: 2.25rem;
       }
 
       .demo__back { min-height: 2.75rem; }
@@ -198,7 +323,7 @@
       font-size: 0.6875rem;
       letter-spacing: 0.18em;
       text-transform: uppercase;
-      color: #605a51;
+      color: var(--demo-dim);
     }
 
     .demo__heading {
@@ -214,13 +339,13 @@
       max-width: 52ch;
       font-size: 1.0625rem;
       line-height: 1.6;
-      color: #4a453d;
+      color: var(--demo-soft);
     }
 
     .demo__notes {
       margin-top: clamp(3.5rem, 8vw, 6rem);
       padding-top: clamp(2rem, 4vw, 3rem);
-      border-top: 1px solid rgba(28, 24, 18, 0.14);
+      border-top: 1px solid var(--demo-line);
       /* Prose measure, not the page's. */
       max-width: 42rem;
     }
@@ -247,7 +372,7 @@
     .demo__notes-summary::-webkit-details-marker { display: none; }
 
     .demo__notes-summary:focus-visible {
-      outline: 2px solid #1c1812;
+      outline: 2px solid var(--demo-fg);
       outline-offset: 4px;
       border-radius: 0.25rem;
     }
@@ -256,11 +381,11 @@
       flex: none;
       width: 1rem;
       height: 1rem;
-      color: #605a51;
+      color: var(--demo-dim);
       transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    .demo__notes-summary:hover .demo__notes-chevron { color: #1c1812; }
+    .demo__notes-summary:hover .demo__notes-chevron { color: var(--demo-fg); }
 
     .demo__notes[open] .demo__notes-chevron { transform: rotate(180deg); }
 
@@ -293,14 +418,14 @@
       font-size: 0.625rem;
       letter-spacing: 0.16em;
       text-transform: uppercase;
-      color: #605a51;
+      color: var(--demo-dim);
     }
 
     .demo__notes-row dd {
       margin: 0;
       font-size: 0.875rem;
       line-height: 1.5;
-      color: #4a453d;
+      color: var(--demo-soft);
       /* A source URL is one unbroken word and the page is 320px wide on a
          phone: without this it sets the whole column's minimum. */
       overflow-wrap: anywhere;
@@ -310,7 +435,7 @@
       margin: 1.75rem 0 0;
       font-size: 0.9375rem;
       line-height: 1.7;
-      color: #4a453d;
+      color: var(--demo-soft);
     }
 
     .demo__notes-list {
@@ -334,7 +459,7 @@
       margin: 0;
       font-size: 0.9375rem;
       line-height: 1.7;
-      color: #4a453d;
+      color: var(--demo-soft);
     }
 
     .demo__notes code {
@@ -342,13 +467,13 @@
       font-size: 0.85em;
       padding: 0.12em 0.32em;
       border-radius: 0.25rem;
-      background: rgba(28, 24, 18, 0.07);
+      background: var(--demo-fill);
       overflow-wrap: anywhere;
     }
 
     .demo__notes a {
       color: inherit;
-      text-decoration-color: #ac512d;
+      text-decoration-color: var(--demo-accent);
       text-underline-offset: 0.2em;
     }
 
@@ -366,19 +491,89 @@
       font-size: 0.6875rem;
       line-height: 1.7;
       letter-spacing: 0.08em;
-      color: #605a51;
+      color: var(--demo-dim);
     }
-  </style>
+
+    /* --- the switch itself ------------------------------------------------
+       Flipping the token block repaints the page in one frame, which reads as
+       a cut rather than as a change of light. The script hangs .is-theming on
+       <html> for the length of the crossfade and takes it off again, so the
+       rule is not on every element for the rest of the session. One class plus
+       a type, so it outranks the page rules it stands in for without
+       !important. */
+    html.is-theming,
+    html.is-theming *,
+    html.is-theming *::before,
+    html.is-theming *::after {
+      transition:
+        background-color 420ms cubic-bezier(0.16, 1, 0.3, 1),
+        background-image 420ms cubic-bezier(0.16, 1, 0.3, 1),
+        border-color 420ms cubic-bezier(0.16, 1, 0.3, 1),
+        box-shadow 420ms cubic-bezier(0.16, 1, 0.3, 1),
+        color 420ms cubic-bezier(0.16, 1, 0.3, 1),
+        fill 420ms cubic-bezier(0.16, 1, 0.3, 1),
+        stroke 420ms cubic-bezier(0.16, 1, 0.3, 1),
+        transform 420ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html.is-theming,
+      html.is-theming *,
+      html.is-theming *::before,
+      html.is-theming *::after { transition-duration: 1ms; }
+    }
+</style>
+
+  <!-- The theme, before the first paint. The toggle and the rest of it are in
+     the script at the foot of the page, but the answer has to be on <html> by
+     the time the stylesheet draws, or a page opened in dark flashes a frame of
+     the other one.
+
+     The query string first, because that is how the index hands the choice
+     over — over file:// each document gets an opaque origin and localStorage
+     does not carry across. Then the stored choice, then the system's. -->
+  <script>
+    try {
+      var q = new URLSearchParams(location.search).get('theme');
+      var t = (q === 'dark' || q === 'light') ? q
+            : localStorage.getItem('interface-studies:theme');
+      if (t !== 'dark' && t !== 'light') {
+        t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      document.documentElement.setAttribute('data-theme', t);
+    } catch (err) { /* private mode: the page keeps the theme in its markup */ }
+  </script>
 </head>
 <body>
   <div class="demo">
 
     <!-- Delete alongside the language script below if this study is
          single-language. -->
-    <div class="demo__lang" role="group" aria-label="Language">
-      <button class="demo__lang-btn" type="button" data-lang="en" aria-pressed="true">EN</button>
-      <span class="demo__lang-sep" aria-hidden="true"></span>
-      <button class="demo__lang-btn" type="button" data-lang="da" aria-pressed="false">DA</button>
+    <div class="demo__controls">
+      <div class="demo__lang" role="group" aria-label="Language">
+        <button class="demo__lang-btn" type="button" data-lang="en" aria-pressed="true">EN</button>
+        <span class="demo__lang-sep" aria-hidden="true"></span>
+        <button class="demo__lang-btn" type="button" data-lang="da" aria-pressed="false">DA</button>
+      </div>
+
+      <button
+        class="demo__theme"
+        type="button"
+        data-theme-toggle
+        aria-pressed="false"
+        data-i18n-aria="a11y.theme"
+        aria-label="Dark mode">
+        <svg class="demo__theme-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <mask id="demo-theme-bite">
+            <rect width="24" height="24" fill="#fff" />
+            <circle class="demo__theme-cut" cx="12" cy="12" r="9" />
+          </mask>
+          <circle class="demo__theme-disc" cx="12" cy="12" r="9" mask="url(#demo-theme-bite)" />
+          <g class="demo__theme-rays">
+            <path d="M12 1v2M12 21v2M3.9 3.9l1.4 1.4M18.7 18.7l1.4 1.4M1 12h2M21 12h2M3.9 20.1l1.4-1.4M18.7 5.3l1.4-1.4" />
+          </g>
+        </svg>
+      </button>
     </div>
 
     <a class="demo__back" href="../index.html">
@@ -493,10 +688,28 @@
     Delete the whole block for a single-language study.
   -->
   <script>
+  (function () {
+    // Page chrome: the language switch, the theme switch, and the one back
+    // link that hands both of them to the index. Only an explicit choice
+    // travels — a theme resolved from the system is not a choice, and the
+    // index would only resolve it the same way.
+    var back = document.querySelector('.demo__back');
+    var chosenLang = 'en';
+    var chosenTheme = null;
+
+    function syncBack() {
+      if (!back) return;
+      var q = [];
+      if (chosenLang !== 'en') q.push('lang=' + chosenLang);
+      if (chosenTheme) q.push('theme=' + chosenTheme);
+      back.setAttribute('href', '../index.html' + (q.length ? '?' + q.join('&') : ''));
+    }
+
     (function () {
       var STORE_KEY = 'interface-studies:lang';
 
       var DA = {
+        'a11y.theme': 'M\u00f8rk tilstand',
         'back': 'Alle studier',
         'notes.title': 'Beslutninger',
         'notes.type': 'Type',
@@ -511,7 +724,10 @@
 
       var nodes = Array.prototype.slice.call(document.querySelectorAll('[data-i18n]'));
       var buttons = Array.prototype.slice.call(document.querySelectorAll('[data-lang]'));
-      var back = document.querySelector('.demo__back');
+      // Labels that live in an attribute rather than in text — the theme
+      // toggle's is the only one so far. Same table, different setter.
+      var labelled = Array.prototype.slice.call(document.querySelectorAll('[data-i18n-aria]'));
+      var englishLabels = labelled.map(function (el) { return el.getAttribute('aria-label'); });
       var english = nodes.map(function (el) { return el.textContent; });
 
       function apply(lang) {
@@ -520,6 +736,11 @@
         nodes.forEach(function (el, i) {
           var key = el.getAttribute('data-i18n');
           el.textContent = table && table[key] ? table[key] : english[i];
+        });
+
+        labelled.forEach(function (el, i) {
+          var key = el.getAttribute('data-i18n-aria');
+          el.setAttribute('aria-label', table && table[key] ? table[key] : englishLabels[i]);
         });
 
         // The tab follows the heading rather than keeping its own copy of it,
@@ -532,9 +753,8 @@
         buttons.forEach(function (b) {
           b.setAttribute('aria-pressed', b.dataset.lang === lang ? 'true' : 'false');
         });
-        if (back) {
-          back.setAttribute('href', lang === 'en' ? '../index.html' : '../index.html?lang=' + lang);
-        }
+        chosenLang = lang;
+        syncBack();
 
         try { localStorage.setItem(STORE_KEY, lang); } catch (err) { /* private mode */ }
       }
@@ -549,6 +769,73 @@
 
       apply(fromQuery || stored || 'en');
     })();
+
+    // --- theme -----------------------------------------------------------
+    //
+    // The answer is already on <html> — the head carries the same resolution
+    // so the first paint is not a frame of the wrong theme. This is the
+    // toggle, the state it reports, and the crossfade.
+    //
+    // The stylesheet reads the attribute and nothing else, which is what
+    // keeps the dark palette to one block. The system preference is resolved
+    // here rather than in a media query, so it stays live: until someone
+    // picks a theme, an OS switch with the page open still moves it.
+    (function () {
+      var STORE_KEY = 'interface-studies:theme';
+      var root = document.documentElement;
+      var toggle = document.querySelector('[data-theme-toggle]');
+      if (!toggle) return;
+
+      var media = window.matchMedia
+        ? window.matchMedia('(prefers-color-scheme: dark)')
+        : null;
+
+      var fromQuery = new URLSearchParams(location.search).get('theme');
+      if (fromQuery === 'dark' || fromQuery === 'light') {
+        chosenTheme = fromQuery;
+      } else {
+        try {
+          var stored = localStorage.getItem(STORE_KEY);
+          if (stored === 'dark' || stored === 'light') chosenTheme = stored;
+        } catch (err) { /* private mode */ }
+      }
+
+      function shown() {
+        return chosenTheme || (media && media.matches ? 'dark' : 'light');
+      }
+
+      function paint() {
+        var theme = shown();
+        root.setAttribute('data-theme', theme);
+        toggle.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
+        syncBack();
+      }
+
+      var settle = 0;
+      toggle.addEventListener('click', function () {
+        chosenTheme = shown() === 'dark' ? 'light' : 'dark';
+        try { localStorage.setItem(STORE_KEY, chosenTheme); } catch (err) { /* private mode */ }
+
+        // The crossfade is hung on <html> for its own length and taken off
+        // again, so the rule is not sitting on every element for the rest of
+        // the session.
+        root.classList.add('is-theming');
+        clearTimeout(settle);
+        settle = setTimeout(function () { root.classList.remove('is-theming'); }, 420);
+
+        paint();
+      });
+
+      if (media) {
+        var follow = function () { if (!chosenTheme) paint(); };
+        if (media.addEventListener) media.addEventListener('change', follow);
+        else if (media.addListener) media.addListener(follow);
+      }
+
+      paint();
+    })();
+
+  })();
   </script>
 
 </body>

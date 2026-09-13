@@ -782,6 +782,25 @@
   under the pointer, and the icon that brightens before you commit to it. A press
   stands in for both, for as long as the finger is down.
 */
+/*
+  A focused input under 16px makes a mobile browser zoom the page to reach it,
+  and it does not zoom back out: the viewport stays magnified and scrolled, so
+  the study around it is left sideways and clipped mid-word. It is the label's
+  13px that does it — the field inherits the bar's type, which is set for chrome
+  rather than for a text box, and 16px is the threshold every mobile engine uses.
+
+  So the input, and only the input, comes back up to 16px where the pointer is
+  coarse. The label keeps 13px because a label is not focusable and never
+  triggers it, and the two are never on screen together anyway — the field is
+  what replaces the label in that slot. `max()` rather than a flat 1rem so a
+  caller who themes the bar larger keeps their size.
+*/
+@media (pointer: coarse) {
+  .liquid-glass-toolbar__input {
+    font-size: max(1rem, var(--liquid-glass-toolbar-label-size));
+  }
+}
+
 @media (hover: none) {
   .liquid-glass-toolbar__action:active {
     color: var(--liquid-glass-toolbar-fg);
@@ -1052,10 +1071,23 @@
   --liquid-glass-toolbar-warm: rgba(255, 255, 255, 0.18);
   --liquid-glass-toolbar-warm-rim: rgba(255, 255, 255, 0.55);
 
-  --liquid-glass-toolbar-fg: #35312b;
-  --liquid-glass-toolbar-muted: rgba(53, 49, 43, 0.82);
-  --liquid-glass-toolbar-dim: rgba(53, 49, 43, 0.7);
-  --liquid-glass-toolbar-accent: #b4552f;
+  /* The only ink in the set that follows the page rather than the sheet, and
+     the reason is the 7% above: crystal is the one material thin enough to
+     *become* its ground. The other five carry enough tint to stay themselves
+     over anything — alabaster is still a light plate on a dark page, basalt
+     still a dark one on a light page — so their ink is settled once, against
+     their own body. Crystal has no body to settle against. On light paper it
+     is a pale sheet and takes dark ink; on a dark page it is a dark sheet, and
+     dark ink vanishes into it. Measured before this: 1.3:1.
+
+     `light-dark()` reads the page's own `color-scheme`, so it follows an
+     explicit theme toggle and the OS default alike, and it stays inside the
+     component — nothing here names a selector outside it. A page that declares
+     no scheme resolves light, which is the ground this was drawn for. */
+  --liquid-glass-toolbar-fg: light-dark(#35312b, rgba(247, 248, 250, 0.97));
+  --liquid-glass-toolbar-muted: light-dark(rgba(53, 49, 43, 0.82), rgba(238, 240, 245, 0.64));
+  --liquid-glass-toolbar-dim: light-dark(rgba(53, 49, 43, 0.7), rgba(238, 240, 245, 0.46));
+  --liquid-glass-toolbar-accent: light-dark(#b4552f, #e2924f);
 }
 
 /* --- too narrow for five full targets ------------------------------------ */
@@ -1101,14 +1133,28 @@
     --liquid-glass-toolbar-avatar: 2rem;
 
     /* The field's ceiling is a different sum at this scale, because the row
-       clears itself out of the way for it below: one square, the gaps, the
-       padding and the trailing allowance. It is only ever read in the searching
-       state, so it can be restated here rather than under that state. */
+       clears itself out of the way for it below, and the sum has to describe
+       the row that is actually left rather than the one in the wide layout.
+       What survives is one square — the search action's own pad, icon and pad,
+       which is exactly `--hit` — and the surface's padding at each end. The
+       gaps go with the actions they sat between, and the trailing allowance
+       goes with the word it was balancing; both are zeroed for this state
+       below, and a ceiling that still reserved them left the field 13px short
+       of the surface it had been told to open across. It is only ever read in
+       the searching state, so it can be restated here rather than under it. */
     --liquid-glass-toolbar-search-max: calc(100cqi - (
       var(--liquid-glass-toolbar-hit) +
-      5 * var(--liquid-glass-toolbar-gap) +
-      2 * var(--liquid-glass-toolbar-pad) +
-      var(--liquid-glass-toolbar-label-trail)));
+      2 * var(--liquid-glass-toolbar-pad)));
+
+    /* And the width it *wants* has to come up with the ceiling, or the ceiling
+       never gets read. The track is `clamp(0px, --search-max, --search-w)`, so
+       --search-w is the upper bound: restating only the sum above left the
+       field pinned at the wide layout's 14rem while the row had already cleared
+       a whole bar for it — 224px of field in 239px of room on a 390px phone,
+       and the shell hugging 15px short of the surface it was told to open
+       across. At this scale the field wants everything and --search-max is the
+       only thing that should trim it. */
+    --liquid-glass-toolbar-search-w: 100cqi;
   }
 
   /*
@@ -1156,6 +1202,34 @@
     .liquid-glass-toolbar__action:not(.liquid-glass-toolbar__action--search) {
     min-width: 0;
     padding-inline: 0;
+  }
+
+  /*
+    Alone in the bar the pill keeps its rim — it is the field's own edge, and a
+    field that does not show where it starts and stops is not a field — but it
+    has to sit square inside the shell, and it did not. It stood 7px from the
+    left of the surface and 13px from the right, which reads as a box shoved
+    into a corner rather than as a field filling its container.
+
+    Two things made up the difference, and neither is visible in the source.
+    `--label-trail` is the first: it balances an icon's bearing against a *word*,
+    and there is no word in a search field, so its 2.9px was pure right-hand
+    slack. The rest is the row's own `gap` — the four collapsed actions take
+    their width and their padding to zero but the gaps *between* them survive,
+    so three of them pile up past the field's trailing edge while only one sits
+    before its leading one. Zero the gap for this state and both ends resolve to
+    the surface's own padding, which is the only inset the field should have.
+  */
+  .liquid-glass-toolbar__bar:has(.liquid-glass-toolbar__action--search:focus-within),
+  .liquid-glass-toolbar--searching .liquid-glass-toolbar__bar {
+    gap: 0;
+  }
+
+  .liquid-glass-toolbar__bar:has(.liquid-glass-toolbar__action--search:focus-within)
+    .liquid-glass-toolbar__action--search,
+  .liquid-glass-toolbar--searching .liquid-glass-toolbar__bar
+    .liquid-glass-toolbar__action--search {
+    padding-inline-end: var(--liquid-glass-toolbar-action-pad);
   }
 
   .liquid-glass-toolbar__bar:has(.liquid-glass-toolbar__action--search:focus-within)

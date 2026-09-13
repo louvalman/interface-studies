@@ -44,26 +44,77 @@
     <meta name="twitter:creator" content="@LouisDyrhauge" />
 
     <link rel="stylesheet" href="index.css" />
+
+    <!-- The theme, before the first paint. The toggle and everything else
+       about it live in index.js, but the answer has to be on <html> by the
+       time the stylesheet draws, or a page set to dark opens with a frame of
+       white paper — which is why these six lines are here and inline rather
+       than at the foot of the page with the rest.
+
+       The stored choice, or the system's when there is none. index.js does
+       the same on load and keeps following the system while nothing is
+       stored; the attribute is the only thing index.css reads, so this is
+       where the two inputs become one. -->
+    <script>
+      try {
+        var t = localStorage.getItem('interface-studies:theme');
+        if (t !== 'dark' && t !== 'light') {
+          t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        document.documentElement.setAttribute('data-theme', t);
+      } catch (err) { /* private mode, or no matchMedia: the page stays light */ }
+    </script>
   </head>
   <body>
-    <!-- Language selector. Every translatable string in this file carries a
-       data-i18n key; index.js swaps them. Study folders are not touched —
-       a demo page is its own document and keeps its own copy. -->
-    <div class="lang" role="group" aria-label="Language">
+    <!-- The page's two controls, in one cluster at the top-right corner.
+
+       Language: every translatable string in this file carries a data-i18n
+       key; index.js swaps them. Study folders are not touched — a demo page
+       is its own document and keeps its own copy.
+
+       Theme: site chrome only, for the same reason. The previews are separate
+       documents that own their own ground, so they stay lit under a dark
+       page. -->
+    <div class="controls">
+      <div class="lang" role="group" aria-label="Language">
+        <button
+          class="lang__btn"
+          type="button"
+          data-lang="en"
+          aria-pressed="true">
+          EN
+        </button>
+        <span class="lang__sep" aria-hidden="true"></span>
+        <button
+          class="lang__btn"
+          type="button"
+          data-lang="da"
+          aria-pressed="false">
+          DA
+        </button>
+      </div>
+
+      <!-- One shape for both states: a disc with a bite out of it, plus the
+         rays. The bite slides off the disc and the rays come in, so the moon
+         becomes the sun rather than being swapped for it. aria-pressed is the
+         state; the label stays put, which is what lets it be read once. -->
       <button
-        class="lang__btn"
+        class="theme"
         type="button"
-        data-lang="en"
-        aria-pressed="true">
-        EN
-      </button>
-      <span class="lang__sep" aria-hidden="true"></span>
-      <button
-        class="lang__btn"
-        type="button"
-        data-lang="da"
-        aria-pressed="false">
-        DA
+        data-theme-toggle
+        aria-pressed="false"
+        data-i18n-aria="a11y.theme"
+        aria-label="Dark mode">
+        <svg class="theme__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <mask id="theme-bite">
+            <rect width="24" height="24" fill="#fff" />
+            <circle class="theme__cut" cx="12" cy="12" r="9" />
+          </mask>
+          <circle class="theme__disc" cx="12" cy="12" r="9" mask="url(#theme-bite)" />
+          <g class="theme__rays">
+            <path d="M12 1v2M12 21v2M3.9 3.9l1.4 1.4M18.7 18.7l1.4 1.4M1 12h2M21 12h2M3.9 20.1l1.4-1.4M18.7 5.3l1.4-1.4" />
+          </g>
+        </svg>
       </button>
     </div>
 
@@ -120,7 +171,12 @@
     </header>
 
     <section class="rail">
-      <div class="rail__bar">
+      <!-- One grid rather than a bar and a row beneath it: the count sits on
+         the top line, the type filter on the one below, and the carousel
+         controls span both and land on the filter chips' own bottom edge. On a
+         narrow viewport the chips need the full width, so the areas restack
+         and the controls go back up beside the count - see index.css. -->
+      <div class="rail__head">
         <p class="rail__count">
           <span data-i18n="rail.study">Study</span>
           <span id="rail-index">01</span>
@@ -199,7 +255,6 @@
             </svg>
           </button>
         </nav>
-      </div>
 
       <!-- Type filter. The buttons are written by index.js from the types the
          cards actually declare, so this row is empty markup until it runs and
@@ -213,6 +268,7 @@
         data-i18n-aria="a11y.filter"
         aria-label="Filter by type"
         hidden></div>
+      </div>
 
       <!-- Add a study: copy one <article class="piece"> block and point the
          iframe at the new folder's preview.html and the title link at its
@@ -598,11 +654,55 @@
           </div>
         </article>
 
-        <div class="piece piece--ghost" aria-hidden="true">
+        <!-- The slots at the end of the rail. Three, because the row reads as a
+             set and one trailing placeholder reads as an accident. They carry a
+             card's anatomy — the frame, the slug, a title — rather than a line of
+             instructions to whoever is adding the next study, because the rail is
+             something a reader scrolls and the note to self belongs in CLAUDE.md.
+             They are in the ring and recycle with everything else; real() skips
+             them, so the counts and the progress bar go on counting studies. -->
+        <div class="piece piece--ghost">
           <div class="piece__frame">
-            <span class="piece__ghost-text" data-i18n="ghost.next">
-              Next one goes here &mdash; copy _template/
+            <span class="piece__ghost-when">
+              <span class="piece__ghost-month" data-i18n="ghost.month.oct">October</span>
+              <span class="piece__ghost-year">2026</span>
             </span>
+          </div>
+          <div class="piece__body">
+            <span class="piece__slug">2026 &middot; 10</span>
+            <p class="piece__title piece__title--ghost" data-i18n="ghost.title">
+              Forthcoming study
+            </p>
+          </div>
+        </div>
+
+        <div class="piece piece--ghost">
+          <div class="piece__frame">
+            <span class="piece__ghost-when">
+              <span class="piece__ghost-month" data-i18n="ghost.month.nov">November</span>
+              <span class="piece__ghost-year">2026</span>
+            </span>
+          </div>
+          <div class="piece__body">
+            <span class="piece__slug">2026 &middot; 11</span>
+            <p class="piece__title piece__title--ghost" data-i18n="ghost.title">
+              Forthcoming study
+            </p>
+          </div>
+        </div>
+
+        <div class="piece piece--ghost">
+          <div class="piece__frame">
+            <span class="piece__ghost-when">
+              <span class="piece__ghost-month" data-i18n="ghost.month.dec">December</span>
+              <span class="piece__ghost-year">2026</span>
+            </span>
+          </div>
+          <div class="piece__body">
+            <span class="piece__slug">2026 &middot; 12</span>
+            <p class="piece__title piece__title--ghost" data-i18n="ghost.title">
+              Forthcoming study
+            </p>
           </div>
         </div>
       </div>
@@ -695,16 +795,42 @@
       </div>
 
       <div class="foot__bar">
-        <p class="foot__line">
-          <span data-i18n="foot.builtBy">Built by</span>
+        <!-- The byline and the tip jar are one group, so the bar keeps its two
+           ends: credits on the left, the control on the right. The coffee link
+           is not in foot__social above — that row is handles, and a tip jar is
+           not one — and it is labelled rather than an icon on its own, because
+           a cup with no word beside it could be anything. -->
+        <div class="foot__credit">
+          <p class="foot__line">
+            <span data-i18n="foot.builtBy">Built by</span>
+            <a
+              class="foot__author"
+              href="https://github.com/louvalman"
+              target="_blank"
+              rel="noopener noreferrer">louval</a>
+            <span aria-hidden="true">&middot;</span>
+            2026
+          </p>
           <a
-            class="foot__author"
-            href="https://github.com/louvalman"
+            class="foot__coffee"
+            href="https://buymeacoffee.com/ou2jlyzlvg"
             target="_blank"
-            rel="noopener noreferrer">louval</a>
-          <span aria-hidden="true">&middot;</span>
-          2026
-        </p>
+            rel="noopener noreferrer">
+            <svg
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true">
+              <path d="M2.5 6.5h9v4a3 3 0 0 1-3 3h-3a3 3 0 0 1-3-3z" />
+              <path d="M11.5 7.5h1.25a1.75 1.75 0 0 1 0 3.5H11.5" />
+              <path class="foot__steam" d="M5 4V2.5M8 4V2.5M11 4V2.5" />
+            </svg>
+            <span data-i18n="foot.coffee">Buy me a coffee</span>
+          </a>
+        </div>
         <a class="foot__top" href="#top">
           <span data-i18n="foot.backToTop">Back to top</span>
           <svg

@@ -179,6 +179,8 @@ is the exact markup `component.css` expects, and what gets copied out.
 All page-level context lives here, and only here:
 
 - background and centering
+- the page's own colour tokens, in a `:root` block and a second one for the
+  other theme — see **Two themes** below
 - font loading (`<link>` to a font service is fine *here*)
 - a link to `component.css`
 - an `<h1>` naming the study, with the type and a one-sentence lede
@@ -260,6 +262,8 @@ position:
 { source: 'interface-studies', type: 'preview', active: true | false }
 { source: 'interface-studies', type: 'preview:variant', index: n }
 { source: 'interface-studies', type: 'preview:scale', scale: n }
+{ source: 'interface-studies', type: 'preview:theme', theme: 'light' | 'dark' }
+{ source: 'interface-studies', type: 'preview:pause', paused: true | false }
 
 // preview -> index, once its listener is live
 { source: 'interface-studies', type: 'preview:ready',
@@ -282,7 +286,31 @@ itself. Beware toggling a variant's element with the `hidden` attribute — if
 `component.css` gives that element a `display`, the author rule beats the UA
 `[hidden]` rule and it will not hide. Add and remove the node instead.
 
-`preview:key` is the fourth, and it goes the other way — preview to index. An
+`preview:theme` says which theme the index is in. It arrives twice over, and
+deliberately: as `?theme=` on the src the frame is loaded with, so a thumbnail
+is never painted on the wrong ground and then corrected, and as this message if
+the index is switched while the frame is already on screen — reloading a live
+thumbnail to change one colour would drop its animation and flash the skeleton
+back. The index rewrites `data-src` rather than `src`, so the two places that
+load a preview (the rail on approach, quick look on open) never learn about any
+of this.
+
+Every preview takes it, and takes it the same way: `--preview-ground` is
+`#f3f2ef` on a light rail and `#191b1e` on a dark one, two literals repeated in
+every folder. That ground is the rail's rather than the component's — it is
+repeated across the folders precisely so the rail reads as one set of cards,
+which is an argument about the index and not about any study — so it follows
+the index into dark rather than staying lit under it. A card that kept the
+paper while the others went dark would read as a different kind of thing rather
+than as that study's card.
+
+What sits on the ground is still the folder's own: `2026-09-inked-plate-card`
+brings its plotter grid along, in ink on the paper and in chalk on the dark.
+The component is never touched by any of it, and `demo.html`'s ground is a
+separate decision — that page may be ink in both themes while its thumbnail is
+neither.
+
+`preview:key` is the fifth, and it goes the other way — preview to index. An
 iframe is its own document: keys pressed inside it fire against that document
 and never reach the index. Quick look runs the preview with pointer events
 live, which is the whole point of it, so a click on the component moves focus
@@ -314,11 +342,151 @@ against it, inline, so it beats the stylesheet's own media queries. That is a
 custom property being set from outside, which is what the property block is
 for; it is still not a rule written against a component class.
 
+`preview:pause` is the sixth, and it is the only one a preview may not ignore.
+A same-origin iframe shares the index's main thread, so a thumbnail that keeps
+animating while the rail is being dragged is animating against the drag, on the
+thread the drag needs — and a live component is the whole of what this index
+shows, so every card on screen would be doing it at once.
+
+What it holds is the rail moving, not the card being off the mark. A preview
+runs while its card is on screen and the rail is still, and stops while the rail
+travels — under a hand, in a step, or on the drift. Off screen it is stopped
+too, since nothing is being shown. It is sent `true` when the rail starts
+moving and when its card leaves the scrollport; `false` when the rail lands,
+when the card comes back into view, and on load once its settling-in grace is
+up.
+
+Holding a card off the mark was the earlier rule and it was too broad: a
+component's resting state is a state, and a preview frozen at its first frame
+shows the component stopped rather than at rest. What keeps a card from
+performing early is `active`, which is the read mark's, and it is untouched by
+any of this.
+
+At the mark means arrived, not nearest. Nearest flips at the halfway point
+between two cards, which is the right answer for the counter and the progress
+bar and the wrong one for whether a component should start performing — a card
+half in is not being read. `ON_MARK` is how close counts, as a fraction of a
+card; snap lands exactly, so it only has to absorb the last pixels of a settle.
+
+The drift needs the sign as well as the distance. It never rests, so it cannot
+wait for rest — but nearest flips half a card *before* the card reaches the
+mark, so a drifting rail had every card start performing on its way in: the
+pulse ran while the card was still coming onto the screen. `activeIndex` reports
+the signed distance for this, and while the drift is running a card counts as
+arrived once it is at the mark or past it. It then keeps performing as it
+travels off, until the next card arrives in its turn — which is the cost of the
+drift never resting, and the right way round: a card that has been read leaving
+is better than one being read before it is there. Measured over 26 seconds of
+drift: 89 samples of a card performing before the mark, worst half a card early,
+against none.
+
+The pause is not the only thing holding a card, and cannot be. A component
+whose performance is a transition rather than an animation —
+`2026-09-liquid-glass-toolbar`, which has nine transitions and no keyframes at
+all — is not touched by `animation-play-state`, so nothing stops it once it has
+been told to perform. What holds it is never being told: the mark starts a
+card, `hush()` stops the one being left at the moment the rail starts moving
+rather than when it arrives, and `settleWork` re-reads the position before
+handing off, because `sync` is coalesced onto a frame and the read position it
+would otherwise use is the one the gesture started from. Measured by stepping
+the rail eight times and sampling through each step: 47 samples of a visible
+card performing off the mark, worst a full card and a fifth away, against none
+— and every card told to perform sitting exactly on it. The preview stamps `data-preview-paused` on its own root, and the one
+rule that goes with it stops every animation in the document:
+
+```css
+:root[data-preview-paused] *,
+:root[data-preview-paused] *::before,
+:root[data-preview-paused] *::after {
+  animation-play-state: paused !important;
+}
+```
+
+Global, and in `preview.html`'s own style block rather than in `component.css`
+— it has to reach the component without naming one of its classes, which is
+the same rule the rest of the file keeps. Transitions are deliberately left
+out: stopping those mid-gesture makes states snap instead of settle, and they
+are not what costs.
+
+Measured across the rail on a throttled phone profile, the same two-card drag
+runs 446 style recalcs with the pause defeated and 175 with it working. One
+study accounted for nearly all of it — `2026-09-raster-pulse`,
+whose 289 dots are past Chromium's composited-animation budget and so fall back
+to the main thread — but the message is the contract's rather than that
+folder's, because the next study to animate three hundred things would do the
+same.
+
+Pausing is not `active: false`. That puts a preview in its resting state, and a
+resting state still animates; sending it to all five changed nothing measurable.
+Nor is it unloading: the document stays, so the animations pick up where they
+were instead of starting over, which is what a card that has been dropped and
+re-loaded does.
+
 The block is optional. A preview that ignores the messages still renders; it
 just sits still, and quick look shows it without dots. A preview opened on its own does nothing, because the script only
 posts back when it is framed. This is the one place a study folder may carry
 script without meeting the JavaScript bar below — it is thumbnail scaffolding,
 not component behaviour, and it never goes in `component.js`.
+
+## Two themes, and every page carries its own copy
+
+`index.css` declares every colour it uses as a token in `:root`, and the dark
+theme is that same list re-declared under `:root[data-theme="dark"]`. There is
+no rule that exists in one theme and not the other, no second stylesheet, and
+no `prefers-color-scheme` query — a colour hardcoded past the token block is a
+colour that will be wrong in one of the two.
+
+The attribute is the only thing the stylesheet reads, which is what keeps the
+dark palette to one block: the two inputs are resolved in script instead, where
+they become one answer. The stored choice, or the system's when there is none.
+Six inline lines in `<head>` do it before the first paint — a theme that
+arrives with the stylesheet instead flashes a frame of the other one — and the
+page's own script does it again on load, then keeps listening while nothing is
+stored, so an OS switch made with the page open still moves it. Choosing
+stores; a stored choice then outranks the OS in both directions.
+
+Without JavaScript a page keeps whatever its bare `:root` holds. On the index
+that is the light theme, and the index already needs script for its previews,
+its rail order and its counts; on a demo page it is the ground the folder
+authored, which is the right thing to fall back to.
+
+A demo page does the same in its own `<style>`: its own tokens, its own two
+blocks, its own copy of the toggle and of the head script. No shared module and
+no shared stylesheet — the folder has to survive being copied out, which is the
+same reason its language table is its own. `_template/demo.html` holds the
+block to copy.
+
+Which theme a folder's bare `:root` holds is the folder's business.
+`2026-09-inked-plate-card` is ink by authorship — the plotter ground is that
+study's own staging, not a default it inherited — so its `:root` carries the
+dark theme and it declares `:root[data-theme="light"]` instead. The attribute
+selects either way.
+
+`component.css` is not in it, in any folder. A component owns its colours in
+both themes and no demo rule may reach into them, so on a dark page it sits as
+a lit plate — which is exactly what it does on the index cards. A study that
+wants a dark variant of the component declares one as a modifier, in its own
+file, as a decision of the study.
+
+`preview.html` is told, rather than left out. The index cannot reach into a
+framed document — over `file://` it is behind an opaque origin — so the theme
+rides on the src and over `preview:theme`. Every preview moves its shared
+ground with it and nothing else; see **The preview message contract**.
+
+The chips that sit *on* a thumbnail are the part of the index that has to know:
+the type badge, the number and quick look are painted against the preview
+rather than against the page, so they invert with the chrome rather than with
+the plate they cover.
+
+The choice travels in the link, the way the language does: the index appends
+`?theme=` to the link that opens a demo, the demo's back link hands it back,
+and `localStorage` is the secondary channel. Only an explicit choice travels —
+a theme resolved from the system is not a choice, and the other end would
+resolve it the same way anyway.
+
+The matte part is the grain: the dark ground is a wash across two thousand
+pixels, which 8-bit colour cannot draw without ringing. A fractal-noise tile at
+a low alpha dithers the banding out, and reads as paper rather than as texture.
 
 ## JavaScript
 
@@ -337,10 +505,17 @@ intentional, because each folder has to survive being copied out on its own.
 When asked to add a study, touch that folder and nothing else — with the
 single exception below.
 
-The one thing that legitimately sweeps every folder is an identity change —
-the site was renamed, and each `demo.html` carries its own copy of the back
-link's strings. That is a rename, not a refactor: it touches the strings and
-nothing structural, and a folder still owns its own copy afterwards.
+Two things legitimately sweep every folder, and both are the same shape. One is
+an identity change — the site was renamed, and each `demo.html` carries its own
+copy of the back link's strings. The other is a page contract every demo has to
+meet, which is how the language switch arrived and how the theme switch did:
+each folder gets its own copy, written into its own file, in its own palette.
+
+Neither is a refactor. The test is what the folder owns afterwards: a sweep
+that leaves every folder holding its own copy is a sweep; one that leaves them
+sharing a file is the thing this rule forbids. Adding a contract like that is a
+decision about the whole repo — make it deliberately, write it down here, and
+put it in `_template/` so the next study is born with it.
 
 ## The landing page
 
@@ -353,6 +528,143 @@ classes. A study folder must keep working with the index deleted.
 Each card iframes that folder's `preview.html` — so the index shows the live
 component, not `ref.png`. The reference image stays in the folder as the record
 of what the build was based on; it is not what gets displayed.
+
+A touch release is the platform's, end to end — its momentum, its snap, its
+deceleration curve. Nothing in `index.js` animates the landing.
+
+Four attempts got here, and each failed for a reason that only made sense once
+the next one failed too. Driving `scrollLeft` from rAF is a main-thread scroll
+update per frame: two or three visible hitches in every landing on a phone.
+Handing it to `scrollTo({behavior:'smooth'})` is smooth but its duration is the
+browser's, nothing exposes it, and over one card it is finished before it reads
+as motion. Translating the row instead is smooth and the duration is ours — but
+the fling is still running underneath, so the two distances add up, the rail
+travels much too far, and committing the real scroll snaps it back. And a fling
+cannot reliably be cancelled from script: the write meant to stop it is a no-op
+when it asks for the position the scroll is already at.
+
+What was wrong sat upstream of all of it. `scroll-snap-stop: always` makes a
+fling stop at the next card rather than running through several — but only if
+snap is on when the browser *plans* the fling, and snap was off for the whole
+gesture so that a finger landing on a drifting rail is not yanked to the nearest
+card. It was off at exactly the moment it needed to be on.
+
+It only has to be off while the rail is **still**. Mandatory snap applies at the
+end of a scroll, not during one, so giving the class back on the first
+`touchmove` yanks nothing — the scroll is live by then — and the fling that
+follows is planned with snap and snap-stop in hand. One swipe, one study,
+landing on the mark, and not a line of it on this thread.
+
+`endTouch` then only picks which of two things is true. A flick: hands off
+entirely, `landFlung` waits for `scrollend` and the platform does the rest. A
+slow drag: there is no fling to fight, and snap on its own would return a short
+drag to the card it started on — right for a stray touch, wrong for the
+deliberate short drag this rail is mostly used with — so `landWalked` scrolls it
+one card on, smoothly, as the only thing moving. `FLICK_SPEED` over the last two
+`touchmove` samples is the whole of the distinction; the full velocity sampling
+this replaced ran on every scroll event of a gesture to feed arithmetic that
+decided the target, and that arithmetic is what used to land cards off the mark.
+
+A press that never moved takes the same walked path, because snap is still held
+off and giving it back to a rail standing between two cards is the yank.
+
+`gesturing()` counts the landing as the rail still moving, so the recycle holds
+off and the read mark does not start a card until it has arrived.
+
+What ends the landing is `scrollend`, and a backstop timer behind it in case
+none comes. The backstop alone was a second of dead air: the card was on the
+mark, visibly stopped, and nothing had started — the animation is told to run by
+`settleWork`, which the landing has to finish first. So a quiet poll sits beside
+`scrollend` and ends it as soon as the rail has stopped moving, about 90ms.
+
+Quiet is not enough on its own to go on. `scrollLeft` quantises to whole pixels,
+so the tail of an ease-out sits on one of them for longer than those two ticks
+while the scroll is still live, and ending the landing there would recycle the
+rail mid-motion — which is the seam jump. The poll therefore wants the rail
+quiet *and* on a snap position: landed, not merely slow. Anything else waits out
+the backstop, which is what it is for.
+
+**On testing this.** A throttled Chromium reported the rAF version as flawless —
+every frame 16.7ms, nothing dropped — on code that stuttered plainly on an
+iPhone. It has no touch scrolling and no momentum, so the fling path cannot be
+exercised in it at all, and with snap live a synthetic `scrollLeft` write is
+undone before it counts. What a harness here can check is the rail's own
+decision — which branch, how many cards — and not how a platform lands it. Where
+the question is how something feels on a phone, the phone is the instrument, and
+a green harness is not evidence. Note also that Chrome on iOS is WebKit: "tested
+in Chrome" means two different engines depending on the device.
+
+### What stops the drift, and what only holds it
+
+The rail drifts on its own until a reader takes it, and the two are different
+things. `driftStop(byUser)` is final — only the play control brings it back —
+while `driftHold`/`driftRelease` is the rail deferring to someone who is there
+and picking up again when they are not. Reading a gesture as the first when it
+was the second is how the carousel ends up dead on a page nobody has touched.
+
+Both of those went wrong the same way, by taking a proxy for the thing.
+
+**A wheel is only the rail's if it is sideways.** Any wheel over the track used
+to stop the drift for good, and a vertical wheel over the track scrolls the page
+past it and leaves `scrollLeft` exactly where it was — measured. So scrolling
+down the page to reach the rail killed the carousel on the way. On a 1440x810
+laptop the track's box is 86% of the fold, which makes that the ordinary way to
+arrive rather than an edge case: the drift was off before the rail had been
+looked at. Predominantly horizontal, or shift held, is the rail being taken;
+anything else is the page moving past it, and the pointer being there already
+holds the drift and lets go again on the way out.
+
+**A pointer holds the rail by moving, not by being there.** Presence was the
+proxy, and at 86% of the fold "on the rail" is indistinguishable from "on the
+page": a cursor parked mid-screen held the drift for as long as the tab stayed
+open. So movement holds it and stillness lets it go, after `POINTER_IDLE`. Any
+move re-holds at once, which is what keeps the rail from travelling out from
+under a reader — they need only have moved within that window, not be moving
+now. Measured on a 1440x810 viewport: parked, the rail is held for the first
+2.5s and drifting again by 6.5s; nudged every 700ms, it stays put throughout.
+
+**A pointer moving is not the same as a pointermove.** A browser dispatches one
+of its own when the content under a stationary cursor changes, so `:hover` can
+land on whatever is under it now — and a drifting rail changes that every frame.
+Taken at face value, the rail's own motion reads as a reader being there and
+holds the drift, which leaves the carousel still except for a frame or two after
+each idle release. The synthetic move carries the coordinates the pointer
+already had, so comparing them is the whole of the distinction. A headless
+harness will not show this: its cursor is virtual and it does not do the
+hover recalculation, so the guard has to be reasoned about rather than measured.
+
+**Reduced motion decides whether the rail sets off, not whether it can.** These
+were one test, `driftable()`, and folding them together meant a reader with the
+preference set got no drift *and* no control — the play button was hidden along
+with the thing it starts, so there was no way in at all. Content that moves by
+itself is what the preference is about, so the rail does not; a reader who
+presses play has asked for this one, and leaving that open is what the
+preference is for rather than something it forbids. `driftable()` is now
+`loopable()` alone and `driftsUnasked()` carries the preference: it gates the
+boot timer and the resize restart, and nothing else. The control is offered
+from the first paint in that case, because it is never going to appear on its
+own.
+
+The play label lost its "again" with it. Under reduced motion the rail has never
+set off, so "Start the carousel again" was wrong in exactly the state where the
+control matters most, and the word carried nothing a reader needed in the other.
+
+The rail loops, and so drifts, while the row can cover the viewport with a card
+to spare: `client <= (ring - 2) * step`, which at eight cards and a 336px card
+is 2184px. Past that it is finite and the drift control hides itself — the one
+case documented under `loopable()`, and the ceiling rises by a card with every
+study added. A wider screen than that needs a wider card, and the pair to keep
+in step is `--card-w` and `--preview-scale`.
+
+**When the control is missing, those are the two reasons**, and they are worth
+telling apart before looking anywhere else: the row is too short to loop, or
+reduced motion is set. Everything else about the drift is about when it stops,
+not whether it exists.
+
+The pointer path still steps itself, through `stepTo`, and keeps the old
+arithmetic. There is nothing native to defer to there: the drag is scripted from
+`pointermove`, there is no momentum, and a recycle mid-step has to move both
+ends of the animation underneath it.
 
 Cards run their preview in place, via the message contract above. The quick-look
 overlay iframes the same `preview.html` again at full logical size with pointer
@@ -427,13 +739,154 @@ only file outside the study folder that a new study may touch.
 
 The preview iframe carries its path in `data-src`, not `src`. Every card on the
 page is a live component — which is the point, and also what it costs: one
-thumbnail alone runs 289 dots on their own animations, on screen or not, and
-the rail drifts, so every card eventually arrives. `index.js` loads a preview
-when it comes within a card-width of the rail's scrollport and drops it again
-two card-widths past, so a long rail only ever has a handful alive. A card
-whose preview has been dropped shows its skeleton, not an empty frame. This
-does mean no previews at all without JavaScript; the index already needs it for
-the rail's order, its numbers and its counts.
+thumbnail alone runs 289 dots on their own animations, and the rail drifts, so
+every card eventually arrives. So two things are decided separately: whether a
+preview's document exists, and whether it animates.
+
+**Whether it animates is whether the rail is still.** A card on screen runs
+while the rail is stopped; everything pauses the moment it moves, and a card
+with none of it on screen is paused whatever the rail is doing.
+
+While the rail drifts, the card at the mark runs and the rest do not. The drift
+writes `scrollLeft` from a frame callback, so a field animating under it is
+animating on the thread it needs, and five at once cost it plainly: measured on
+a throttled phone profile, the drift's median frame went 16.7ms to 33.3ms with
+every resting field live, and 25 dropped frames in 700 became 457. One field is
+free — 20 and 22 dropped against main's 29.
+
+Holding *all* of them during the drift was the first answer and it was too much,
+for a reason that is easy to miss: `handoff` is a coarse-pointer path — it is
+what stands in for hover where there is none — so on a desktop no card is ever
+`active` from the mark. Every preview therefore fell through to the drift test
+and was paused, and since the rail drifts for all but the seconds a pointer
+rests on it, the resting fields were paused essentially always. Measured on a
+desktop with the pointer off the rail: 0 running samples in 250, the card at the
+mark included. What a reader saw was the field animating for the 1400ms before
+the drift sets off and then stopping dead.
+
+**What the read mark governs is performing**, which is a different question and
+`active` is what carries it. The card at the mark is told to perform; a pointer
+on a card tells it too, which is what hover has always meant here. Nothing else
+is. A component's open state, its entry, its loud version — all of it hangs off
+`active`, so a card that is merely on screen shows its resting state and not its
+performance.
+
+Proximity used to decide performing, and it was the wrong rule. A preview woke a
+scrollport before it arrived, so a card a third of the way onto the screen was
+already running its open state, and a component that introduces itself on load —
+the plate that inks its own line drawing — did the introducing off to the side.
+By the time the card was yours to look at, the thing worth seeing had already
+happened next to it.
+
+The two were one rule for a while, and that was the error: paused was the
+default and the mark was the only exception, so a card off the mark was frozen
+rather than resting. A resting state is still a state — `2026-09-raster-pulse`
+is a field that breathes and `2026-09-detail-reveal-card` has a ping that is the
+only thing moving in it — and holding those at their first frame does not show
+the component at rest, it shows it stopped. A rail of stopped cards reads as a
+page that has crashed.
+
+The cost is real and it is worth knowing where it lands. Letting the fields run
+while the rail moves is what the numbers above rule out. Letting them run while
+it is still costs the head of the next gesture, because the pause is a message
+into five documents that then restyle everything they are animating:
+`2026-09-raster-pulse` alone has 289 dots to re-state. Measured from
+`pointerdown`, the worst frame in the first ten of a drag is 17ms unthrottled
+either way, 67ms against 17ms at 2x, and 150ms against 33ms at 4x. So there is
+nothing in it on a desktop and something in it on a slow phone, for the tenth
+of a second before the hush lands. If that ever reads as a hitch, the rule to
+narrow is this one — not the read mark, which is about something else.
+
+A preview still loads paused, because a card off screen is paused and loading
+happens a scrollport out. The exception is the moment it loads, and it is there
+because holding a component at its first frame assumes there is something on
+that frame. For one
+that draws itself — the plate, again — the first frame is an empty card, and
+under the drift it sits in view empty for ten seconds before it reaches the mark.
+So a freshly loaded preview gets `SETTLE_IN` to reach its resting state before
+the pause takes it: long enough for the slowest entry in the set, measured.
+
+Granted off screen, which loading a full scrollport out makes the ordinary case,
+and on the page's own first pass, because nothing has been read yet: the whole
+rail arrives at once and the second card is a third on screen whatever the rail
+does, so holding it at its first frame is not a card introducing itself early,
+it is a card that never introduces itself at all. A component drawing itself
+while the page loads is the page loading.
+
+The grace runs a component once, off screen, and what arrives at the mark is the
+finished drawing. The card then performs on arrival the way every other one does
+— the plate re-inks under `--live`, so the drawing is still made in front of you
+when it is yours to look at.
+
+`syncVisibility` is what carries the on-screen half, from `sync` so it is read
+at the same moment as everything else about the rail's position. It posts only
+where the answer moved, and its rects are the same order `activeIndex` already
+pays for: measured, the sweep on its own costs nothing at all — 33ms worst frame
+in the first ten of a drag, the same as without it.
+
+**Whether the document exists is two bands**, and they only load and unload.
+Loading starts a full scrollport out, where it used to start a quarter of one —
+a quarter put the load a third of a card before the card did, where you could
+watch it happen. A load has to finish before it is looked at, so it has to start
+well before, and it can afford to: an off-mark preview is paused, so a document
+that exists early costs nothing but its memory.
+
+Unloading is a ceiling rather than a routine, at a margin the current set never
+reaches. It used to be routine and it was visible: navigating the frame to
+`about:blank` and back brought the skeleton with it, so a card you had already
+seen flashed its ground as it came into view and then played its entry animation
+from the top, introducing itself again — and it put an iframe navigation into
+roughly every third drag. Measured over eight drags through the set: thirteen
+navigations and six of those flashes, against one and none after.
+
+A card whose preview has not loaded yet shows its skeleton, not an empty frame.
+This does mean no previews at all without JavaScript; the index already needs it
+for the rail's order, its numbers and its counts.
+
+`2026-09-raster-pulse` is far and away the most expensive of them, and worth
+knowing about before measuring anything on this page. Isolating one study at a
+time on a throttled phone, it costs what all five previews together cost: every
+other card held a drag at 16.7ms a frame and that one alone took it to 50ms.
+Pausing does not save it — a same-origin iframe takes part in this page's style
+and layout passes whether or not it animates, and paused it still measured 2.6
+times a card holding no document at all. `content-visibility: hidden` and
+`visibility: hidden` on the frame were both tried and neither helped, for the
+same reason: the child's lifecycle is not the parent's to skip.
+
+It ran as a still render in the rail for a while because of that, and it does
+not need to any more. What made the rail feel bad was never the previews: it was
+the landing being animated from script, and with that gone — the gesture and its
+fling both on the compositor — a heavy preview costs a busy main thread that
+nothing is waiting on. The lesson is the order to look in. Measure the thread
+only after establishing that something on it is in the way.
+
+The three cards at the end of the rail are forthcoming slots — a month, a year
+and a title, in a dashed frame. They are in the ring and recycle with the rest;
+`real()` skips them, so the counts and the progress bar go on counting studies,
+and the filter hides all three at once because a slot has no type to be narrowed
+to. Three rather than one because the row reads as a set and a single trailing
+placeholder reads as an accident. When a study lands, replace the slot whose
+month it is.
+
+The rail's head is one grid — `.rail__head` — holding the count, the type
+filter and the carousel controls, rather than a bar with a row beneath it. The
+controls span both rows and sit in the right column, so they land on the filter
+chips' own bottom edge instead of floating on a line that is otherwise empty for
+a thousand pixels. It takes 31px off the header, which is 31px more of the first
+card above the fold.
+
+Bottom-aligned rather than centred, because the chips and the circles are
+different heights and the chips' bottom edge is the line the eye already has;
+the nav's bottom padding matches the filter's so the circles finish on the chips
+rather than on the scroller's box. Right-aligned to the page gutter, the same
+one the masthead and the cards use.
+
+Side by side only above 52rem, which is where all four chips still fit beside
+the controls. Below it the areas restack to what they were — controls up beside
+the count, chips full width underneath — because the chips lose more than they
+gain: measured at 320px with the drift control showing, the scroller is left
+132px and one chip of four. The grid restacks with `grid-template-areas`, so
+nothing moves in the DOM and the nav is one element in both layouts.
 
 The type filter above the rail is built by `index.js` from the `type.*` key on
 each card's badge, so a study of a new type needs nothing added to it. Filtering

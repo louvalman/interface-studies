@@ -8,17 +8,26 @@
   Two things here differ from demo.html on purpose, and both are about being
   read at thumbnail size.
 
-  The ground: this page uses the light #f3f2ef every study in this repo
-  sits on, so the rail reads as one set of cards rather than one dark frame
-  among light ones. The plotter grid runs in ink rather than chalk behind it.
-  The dark ground the aesthetic is built for is demo.html's, and it keeps it.
+  The ground: the shared one, in whichever theme the index is in — the #f3f2ef
+  every study in this repo sits on, or the #191b1e they all take on a dark
+  rail. It is the rail's ground rather than this study's: a card that broke
+  ranks with it would read as a different kind of thing rather than as this
+  study's card, whichever way round the page is. demo.html's ink is
+  demo.html's, and it keeps it.
+
+  The plotter grid does come along, because that is the component's context
+  rather than the page's: in ink on the paper, in chalk on the dark ground.
+
+  Which theme arrives over the message contract: `?theme=` on the src this is
+  loaded with, and a `preview:theme` message if the index is switched while it
+  is on screen.
 
   The surface: the demo leads with the porcelain default, this page leads with
   --acid and the waterfall. Not because porcelain fails at thumbnail size — at
   0.7 the grid still stops at the plate, the edge still holds, and the vortex
-  still reads. It is that porcelain on this ground inside the index's own light
-  rail is three near-whites stacked, and a thumbnail has to be picked out of a
-  row of them. Lime is the one surface that does that without going dark and
+  still reads. It is that porcelain on the light ground inside the index's own
+  light rail is three near-whites stacked, and a thumbnail has to be picked out
+  of a row of them. Lime is the one surface that does that without going dark and
   reading as a hole, and the waterfall's 9 curves carry further than 13 nested
   squares at any size.
 
@@ -39,6 +48,15 @@
 
   <link rel="stylesheet" href="component.css">
 
+  <!-- The ground, before the first paint. The index loads this frame with
+     ?theme= on the src, so the thumbnail is never drawn on the wrong one and
+     then corrected — the card would flash paper for a frame on a dark page.
+     Opened on its own, with no query, this page keeps the light ground. -->
+  <script>
+    var theme = new URLSearchParams(location.search).get('theme');
+    if (theme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+  </script>
+
   <style>
     /* Thumbnail scaffolding only. Nothing here names a component class. */
     /* The same ground every study in this repo sits on. Repeated as a
@@ -46,8 +64,25 @@
        copied out — but it has to be the same number in all of them, or the
        rail stops reading as one set of cards. <html> carries it too, so
        <body>'s background does not propagate to the viewport canvas and leave
-       a seam at the frame edge. */
-    html { background-color: #f3f2ef; }
+       a seam at the frame edge.
+
+       Both grounds are tokens, and both are the rail's rather than this
+       study's: the dark one is the #191b1e every other thumbnail here takes,
+       not demo.html's ink. The plotter grid is the part that belongs to the
+       component, and it comes along — in ink on the paper, in chalk on the
+       dark. The script at the foot of this file sets data-theme from what the
+       index tells it. */
+    :root {
+      --preview-ground: #f3f2ef;
+      --preview-grid: rgba(20, 24, 26, 0.05);
+    }
+
+    :root[data-theme="dark"] {
+      --preview-ground: #191b1e;
+      --preview-grid: rgba(232, 235, 228, 0.05);
+    }
+
+    html { background-color: var(--preview-ground); }
 
     body {
       margin: 0;
@@ -64,20 +99,41 @@
       padding: 2.5rem 1rem 1.5rem;
       box-sizing: border-box;
 
-      background-color: #f3f2ef;
-      /* The plotter grid the demo page uses, in ink rather than in chalk. It
-         places the card on a drawing surface, and it is also what draws the
-         edge of the porcelain plate when quick look steps to it: the grid runs
-         up to the plate and stops. The lime plate this page rests on needs no
-         such help. */
+      background-color: var(--preview-ground);
+      /* The plotter grid the demo page uses — in ink on the light ground, in
+         chalk on the dark one. It places the card on a drawing surface, and it
+         is also what draws the edge of the porcelain plate when quick look
+         steps to it: the grid runs up to the plate and stops. The lime plate
+         this page rests on needs no such help. */
       background-image:
-        linear-gradient(rgba(20, 24, 26, 0.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(20, 24, 26, 0.05) 1px, transparent 1px);
+        linear-gradient(var(--preview-grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--preview-grid) 1px, transparent 1px);
       background-size: 44px 44px;
 
       font-family: "Plus Jakarta Sans", system-ui, sans-serif;
     }
 
+  
+    /* The index has told this thumbnail that the rail is moving under a
+       finger. Every animation in the document stops for the length of the
+       gesture and picks up where it left off.
+
+       It is here rather than in the component because it is the rail's
+       problem, not the study's: a same-origin iframe shares the index's main
+       thread, so a card that keeps animating while it is being dragged is
+       animating against the drag, on the same thread the drag needs. Measured
+       across the whole rail: 80 dropped frames in a two-card drag against 20
+       with this in.
+
+       Global on purpose. It has to reach the component without naming a
+       single one of its classes — the same rule the rest of this file keeps.
+       Transitions are deliberately left out: stopping those mid-gesture makes
+       states snap instead of settle, and they are not what costs. */
+    :root[data-preview-paused] *,
+    :root[data-preview-paused] *::before,
+    :root[data-preview-paused] *::after {
+      animation-play-state: paused !important;
+    }
   </style>
 </head>
 <body>
@@ -357,6 +413,31 @@
         if (data.type === 'preview:variant') {
           var variant = VARIANTS[data.index];
           if (variant) apply(variant);
+        }
+
+        // The index was switched while this thumbnail was on screen. The
+        // component is not touched — its plates are the study, and they are
+        // the same six in both themes. Only the surface they are drawn on
+        // moves, which is the one this folder authored either way.
+        // The rail is moving under a finger, or stepping to a card. Everything
+        // in here stops until it lands — see the paused rule in the style
+        // block above. Resuming picks the animations up where they were
+        // rather than restarting them, which is the point of pausing over
+        // unloading.
+        if (data.type === 'preview:pause') {
+          if (data.paused === true) {
+            document.documentElement.setAttribute('data-preview-paused', '');
+          } else {
+            document.documentElement.removeAttribute('data-preview-paused');
+          }
+        }
+
+        if (data.type === 'preview:theme') {
+          if (data.theme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+          } else {
+            document.documentElement.removeAttribute('data-theme');
+          }
         }
       });
 

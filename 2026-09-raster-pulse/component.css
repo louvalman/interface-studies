@@ -76,6 +76,14 @@
   /* --- motion --------------------------------------------------------- */
   --raster-pulse-dur: 6.4s;
   --raster-pulse-dur-active: 1.9s;
+  /* The resting field's colour drift: how far the whole field rotates off its
+     own hue, and how long a round trip takes. Negative carries tone A toward
+     tone B — pink to magenta — rather than the other way, which is toward red
+     and belongs to neither tone. Slow against --dur on purpose: the ring is
+     the thing travelling and this is the ground it travels over, so a drift
+     that kept pace with it would read as a second wave. */
+  --raster-pulse-hue-drift: -20deg;
+  --raster-pulse-hue-dur: calc(var(--raster-pulse-dur) * 2.5);
   /* Rings visible at once. 1 puts exactly one wave across the field; above 1
      the pattern repeats within it. */
   --raster-pulse-spread: 1;
@@ -182,8 +190,11 @@
   border-radius: 50%;
 
   /* A dot outside the shape is scaled to nothing rather than hidden, so it
-     keeps its grid cell and the field stays square whatever the pattern. */
-  transform: scale(calc(var(--raster-pulse-trough-scale) * var(--on)));
+     keeps its grid cell and the field stays square whatever the pattern.
+     On `scale` rather than inside `transform`, because `transform` is what the
+     pulse animates and the two multiply: this is the dot's resting size, the
+     animation below is the swell on top of it. */
+  scale: calc(var(--raster-pulse-trough-scale) * var(--on));
 
   /* One tone, painted once, dimmed by alpha — not a colour that animates.
      A keyframe holding var(--trough) cannot be resolved ahead of time, so the
@@ -203,43 +214,95 @@
   animation-delay: calc((var(--phase) - 1) * var(--raster-pulse-spread) * var(--raster-pulse-dur));
 }
 
+/* The resting field's colour life, and the whole of why it is on this element
+   rather than on the dots.
+
+   A dot's own hue cannot move at rest without paying for it: a keyframe holding
+   a var()-derived colour is re-resolved for all 289 of them on every frame,
+   which is what drove the resting wave onto alpha in the first place. Stacking
+   a second tone per dot and cross-fading it is worse again — measured, style
+   recalc goes from 949ms to 5822ms over three seconds and 177 frames in 180
+   drop — because it doubles the animated element count past what Chromium will
+   composite.
+
+   So the hue moves under the field instead of inside each dot. One element, one
+   filter, composited: measured at +10% recalc and no dropped frames. The ring
+   still travels in each dot's own alpha; what this adds is the ground moving
+   colour beneath it. A var() in these keyframes costs nothing — only one
+   element resolves it — which is why the drift stays a token when the dots'
+   own keyframes could not.
+
+   filter rather than a colour animation for the same reason it is on one
+   element: filter composites, background-color does not. */
+.raster-pulse__field {
+  animation: raster-pulse-hue var(--raster-pulse-hue-dur) linear infinite;
+}
+
+@keyframes raster-pulse-hue {
+  0%, 100% { filter: hue-rotate(0deg); }
+  50% { filter: hue-rotate(var(--raster-pulse-hue-drift)); }
+}
+
 /* Narrow bright window, long recovery — that is what makes the wave read as a
    ring travelling outward rather than as the whole field breathing. The two
    keyframe sets are the same shape in two currencies: --fade rides alpha and
    is what runs at rest, --beat moves the colour itself and runs only while a
    card is active. */
+/* Every value here is a literal, and that is the whole point of it. A keyframe
+   holding var() has to be re-resolved for all 289 dots on every frame —
+   measured at 86% of a phone's main thread for one thumbnail, which is a page
+   that drops four frames in five while nobody is touching it. Literals halve
+   that, and halving it is what took the index back to 60fps.
+
+   Not to nothing, though, and it is worth being accurate about why: 289
+   animations is past the count Chrome will hand to its compositor, so these
+   still run on the main thread and still cost about a seventh of a percent
+   each per frame. Literal or not, a field this size is paid for in style
+   recalculation; what literals buy is how much.
+
+   So the resting pulse's depth is fixed: 1.913 is --peak-scale over
+   --trough-scale, 40% is 100% minus --dim, at the values declared above. The
+   size is still tunable — --trough-scale scales the dot itself through the
+   `scale` property, and the swell rides on top of it — and both properties go
+   on governing the active beat below and the dot's own tone. */
 @keyframes raster-pulse-fade {
   0%,
   100% {
-    transform: scale(calc(var(--raster-pulse-trough-scale) * var(--on)));
-    opacity: calc(100% - var(--raster-pulse-dim));
+    transform: scale(1);
+    opacity: 40%;
   }
 
   16% {
-    transform: scale(calc(var(--raster-pulse-peak-scale) * var(--on)));
+    transform: scale(1.913);
     opacity: 100%;
   }
 
   44% {
-    transform: scale(calc(var(--raster-pulse-trough-scale) * var(--on)));
-    opacity: calc(100% - var(--raster-pulse-dim));
+    transform: scale(1);
+    opacity: 40%;
   }
 }
 
+/* The active beat keeps its var()s and pays for them, as it always did: a
+   colour animation cannot composite whatever is written here, and this one
+   only ever runs on the card under the pointer. Its scales are ratios now
+   rather than absolutes, because the dot's own `scale` already carries
+   --trough-scale — which is what keeps the touch-active override of both
+   working, since the ratio moves with them. */
 @keyframes raster-pulse-beat {
   0%,
   100% {
-    transform: scale(calc(var(--raster-pulse-trough-scale) * var(--on)));
+    transform: scale(1);
     background-color: var(--trough);
   }
 
   16% {
-    transform: scale(calc(var(--raster-pulse-peak-scale) * var(--on)));
+    transform: scale(calc(var(--raster-pulse-peak-scale) / var(--raster-pulse-trough-scale)));
     background-color: var(--peak);
   }
 
   44% {
-    transform: scale(calc(var(--raster-pulse-trough-scale) * var(--on)));
+    transform: scale(1);
     background-color: var(--trough);
   }
 }
@@ -475,9 +538,19 @@
    is the whole field at full tone rather than a frozen wave — a frozen wave
    would read as a half-drawn pattern. */
 @media (prefers-reduced-motion: reduce) {
+  /* The drift is motion too, and a field left mid-rotation would be the study
+     in a colour it does not own. */
+  .raster-pulse__field {
+    animation: none;
+    filter: none;
+  }
+
   .raster-pulse__dot {
     animation: none;
-    transform: scale(calc(var(--raster-pulse-still-scale) * var(--on)));
+    /* Both, because the size lives on `scale` now and a stale `transform`
+       would multiply the still frame by the last swell it was left at. */
+    transform: none;
+    scale: calc(var(--raster-pulse-still-scale) * var(--on));
     background-color: var(--own);
     opacity: 1;
   }

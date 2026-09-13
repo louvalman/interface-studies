@@ -47,6 +47,16 @@
 
   <link rel="stylesheet" href="component.css">
 
+
+  <!-- The ground, before the first paint. The index loads this frame with
+     ?theme= on the src, so a thumbnail is never drawn on the wrong one and
+     then corrected. Opened on its own, with no query, it keeps the light
+     ground. -->
+  <script>
+    var theme = new URLSearchParams(location.search).get('theme');
+    if (theme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+  </script>
+
   <style>
     /* Thumbnail scaffolding only. Nothing here names a component class. */
     /* The same #f3f2ef every study in this repo sits on. <html> carries it
@@ -55,7 +65,18 @@
        something the variant switches: the rail only reads as one set of cards
        if the ground behind them never moves, so the darkness belongs to the
        surface and not to the page. */
-    html { background-color: #f3f2ef; }
+    /* The shared ground, and the only colour this page writes. Both values are
+       literals repeated in every folder rather than shared from anywhere — the
+       folder has to survive being copied out — but they have to be the same
+       two numbers in all of them, or the rail stops reading as one set of
+       cards. That is what this ground is for: it is the rail's, not the
+       component's, which is why it follows the index into dark rather than
+       staying lit under it. The index says which over ?theme= on the src and
+       the preview:theme message; the script at the foot of the file listens. */
+    :root { --preview-ground: #f3f2ef; }
+    :root[data-theme="dark"] { --preview-ground: #191b1e; }
+
+    html { background-color: var(--preview-ground); }
 
     body {
       margin: 0;
@@ -68,7 +89,7 @@
       place-items: center;
       padding: 1.5rem;
       box-sizing: border-box;
-      background-color: #f3f2ef;
+      background-color: var(--preview-ground);
       font-family: "Plus Jakarta Sans", system-ui, sans-serif;
     }
 
@@ -116,6 +137,27 @@
 
     @media (prefers-reduced-motion: reduce) {
       .stage { transition: none; }
+    }
+  
+    /* The index has told this thumbnail that the rail is moving under a
+       finger. Every animation in the document stops for the length of the
+       gesture and picks up where it left off.
+
+       It is here rather than in the component because it is the rail's
+       problem, not the study's: a same-origin iframe shares the index's main
+       thread, so a card that keeps animating while it is being dragged is
+       animating against the drag, on the same thread the drag needs. Measured
+       across the whole rail: 80 dropped frames in a two-card drag against 20
+       with this in.
+
+       Global on purpose. It has to reach the component without naming a
+       single one of its classes — the same rule the rest of this file keeps.
+       Transitions are deliberately left out: stopping those mid-gesture makes
+       states snap instead of settle, and they are not what costs. */
+    :root[data-preview-paused] *,
+    :root[data-preview-paused] *::before,
+    :root[data-preview-paused] *::after {
+      animation-play-state: paused !important;
     }
   </style>
 </head>
@@ -1032,9 +1074,27 @@
     (function () {
       var CHANNEL = 'interface-studies';
       var MIX = 'drawn-gradients__surface--mix';
-      /* What the field settles to. Set as the component's own tunable, from
-         outside, which is what that block is for. */
-      var GROUND = '#f3f2ef';
+      /* What the field settles to, and the ink the sample type is set in —
+         both handed to the component as its own tunables, from outside, which
+         is what that block is for. This file still writes no rule against a
+         component class.
+
+         The pair moves with the page. An aesthetic study is its samples, and
+         a sample block sits on the ground rather than on a surface of its
+         own: left at the paper ink on a dark rail, its three labels were
+         invisible and its read-out was a grey smear. The dark values are the
+         component's own — the ones its --night surface declares — so nothing
+         here invents a colour. */
+      var TONES = {
+        light: { base: '#f3f2ef', ink: '#1b1c1f', inkSoft: '#55565a' },
+        dark:  { base: '#191b1e', ink: '#f4f4f6', inkSoft: '#a7a9b0' }
+      };
+
+      function tone() {
+        return document.documentElement.getAttribute('data-theme') === 'dark'
+          ? TONES.dark
+          : TONES.light;
+      }
 
       var stage = document.querySelector('[data-stage]');
       if (!stage || !stage.firstElementChild) return;
@@ -1164,7 +1224,10 @@
       }
 
       function dress(node) {
-        node.style.setProperty('--drawn-gradients-base', GROUND);
+        var t = tone();
+        node.style.setProperty('--drawn-gradients-base', t.base);
+        node.style.setProperty('--drawn-gradients-ink', t.ink);
+        node.style.setProperty('--drawn-gradients-ink-soft', t.inkSoft);
         applyScale(node);
         // Only the resting composition carries the drift's three tinted
         // copies; everywhere else there is one drawing per surface.
@@ -1315,6 +1378,33 @@
 
         if (data.type === 'preview') {
           setActive(data.active);
+        }
+
+        // The index was switched while this thumbnail was on screen. Only the
+        // ground moves: the component is not touched, and it is the same
+        // component in both themes.
+        // The rail is moving under a finger, or stepping to a card. Everything
+        // in here stops until it lands — see the paused rule in the style
+        // block above. Resuming picks the animations up where they were
+        // rather than restarting them, which is the point of pausing over
+        // unloading.
+        if (data.type === 'preview:pause') {
+          if (data.paused === true) {
+            document.documentElement.setAttribute('data-preview-paused', '');
+          } else {
+            document.documentElement.removeAttribute('data-preview-paused');
+          }
+        }
+
+        if (data.type === 'preview:theme') {
+          if (data.theme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+          } else {
+            document.documentElement.removeAttribute('data-theme');
+          }
+          // The tunables above are written onto the mounted composition, so
+          // they are restated rather than waiting for the next switch.
+          if (root) dress(root);
         }
 
         if (data.type === 'preview:variant') {

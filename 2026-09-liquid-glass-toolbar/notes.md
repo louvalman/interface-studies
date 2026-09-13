@@ -34,9 +34,10 @@ paper — at 0.7 scale beside three near-white neighbours the card read as a
 different kind of object before it read as a component, which is the opposite
 of what a thumbnail is for. So preview.html takes the shared paper and
 demo.html's stage keeps the ramps. The glass survives the trade because the
-thumbnail is not showing one sheet: it stacks six, four of them dark, and each
+thumbnail is not showing one sheet: it stacks three, two of them dark, and each
 carries its own rim, sheen and drop shadow. A single alabaster sheet on flat
-paper would be the failure above; six materials on it are still six materials.
+paper would be the failure above; a near-black, a moss and a paper sheet on it
+are still three materials.
 
 The icons are drawn rather than borrowed: a dot inside a ring, a magnifier, two
 drawers, a ruled ledger, two sliders. The magnifier is the one glyph in a
@@ -302,9 +303,9 @@ side, which is what the eye reads and what `getBBox()` leaves out.
   wheel, and it is spent only on the two marks that mean unread. `--light`
   changes nothing below the variable block — tint, rim, sheen and ink — and the
   same construction comes back in six materials. Moss is the default and has no
-  modifier; `--alabaster`, `--slate`, `--basalt` and `--crystal` are the others.
-  Named for materials rather than for brightness, which is not decoration: two
-  of the five flip to dark ink, so `--light` would have been describing part of
+  modifier; `--alabaster`, `--slate`, `--basalt`, `--carnelian` and `--crystal`
+  are the others. Named for materials rather than for brightness, which is not
+  decoration: two of the six flip to dark ink, so `--light` would have been describing part of
   the set by a property the rest do not share.
 
   Alabaster took a round to get right, and the mistake is the useful part. The
@@ -389,6 +390,18 @@ side, which is what the eye reads and what `getBBox()` leaves out.
   back up to 44% and kept its brightness near 1: it is milk glass, a body you
   cannot see through, and crystal is a pane you can. What separates them is not
   how light they are.
+
+  That is also why crystal is the only one whose ink follows the page rather
+  than the sheet. The other five carry enough tint to stay themselves over
+  anything — alabaster is a light plate on a dark page, basalt a dark one on
+  light paper — so each one's ink is settled once, against its own body. A pane
+  has no body to settle against: it becomes whatever is behind it. On light
+  paper that is a pale sheet wearing dark ink, which is the whole idea; on the
+  dark theme the index grew it is a dark sheet wearing dark ink, measured at
+  1.3:1, which is no idea at all. `light-dark()` reads the page's own
+  `color-scheme`, so it follows an explicit toggle and the OS default alike
+  without the component naming a selector outside itself — and both pages now
+  declare that scheme, which they had not needed to before.
 
 - **Everything here animates layout, so the savings are elsewhere.** A label
   opening is a track going `0fr -> 1fr`, the panel is a row and a width, and the
@@ -484,6 +497,50 @@ on the actions themselves, because that would be interpolating from `auto` and
 would not move — an action is auto-width around two lengths that do animate, its
 own padding and the icon's width, so it follows them down.
 
+"Across the surface" took two values, not one, and for a while it only had the
+first. The track is `clamp(0px, --search-max, --search-w)`: the sum of what the
+row still owes is the *ceiling*, and the width the field wants is the upper
+bound. The narrow scale restated the ceiling for a cleared row — one square
+instead of five — and left the want at the wide layout's 14rem, which is the
+smaller of the two and therefore the one clamp returns. So the row cleared a
+whole bar and the field took 224px of it: 15px short on a 390px phone, 51px
+short on a 430px one, with the shell hugging the field rather than the surface
+it had been told to fill. At this scale the field wants everything and the
+ceiling is the only thing that should trim it, so `--search-w` comes up to
+`100cqi` alongside it. Restating one half of a clamp is the bug that hides,
+because nothing overflows and nothing errors — it just quietly stops at the
+other half.
+
+The field has one size of its own, and it is the only place in the component
+where a number is set by the browser rather than by the design. A focused input
+under 16px makes a mobile engine zoom the page to reach it, and it does not
+zoom back out — the viewport stays magnified and scrolled, so the study around
+it is left sideways and clipped mid-word. The label's 13px is what does it: the
+field inherits the bar's type, which is set for chrome rather than for a text
+box. So the input, and only the input, comes back to 16px where the pointer is
+coarse. The label keeps 13px, because a label is not focusable and never
+triggers it, and the two are never on screen together anyway — the field is
+what replaces the label in that slot. This is the cost of the type coming down,
+and it was not paid at the time: at 1rem the field was over the threshold by
+accident.
+
+And once it is alone in the bar the pill keeps its rim — that rim is the
+field's own edge, and a field that does not show where it starts and stops is
+not a field — but it has to sit square inside the shell, and it did not. It
+stood 7px from the left of the surface and 13px from the right, which reads as
+a box shoved into a corner rather than as a field filling its container. Two
+things made up the difference and neither is visible in the source.
+`--label-trail` is the first: it balances an icon's bearing against a word, and
+there is no word in a search field. The rest is the row's own `gap` — the four
+collapsed actions take their width and their padding to zero, but the gaps
+*between* them survive, so three pile up past the field's trailing edge while
+one sits before its leading one. Both are zeroed for this state, and the
+ceiling had to be told: `--search-max` was still reserving five gaps and a
+trailing allowance that no longer exist, which left the field 13px short of the
+surface it had been told to open across. The sum now describes the row that is
+actually left — one square and the surface's padding — and both ends resolve to
+the same 5px.
+
 At every scale the track itself is now a ceiling rather than a length. `14rem`
 was fixed inside a surface that clips, so under about 31rem of container the
 field was cut off mid-placeholder; it is capped at what the row has left once
@@ -532,25 +589,43 @@ table are static strings in the file. Material names are not translated — they
 are shown as the class that selects them, which makes them class-name hints
 rather than page prose.
 
-The card shows all six materials stacked, which is a deliberate departure from
-this repo's rule that a thumbnail holds one instance and no second copy. The rule
-is there to stop a thumbnail turning into a small demo page, and it is the right
-rule — but what this study offers is a construction that comes in six
-materials, and one bar cannot advertise that. So the card is the set, with no
+The card shows three of the six materials stacked, which is a deliberate
+departure from this repo's rule that a thumbnail holds one instance and no second
+copy. The rule is there to stop a thumbnail turning into a small demo page, and
+it is the right rule — but what this study offers is a construction that comes in
+six materials, and one bar cannot advertise that. So the card is the set, with no
 captions and no state labels, and the variant dots step into a single bar where
 a panel has somewhere to open. The stagger down the stack costs nothing to add
 from outside, because the motion is a custom property whose value is a whole
 shorthand: a delay goes on the end of it without the component knowing. The
 sheets are added and removed rather than hidden — `component.css` gives the root
 a `display`, and an author rule beats the user-agent `[hidden]` one, which would
-have left all six on screen.
+have left all three on screen.
 
-Darkest at the top, and that is the thumbnail's order rather than the demo's. The stack used to run lightest first, which put the two palest sheets against the card's own near-white paper at the moment the eye lands — two faint outlines and then the weight arriving underneath, so the card read as empty at the top and heavy at the bottom. Reversed, the mass is where the eye starts and the sheets fade out of it. demo.html keeps its own order, default first, because that page is making a different argument: moss is what the component ships as, and the rest are shown against it.
+Three rather than all six, and the cut is what the card needed rather than what
+the set wanted. Six sheets at a 1.5rem gap filled 492px of the 600px frame, and
+a card 336px wide showing six near-identical bars is a swatch chart — the eye
+counts rows before it reads a toolbar, which is the same failure as a thumbnail
+turning into a demo page, arrived at from the other side. Three still says
+*materials*, plural, and the three chosen are the ends and the middle: basalt,
+moss, alabaster. The claim the stack is making is that one construction takes a
+whole palette rather than a hue rotation, and a lightness ramp from near-black
+to paper states it in three sheets; carnelian, slate and crystal are further
+points on a line already drawn. Crystal is the one that most wanted dropping
+from the card in any case — at a 7% tint it is carried by its rim, and beside
+alabaster at 0.7 scale the two read as one sheet drawn twice. The full six are
+still in `component.css` and still shown in `demo.html`, which is the page that
+is making that argument. The gap opened to 2rem with the cut: each sheet's drop
+is `0 1.5rem 3rem -1rem`, so at 24px the shadow was landing on the sheet below
+and the stack read as one ridged slab, and with three sheets there is frame to
+spend on giving each of them its own ground.
+
+Darkest at the top, and that is the thumbnail's order rather than the demo's. The stack used to run lightest first, which put the palest sheets against the card's own near-white paper at the moment the eye lands — faint outlines and then the weight arriving underneath, so the card read as empty at the top and heavy at the bottom. Reversed, the mass is where the eye starts and the sheets fade out of it. demo.html keeps its own order, default first, because that page is making a different argument: moss is what the component ships as, and the rest are shown against it.
 
 Which makes rebuilding the stack a thing that has to be done sparingly, and
-getting the order right is what got that wrong. Appending all six in order is
-the tidy way to both restore the missing sheets and sort them, and it is also a
-*move* for the five already in place — a move is a removal and an insertion, and
+getting the order right is what got that wrong. Appending the whole list in order
+is the tidy way to both restore the missing sheets and sort them, and it is also
+a *move* for the ones already in place — a move is a removal and an insertion, and
 a re-inserted element has no before-change style, so every transition on it is
 cancelled and the next one never starts. Hover runs through the same function,
 and on hover the stack is already built, so the card went dead: the search field
@@ -559,8 +634,10 @@ which is why it looked like a CSS problem. `getAnimations()` is what settled it
 — nought running where the same class change made by hand produced fifty — and
 the repair is to touch only the sheets that are actually out of place.
 
-They run lightest to darkest — alabaster, crystal, slate, moss, basalt — and
-that order had to be measured rather than reasoned. Brightness and tint pull
+They run darkest to lightest — basalt, moss, carnelian, slate, crystal,
+alabaster, of which the card takes the first, the second and the last — and the
+sequence had to be measured rather than reasoned even though the direction was
+chosen. Brightness and tint pull
 opposite ways: alabaster's `brightness: 1.02` makes it lighter than the page it
 sits on, while crystal's 7% tint leaves it near enough the page itself. Sampled
 off a render, moss and slate come out identical to four decimal places, so which

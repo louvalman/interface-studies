@@ -15,6 +15,8 @@
 //                         index: n }
 //   parent -> preview   { source: 'interface-studies', type: 'preview:scale',
 //                         scale: n }
+//   parent -> preview   { source: 'interface-studies', type: 'preview:theme',
+//                         theme: 'light' | 'dark' }
 //   preview -> parent   { source: 'interface-studies', type: 'preview:ready',
 //                         variants?: [{ id, label }] }
 //
@@ -95,7 +97,10 @@
       'cta.openDemo': 'Åbn demo',
       'cta.quickLook': 'Hurtigt kig',
       'cta.quickLookOf': 'Hurtigt kig: Kort med detaljeafsløring',
-      'ghost.next': 'Den næste kommer her — kopiér _template/',
+      'ghost.title': 'Kommende studie',
+      'ghost.month.oct': 'oktober',
+      'ghost.month.nov': 'november',
+      'ghost.month.dec': 'december',
       'foot.blurb': 'Hvert studie er selvstændigt. Kopiér en mappe ud, og den '
         + 'virker uden noget andet herfra — intet delt stylesheet, intet '
         + 'byggetrin, ingen afhængighed af denne side.',
@@ -107,18 +112,20 @@
       'foot.stackVal': 'HTML og CSS, intet byggetrin',
       'foot.studies': 'Studier',
       'foot.builtBy': 'Bygget af',
+      'foot.coffee': 'Giv en kop kaffe',
       'foot.backToTop': 'Til toppen',
       'a11y.elsewhere': 'Andre steder',
       'a11y.carousel': 'Karrusel',
       'a11y.previous': 'Forrige',
       'a11y.next': 'Næste',
       'a11y.pauseRail': 'Sæt karrusellen på pause',
-      'a11y.playRail': 'Start karrusellen igen',
+      'a11y.playRail': 'Start karrusellen',
       'a11y.railRegion': 'Studiekarrusel',
       'a11y.filter': 'Filtrér efter type',
       'a11y.variants': 'Varianter',
       'a11y.closeQuickLook': 'Luk hurtigt kig',
-      'a11y.livePreview': 'Live forhåndsvisning af komponent'
+      'a11y.livePreview': 'Live forhåndsvisning af komponent',
+      'a11y.theme': 'Mørk tilstand'
     }
   };
 
@@ -141,6 +148,32 @@
   });
 
   let current = 'en';
+
+  // The theme the visitor actually chose, if they chose one. It arrives on the
+  // theme:change event below rather than being read off <html>, because the
+  // attribute there is the resolved answer — a dark page on a dark machine is
+  // not a choice, and handing it on as one would store it at the other end.
+  let themeChoice = null;
+
+  // Demo pages are separate documents that carry their own copy of both
+  // switches, so the choices travel in the link. Over file:// each document
+  // gets its own opaque origin and localStorage does not carry across, which
+  // is why the query string is the primary channel rather than a fallback.
+  function syncLinks() {
+    const query = [];
+    if (current !== 'en') query.push('lang=' + current);
+    if (themeChoice) query.push('theme=' + themeChoice);
+
+    document.querySelectorAll('[data-lang-link]').forEach((link) => {
+      const base = link.getAttribute('data-lang-link');
+      link.setAttribute('href', base + (query.length ? '?' + query.join('&') : ''));
+    });
+  }
+
+  document.addEventListener('theme:change', (event) => {
+    themeChoice = event.detail ? event.detail.chosen : null;
+    syncLinks();
+  });
 
   function apply(lang) {
     const table = COPY[lang];
@@ -168,14 +201,7 @@
       b.setAttribute('aria-pressed', b.dataset.lang === lang ? 'true' : 'false');
     });
 
-    // Demo pages are separate documents that carry their own copy, so the
-    // choice travels in the link. Over file:// each document gets its own
-    // opaque origin and localStorage does not carry across, which is why the
-    // query string is the primary channel rather than a fallback.
-    document.querySelectorAll('[data-lang-link]').forEach((link) => {
-      const base = link.getAttribute('data-lang-link');
-      link.setAttribute('href', lang === 'en' ? base : base + '?lang=' + lang);
-    });
+    syncLinks();
 
     // The lede's closing sentence is written by index.js, not by the markup,
     // so it is handed the table rather than reading a data-i18n key.
@@ -216,6 +242,131 @@
   // apply() also rewrites the outgoing links, so English runs too — it has to
   // strip a ?lang= that an earlier switch left on them.
   queueMicrotask(() => apply(initial === 'da' ? 'da' : 'en'));
+})();
+
+
+// --- theme ---------------------------------------------------------------
+//
+// Site chrome only, like the language switch above, and for the same reason:
+// a preview is its own document with its own ground, so the cards stay lit
+// plates under a dark page rather than inverting with it.
+//
+// The answer is already on <html> by the time this runs — the head carries a
+// six-line copy of the same resolution, so the first paint is not a frame of
+// the wrong theme. What is left here is the toggle, the state it reports, and
+// the crossfade.
+//
+// index.css reads the attribute and nothing else, which is what keeps the dark
+// palette to one block. The system preference is resolved here rather than in
+// a media query, so it is still live: until someone picks a theme, an OS
+// switch made while the page is open moves the page and relabels the button.
+
+(function () {
+  const STORE_KEY = 'interface-studies:theme';
+  const SWITCH_MS = 420;   // matches .is-theming in index.css
+
+  const root = document.documentElement;
+  const toggle = document.querySelector('[data-theme-toggle]');
+  if (!toggle) return;
+
+  const media = window.matchMedia
+    ? window.matchMedia('(prefers-color-scheme: dark)')
+    : null;
+
+  // What the head script read, read again — not what it wrote: the attribute
+  // is by then the resolved answer, and a system dark theme is not a choice
+  // to keep once the OS changes.
+  //
+  // A demo page hands the choice back the way it received it, so the query
+  // string comes first here for the same reason it does for the language.
+  let chosen = new URLSearchParams(location.search).get('theme');
+  if (chosen !== 'dark' && chosen !== 'light') {
+    chosen = null;
+    try { chosen = localStorage.getItem(STORE_KEY); } catch (err) { /* private mode */ }
+    if (chosen !== 'dark' && chosen !== 'light') chosen = null;
+  } else {
+    try { localStorage.setItem(STORE_KEY, chosen); } catch (err) { /* private mode */ }
+  }
+
+  function shown() {
+    return chosen || (media && media.matches ? 'dark' : 'light');
+  }
+
+  // The previews are separate documents as well, and a framed one is behind an
+  // opaque origin over file:// — so the theme rides on the src the way it rides
+  // on a demo link. Rewriting data-src rather than src is what keeps the two
+  // places that load a preview (the rail on approach, quick look on open) from
+  // having to know about any of this: they read data-src as they always did.
+  //
+  // A preview that is already loaded is told instead, over the same contract
+  // the rail uses for everything else — reloading a live thumbnail to change
+  // one colour would drop its animation and flash the skeleton back.
+  //
+  // What each preview does with it is the folder's business, and most do
+  // nothing: a thumbnail is a picture of the component, and the light ground
+  // four of them sit on is the component's own staging rather than the page's.
+  // The one that acts on it is the study whose authored page is ink.
+  function tellPreviews(theme) {
+    document.querySelectorAll('[data-preview]').forEach((frame) => {
+      const src = frame.getAttribute('data-src');
+      if (src) frame.setAttribute('data-src', src.split('?')[0] + '?theme=' + theme);
+    });
+
+    document.querySelectorAll('[data-preview], [data-lightbox-frame]').forEach((frame) => {
+      const live = frame.getAttribute('src');
+      if (!live || live === 'about:blank') return;
+      try {
+        frame.contentWindow.postMessage(
+          { source: 'interface-studies', type: 'preview:theme', theme: theme },
+          '*'
+        );
+      } catch (err) { /* not loaded yet: the src it loads with carries it */ }
+    });
+  }
+
+  function paint() {
+    const theme = shown();
+    root.setAttribute('data-theme', theme);
+    toggle.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
+    tellPreviews(theme);
+
+    // The language module owns the outgoing links; it needs the choice, not
+    // the resolved answer.
+    document.dispatchEvent(new CustomEvent('theme:change', {
+      detail: { theme: theme, chosen: chosen }
+    }));
+  }
+
+  let settle = 0;
+  toggle.addEventListener('click', () => {
+    chosen = shown() === 'dark' ? 'light' : 'dark';
+    try { localStorage.setItem(STORE_KEY, chosen); } catch (err) { /* private mode */ }
+
+    // Keep ?theme= in step with the choice, the way the language switch does:
+    // left stale, an older value would win over the stored one on the next
+    // reload and undo the switch.
+    try {
+      const url = new URL(location.href);
+      url.searchParams.set('theme', chosen);
+      history.replaceState({}, '', url);
+    } catch (err) { /* file:// can refuse replaceState */ }
+
+    // The crossfade is hung on <html> for its own length and taken off again,
+    // so the rule is not sitting on every element for the rest of the session.
+    root.classList.add('is-theming');
+    clearTimeout(settle);
+    settle = setTimeout(() => root.classList.remove('is-theming'), SWITCH_MS);
+
+    paint();
+  });
+
+  if (media) {
+    const follow = () => { if (!chosen) paint(); };
+    if (media.addEventListener) media.addEventListener('change', follow);
+    else if (media.addListener) media.addListener(follow);
+  }
+
+  paint();
 })();
 
 
@@ -289,6 +440,8 @@
     // usually already right, so the common case touches no DOM at all.
     if (sorted.every((piece, n) => piece === list[n])) return;
 
+    // Before the first of the slots, so every study lands ahead of all three
+    // and the three keep the order they are written in.
     const ghost = track.querySelector('.piece--ghost');
     sorted.forEach((piece) => track.insertBefore(piece, ghost));
   }
@@ -315,10 +468,151 @@
     if (!frame || !frame.contentWindow) return;
     if (active) piece.dataset.active = 'true';
     else delete piece.dataset.active;
+    // Before the message when starting, after it when stopping: the preview has
+    // to be running to play its open state, and has to still be running to play
+    // its way back out of it.
+    if (active) syncPause(piece);
     frame.contentWindow.postMessage(
       { source: CHANNEL, type: 'preview', active: active },
       '*'
     );
+    if (!active) syncPause(piece);
+  }
+
+  // Every animation in every loaded preview stops for the length of a gesture.
+  //
+  // A same-origin iframe shares this page's main thread, so a thumbnail that
+  // keeps animating while the rail is being dragged is animating against the
+  // drag, on the thread the drag needs. Measured on a throttled phone profile,
+  // a two-card drag with the pause taking effect against the same drag with it
+  // defeated: 446 style recalcs against 175. The frame-timing half of that
+  // measurement stopped reproducing on the machine it was taken on, so the
+  // recalc count is what this claim rests on, and a real phone is the test.
+  //
+  // Telling a preview it is inactive does not do this and never did — that
+  // puts it in its resting state, and a resting state still animates. Measured
+  // the same way, sending active:false to all five changed nothing.
+  //
+  // Pausing rather than unloading is what keeps a card's animation from
+  // starting over every time it comes back: the document is still there and
+  // the animations pick up where they were.
+  let pausedAll = false;
+
+  function pausePreview(piece, paused) {
+    const frame = piece.querySelector('[data-preview]');
+    if (!frame || !frame.contentWindow) return;
+    frame.contentWindow.postMessage(
+      { source: CHANNEL, type: 'preview:pause', paused: paused },
+      '*'
+    );
+  }
+
+  // A preview animates when it is the card being read, or when a pointer is on
+  // it. Everything else is paused, however close to the scrollport it sits.
+  //
+  // Proximity used to be the rule, and it was the wrong one: a preview woke a
+  // scrollport before it arrived, so a card a third of the way onto the screen
+  // was already running its open state, and a component that introduces itself
+  // on load — the plate that inks its own line drawing — did the introducing
+  // while it was still off to the side. By the time it was yours to look at,
+  // the thing worth seeing had happened next to it.
+  //
+  // Loading is still early, and deliberately: the document has to exist and be
+  // parsed before the card lands, or you watch it arrive instead. It just
+  // arrives stopped. A paused animation holds at its first frame, so the entry
+  // plays on arrival rather than having played on approach.
+  // How long a freshly loaded preview may run before the pause takes it. Long
+  // enough for the slowest entry in the set: the inked plate's line drawing is
+  // 520ms with up to 570ms of stagger behind it.
+  const SETTLE_IN = 1200;
+
+  // When this page's own previews were born, so the first pass can be told
+  // apart from a card scrolling into view later.
+  const bornAt = performance.now();
+
+  // Nothing of it within the scrollport. Costs a pair of rects, and is only
+  // read when a preview announces itself.
+  function offScreen(piece) {
+    const tr = track.getBoundingClientRect();
+    const r = piece.getBoundingClientRect();
+    return r.right <= tr.left || r.left >= tr.right;
+  }
+
+  // One timer per card for the settling-in grace. Declared up here with the
+  // rest of the grace: dropPreview ends a grace and runs during setup, so a
+  // const further down the file would be a TDZ error on that path.
+  const arrivals = new WeakMap();
+
+  function endGrace(piece) {
+    clearTimeout(arrivals.get(piece));
+    arrivals.delete(piece);
+    if (piece.dataset.arriving !== 'true') return;
+    delete piece.dataset.arriving;
+    syncPause(piece);
+  }
+
+  // Whether each card is on screen, so a card coming into view on a still rail
+  // starts and one leaving stops. Only the ones that changed are told, and the
+  // rects cost the same order as activeIndex's, which sync already pays.
+  function syncVisibility() {
+    real().forEach((piece) => {
+      const seen = offScreen(piece) ? 'false' : 'true';
+      if (piece.dataset.seen === seen) return;
+      piece.dataset.seen = seen;
+      syncPause(piece);
+    });
+  }
+
+  function wantPaused(piece) {
+    if (pausedAll) return true;                        // the rail is moving
+    if (piece.dataset.active === 'true') return false; // hovered, focused, handed off
+    // A component that draws itself on load has nothing on screen until it has
+    // done so, and paused at its first frame that is an empty card. Loading
+    // happens a scrollport out, so this runs itself off screen and what arrives
+    // is the finished drawing rather than the drawing being made.
+    if (piece.dataset.arriving === 'true') return false;
+    // Nothing to see. A loaded card a scrollport away would otherwise go on
+    // running its field forever for nobody, which is the whole of what this
+    // saves once the rail is still.
+    if (offScreen(piece)) return true;
+    // While the rail drifts, the card at the mark runs and the rest do not.
+    // The drift writes scrollLeft from a frame callback, so a field animating
+    // under it is animating on the thread it needs, and five of them at once
+    // cost it plainly: measured on a throttled phone profile, the drift's
+    // median frame went 16.7ms to 33.3ms with every resting field live, 25
+    // dropped frames in 700 against 457.
+    //
+    // Holding all of them was the first answer and it was too much. `handoff`
+    // is a coarse-pointer path — it is what stands in for hover where there is
+    // none — so on a desktop no card is ever `active` from the mark, and the
+    // rail drifts for all but the seconds a pointer is resting on it. That
+    // left the resting fields paused essentially always, which is the whole of
+    // what they are for.
+    if (drift === 'on') return !(onMark && piece.classList.contains('is-active'));
+    // On screen and the rail is still: it rests, and a resting state is still
+    // a state.
+    return false;
+  }
+
+  function syncPause(piece) {
+    const frame = piece.querySelector('[data-preview]');
+    if (!frame || frame.dataset.loaded !== 'true') return;
+    const want = wantPaused(piece) ? 'true' : 'false';
+    if (frame.dataset.paused === want) return;
+    frame.dataset.paused = want;
+    pausePreview(piece, want === 'true');
+  }
+
+  function pauseAll(paused) {
+    if (paused === pausedAll) return;
+    pausedAll = paused;
+    refreshPause();
+  }
+
+  // The drift starting or stopping changes the answer for every card at once,
+  // the way a gesture does. Cheap: syncPause posts only where the answer moved.
+  function refreshPause() {
+    real().forEach(syncPause);
   }
 
   // A preview may not have parsed its listener yet when the pointer arrives,
@@ -335,6 +629,14 @@
     // Always, not only on the first pass: markReady is a one-shot, and the
     // ready message is the one moment a preview is known to be listening.
     tellScale(piece.querySelector('[data-preview]'), cardScale());
+    // Including the pause, and for the same reason. A document that has just
+    // announced itself is holding none of the state the index thinks it is —
+    // markReady would return early on a card that is already ready and never
+    // reach it, which left a fresh preview animating through a gesture that
+    // every other card had stopped for.
+    const held = piece.querySelector('[data-preview]');
+    if (held) delete held.dataset.paused;
+    syncPause(piece);
     markReady(piece);
   });
 
@@ -364,6 +666,33 @@
     if (held && held.dataset.loaded !== 'true') return;
     piece.classList.add('is-ready');
     tellScale(piece.querySelector('[data-preview]'), cardScale());
+    // Loads drain when the hand lifts, so one can arrive while the step that
+    // follows is still running. It joins the others paused rather than being
+    // the one card animating through the landing.
+    // ...but not before it has had SETTLE_IN to reach its resting state, which
+    // for a component that draws itself is the difference between a thumbnail
+    // and an empty frame.
+    //
+    // Off screen, or on the page's own first pass. A card you can see follows
+    // the read mark like every other card does — the grace is for the one
+    // arriving from outside, and granting it to a card already a third onto the
+    // screen is the thing the read mark exists to prevent. Loading starts a
+    // scrollport out, so off screen is the ordinary case; what it rules out is
+    // the load that drains late enough in a step that the card has come into
+    // view under it.
+    //
+    // The first pass is the exception because nothing has been read yet: the
+    // whole rail arrives at once and the second card is a third on screen
+    // whatever the rail does, so holding it at its first frame is not a card
+    // introducing itself early — it is a card that never introduced itself at
+    // all, and under the drift it sits there empty for ten seconds. A component
+    // drawing itself while the page loads is the page loading.
+    if (offScreen(piece) || performance.now() - bornAt < SETTLE_IN) {
+      piece.dataset.arriving = 'true';
+      clearTimeout(arrivals.get(piece));
+      arrivals.set(piece, setTimeout(() => endGrace(piece), SETTLE_IN));
+    }
+    syncPause(piece);
     if (piece.dataset.active === 'true') tell(piece, true);
   }
 
@@ -426,11 +755,66 @@
   // set going.
   const readyTimers = new WeakMap();
 
+  // Spinning up a document costs a frame — measured: a preview's src changing
+  // on one frame and the next one arriving 30ms late. At rest that is a hitch
+  // nobody is looking at, but mid-gesture it lands in the middle of the motion,
+  // and with the margins as tight as they are a drag across two cards used to
+  // set off two or three of them. So while a gesture is in flight the work is
+  // remembered rather than done, and the rail catches up the moment it settles.
+  const waiting = new Set();
+
+  // Declared here rather than beside land(), which is far below: gesturing()
+  // is called from loadPreview, and loadPreview runs synchronously during setup
+  // on a browser with no IntersectionObserver. A `let` declared after this
+  // point would be a ReferenceError on that path.
+  let landing = false;
+  let landTimer = 0;
+  let quietPoll = 0;
+
+  function gesturing() {
+    return touching || dragging || landing || stepFrame !== 0;
+  }
+
+  // The two halves settle at different moments, because they are waiting on
+  // different things. A load only has to be off the finger: started when the
+  // hand lifts, it runs under the step that follows and the card is ready
+  // before it has finished arriving — where waiting for the step to end left
+  // the landed card showing its skeleton for a quarter of a second, all of it
+  // after the movement had stopped. Playing waits for the step, because that
+  // is the expensive one and the step is still motion.
+  function drainWork() {
+    if (!waiting.size) return;
+    const due = Array.from(waiting);
+    waiting.clear();
+    due.forEach((job) => job());
+  }
+
+  function settleWork() {
+    // Where the rail actually stopped, not where it was when the step was
+    // planned. sync is coalesced onto a frame, so currentActive can still be
+    // the card the gesture started from — which is how a card a third on screen
+    // and a full card off the mark ended up being told to perform, and stayed
+    // that way at rest. Reading it again here costs one layout per settle.
+    sync();
+    // handoff before the unpause: it is what stops the card being left behind
+    // and starts the one that landed, and unpausing first would let the old
+    // card — still holding dataset.active — run for the frames in between.
+    if (onMark) handoff();
+    pauseAll(false);
+    drainWork();
+  }
+
   function loadPreview(piece) {
     const frame = piece.querySelector('[data-preview]');
     if (!frame || frame.dataset.loaded === 'true') return;
     const src = frame.getAttribute('data-src');
     if (!src) return;
+
+    if (gesturing()) {
+      waiting.add(() => loadPreview(piece));
+      return;
+    }
+
     frame.dataset.loaded = 'true';
     watchLoad(piece);
     frame.setAttribute('src', src);
@@ -439,7 +823,18 @@
   function dropPreview(piece) {
     const frame = piece.querySelector('[data-preview]');
     if (!frame || frame.dataset.loaded !== 'true') return;
+
+    // Deferred for the same reason: blanking a frame is a repaint of the card,
+    // and a card repainting under a moving finger is the thing being fixed.
+    if (gesturing()) {
+      waiting.add(() => dropPreview(piece));
+      return;
+    }
+
     delete frame.dataset.loaded;
+    delete frame.dataset.paused;
+    delete piece.dataset.seen;
+    endGrace(piece);
     clearTimeout(readyTimers.get(piece));
     // The skeleton comes back with it: the card is about to hold a blank
     // document, and lifting the cover off that is worse than covering it.
@@ -448,18 +843,31 @@
     frame.setAttribute('src', 'about:blank');
   }
 
+  // Two bands now, and neither decides whether a preview animates — the read
+  // mark does that, in wantPaused. These only decide whether the document
+  // exists.
+  //
+  // Loading starts a full scrollport out, where it used to start a quarter of
+  // one. A quarter put the load a third of a card before the card arrived, so
+  // you watched it happen. A load has to finish before it is looked at, which
+  // means starting well before, and it can afford to: an off-mark preview is
+  // paused, so a document that exists early costs nothing but its memory.
+  //
+  // Unloading is a ceiling rather than a routine — a handful of documents is
+  // fine to hold, five hundred would not be. At this margin nothing in the
+  // current set ever reaches it.
   if ('IntersectionObserver' in window) {
     const near = new IntersectionObserver(
       (entries) => entries.forEach((e) => { if (e.isIntersecting) loadPreview(e.target); }),
       { root: track, rootMargin: '0px 100% 0px 100%' }
     );
 
-    const far = new IntersectionObserver(
+    const gone = new IntersectionObserver(
       (entries) => entries.forEach((e) => { if (!e.isIntersecting) dropPreview(e.target); }),
-      { root: track, rootMargin: '0px 200% 0px 200%' }
+      { root: track, rootMargin: '0px 600% 0px 600%' }
     );
 
-    allPieces().forEach((piece) => { near.observe(piece); far.observe(piece); });
+    allPieces().forEach((piece) => { near.observe(piece); gone.observe(piece); });
   } else {
     // No observer: load the lot, which is what the page did before.
     allPieces().forEach(loadPreview);
@@ -493,7 +901,7 @@
   // with the part of the set you are most likely to want and does not
   // reshuffle itself every time a study is added.
   const filterRow = document.querySelector('[data-rail-filter]');
-  const ghost = track.querySelector('.piece--ghost');
+  const ghosts = Array.from(track.querySelectorAll('.piece--ghost'));
 
   const FILTER_ALL = '*';
 
@@ -536,7 +944,9 @@
     });
 
     // "Next one goes here" is about the set, not about one type of it.
-    if (ghost) ghost.classList.toggle('is-filtered', filterType !== FILTER_ALL);
+    // All of them. A filter narrows the rail to one type, and a forthcoming
+    // slot has no type to be narrowed to.
+    ghosts.forEach((el) => el.classList.toggle('is-filtered', filterType !== FILTER_ALL));
 
     filterBtns.forEach((btn) => {
       btn.setAttribute('aria-pressed', btn.dataset.type === filterType ? 'true' : 'false');
@@ -665,9 +1075,14 @@
   // lives here instead of in the markup's data-i18n-aria and the Danish comes
   // off the same table the hint reads. prev and next keep their markup labels:
   // a looping rail has no end for them to announce.
+  //
+  // No "again" in the play label: under reduced motion the rail has never set
+  // off, and the control is offered from the start precisely so it can be. The
+  // word carried nothing the reader needed and was wrong in the one state where
+  // the control matters most.
   const NAV_EN = {
     'a11y.pauseRail': 'Pause the carousel',
-    'a11y.playRail': 'Start the carousel again'
+    'a11y.playRail': 'Start the carousel'
   };
 
   let navCopy = null;    // held, so a language switch re-labels without a scroll
@@ -690,18 +1105,68 @@
     }
   }
 
-  // One card plus the flex gap — the distance a single step should cover.
-  // Measured off a card in the row rather than the first in the file, which
-  // the filter may have taken out and left with a zero width.
-  function step() {
+  // The three measurements every other function here asks for, taken once and
+  // kept. Each one is a read, and a read after a write is where the browser has
+  // to stop and lay the row out again before it can answer — which is exactly
+  // what a drag does, writing scrollLeft on every pointermove and then asking
+  // how wide a card is. Measured over a three-second drag: 172 forced layouts
+  // and a third of the thread, on a phone reporting moves at 120Hz.
+  //
+  // None of it moves under a gesture. A card's width changes at a breakpoint,
+  // the scrollport's with the window, the inset with neither — so the cache is
+  // dropped where those happen and nowhere else.
+  let metrics = null;
+
+  function forget() { metrics = null; }
+
+  function measure() {
+    // Measured off a card in the row rather than the first in the file, which
+    // the filter may have taken out and left with a zero width.
     const first = ring[0] || laidOut()[0];
-    if (!first) return track.clientWidth;
-    const gap = parseFloat(getComputedStyle(track).columnGap) || 0;
-    return first.getBoundingClientRect().width + gap;
+    const cs = getComputedStyle(track);
+    const gap = parseFloat(cs.columnGap) || 0;
+    metrics = {
+      step: first ? first.getBoundingClientRect().width + gap : track.clientWidth,
+      inset: parseFloat(cs.scrollPaddingLeft) || 0,
+      client: track.clientWidth,
+      // The row's width does not move under a gesture either — the ring keeps
+      // the same cards in it, only in a different order — so this is cached
+      // with the rest. recycle() reads it on every frame of a drag, and
+      // scrollWidth is a forced layout every time it is asked for.
+      max: Math.max(0, track.scrollWidth - track.clientWidth)
+    };
+    return metrics;
+  }
+
+  const sized = () => metrics || measure();
+
+  // One card plus the flex gap — the distance a single step should cover.
+  function step() {
+    return sized().step;
   }
 
   function maxScroll() {
-    return Math.max(0, track.scrollWidth - track.clientWidth);
+    return sized().max;
+  }
+
+  // Where the recycle parks the rail: the middle of the row.
+  //
+  // It used to park one card in, which left a card and a quarter of row behind
+  // the rail and three and a half in front. Touch is the half of this that
+  // cannot recycle mid-gesture — writing scrollLeft under a native scroll is
+  // writing underneath the thing doing the scrolling, and takes the momentum
+  // with it — so a swipe has only the row that is already there to spend, and
+  // backwards it ran out after a card and a quarter. Past that the rail hits
+  // scrollLeft 0, rubber-bands against a wall it is not supposed to have, and
+  // the recycle that was waiting for the gesture to end lands all at once.
+  // That is the jump at the seam.
+  //
+  // The band is a card wide and any w-periodic lattice has exactly one point
+  // in it, so parking it on the middle lands the rail on the snap position
+  // nearest the middle without this having to know where the snap positions
+  // are. Same slack either way, and about twice what a backwards swipe had.
+  function homePos() {
+    return maxScroll() / 2;
   }
 
   // --- the loop ---------------------------------------------------------
@@ -735,6 +1200,7 @@
   // card was left holding while it was filtered out.
   function rebuildRing() {
     ring = laidOut();
+    forget();          // a different set of cards is a different row
     applyRing();
     recycle();
   }
@@ -744,32 +1210,43 @@
   // viewport holding few studies is below that line; it is the one case the
   // rail stays finite in, and every study added raises the ceiling by a card.
   function loopable() {
-    const w = step();
-    return w > 0 && (ring.length - 1) * w - track.clientWidth >= w;
+    const m = sized();
+    return m.step > 0 && (ring.length - 1) * m.step - m.client >= m.step;
   }
 
-  // scrollLeft is held within half a card either side of one card in, so there
-  // is always row to the left to scroll back into and the rest of it to the
-  // right. Returns the distance the scroll was moved, because anything holding
+  // scrollLeft is held within half a card either side of the middle of the row
+  // (see homePos), so there is as much row to scroll back into as there is to
+  // scroll forward through. Returns the distance the scroll was moved, because anything holding
   // a scroll position of its own — a drag's origin, a step's two ends — has to
   // move with it or it will fight the recycle on the next frame.
-  function recycle() {
+  // `at` is the position the caller has just put the scroll at. Reading it back
+  // off the element instead is what made dragging expensive: a scrollLeft write
+  // followed by a scrollLeft read is a question the browser cannot answer
+  // without laying the row out again, and the drag does exactly that on every
+  // pointermove. Measured at one forced layout per move, about a hundred and
+  // sixty in a three-second drag, against none while the rail sits still.
+  // Callers that have not just written it pass nothing and pay for one read.
+  function recycle(at) {
     if (!loopable()) return 0;
 
     const w = step();
+    const home = homePos();
+    let pos = at === undefined ? track.scrollLeft : at;
     let shifted = 0;
     let guard = ring.length * 2;
 
-    while (guard-- > 0 && track.scrollLeft >= w * 1.5) {
+    while (guard-- > 0 && pos >= home + w * 0.5) {
       rotate(1);
-      track.scrollLeft -= w;
+      pos -= w;
+      track.scrollLeft = pos;
       shifted -= w;
     }
 
     guard = ring.length * 2;
-    while (guard-- > 0 && track.scrollLeft < w * 0.5) {
+    while (guard-- > 0 && pos < home - w * 0.5) {
       rotate(-1);
-      track.scrollLeft += w;
+      pos += w;
+      track.scrollLeft = pos;
       shifted += w;
     }
 
@@ -810,43 +1287,123 @@
   }
 
   // The card sitting in the read position: the one whose left edge is nearest
-  // the track's scroll-padding edge.
+  // the track's scroll-padding edge, and how far off the mark it still is.
+  //
+  // Nearest and arrived are two different questions, and they were being
+  // answered by one number. Nearest flips at the halfway point — the moment the
+  // incoming card's edge is closer than the outgoing one's — which is the right
+  // answer for the counter and the progress bar, and the wrong one for whether
+  // a component should start performing. A card half in is not being read.
   function activeIndex() {
     const list = real();
-    if (!list.length) return 0;
+    if (!list.length) return { index: 0, off: Infinity };
 
     const trackLeft = track.getBoundingClientRect().left;
-    const inset = parseFloat(getComputedStyle(track).scrollPaddingLeft) || 0;
+    const inset = sized().inset;
     const mark = trackLeft + inset;
 
     let best = 0;
     let bestDistance = Infinity;
+    let bestSigned = Infinity;
     list.forEach((piece, i) => {
-      const distance = Math.abs(piece.getBoundingClientRect().left - mark);
+      const signed = piece.getBoundingClientRect().left - mark;
+      const distance = Math.abs(signed);
       if (distance < bestDistance) {
         bestDistance = distance;
+        bestSigned = signed;
         best = i;
       }
     });
-    return best;
+    // Signed as well as absolute, because which side of the mark a card is on
+    // is the difference between arriving and leaving. A card still to the right
+    // of the mark has not been read yet however near it is.
+    return { index: best, off: bestDistance, signed: bestSigned };
   }
 
+  // How close to the mark counts as arrived, as a fraction of a card. Snap
+  // lands exactly, so this only has to absorb the last pixels of a settle — it
+  // is not a halfway line, which is the whole point of it.
+  const ON_MARK = 0.1;
+
   let currentActive = -1;
+  let onMark = false;
 
-  function markActive(i) {
-    if (i === currentActive) return;
+  // Which card is currently being told to play, as against which one is in the
+  // read position. They are the same thing at rest and deliberately not during
+  // a gesture — see handoff().
+  let told = -1;
+
+  // Without hover, the read card is the only thing that can demonstrate the
+  // component, so it plays by default and the one leaving stops.
+  //
+  // Never mid-gesture, though. The playing state is the expensive half of a
+  // component — the one a study writes knowing only one card is ever in it —
+  // and a drag across two cards used to start it and stop it four times on the
+  // way past. Whatever is animating while the rail moves is animating against
+  // the movement, so the handoff waits for the rail to stop and then happens
+  // once.
+  // Stopping is cheap and starting is not, so the two halves of a handoff are
+  // not deferred together. The card being dragged away from stops the moment
+  // the gesture begins — it is no longer the one being read, and leaving it
+  // playing means the expensive half of a component animating through the
+  // whole drag on a card nobody is looking at. The card being dragged toward
+  // waits until it has landed.
+  function hush() {
+    if (told < 0) return;
     const list = real();
+    if (list[told]) tell(list[told], false);
+    told = -1;
+  }
 
-    list.forEach((piece, n) => piece.classList.toggle('is-active', n === i));
+  function handoff() {
+    if (!coarse.matches || told === currentActive) return;
+    const list = real();
+    if (list[told]) tell(list[told], false);
+    if (list[currentActive]) tell(list[currentActive], true);
+    told = currentActive;
+  }
 
-    // Without hover, the read card is the only thing that can demonstrate the
-    // component, so it plays by default and the one leaving stops.
-    if (coarse.matches) {
-      if (list[currentActive]) tell(list[currentActive], false);
-      if (list[i]) tell(list[i], true);
+  function markActive(i, arrived) {
+    const moved = i !== currentActive;
+    const landed = arrived !== onMark;
+    if (!moved && !landed) return;
+
+    const list = real();
+    const leaving = moved ? list[currentActive] : null;
+
+    if (moved) {
+      list.forEach((piece, n) => piece.classList.toggle('is-active', n === i));
+      currentActive = i;
     }
+    onMark = arrived;
 
-    currentActive = i;
+    // Arriving is what starts a preview, so both facts have to reach the cards
+    // that changed: the one the mark left, and the one it is on.
+    if (leaving) syncPause(leaving);
+    if (list[currentActive]) syncPause(list[currentActive]);
+
+    // Only once it has actually arrived. handoff is what tells a component to
+    // perform, and a component whose performance is a transition rather than an
+    // animation — the toolbar that morphs its search field — cannot be held by
+    // the pause at all, because animation-play-state does not touch
+    // transitions. The pause stops a card that is running; this is what stops
+    // one from being started.
+    if (onMark && !gesturing()) handoff();
+  }
+
+  // sync() reads the position of every card, and a scroll fires more often than
+  // the screen can draw — several times a frame under a drag, which on a 120Hz
+  // phone is several times 120. Coalesced onto the frame, it runs once for
+  // however many arrived, and it runs after the writes rather than between
+  // them, which is the difference between one layout and one per event.
+  let syncFrame = 0;
+
+  function syncSoon() {
+    if (syncFrame) return;
+    syncFrame = requestAnimationFrame(() => {
+      syncFrame = 0;
+      sync();
+    });
   }
 
   function sync() {
@@ -871,8 +1428,28 @@
       metaLatest.textContent = key ? key.slice(0, 7).replace('-', ' · ') : '—';
     }
 
-    const active = activeIndex();
-    markActive(active);
+    syncVisibility();
+
+    const read = activeIndex();
+    const active = read.index;
+    const w = step();
+    // The drift is the exception, and it has to be: it never rests, so a rule
+    // that waits for rest would leave the index permanently still. While the
+    // rail is moving on its own the nearest card is the one being shown. The
+    // arrival test governs the rail under a reader's hand, which is where the
+    // complaint lives — and the first touch stops the drift for good anyway.
+    // Arrival, not nearness — and during the drift that distinction needs the
+    // sign. Nearest flips at the halfway point, which is half a card *before*
+    // the card reaches the mark, so a drifting rail had every card start
+    // performing on its way in: the pulse ran while the card was still coming
+    // onto the screen. Reading the signed distance instead starts it when it
+    // arrives and leaves it running as it travels past, until the next one
+    // arrives in its turn — which is what the drift needs, since it never rests
+    // and a rule that waited for rest would leave the index permanently still.
+    const arrived = !(w > 0)
+      ? true
+      : (drift === 'on' ? read.signed <= w * ON_MARK : read.off <= w * ON_MARK);
+    markActive(active, arrived);
     if (indexOut) indexOut.textContent = pad(Math.min(count, active + 1));
 
     if (progress) {
@@ -902,9 +1479,12 @@
   // step would stop halfway. Driving it ourselves means a recycle mid-step
   // shifts both ends of the animation and it lands where it was always going.
   const STEP_MS = 420;
-  // A released drag lands faster than a button step: the hand has already done
-  // the travel, so the rail only has to close the gap it was let go in.
-  const RELEASE_MS = 240;
+  // A release used to land faster than a button step, on the reasoning that the
+  // hand had already done the travel. That was right while the hand's momentum
+  // was still carrying it; now that the fling is cancelled and the rail travels
+  // the whole way itself, the same reasoning makes it abrupt — there is nothing
+  // else moving to be quick relative to.
+  const RELEASE_MS = 460;
 
   let stepFrame = 0;
   let stepFrom = 0;
@@ -919,9 +1499,18 @@
     if (reduced.matches) {
       track.scrollLeft = target;
       recycle();
+      settleWork();
       return;
     }
 
+    // The card being left stops now, not when the rail arrives. A touch gesture
+    // already does this at first contact; a button step and a settle had no
+    // equivalent, so the outgoing card went on performing for the length of the
+    // step — and a component whose performance is a transition rather than an
+    // animation is not held by the pause at all, so the toolbar morphed its way
+    // out of the read position and a card or two past it.
+    hush();
+    pauseAll(true);
     stepFrom = track.scrollLeft;
     stepTarget = target;
     stepStart = 0;
@@ -934,10 +1523,13 @@
     if (!stepStart) stepStart = now;
 
     const t = Math.min(1, (now - stepStart) / stepMs);
-    const eased = 1 - Math.pow(1 - t, 3);
-    track.scrollLeft = stepFrom + (stepTarget - stepFrom) * eased;
+    // Quartic rather than cubic: the same start, a longer tail. What makes a
+    // landing read as buttery is how it arrives, not how it leaves.
+    const eased = 1 - Math.pow(1 - t, 4);
+    const at = stepFrom + (stepTarget - stepFrom) * eased;
+    track.scrollLeft = at;
 
-    const shift = recycle();
+    const shift = recycle(at);
     if (shift) { stepFrom += shift; stepTarget += shift; }
 
     if (t < 1) {
@@ -947,6 +1539,116 @@
 
     track.classList.remove('is-stepping');
     stepFrame = 0;
+    // The rail has stopped moving: whatever the gesture deferred can happen now.
+    settleWork();
+  }
+
+  // A touch release is the platform's, end to end — its momentum, its snap, its
+  // deceleration curve. Nothing here animates anything.
+  //
+  // Every attempt that did animate it failed the same way, for reasons that
+  // only lined up at the end. Driving scrollLeft from rAF is a main-thread
+  // scroll update per frame: two or three visible hitches in every landing on a
+  // phone, invisible to a throttled Chromium. Translating the row instead is
+  // smooth, but the fling is still running underneath it, so the two distances
+  // add up — the rail travels much too far and then snaps back when the real
+  // scroll is committed. And a fling cannot reliably be cancelled from script:
+  // the write meant to stop it is a no-op when it asks for the position the
+  // scroll is already at.
+  //
+  // What was actually wrong was upstream of all of it. `scroll-snap-stop:
+  // always` makes a fling stop at the next card rather than running through
+  // several — but only if snap is on when the browser *plans* the fling, and
+  // snap was off for the whole gesture so that a finger landing on a drifting
+  // rail is not yanked to the nearest card. It was off at exactly the moment it
+  // needed to be on.
+  //
+  // It only has to be off while the rail is still. Mandatory snap applies at
+  // the end of a scroll, not during one, so giving the class back on the first
+  // touchmove yanks nothing — the scroll is live by then — and the fling that
+  // follows is planned with snap and snap-stop in hand. One swipe, one study,
+  // landing on the mark, and not one line of it on this thread.
+  let landEnd = null;
+
+  // The lattice the cards actually sit on. A gesture that began on a drifting
+  // rail began between two of them, and every target has to be one of them
+  // whatever the arithmetic started from.
+  function snapPos(at) {
+    const w = step();
+    const row = laidOut();
+    if (!row.length || w <= 0) return at;
+    const base = row[0].offsetLeft - sized().inset;
+    return base + Math.round((at - base) / w) * w;
+  }
+
+  function stopWaiting() {
+    clearTimeout(landTimer);
+    clearInterval(quietPoll);
+    quietPoll = 0;
+    if (landEnd) { track.removeEventListener('scrollend', landEnd); landEnd = null; }
+  }
+
+  function finishLanding() {
+    if (!landing) return;
+    landing = false;
+    stopWaiting();
+    track.classList.remove('is-dragging');   // a no-op unless the finger never moved
+    recycle();
+    settleWork();
+  }
+
+  // Wait for the scroll to stop, however it is stopping, and then let the rail
+  // catch up with itself. `wait` is the backstop for an engine that sends no
+  // scrollend, or a scroll that is interrupted.
+  function waitForStop(wait) {
+    landing = true;
+    stopWaiting();
+    landEnd = () => finishLanding();
+    track.addEventListener('scrollend', landEnd);
+
+    // scrollend is the proper signal, and this is what covers an engine that is
+    // late with it or does not send one. Waiting out the backstop instead left
+    // the card sitting on the mark for the better part of a second before it was
+    // told to perform — dead air between arriving and anything happening.
+    //
+    // Quiet alone is not enough to go on. scrollLeft quantises to whole pixels,
+    // so the tail of an ease-out sits on one of them for longer than these two
+    // ticks while the scroll is still live, and finishing there would recycle
+    // the rail mid-motion — which is the seam jump. So the rail has to be quiet
+    // AND on a snap position: landed, not merely slow. Anything else waits out
+    // the backstop, which is what it is for.
+    let was = track.scrollLeft;
+    let still = 0;
+    quietPoll = setInterval(() => {
+      const at = track.scrollLeft;
+      if (at !== was) { was = at; still = 0; return; }
+      if (++still < 2) return;
+      if (Math.abs(at - snapPos(at)) > 1) return;
+      finishLanding();
+    }, 45);
+
+    landTimer = setTimeout(finishLanding, wait);
+  }
+
+  // The platform has it: a fling is running, snap and scroll-snap-stop will
+  // land it on the next card, and nothing here may touch the scroll while that
+  // happens.
+  function landFlung() {
+    waitForStop(1200);
+  }
+
+  // No fling worth the name — which is the only condition under which the rail
+  // may move the scroll itself without fighting something. A slow drag leaves
+  // almost no momentum, so a smooth scroll started now is the only thing
+  // travelling, and it is the platform's animation rather than a loop here.
+  function landWalked(target) {
+    if (reduced.matches || Math.abs(target - track.scrollLeft) < 1) {
+      landing = true;
+      finishLanding();
+      return;
+    }
+    waitForStop(900);
+    track.scrollTo({ left: target, behavior: 'smooth' });
   }
 
   function scrollBy(direction) {
@@ -962,7 +1664,7 @@
     const list = real();
     const target = end ? list[list.length - 1] : list[0];
     if (!target) return;
-    const inset = parseFloat(getComputedStyle(track).scrollPaddingLeft) || 0;
+    const inset = sized().inset;
     stepTo(target.offsetLeft - inset);
   }
 
@@ -970,9 +1672,9 @@
   // paths that turn it off — a drag, and the drift — where the scroll can stop
   // anywhere.
   function settle() {
-    const target = real()[activeIndex()];
+    const target = real()[activeIndex().index];
     if (!target) return;
-    const inset = parseFloat(getComputedStyle(track).scrollPaddingLeft) || 0;
+    const inset = sized().inset;
     // Through stepTo rather than scrollTo, so every movement of this rail has
     // the same timing, and so the track never sits for a frame with snap back
     // on and the scroll still between two cards — which is the gap that made
@@ -994,11 +1696,23 @@
   // a focus jump. The drift, a step and a drag each recycle on their own
   // schedule, and would fight a second one here.
   track.addEventListener('scroll', () => {
-    if (!stepFrame && !dragging && drift !== 'on') recycle();
-    sync();
+    // Never while a finger is down. A recycle writes scrollLeft, and writing it
+    // under a native gesture is writing underneath the thing doing the
+    // scrolling — the browser is tracking the finger against an offset it set
+    // itself, and moving that offset is how a swipe loses its momentum. The
+    // row carries a card of slack either side, which is more than a gesture
+    // spends before it ends, and the step that follows recycles on every frame
+    // of itself.
+    // Never under a glide either: a scrollLeft write cancels a native smooth
+    // scroll, and the recycle would stop it halfway.
+    // Never while a landing is still travelling: a scrollLeft write would cut
+    // the momentum short, and the browser is mid-decision about where to snap.
+    if (!stepFrame && !dragging && !touching && !landing && drift !== 'on') recycle();
+    syncSoon();
   }, { passive: true });
 
   window.addEventListener('resize', () => {
+    forget();          // a new viewport is new card widths and a new scrollport
     normalise();
     sync();
   });
@@ -1016,7 +1730,7 @@
   // snap yanks the scroll back to a card every time it is written, and with
   // scroll-behavior inherited smooth the writes would queue animations against
   // each other. .is-drifting turns both off, the way .is-dragging already does.
-  const DRIFT_SPEED = 22;      // px per second
+  const DRIFT_SPEED = 26;      // px per second
   const DRIFT_DELAY = 1400;    // ms before it sets off, so the previews land first
   const DRIFT_RESUME = 900;    // ms after the pointer leaves
 
@@ -1029,13 +1743,67 @@
   let drift = 'off';           // 'on' | 'held' | 'off'
   let driftFrame = 0;
   let driftLast = 0;
-  let driftCarry = 0;          // the sub-pixel the engine rounded away last frame
+  let driftPos = 0;            // the exact position, unrounded, carried between frames
+  let nudged = 0;              // the sub-pixel part of it, currently paid out on the cards
   let holdTimer = 0;
   let boxOpen = false;         // quick look, which must not resume behind itself
   let taken = false;           // the reader has stopped it; it does not come back on its own
 
+  // Whether this rail can drift at all — a row too short to loop has nowhere to
+  // drift to. Reduced motion is deliberately not in here: it decides whether the
+  // rail sets off on its own, which is a different question from whether the
+  // control exists, and folding the two together is what left a reader with the
+  // preference set no way to start the carousel at all.
   function driftable() {
-    return !reduced.matches && loopable();
+    return loopable();
+  }
+
+  // ...and whether it may set off unasked. Content that moves by itself is the
+  // thing the preference is about, so it does not; a reader who presses play has
+  // asked for this one, which is the opt-in the preference is supposed to leave
+  // open rather than close.
+  function driftsUnasked() {
+    return !reduced.matches;
+  }
+
+  // scrollLeft is handed 0.43 of a pixel a frame at this speed, and its getter
+  // reports whole pixels — so read back, the rail looks frozen for two frames
+  // in three and then jumping a whole one. That reading is the getter's, not
+  // the rendering's: Chromium keeps the scroll offset fractional underneath,
+  // and a card's measured position there moves the full 0.43 every frame with
+  // none of this. Measured both ways on the same frame: rendered position 0%
+  // frozen, scrollLeft getter 63%.
+  //
+  // So this is here for the engine that does not, which is the one it was
+  // reported on and the one that cannot be checked from here — only Chromium
+  // is installed. scrollLeft takes the whole pixels and the remainder is paid
+  // out as a translate on the cards, where sub-pixel positions are what the
+  // compositor is for. On an engine that already renders the fraction it is a
+  // no-op that costs nothing measurable: 200 frames of drift on a throttled
+  // phone profile came back at the same 16.7ms median, 0 dropped against 1.
+  //
+  // `translate` rather than `transform`, because .piece already uses transform
+  // for its hover lift and the two compose independently instead of one
+  // clobbering the other.
+  function nudge(frac) {
+    nudged = frac;
+    const px = frac ? `${-frac}px` : '';
+    ring.forEach((el) => { el.style.translate = px; });
+  }
+
+  // Off, and off every card rather than only the ring's, so nothing is left
+  // holding a fraction after a filter change swapped the set underneath it.
+  // The rail moves by under a pixel when this lands, which is the point.
+  function unnudge() {
+    if (!nudged) return;
+    nudged = 0;
+    pieces().forEach((el) => { el.style.translate = ''; });
+  }
+
+  function place(pos) {
+    const whole = Math.floor(pos);
+    track.scrollLeft = whole;
+    nudge(pos - whole);
   }
 
   function driftTick(now) {
@@ -1053,14 +1821,22 @@
     // past what the set can fill — and there is no end to drift to once it is.
     if (!loopable()) { driftStop(false); return; }
 
-    const want = track.scrollLeft + driftCarry + DRIFT_SPEED * dt;
-    track.scrollLeft = want;
-    // scrollLeft quantises to whole pixels, but carrying the remainder costs
-    // nothing and keeps the rate honest.
-    driftCarry = want - track.scrollLeft;
+    // The position is carried here as a float rather than read back off the
+    // element. scrollLeft quantises to whole pixels, so the old way — write,
+    // read, keep the difference — needed a read after every write, which is a
+    // forced layout on every frame the rail drifts. Holding the exact position
+    // ourselves keeps the rate just as honest and asks the browser nothing.
+    driftPos += DRIFT_SPEED * dt;
+    place(driftPos);
 
     // The reason there is no longer anything to see at the end of the row.
-    recycle();
+    // A rotation moves the scroll by a card, and a card is not necessarily a
+    // whole number of pixels, so the split has to be taken again after it.
+    const shifted = recycle(driftPos);
+    if (shifted) {
+      driftPos += shifted;
+      place(driftPos);
+    }
   }
 
   function driftRun() {
@@ -1069,10 +1845,12 @@
     if (drift === 'on') return;
     drift = 'on';
     driftLast = 0;
-    driftCarry = 0;
+    // The one read: where the rail actually is when the drift takes it over.
+    driftPos = track.scrollLeft;
     track.classList.add('is-drifting');
     cancelAnimationFrame(driftFrame);
     driftFrame = requestAnimationFrame(driftTick);
+    refreshPause();
     syncDriftBtn();
     renderNav();
   }
@@ -1084,6 +1862,8 @@
     if (drift !== 'on') return;
     drift = 'held';
     cancelAnimationFrame(driftFrame);
+    unnudge();
+    refreshPause();
     renderNav();
   }
 
@@ -1113,14 +1893,65 @@
     drift = 'off';
     if (byUser !== false) taken = true;
     track.classList.remove('is-drifting');
+    // Before the settle, so snap measures the cards where they actually are.
+    unnudge();
     if (wasRunning && settleAfter !== false) settle();
+    refreshPause();
     syncDriftBtn();
     renderNav();
   }
 
-  // A pointer resting on the rail is someone reading it, so the rail waits.
-  track.addEventListener('pointerenter', driftHold);
-  track.addEventListener('pointerleave', () => driftRelease(DRIFT_RESUME));
+  // A pointer on the rail is someone reading it, so the rail waits — but only
+  // while there is someone there. Presence alone is not the signal it looks
+  // like: on a 1440x810 laptop the track's box is 86% of the fold, so a cursor
+  // left anywhere in the middle of the screen is "on the rail" and the drift
+  // was held for as long as the page stayed open. A pointer that has moved
+  // recently is a reader; one that has not is furniture.
+  //
+  // So movement holds it and stillness lets it go. Any move re-holds at once,
+  // which is what keeps the rail from travelling out from under someone who is
+  // actually there — they need only have moved within POINTER_IDLE, not be
+  // moving now.
+  const POINTER_IDLE = 4000;
+  let idleTimer = 0;
+  let idleX = null;
+  let idleY = null;
+
+  // Moved, in the sense of the pointer having moved. A browser dispatches a
+  // pointermove of its own when the content under a stationary cursor changes,
+  // so that :hover lands on whatever is under it now — and a drifting rail
+  // changes that on every frame. Taken at face value, the rail's own motion
+  // reads as a reader being there, holds the drift, and the carousel sits
+  // still except for the frame or two after each idle release. The synthetic
+  // move carries the coordinates the pointer already had, so comparing them is
+  // the whole of the distinction.
+  function pointerMoved(event) {
+    if (!event || event.clientX === undefined) return true;   // enter, or no coords
+    if (event.clientX === idleX && event.clientY === idleY) return false;
+    idleX = event.clientX;
+    idleY = event.clientY;
+    return true;
+  }
+
+  function pointerAwake(event) {
+    if (drift === 'off') return;        // taken for good; nothing to hold
+    if (!pointerMoved(event)) return;
+    clearTimeout(idleTimer);
+    driftHold();
+    idleTimer = setTimeout(() => driftRelease(0), POINTER_IDLE);
+  }
+
+  track.addEventListener('pointerenter', (event) => {
+    idleX = event.clientX;
+    idleY = event.clientY;
+    pointerAwake(null);               // arriving counts, wherever it arrived
+  });
+  track.addEventListener('pointermove', pointerAwake);
+  track.addEventListener('pointerleave', () => {
+    clearTimeout(idleTimer);
+    idleX = idleY = null;
+    driftRelease(DRIFT_RESUME);
+  });
 
   // Arriving by keyboard is taking control of the rail — one that drifted
   // between two tab presses would be hostile — so that stops it for good. A
@@ -1136,13 +1967,30 @@
     else driftHold();
   });
 
-  // Touch and wheel both scroll the track natively, with nothing for the drag
-  // handler to catch — so they are hooked here rather than left to fight the
-  // drift over the same scrollLeft.
-  // Both scroll the track natively, and snap comes back the moment the drift
-  // lets go of it, so the browser lands them on a card without help.
-  track.addEventListener('touchstart', () => driftStop(true, false), { passive: true });
-  track.addEventListener('wheel', () => driftStop(true, false), { passive: true });
+  // A wheel scrolls the track natively and snap lands it on a card, with
+  // nothing for the drag handler to catch. Touch used to need a line here too
+  // and no longer does: pointerdown covers a finger now, and stopping the
+  // drift from two places for one gesture is what stopped the rail before it
+  // had been given anywhere to stop.
+  //
+  // Only a wheel that is actually moving the rail, though. A vertical wheel
+  // over the track scrolls the page past it and leaves scrollLeft exactly
+  // where it was — measured — so reading it as the reader taking the rail
+  // stopped the drift for good on the way down to it. On a 13in laptop the rail
+  // is most of the viewport, so scrolling the page to reach the rail is enough
+  // to put the pointer over it, and the carousel was dead before it had been
+  // looked at. The pointer being there already holds the drift and lets go
+  // again on the way out; that is the right answer for passing through.
+  //
+  // Predominantly horizontal, or shift held, which is the conventional way to
+  // ask a vertical wheel for a horizontal scroll. Equal deltas are the
+  // diagonal start of a two-finger swipe and count as vertical: a gesture that
+  // means the rail resolves into one within a frame or two.
+  track.addEventListener('wheel', (event) => {
+    const sideways = event.shiftKey || Math.abs(event.deltaX) > Math.abs(event.deltaY);
+    if (!sideways) return;
+    driftStop(true, false);
+  }, { passive: true });
 
   if (driftBtn) {
     driftBtn.addEventListener('click', () => {
@@ -1166,25 +2014,48 @@
   // start something that is about to start by itself.
   function syncDriftBtn() {
     if (!driftBtn) return;
-    driftBtn.hidden = !driftable() || (drift === 'off' && !taken);
+    // Before the rail has ever set off the control has nothing to say, so it
+    // stays out of the way — unless it is never going to set off, in which case
+    // it is the only way in and has to be there from the start.
+    const pending = drift === 'off' && !taken && driftsUnasked();
+    driftBtn.hidden = !driftable() || pending;
   }
 
   // --- drag to scroll ---------------------------------------------------
 
-  // Mouse only. A touch pointer already scrolls the track natively, and
-  // driving scrollLeft underneath that gesture fought the browser's own
-  // momentum. Worse, a swipe ends in `pointercancel` with no click behind it,
-  // so the one-shot click swallower below stayed armed and ate the user's
-  // next tap on a card.
-  const DRAG_SLOP = 4;   // below this it is a click, not a drag
+  // Mouse, pen and finger alike. This was mouse-only while the browser still
+  // scrolled the track horizontally on touch — driving scrollLeft underneath
+  // that fought its momentum — but `touch-action: pan-y pinch-zoom` hands
+  // horizontal to us, so there is no native scroll left to fight and a swipe
+  // gets the same landing a drag does.
+  //
+  // The hazard the mouse-only rule was avoiding is still real and handled
+  // below: a touch gesture can end in `pointercancel` rather than `pointerup`
+  // — the browser claiming it for a vertical pan — and a cancelled pointer has
+  // no click behind it to swallow.
+  // Below this it is a tap or a click, not a drag. A finger is never as still
+  // as a mouse: at 4px a tap with ordinary jitter registered as a drag, and
+  // the click swallower below then ate the tap that was meant to open the
+  // card.
+  const DRAG_SLOP = { mouse: 4, touch: 12, pen: 8 };
 
   // Where a released drag lands. Nearest-card is the obvious rule and the
   // wrong one: it sends a drag of two fifths of a card back to the card it
   // came from, which reads as the rail refusing the gesture rather than
-  // answering it. A fifth of a card is enough to mean "the next one", and a
-  // flick means the next one whatever distance it covered.
-  const SNAP_FRACTION = 0.2;    // of a card
-  const FLICK_SPEED = 0.35;     // px per ms
+  // answering it.
+  //
+  // The bar is a tenth of a card, which is low on purpose. There is nowhere to
+  // rest between two cards — the rail snaps either way — so the only question
+  // a release asks is which card it ends on, and anything past the slop is a
+  // deliberate answer to it. A flick means the next one whatever distance it
+  // covered.
+  const SNAP_FRACTION = 0.1;    // of a card
+  const FLICK_SPEED = 0.2;      // px per ms
+
+  // A flick has to have gone somewhere before it counts as one. Without a
+  // floor, the jitter at the end of a tap clears the speed bar on its own and
+  // the rail answers a tap by moving a card.
+  const FLICK_FLOOR = 0.04;     // of a card
 
   let dragging = false;
   let moved = false;
@@ -1198,16 +2069,37 @@
   let lastT = 0;
   let speed = 0;
 
+  let slop = DRAG_SLOP.mouse;
+
   track.addEventListener('pointerdown', (event) => {
     if (event.button !== 0) return;
-    if (event.pointerType !== 'mouse') return;
+    // A finger is not driven from here: the browser scrolls this natively on
+    // the compositor, and taking that over puts every frame of the gesture on
+    // the main thread behind the thumbnails. The touch path below lets it
+    // scroll and only decides where the gesture lands once it is over.
+    if (event.pointerType === 'touch') return;
     dragging = true;
     moved = false;
+    slop = DRAG_SLOP[event.pointerType] || DRAG_SLOP.mouse;
     originX = event.clientX;
     originScroll = track.scrollLeft;
     lastX = event.clientX;
     lastT = event.timeStamp;
     speed = 0;
+
+    // Snap comes off at the first contact, not at the first movement. Between
+    // the two, the drift stopping would hand the track back to mandatory snap
+    // for long enough to yank it to the previous card — which is the jump a
+    // finger landing on a drifting rail used to produce. Nothing is committed
+    // by this: a press that turns out to be a tap settles on pointerup.
+    track.classList.add('is-dragging');
+
+    // And the rail stops under the finger. pointerenter usually has this in
+    // hand already, but a pointer that arrives by landing rather than by
+    // travelling may not have fired one, and a rail that keeps drifting under
+    // a finger that is already down is the same complaint as the jump.
+    driftHold();
+
     // Capture is taken only once a drag is real. Taking it here would
     // retarget the click, and the quick-look button would stop firing.
   });
@@ -1215,14 +2107,15 @@
   track.addEventListener('pointermove', (event) => {
     if (!dragging) return;
     const delta = event.clientX - originX;
-    if (!moved && Math.abs(delta) > DRAG_SLOP) {
+    if (!moved && Math.abs(delta) > slop) {
       moved = true;
       // Only once the drag is real. A press that turns out to be a click — a
       // card's link, its quick-look button — has not moved the rail and should
       // not end the drift; the pointer being over the track is already holding
       // it, and it picks up again when that pointer leaves.
       driftStop(true, false);
-      track.classList.add('is-dragging');
+      hush();
+      pauseAll(true);
       track.setPointerCapture(event.pointerId);
     }
     if (moved) {
@@ -1231,11 +2124,14 @@
       lastX = event.clientX;
       lastT = event.timeStamp;
 
-      track.scrollLeft = originScroll - delta;
+      const want = originScroll - delta;
+      track.scrollLeft = want;
       // A recycle under the drag moves the scroll out from under the origin
       // this is measured against; without this the next frame would drag the
-      // rail back by exactly the card that was just recycled.
-      originScroll += recycle();
+      // rail back by exactly the card that was just recycled. Handed the
+      // position rather than asked for it, so the write above is never read
+      // back.
+      originScroll += recycle(want);
     }
   });
 
@@ -1248,11 +2144,14 @@
 
     // Swallow the click the drag would otherwise fire on a card link.
     if (moved) {
-      track.addEventListener('click', (click) => {
-        click.preventDefault();
-        click.stopPropagation();
-      }, { capture: true, once: true });
+      if (event.type === 'pointerup') swallowNextClick();
+      drainWork();
       release();
+    } else {
+      // A tap, not a drag — but snap has been off since the contact, and the
+      // drift may have left the rail between two cards. Settling animates it
+      // onto one instead of letting snap take it there in a single frame.
+      settle();
     }
 
     // After release(), not before. Dropping .is-dragging hands the track back
@@ -1263,6 +2162,7 @@
     // track is never left for a frame with neither.
     track.classList.remove('is-dragging');
     moved = false;
+    if (!stepFrame) settleWork();
   }
 
   // originScroll is the scroll the drag started from, kept in step with every
@@ -1277,14 +2177,131 @@
     const rest = covered - whole;
     const flick = Math.abs(speed) > FLICK_SPEED;
 
+    // The low bar only answers the first question a release asks — whether the
+    // rail was meant to move at all. Once whole cards have gone past, that is
+    // settled, and the remainder is the ordinary one of which card you stopped
+    // nearest: a drag of 1.1 cards means the next one, not the one after it.
     let cards = whole;
-    if (Math.abs(rest) >= SNAP_FRACTION) cards += Math.sign(rest);
+    const bar = whole === 0 ? SNAP_FRACTION : 0.5;
+    if (Math.abs(rest) >= bar) cards += Math.sign(rest);
     // A flick that covered almost nothing still means the next one, in the
     // direction the hand was travelling — which is the opposite sign to the
     // pointer, since dragging left walks the rail forwards.
-    if (cards === 0 && flick) cards = -Math.sign(speed);
+    if (cards === 0 && flick && Math.abs(covered) > FLICK_FLOOR) {
+      cards = -Math.sign(speed);
+    }
 
     stepTo(originScroll + cards * w, RELEASE_MS);
+  }
+
+  // --- the touch gesture ------------------------------------------------
+
+  // Watched, not driven. The browser scrolls the rail, carries its own momentum
+  // and picks the card to snap to; this notes that a finger is down so the
+  // recycle, the read mark and the drift keep out of the way, and it hands snap
+  // back at the one moment that makes the fling behave.
+  let touching = false;
+  let touchFrom = 0;      // scroll position at touchstart
+  let touchMoved = false;
+
+  track.addEventListener('touchstart', () => {
+    // A finger arriving mid-landing takes it over.
+    if (landing) finishLanding();
+    touching = true;
+    touchMoved = false;
+    touchFrom = track.scrollLeft;
+    moveX = prevX = 0; moveT = prevT = 0;
+    // Off only while the rail is still. Restoring mandatory snap to a rail that
+    // has stopped between two cards — which is where the drift leaves it —
+    // jumps to the nearest one under the finger.
+    track.classList.add('is-dragging');
+    driftStop(true, false);
+    hush();
+    pauseAll(true);
+  }, { passive: true });
+
+  // Two samples, which is all that is needed to tell a flick from a slow drag.
+  // The full velocity sampling this replaced ran on every scroll event of a
+  // gesture and fed arithmetic that decided where to land; this only answers
+  // one yes-or-no question at the end.
+  let moveX = 0, moveT = 0, prevX = 0, prevT = 0;
+
+  function moveSpeed() {
+    const dt = moveT - prevT;
+    return dt > 0 ? (moveX - prevX) / dt : 0;
+  }
+
+  track.addEventListener('touchmove', (event) => {
+    const touch = event.touches && event.touches[0];
+    if (touch) {
+      prevX = moveX; prevT = moveT;
+      moveX = touch.clientX; moveT = event.timeStamp;
+    }
+    if (!touching || touchMoved) return;
+    touchMoved = true;
+    // And back on at the first movement, which is the whole trick. Snap applies
+    // at the end of a scroll rather than during one, so with the scroll live
+    // this yanks nothing — and the fling the browser is about to plan is
+    // planned with snap and scroll-snap-stop in hand, which is what makes it
+    // stop at the next card instead of running through several.
+    track.classList.remove('is-dragging');
+  }, { passive: true });
+
+  function endTouch() {
+    if (!touching) return;
+    touching = false;
+    // Before the landing, which would defer these again for as long as it runs.
+    drainWork();
+
+    // A press that never moved. Snap is still held off, and giving it back to a
+    // rail standing between two cards is the yank the class exists to prevent,
+    // so this walks it onto one instead.
+    if (!touchMoved) {
+      track.classList.remove('is-dragging');
+      landWalked(snapPos(track.scrollLeft));
+      return;
+    }
+
+    const w = step();
+    if (w <= 0) { landing = true; finishLanding(); return; }
+
+    // Measured at touchend, before momentum has added anything: what the finger
+    // asked for, and how fast it was going when it stopped asking.
+    const covered = (track.scrollLeft - touchFrom) / w;
+    const flick = Math.abs(moveSpeed()) > FLICK_SPEED;
+
+    if (flick) {
+      // Hands off entirely. The fling was planned with snap in hand — see the
+      // touchmove handler — so it stops at the next card on its own, and a
+      // scroll written from here would only fight it.
+      landFlung();
+      return;
+    }
+
+    // Slow enough that there is no fling to fight. Snap on its own would return
+    // a short drag to the card it started on, which is right for a stray touch
+    // and wrong for the deliberate short drag this rail is mostly used with.
+    let cards = 0;
+    if (Math.abs(covered) >= SNAP_FRACTION) {
+      cards = Math.sign(covered) * Math.max(1, Math.round(Math.abs(covered)));
+    }
+    landWalked(snapPos(touchFrom) + cards * w);
+  }
+
+  track.addEventListener('touchend', endTouch, { passive: true });
+  track.addEventListener('touchcancel', endTouch, { passive: true });
+
+  // Armed only where a click is actually coming, and it expires either way. A
+  // swallower left waiting after a cancelled gesture does not sit harmlessly:
+  // it eats whatever the next tap on a card was meant to do, which is a bug
+  // that surfaces one gesture later than the one that caused it.
+  function swallowNextClick() {
+    const eat = (click) => {
+      click.preventDefault();
+      click.stopPropagation();
+    };
+    track.addEventListener('click', eat, { capture: true, once: true });
+    setTimeout(() => track.removeEventListener('click', eat, { capture: true }), 400);
   }
 
   track.addEventListener('pointerup', endDrag);
@@ -1713,7 +2730,10 @@
       renderLedeHint(hintCopy);
       const list = real();
       list.forEach((piece) => tell(piece, false));
-      if (coarse.matches && list[currentActive]) tell(list[currentActive], true);
+      // Through the same bookkeeping handoff() keeps, or it would think the
+      // card it last set playing still is.
+      told = -1;
+      handoff();
     });
   }
 
@@ -1731,11 +2751,11 @@
   window.addEventListener('resize', () => {
     // A window narrowed back into a row it can loop sets the rail going again,
     // unless the reader had already stopped it.
-    if (!taken && drift === 'off') driftRun();
+    if (!taken && drift === 'off' && driftsUnasked()) driftRun();
     syncDriftBtn();
   });
   syncDriftBtn();
   // Late enough that the previews have landed: a rail that starts moving under
   // five loading skeletons advertises the wait rather than the work.
-  setTimeout(() => driftRun(), DRIFT_DELAY);
+  setTimeout(() => { if (driftsUnasked()) driftRun(); }, DRIFT_DELAY);
 })();
