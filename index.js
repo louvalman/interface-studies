@@ -1375,7 +1375,7 @@
   // snap yanks the scroll back to a card every time it is written, and with
   // scroll-behavior inherited smooth the writes would queue animations against
   // each other. .is-drifting turns both off, the way .is-dragging already does.
-  const DRIFT_SPEED = 22;      // px per second
+  const DRIFT_SPEED = 26;      // px per second
   const DRIFT_DELAY = 1400;    // ms before it sets off, so the previews land first
   const DRIFT_RESUME = 900;    // ms after the pointer leaves
 
@@ -1398,11 +1398,11 @@
     return !reduced.matches && loopable();
   }
 
-  // scrollLeft is handed 0.37 of a pixel a frame at this speed, and its getter
+  // scrollLeft is handed 0.43 of a pixel a frame at this speed, and its getter
   // reports whole pixels — so read back, the rail looks frozen for two frames
   // in three and then jumping a whole one. That reading is the getter's, not
   // the rendering's: Chromium keeps the scroll offset fractional underneath,
-  // and a card's measured position there moves the full 0.37 every frame with
+  // and a card's measured position there moves the full 0.43 every frame with
   // none of this. Measured both ways on the same frame: rendered position 0%
   // frozen, scrollLeft getter 63%.
   //
