@@ -543,23 +543,39 @@ drifting rail began between two of them. Snap stays off until it arrives, by
 which point the rail is on a snap position and giving the class back moves
 nothing.
 
-Driven here rather than by `scrollTo`'s smooth behaviour, and the reason is
-duration: that animation's is the browser's, nothing exposes it, and over a
-card it is finished before it reads as a transition at all. `RELEASE_MS` is
-460ms, up from the 240 it had while the hand's momentum was still doing the
-carrying — with the fling cancelled and the rail travelling the whole way
-itself, the old number is abrupt, because there is nothing else moving to be
-quick relative to. Further is slower but not proportionally: two cards away
-should not feel twice as far. The curve is quartic ease-out rather than cubic —
-the same start, a longer tail, because what makes a landing read as buttery is
-how it arrives.
+**The scroll is not what moves.** The row is translated instead: one style write
+per card, a CSS transition, and the compositor runs it with no further
+main-thread work. When it arrives the transform is dropped and the real scroll
+takes the same distance over, in one task, so the frame that loses the translate
+is the frame that gains the scroll. `commitGlide` writes the target absolutely
+rather than as a delta, so a fling that leaked past the cancel still lands on
+the mark instead of accumulating the error.
 
-That puts the animation back on the main thread, which is what made the first
-attempt at this feel laggy, and the trade is now worth taking: the one study
-that was costing 50ms frames is a still, so a landing has the thread largely to
-itself, and the fling is cancelled by the step's own first write rather than
-fought. Measured on a 4x-throttled phone profile: every frame of a landing at
-16.7ms, none dropped.
+Everything else was tried first and each attempt had two of the three
+properties. `scrollTo({behavior:'smooth'})` lands right and advances right, but
+its duration is the browser's, nothing exposes it, and over a card it is
+finished before it reads as motion. Driving `scrollLeft` from rAF has all three
+on paper: it gives two or three visible hitches in every landing on a phone,
+because every write is a main-thread scroll update, and no amount of quieting
+the thread removes them.
+
+That last one matters beyond this rail. **A throttled Chromium shows none of
+it** — every frame at 16.7ms, nothing dropped, on the same code that stutters
+plainly on an iPhone. The harness could not see the bug, which is why it took
+several rounds to place. Where a question is about how something feels on a
+phone, the phone is the instrument.
+
+`RELEASE_MS` is 460ms, up from the 240 it had while the hand's momentum was
+still doing the carrying: with the fling cancelled and the rail travelling the
+whole way itself there is nothing else moving to be quick relative to. Further
+is slower but not proportionally — two cards away should not feel twice as far.
+The curve is a `cubic-bezier(0.22, 1, 0.36, 1)` in `index.css`, a long tail on a
+quick start, because what makes a landing read as buttery is how it arrives.
+
+The `translate` property is shared with the drift's sub-pixel nudge. They never
+overlap — the drift is stopped at `touchstart`, before any landing — and a
+finger arriving mid-landing commits it first, so nothing reads `scrollLeft`
+while the row is still standing in for it.
 
 How far it goes is the finger's, never momentum's. `covered` is read at
 `touchend`, before momentum has added anything, so it measures what was asked
