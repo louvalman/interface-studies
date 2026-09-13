@@ -119,7 +119,7 @@
       'a11y.previous': 'Forrige',
       'a11y.next': 'Næste',
       'a11y.pauseRail': 'Sæt karrusellen på pause',
-      'a11y.playRail': 'Start karrusellen igen',
+      'a11y.playRail': 'Start karrusellen',
       'a11y.railRegion': 'Studiekarrusel',
       'a11y.filter': 'Filtrér efter type',
       'a11y.variants': 'Varianter',
@@ -1065,9 +1065,14 @@
   // lives here instead of in the markup's data-i18n-aria and the Danish comes
   // off the same table the hint reads. prev and next keep their markup labels:
   // a looping rail has no end for them to announce.
+  //
+  // No "again" in the play label: under reduced motion the rail has never set
+  // off, and the control is offered from the start precisely so it can be. The
+  // word carried nothing the reader needed and was wrong in the one state where
+  // the control matters most.
   const NAV_EN = {
     'a11y.pauseRail': 'Pause the carousel',
-    'a11y.playRail': 'Start the carousel again'
+    'a11y.playRail': 'Start the carousel'
   };
 
   let navCopy = null;    // held, so a language switch re-labels without a scroll
@@ -1734,8 +1739,21 @@
   let boxOpen = false;         // quick look, which must not resume behind itself
   let taken = false;           // the reader has stopped it; it does not come back on its own
 
+  // Whether this rail can drift at all — a row too short to loop has nowhere to
+  // drift to. Reduced motion is deliberately not in here: it decides whether the
+  // rail sets off on its own, which is a different question from whether the
+  // control exists, and folding the two together is what left a reader with the
+  // preference set no way to start the carousel at all.
   function driftable() {
-    return !reduced.matches && loopable();
+    return loopable();
+  }
+
+  // ...and whether it may set off unasked. Content that moves by itself is the
+  // thing the preference is about, so it does not; a reader who presses play has
+  // asked for this one, which is the opt-in the preference is supposed to leave
+  // open rather than close.
+  function driftsUnasked() {
+    return !reduced.matches;
   }
 
   // scrollLeft is handed 0.43 of a pixel a frame at this speed, and its getter
@@ -1886,18 +1904,42 @@
   // moving now.
   const POINTER_IDLE = 4000;
   let idleTimer = 0;
+  let idleX = null;
+  let idleY = null;
 
-  function pointerAwake() {
+  // Moved, in the sense of the pointer having moved. A browser dispatches a
+  // pointermove of its own when the content under a stationary cursor changes,
+  // so that :hover lands on whatever is under it now — and a drifting rail
+  // changes that on every frame. Taken at face value, the rail's own motion
+  // reads as a reader being there, holds the drift, and the carousel sits
+  // still except for the frame or two after each idle release. The synthetic
+  // move carries the coordinates the pointer already had, so comparing them is
+  // the whole of the distinction.
+  function pointerMoved(event) {
+    if (!event || event.clientX === undefined) return true;   // enter, or no coords
+    if (event.clientX === idleX && event.clientY === idleY) return false;
+    idleX = event.clientX;
+    idleY = event.clientY;
+    return true;
+  }
+
+  function pointerAwake(event) {
     if (drift === 'off') return;        // taken for good; nothing to hold
+    if (!pointerMoved(event)) return;
     clearTimeout(idleTimer);
     driftHold();
     idleTimer = setTimeout(() => driftRelease(0), POINTER_IDLE);
   }
 
-  track.addEventListener('pointerenter', pointerAwake);
+  track.addEventListener('pointerenter', (event) => {
+    idleX = event.clientX;
+    idleY = event.clientY;
+    pointerAwake(null);               // arriving counts, wherever it arrived
+  });
   track.addEventListener('pointermove', pointerAwake);
   track.addEventListener('pointerleave', () => {
     clearTimeout(idleTimer);
+    idleX = idleY = null;
     driftRelease(DRIFT_RESUME);
   });
 
@@ -1962,7 +2004,11 @@
   // start something that is about to start by itself.
   function syncDriftBtn() {
     if (!driftBtn) return;
-    driftBtn.hidden = !driftable() || (drift === 'off' && !taken);
+    // Before the rail has ever set off the control has nothing to say, so it
+    // stays out of the way — unless it is never going to set off, in which case
+    // it is the only way in and has to be there from the start.
+    const pending = drift === 'off' && !taken && driftsUnasked();
+    driftBtn.hidden = !driftable() || pending;
   }
 
   // --- drag to scroll ---------------------------------------------------
@@ -2695,11 +2741,11 @@
   window.addEventListener('resize', () => {
     // A window narrowed back into a row it can loop sets the rail going again,
     // unless the reader had already stopped it.
-    if (!taken && drift === 'off') driftRun();
+    if (!taken && drift === 'off' && driftsUnasked()) driftRun();
     syncDriftBtn();
   });
   syncDriftBtn();
   // Late enough that the previews have landed: a rail that starts moving under
   // five loading skeletons advertises the wait rather than the work.
-  setTimeout(() => driftRun(), DRIFT_DELAY);
+  setTimeout(() => { if (driftsUnasked()) driftRun(); }, DRIFT_DELAY);
 })();

@@ -623,12 +623,43 @@ under a reader — they need only have moved within that window, not be moving
 now. Measured on a 1440x810 viewport: parked, the rail is held for the first
 2.5s and drifting again by 6.5s; nudged every 700ms, it stays put throughout.
 
+**A pointer moving is not the same as a pointermove.** A browser dispatches one
+of its own when the content under a stationary cursor changes, so `:hover` can
+land on whatever is under it now — and a drifting rail changes that every frame.
+Taken at face value, the rail's own motion reads as a reader being there and
+holds the drift, which leaves the carousel still except for a frame or two after
+each idle release. The synthetic move carries the coordinates the pointer
+already had, so comparing them is the whole of the distinction. A headless
+harness will not show this: its cursor is virtual and it does not do the
+hover recalculation, so the guard has to be reasoned about rather than measured.
+
+**Reduced motion decides whether the rail sets off, not whether it can.** These
+were one test, `driftable()`, and folding them together meant a reader with the
+preference set got no drift *and* no control — the play button was hidden along
+with the thing it starts, so there was no way in at all. Content that moves by
+itself is what the preference is about, so the rail does not; a reader who
+presses play has asked for this one, and leaving that open is what the
+preference is for rather than something it forbids. `driftable()` is now
+`loopable()` alone and `driftsUnasked()` carries the preference: it gates the
+boot timer and the resize restart, and nothing else. The control is offered
+from the first paint in that case, because it is never going to appear on its
+own.
+
+The play label lost its "again" with it. Under reduced motion the rail has never
+set off, so "Start the carousel again" was wrong in exactly the state where the
+control matters most, and the word carried nothing a reader needed in the other.
+
 The rail loops, and so drifts, while the row can cover the viewport with a card
 to spare: `client <= (ring - 2) * step`, which at eight cards and a 336px card
 is 2184px. Past that it is finite and the drift control hides itself — the one
 case documented under `loopable()`, and the ceiling rises by a card with every
 study added. A wider screen than that needs a wider card, and the pair to keep
 in step is `--card-w` and `--preview-scale`.
+
+**When the control is missing, those are the two reasons**, and they are worth
+telling apart before looking anywhere else: the row is too short to loop, or
+reduced motion is set. Everything else about the drift is about when it stops,
+not whether it exists.
 
 The pointer path still steps itself, through `stepTo`, and keeps the old
 arithmetic. There is nothing native to defer to there: the drag is scripted from
