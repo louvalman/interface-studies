@@ -537,15 +537,29 @@ second, because momentum is still running when the finger lifts: an animation
 started against it lands where the two happen to meet, which is a card in the
 middle of the scrollport.
 
-So `land()` chooses the card and the platform does the travelling. The fling is
-cancelled first — an instant write aborts what the browser had in flight, and
-that is the step the aiming attempt was missing — and only then does the smooth
-scroll start, with nothing left to argue with it. `snapPos()` puts the target on
-the lattice the cards actually sit on, because a gesture that began on a
+So `land()` chooses the card and `stepTo` travels. `snapPos()` puts the target
+on the lattice the cards actually sit on, because a gesture that began on a
 drifting rail began between two of them. Snap stays off until it arrives, by
-which point the rail is already on a snap position and giving the class back
-moves nothing. `endLanding` carries a backstop: if the rail is not on the mark
-after all, it is put there without an animation to argue with.
+which point the rail is on a snap position and giving the class back moves
+nothing.
+
+Driven here rather than by `scrollTo`'s smooth behaviour, and the reason is
+duration: that animation's is the browser's, nothing exposes it, and over a
+card it is finished before it reads as a transition at all. `RELEASE_MS` is
+460ms, up from the 240 it had while the hand's momentum was still doing the
+carrying — with the fling cancelled and the rail travelling the whole way
+itself, the old number is abrupt, because there is nothing else moving to be
+quick relative to. Further is slower but not proportionally: two cards away
+should not feel twice as far. The curve is quartic ease-out rather than cubic —
+the same start, a longer tail, because what makes a landing read as buttery is
+how it arrives.
+
+That puts the animation back on the main thread, which is what made the first
+attempt at this feel laggy, and the trade is now worth taking: the one study
+that was costing 50ms frames is a still, so a landing has the thread largely to
+itself, and the fling is cancelled by the step's own first write rather than
+fought. Measured on a 4x-throttled phone profile: every frame of a landing at
+16.7ms, none dropped.
 
 How far it goes is the finger's, never momentum's. `covered` is read at
 `touchend`, before momentum has added anything, so it measures what was asked
