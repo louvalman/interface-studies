@@ -544,21 +544,40 @@ body.is-locked {
   padding-bottom: clamp(1.5rem, 3vw, 2rem);
 }
 
-.rail__bar {
-  display: flex;
-  /* Centred, not flex-end. The count is a 13px line of mono and the controls
-     are 44px circles, so bottom-aligning them put the label's optical centre
-     15.5px below theirs — measured — and the row read as two things at two
-     heights rather than one bar. Nothing else in the bar sits on a baseline
-     worth sharing, so the centre is the line. */
-  align-items: center;
-  justify-content: space-between;
-  gap: 1.5rem;
-  padding: 0 var(--gutter) 1.25rem;
+/* The count, the type filter and the carousel controls, as one grid rather
+   than a bar with a row under it.
+
+   The controls used to sit on their own line with only the count opposite them,
+   which left the right side floating: a cluster of circles on a line that was
+   otherwise empty for a thousand pixels. Spanning them down the grid puts them
+   beside the filter chips, so they land on something, and takes 31px off the
+   header — measured — which is 31px more of the first card above the fold.
+
+   Bottom-aligned rather than centred, because the chips and the circles are
+   different heights and the chips' bottom edge is the line the eye already has.
+   The nav's bottom padding matches the filter's, so the circles finish on the
+   chips' edge rather than on the scroller's box. */
+.rail__head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "count nav"
+    "filter nav";
+  align-items: end;
+}
+
+.rail__count { grid-area: count; }
+.rail__filter { grid-area: filter; }
+
+.rail__nav {
+  grid-area: nav;
+  align-self: end;
+  padding: 0 var(--gutter) 0.875rem 1rem;
 }
 
 .rail__count {
   margin: 0;
+  padding: 0 0 1.25rem var(--gutter);
   /* "Study 01 / 05" is one thing to read; a narrow bar may drop the buttons to
      their own line, but it may never break the label across two. */
   white-space: nowrap;
@@ -572,6 +591,22 @@ body.is-locked {
 .rail__nav {
   display: flex;
   gap: 0.5rem;
+}
+
+/* Side by side only where all four chips still fit beside the controls. Below
+   that the chips lose more than they gain — measured at 320px with the drift
+   control showing, the scroller is left 132px and one chip of four — so the
+   areas restack to what they were: controls up beside the count, chips full
+   width underneath. */
+@media (max-width: 52rem) {
+  .rail__head {
+    grid-template-areas:
+      "count nav"
+      "filter filter";
+    align-items: center;
+  }
+
+  .rail__nav { padding-bottom: 1.25rem; }
 }
 
 .rail__btn {
@@ -655,6 +690,9 @@ body.is-locked {
   gap: 0.4rem;
   padding: 0.375rem var(--gutter) 0.875rem;
   overflow-x: auto;
+  /* min-width so a grid column may shrink it: an auto track takes the
+     scroller's max-content width and the row stops scrolling at all. */
+  min-width: 0;
   overscroll-behavior-x: contain;
   scrollbar-width: none;
   scroll-padding-inline: var(--gutter);
@@ -1801,15 +1839,6 @@ body.is-locked {
   :root {
     --card-w: 16.5rem;         /* 264px */
     --preview-scale: 0.55;     /* 264 / 480 */
-  }
-
-  /* The bar is a count and three buttons now, so it stays one row all the way
-     down — it used to stack, and then to be a small grid, only because a hint
-     line needed somewhere to go. */
-  .rail__bar {
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 0.75rem;
   }
 
   .rail__filter { padding-bottom: 0.625rem; }
