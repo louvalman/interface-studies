@@ -621,14 +621,21 @@ behaviour. The full six are still in `component.css` and still shown in
 `demo.html`, which is the page making that argument; the card is not the place
 to enumerate a palette.
 
-Two legs rather than three, and the one dropped is the resting bar. It is the
-state a reader can already infer: both of the others are visibly a bar that has
-*opened*, so the closed one is implied by either of them, while a field where an
-icon was and a panel unfolding out of the same corner are implied by nothing.
-Three sheets ran 488px of the 600px frame with 56px of air and a silhouette that
-grew downward — defensible as an escalation, but it spent the card's best row on
-the one picture the other two already contain. Two run 394px with 103px of air,
-and the pair reads as one surface shown twice rather than as a row of specimens.
+Two legs rather than three, and the sheet dropped is whichever one the top sheet
+is not holding — the top one is not fixed to a state, it is a bar that opens, and
+a third sheet standing next to it showing the state it opens *into* is the same
+picture twice. Three sheets ran 488px of the 600px frame with 56px of air and a
+silhouette that grew downward; two run 394px with 103px of air, and the pair
+reads as one surface shown twice rather than as a row of specimens.
+
+Shut on top at rest, which took getting the wrong way round first. The card
+opened the top sheet's search field at rest and closed it to Versions on hover,
+which reads backwards the moment you say it out loud: a thumbnail is looked at
+before it is chosen, and a card whose every surface is already open has spent
+what it had to show. The bar has to be closed before opening it means anything.
+So the resting card is a shut bar over an open panel — the component's own
+resting shape and its largest move in one frame — and hover is where the shut
+one opens.
 
 Origin is still a dot in the variant row, which is the one asymmetry between the
 card and quick look and is deliberate. Quick look is the full-size viewer and the
@@ -708,13 +715,13 @@ moving both surfaces at once, which on a rail of thumbnails reads as a shuffle. 
 card that rearranges itself when a pointer crosses it is asking to be watched
 rather than read.
 
-So hover moves one item inside one bar instead. The top sheet closes its search
-field and steps along to the next destination, Versions; nothing changes
-position, and the panel below is left alone — it is the slower, larger state, and
-it has nothing to gain from reshuffling under a passing pointer. The rest state
-is where the card says these are two shapes of one surface. Hover is where it
-says the surface goes places, which is a smaller claim and the one a thumbnail
-can actually make.
+So hover opens one thing inside one bar instead. The top sheet is shut on
+Versions and its search field opens; nothing changes position, and the panel
+below is left alone — it is the slower, larger state, and it has nothing to gain
+from reshuffling under a passing pointer. The rest state is where the card says
+these are two shapes of one surface. Hover is where it shows one of them
+happening, which is a smaller claim than a shuffle and the one a thumbnail can
+actually make.
 
 It costs the frame nothing, which is the part that had to be measured rather than
 hoped for, and this version costs it less than the swap did: a bar at rest and a
