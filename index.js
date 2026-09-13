@@ -674,8 +674,6 @@
   // on a browser with no IntersectionObserver. A `let` declared after this
   // point would be a ReferenceError on that path.
   let landing = false;
-  let landTimer = 0;
-  let landTarget = null;
 
   function gesturing() {
     return touching || dragging || landing || stepFrame !== 0;
@@ -696,6 +694,7 @@
   }
 
   function settleWork() {
+    endLanding();
     // Where the rail actually stopped, not where it was when the step was
     // planned. sync is coalesced onto a frame, so currentActive can still be
     // the card the gesture started from — which is how a card a third on screen
@@ -1365,9 +1364,12 @@
   // step would stop halfway. Driving it ourselves means a recycle mid-step
   // shifts both ends of the animation and it lands where it was always going.
   const STEP_MS = 420;
-  // A released drag lands faster than a button step: the hand has already done
-  // the travel, so the rail only has to close the gap it was let go in.
-  const RELEASE_MS = 240;
+  // A release used to land faster than a button step, on the reasoning that the
+  // hand had already done the travel. That was right while the hand's momentum
+  // was still carrying it; now that the fling is cancelled and the rail travels
+  // the whole way itself, the same reasoning makes it abrupt — there is nothing
+  // else moving to be quick relative to.
+  const RELEASE_MS = 460;
 
   let stepFrame = 0;
   let stepFrom = 0;
@@ -1406,7 +1408,9 @@
     if (!stepStart) stepStart = now;
 
     const t = Math.min(1, (now - stepStart) / stepMs);
-    const eased = 1 - Math.pow(1 - t, 3);
+    // Quartic rather than cubic: the same start, a longer tail. What makes a
+    // landing read as buttery is how it arrives, not how it leaves.
+    const eased = 1 - Math.pow(1 - t, 4);
     const at = stepFrom + (stepTarget - stepFrom) * eased;
     track.scrollLeft = at;
 
@@ -1443,8 +1447,6 @@
   // smooth scroll aimed at a target used to land wherever it met the momentum.
   // Snap stays off until it arrives, because by then the rail is already on a
   // snap position and giving the class back moves nothing.
-  let settleEnd = null;
-
   // The lattice the cards actually sit on. A gesture that began on a drifting
   // rail began between two of them, and every target has to be one of them
   // whatever the arithmetic started from.
@@ -1456,26 +1458,19 @@
     return base + Math.round((at - base) / w) * w;
   }
 
+  // The step that land() starts ends in settleWork, which is where this is
+  // called from: one place where the rail has stopped, whatever started it.
   function endLanding() {
     if (!landing) return;
     landing = false;
-    clearTimeout(landTimer);
-    if (settleEnd) { track.removeEventListener('scrollend', settleEnd); settleEnd = null; }
-    // The backstop for an engine that let the fling through anyway: the rail is
-    // supposed to be on the mark by now, and if it is not this puts it there
-    // without an animation to argue with.
-    if (landTarget !== null && Math.abs(track.scrollLeft - landTarget) > 1) {
-      track.scrollLeft = landTarget;
-    }
-    landTarget = null;
+    // Snap comes back now. The step landed on a snap position, so this moves
+    // nothing — which is the whole reason it waits until here.
     track.classList.remove('is-dragging');
-    recycle();
-    settleWork();
   }
 
   function land() {
     const w = step();
-    if (w <= 0) { landing = true; endLanding(); return; }
+    if (w <= 0) { landing = true; settleWork(); return; }
 
     const here = track.scrollLeft;
     // Finger travel only: momentum has not happened yet at touchend, so this is
@@ -1491,19 +1486,24 @@
     }
 
     const target = snapPos(touchFrom) + cards * w;
-    landTarget = target;
     landing = true;
 
-    clearTimeout(landTimer);
-    settleEnd = () => endLanding();
-    track.addEventListener('scrollend', settleEnd);
-    landTimer = setTimeout(endLanding, 900);
-
-    // Cancel the fling, then travel. Two scrolls in the same task: the instant
-    // one aborts whatever was in flight, the smooth one is the only thing left
+    // Driven here rather than by scrollTo's smooth behaviour, for one reason:
+    // that animation's duration is the browser's and nothing exposes it. Over a
+    // card it is over almost before it starts, which reads as no transition at
+    // all.
+    //
+    // The cost is that this runs on the main thread, which is what made the
+    // first version of this feel laggy. Two things changed since: the one study
+    // that was taking 50ms frames is a still now, so a landing has the thread
+    // largely to itself, and the fling is no longer being fought — the first
+    // frame's write aborts it, and after that the animation is the only thing
     // moving the rail.
-    track.scrollLeft = here;
-    track.scrollTo({ left: target, behavior: reduced.matches ? 'auto' : 'smooth' });
+    //
+    // Further is slower, but not proportionally: two cards away should not feel
+    // twice as far.
+    const reach = Math.max(1, Math.abs(cards));
+    stepTo(target, RELEASE_MS * (1 + 0.3 * (reach - 1)));
   }
 
   function scrollBy(direction) {
