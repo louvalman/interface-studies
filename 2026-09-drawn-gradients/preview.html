@@ -17,9 +17,11 @@
   as two objects. The card is a field with the type cut out of it, fading away
   from itself in both directions.
 
-  What moves when the card is looked at is the recipe. At rest the drawing is
-  showing; looked at, it dissolves off and leaves the stop list underneath.
-  See the script at the end of the file.
+  What moves when the card is looked at is the recipe and the colour. At rest
+  the drawing is showing; looked at, it dissolves off and leaves the stop list
+  underneath, in a colourway the card does not otherwise carry — a night field
+  on the light rail, an ember one on the dark. See the script at the end of the
+  file.
 
   That is the card. Quick look is a different room, and it gets the rest of the
   folder: the composition above is the first of six, and the other five are
@@ -27,11 +29,11 @@
   themes, the night base, and the step run the other way. One is mounted at a
   time, in the stage the card's composition already sits in.
 
-  It links component.css and never redefines it. The two things set from here
-  are scale and the base the field settles to, both through the component's own
-  tunables and inline on each composition's root, because the tunable block
-  lives on .drawn-gradients itself and an inherited value from `body` would
-  lose to it.
+  It links component.css and never redefines it. Three things are set from
+  here — scale, the base the field settles to, and the card's hover colourway —
+  all three through the component's own tunables and inline on the element that
+  declares them, because a recipe resolves where it is declared and an
+  inherited value from `body` would lose to it.
 -->
 <html lang="en">
 <head>
@@ -89,6 +91,42 @@
       box-sizing: border-box;
       background-color: var(--preview-ground);
       font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+    }
+
+    /* The card's hover colourway. Two triples, one per --step block, out of
+       one family — the blocks have to stay different or the mirrored pair
+       reads as one object — and which family is the RAIL's answer, not the
+       desktop's: a night field on the light rail, an ember one on the dark,
+       so the card is always the thing in the rail that is not the colour of
+       the page around it.
+
+       It hangs off the same [data-theme] the ground above does, and that is
+       the point. An earlier pass asked prefers-color-scheme, which is a
+       different question with the same name: the rail can be dark under a
+       light desktop, and there the night colourway landed dark on dark and
+       the card went muddy at exactly the moment it was being looked at. The
+       theme the card sits IN is the one worth answering.
+
+       Values here rather than in the script, so the selector does the
+       switching: the index sets the attribute before the first paint and
+       moves it on preview:theme, and the hover hues follow with no listener
+       of their own.
+
+       Only two of the three stops are named. The stop recipe reads --hot at
+       the pools and --warm twice — the wash and the settle — and never touches
+       --cool, and the drawings carry their own hues in the markup. */
+    :root {
+      --preview-hover-a-hot: #23256e;
+      --preview-hover-a-warm: #5a52c8;
+      --preview-hover-b-hot: #4a1f6e;
+      --preview-hover-b-warm: #8f4fc6;
+    }
+
+    :root[data-theme="dark"] {
+      --preview-hover-a-hot: #e4502a;
+      --preview-hover-a-warm: #f59a55;
+      --preview-hover-b-hot: #c62a4c;
+      --preview-hover-b-warm: #f06a45;
     }
 
     /* The mount point, and the only element on this page that is not the
@@ -149,7 +187,8 @@
             <span class="drawn-gradients__usage-line drawn-gradients__usage-line--label">Overlapping art</span>
             <span class="drawn-gradients__surface drawn-gradients__surface--step drawn-gradients__surface--mix drawn-gradients__surface--ice drawn-gradients__surface--rise"
                   style="--drawn-gradients-step-row: 0;">
-            <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+            <svg class="drawn-gradients__draw"
+                 style="--drawn-gradients-hot: #3f7ff0; --drawn-gradients-warm: #93b8f8; --drawn-gradients-cool: #8f6bf0;" viewBox="0 0 120 120"
                  preserveAspectRatio="xMidYMid slice" aria-hidden="true">
               <ellipse class="drawn-gradients__blob drawn-gradients__blob--hot"
                        cx="26" cy="20" rx="82" ry="54" transform="rotate(-18 26 20)" />
@@ -186,7 +225,8 @@
             <span class="drawn-gradients__usage-line drawn-gradients__usage-line--label">Flat colour</span>
             <span class="drawn-gradients__surface drawn-gradients__surface--step drawn-gradients__surface--mix drawn-gradients__surface--ice drawn-gradients__surface--rise"
                   style="--drawn-gradients-step-row: 1;">
-            <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+            <svg class="drawn-gradients__draw"
+                 style="--drawn-gradients-hot: #3f7ff0; --drawn-gradients-warm: #93b8f8; --drawn-gradients-cool: #8f6bf0;" viewBox="0 0 120 120"
                  preserveAspectRatio="xMidYMid slice" aria-hidden="true">
               <ellipse class="drawn-gradients__blob drawn-gradients__blob--hot"
                        cx="26" cy="20" rx="82" ry="54" transform="rotate(-18 26 20)" />
@@ -223,7 +263,8 @@
             <span class="drawn-gradients__usage-line drawn-gradients__usage-line--label">Wash</span>
             <span class="drawn-gradients__surface drawn-gradients__surface--step drawn-gradients__surface--mix drawn-gradients__surface--ice drawn-gradients__surface--rise"
                   style="--drawn-gradients-step-row: 2;">
-            <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+            <svg class="drawn-gradients__draw"
+                 style="--drawn-gradients-hot: #3f7ff0; --drawn-gradients-warm: #93b8f8; --drawn-gradients-cool: #8f6bf0;" viewBox="0 0 120 120"
                  preserveAspectRatio="xMidYMid slice" aria-hidden="true">
               <ellipse class="drawn-gradients__blob drawn-gradients__blob--hot"
                        cx="26" cy="20" rx="82" ry="54" transform="rotate(-18 26 20)" />
@@ -262,7 +303,8 @@
             <span class="drawn-gradients__usage-line drawn-gradients__usage-line--label">Wash</span>
             <span class="drawn-gradients__surface drawn-gradients__surface--step drawn-gradients__surface--mix drawn-gradients__surface--arc"
                   style="--drawn-gradients-step-row: 0;">
-            <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+            <svg class="drawn-gradients__draw"
+                 style="--drawn-gradients-hot: #ff2e7e; --drawn-gradients-warm: #7b5fd6; --drawn-gradients-cool: #22d3ee;" viewBox="0 0 120 120"
                  preserveAspectRatio="xMidYMid slice" aria-hidden="true">
               <ellipse class="drawn-gradients__blob drawn-gradients__blob--hot"
                        cx="26" cy="20" rx="82" ry="54" transform="rotate(-18 26 20)" />
@@ -299,7 +341,8 @@
             <span class="drawn-gradients__usage-line drawn-gradients__usage-line--label">Flat colour</span>
             <span class="drawn-gradients__surface drawn-gradients__surface--step drawn-gradients__surface--mix drawn-gradients__surface--arc"
                   style="--drawn-gradients-step-row: 1;">
-            <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+            <svg class="drawn-gradients__draw"
+                 style="--drawn-gradients-hot: #ff2e7e; --drawn-gradients-warm: #7b5fd6; --drawn-gradients-cool: #22d3ee;" viewBox="0 0 120 120"
                  preserveAspectRatio="xMidYMid slice" aria-hidden="true">
               <ellipse class="drawn-gradients__blob drawn-gradients__blob--hot"
                        cx="26" cy="20" rx="82" ry="54" transform="rotate(-18 26 20)" />
@@ -336,7 +379,8 @@
             <span class="drawn-gradients__usage-line drawn-gradients__usage-line--label">Overlapping art</span>
             <span class="drawn-gradients__surface drawn-gradients__surface--step drawn-gradients__surface--mix drawn-gradients__surface--arc"
                   style="--drawn-gradients-step-row: 2;">
-            <svg class="drawn-gradients__draw" viewBox="0 0 120 120"
+            <svg class="drawn-gradients__draw"
+                 style="--drawn-gradients-hot: #ff2e7e; --drawn-gradients-warm: #7b5fd6; --drawn-gradients-cool: #22d3ee;" viewBox="0 0 120 120"
                  preserveAspectRatio="xMidYMid slice" aria-hidden="true">
               <ellipse class="drawn-gradients__blob drawn-gradients__blob--hot"
                        cx="26" cy="20" rx="82" ry="54" transform="rotate(-18 26 20)" />
@@ -926,11 +970,14 @@
     --night's own base standing — a class on the surface beats a value
     inherited from the block above it.
 
-    The second is `active`, and it is a bigger move than a colour: it changes
-    RECIPE. At rest the drawing is showing. Looked at, it dissolves off and
-    leaves the stop list underneath — the same silhouette and the same hues,
-    made the other way. That is the folder's whole thesis, and a surface is the
-    one place it can be a change rather than two states side by side.
+    The second is `active`, and it moves two things at once: the RECIPE and the
+    HUES. At rest the drawing is showing. Looked at, it dissolves off and
+    leaves the stop list underneath — the same silhouette, made the other way,
+    and in the colourway below rather than the one the card rests in. The
+    recipe half is the folder's whole thesis, and a surface is the one place it
+    can be a change rather than two states side by side; the colour half is
+    what makes it read as an event from across a rail, where a dissolve between
+    two constructions of the same hue is a subtle thing.
 
     It cross-fades because the two are ON one surface rather than swapping:
     --mix puts the drawing over the stop list instead of in place of it, and
@@ -945,15 +992,37 @@
     tile rather than revealing anything — the raw half of every pair in the set
     holds still for exactly that reason.
 
-    Colours were tried first for `active` and all of them were smaller. A base
-    off the page — sand, a paper tint — read as the card being slightly warmer
-    rather than as an event. Lime was the best of them, and the sweep behind it
+    **The hues, and why they are timed rather than eased.** A stop list is a
+    background-image and does not interpolate, so the colour is a cut whatever
+    is asked of it. The only place a cut can be made invisibly is under the
+    drawing while the drawing is still fully up — which is the START of the
+    dissolve on the way in, and the END of it on the way out. So the hue goes
+    on the moment the pointer arrives and is handed back only once the drawing
+    is home again, --…-mix-ease later. Hand it back on pointerleave instead and
+    the cut lands on a bare stop field with nothing over it, which is the one
+    place in the whole move where it shows.
+
+    Two triples, one per block, out of one family: the blocks have to stay
+    different or the mirrored pair reads as one object, which is the same
+    reason the drift steps them in pairs. And the family is the rail's: a night
+    field on the light rail, an ember one on the dark, so the card is always
+    the thing in the rail that is not the colour of the page around it. The
+    values live in this page's <style> against the same [data-theme] the ground
+    hangs off, and the script only names them, so a switch reaches the hover
+    hues with no listener of their own. It asked prefers-color-scheme first,
+    which is a different question wearing the same word: the rail can be dark
+    under a light desktop, and there the night colourway landed dark on dark.
+
+    The base was where this started and it is not where it ended. A base off
+    the page — sand, a paper tint — read as the card being slightly warmer
+    rather than as an event; lime was the best of them, and the sweep behind it
     is worth keeping: the base is what BOTH blocks of the card ramp into, so a
     base near either hot end's complement greys out through the middle. Amber
     is lovely under the magenta and turns the blue block to khaki; a cool slate
     completes the blue and fights the magenta; lilac avoids both by sitting
     between the two hues and is dull for the same reason. The base stays on the
-    page's ground now: it is what the stopped end of the mix washes out to.
+    page's ground: it is what the stopped end of the mix washes out to, and
+    moving the pools instead leaves that agreement intact.
 
     The settle *direction* was the other candidate — swapping --rise onto the
     lower block so the pair fades inward. Built and dropped: the widest bands
@@ -964,9 +1033,10 @@
     A card thumbnail has pointer events off, so the index sends the message;
     quick look runs this file with pointer events on, where the listeners
     below fire instead and the message never arrives. The state is one
-    function either way. It is not a CSS :hover rule because the base swap is
-    a thumbnail's editorial decision about its own resting state, not
-    something a gradient field does when a pointer is over it.
+    function either way. It is not a CSS :hover rule because which recipe and
+    which hues a surface rests in is a thumbnail's editorial decision about its
+    own resting state, not something a gradient field does when a pointer is
+    over it.
 
     --- the variant axis is composition, not colour --------------------------
 
@@ -990,12 +1060,15 @@
     lays out, paints, or loads until it is cloned, which is what keeps a card
     thumbnail paying for its own composition and nothing else.
 
-    `active` means the same thing in all six, and that is deliberate: every
-    surface that can hold both recipes holds both, so whichever composition is
-    up, being looked at is the stop list arriving. A theme swap on hover was
-    the other candidate and is now doubly wrong — the themes composition exists
-    to be compared, and a pointer that recoloured it would be arguing with the
-    thing it is showing.
+    The recipe half of `active` means the same thing in all six, and that is
+    deliberate: every surface that can hold both recipes holds both, so
+    whichever composition is up, being looked at is the stop list arriving.
+
+    The colour half is the card's alone, and that is the line. The set, the
+    shapes and the themes are showing what a drawing, a geometry and a theme
+    ARE; a pointer that recoloured them would be arguing with the thing on
+    screen — the themes dot most of all, where the five hues are the subject.
+    The card is showing one composition, so it has a hue to spend.
 
     The drift belongs to the resting composition alone. It is the card's
     answer to a rail that has to carry colour without paying for it, and on a
@@ -1030,6 +1103,24 @@
 
       var stage = document.querySelector('[data-stage]');
       if (!stage || !stage.firstElementChild) return;
+
+      /* The card's hover colourway, one entry per --step block. Named rather
+         than valued: the values are in the page's own <style>, behind a
+         prefers-color-scheme query, so the desktop theme picks the family and
+         this file never asks which one it is. */
+      var HOVER = [
+        { hot: 'var(--preview-hover-a-hot)', warm: 'var(--preview-hover-a-warm)' },
+        { hot: 'var(--preview-hover-b-hot)', warm: 'var(--preview-hover-b-warm)' }
+      ];
+      /* --…-mix-ease in milliseconds, and the reason the hue is timed at all:
+         a stop list is a background-image and does not interpolate, so the
+         colour is a cut whatever is asked of it. The cut has to be made under
+         cover — while the drawing is fully up — which is at the START of the
+         dissolve on the way in, and only at the END of it on the way out. Hand
+         it back the moment the pointer leaves and the cut lands on a bare stop
+         field with nothing over it, which is the one place it shows. */
+      var MIX_MS = 520;
+      var restore = 0;
 
       // First entry is the resting state, and it is what the card shows. The
       // rest are the <template>s above, by id.
@@ -1069,6 +1160,35 @@
         return Array.prototype.slice.call(
           node.querySelectorAll('.drawn-gradients__surface')
         ).filter(function (el) { return el.classList.contains(MIX); });
+      }
+
+      // Which of the card's two blocks a surface sits in. They take different
+      // hues out of one family, the way the drift's copies do: one field
+      // reading two ways is the composition, and the same hue on both would
+      // flatten the mirrored pair into one object.
+      function block(el, node) {
+        var blocks = node.querySelectorAll('.drawn-gradients__usage');
+        for (var i = 0; i < blocks.length && i < HOVER.length; i++) {
+          if (blocks[i].contains(el)) return i;
+        }
+        return 0;
+      }
+
+      // The hue half of being looked at. Set on the surface, which is where
+      // the stop recipe is declared and therefore where it resolves; the
+      // drawings are pinned in the markup and do not follow, so this moves the
+      // field the dissolve is uncovering and nothing that is still on top.
+      function paintHue(node, on) {
+        mixed(node).forEach(function (el) {
+          var hue = HOVER[block(el, node)];
+          if (on) {
+            el.style.setProperty('--drawn-gradients-hot', hue.hot);
+            el.style.setProperty('--drawn-gradients-warm', hue.warm);
+          } else {
+            el.style.removeProperty('--drawn-gradients-hot');
+            el.style.removeProperty('--drawn-gradients-warm');
+          }
+        });
       }
 
       // Which copy is showing, and how hard. One at the mix and the rest at
@@ -1116,8 +1236,12 @@
         applyScale(node);
         // Only the resting composition carries the drift's three tinted
         // copies; everywhere else there is one drawing per surface.
-        if (!drifting()) front = 0;
+        if (!onCard()) front = 0;
         node.style.removeProperty('--drawn-gradients-mix-ease');
+        // A composition arrives in the state the pointer is already in, and a
+        // pending hand-back belongs to the composition that is leaving.
+        if (restore) { window.clearTimeout(restore); restore = 0; }
+        paintHue(node, active && onCard());
         paint(node);
       }
 
@@ -1168,11 +1292,27 @@
         if (next === active) return;
         active = next;
         if (!root) return;
-        // The recipe is what being looked at changes, and the move is one
+        // The recipe is one half of being looked at, and the move is one
         // number per copy: 1 is the drawing, 0 is the stop list, and
         // component.css eases between them at its own speed rather than the
         // drift's.
         root.style.removeProperty('--drawn-gradients-mix-ease');
+
+        // The colour is the other half, and it is the CARD's alone. The set,
+        // the shapes and the themes are showing what a theme is; a pointer
+        // that recoloured them would be arguing with the thing on screen.
+        if (onCard()) {
+          if (restore) { window.clearTimeout(restore); restore = 0; }
+          if (active) {
+            paintHue(root, true);
+          } else {
+            restore = window.setTimeout(function () {
+              restore = 0;
+              paintHue(root, false);
+            }, MIX_MS);
+          }
+        }
+
         paint(root);
       }
 
@@ -1197,8 +1337,15 @@
          Pairs rather than single hues, because the card is two blocks and
          they have to stay different: one field reading two ways is the
          composition, and a step that put the same theme on both would flatten
-         it. The first copy carries no tint at all, so it follows the theme
-         class in the markup.
+         it.
+
+         All three copies name their own hues, the first one included, and
+         that one is pinned rather than left to follow the theme class for a
+         reason: the hover colourway is set on the SURFACE, which is where the
+         stop recipe is declared, and a drawing that followed the class would
+         be recoloured by it — a cut on the layer that is on top, which is
+         exactly the layer the cut has to hide under. Pinned, the theme class
+         drives the stop list and nothing else.
 
          It holds still whenever moving would be wrong: nothing under
          prefers-reduced-motion, nothing while the tab is hidden, nothing
@@ -1209,10 +1356,12 @@
       var DRIFT = '1500ms cubic-bezier(0.65, 0, 0.35, 1)';
       var STEP = 3000;
 
-      function drifting() { return variant === VARIANTS[0]; }
+      // The resting composition — the card. The drift, the hover colourway and
+      // the three tinted copies all belong to it and to nothing else.
+      function onCard() { return variant === VARIANTS[0]; }
 
       function drift() {
-        if (!root || active || document.hidden || !drifting()) return;
+        if (!root || active || document.hidden || !onCard()) return;
         var first = mixed(root)[0];
         if (!first) return;
         var n = first.querySelectorAll('.drawn-gradients__draw').length;

@@ -685,25 +685,56 @@ the mirrored pair settles into the page at both ends instead, and a base that
 is ink at one end and paper at the other is not a pair fading away from
 itself — it is two objects again.
 
-**So the recipe became what being looked at means.** The card's hover — and,
-on a touch device, the card in the read position, which is the same message —
-cross-fades the surface from the drawing to the stop list underneath it. The
-hues, the shape and the direction all stay put; one axis moves, and it is the
-axis this folder is about. It is also the only one in the recipe that
-interpolates, so the change is something a state can be eased *through*
-rather than cut to.
+**So the recipe and the colour are what being looked at means.** The card's
+hover — and, on a touch device, the card in the read position, which is the
+same message — cross-fades the surface from the drawing to the stop list
+underneath it, and the stop list it uncovers is in a colourway the card does
+not otherwise carry. The shape and the direction stay put. The recipe half is
+the axis this folder is about, and the only one that interpolates, so it is
+something a state can be eased *through*; the colour half is what makes the
+move read from across a rail, where a dissolve between two constructions of
+the same hue is a quiet thing.
 
-Ink was the other candidate and was built first: hover moving what the field
-settles *to*, from the page's ground to ink. It eases as well as the mix does
-— `--night` moves the base, the border and the shadow and nothing else, all
-animatable, where a `background-image` of gradient stops does not interpolate
-and a theme swap is a cut whatever you ask for. What it is not is the thing
-being demonstrated. A base arriving under the fill reads as the card getting
-darker; the drawing dissolving into the stop list that was hand-tuned to
-imitate it is the argument the two recipes are having, made in one move on
-one surface. `--night` is in quick look instead, on the dot that crosses it
-with the five themes and on the one that puts it under a card, where it can
-be compared rather than glimpsed.
+**The colour has to be timed, because it cannot be eased.** A stop list is a
+`background-image` and does not interpolate, so a hue change is a cut whatever
+is asked of it — and the only place a cut can be made invisibly is under the
+drawing while the drawing is still fully up. That is the *start* of the
+dissolve on the way in and the *end* of it on the way out: the hue goes on the
+moment the pointer arrives, and is handed back only once the drawing is home
+again, one `--…-mix-ease` later. Handed back on `pointerleave` instead, the
+cut lands on a bare stop field with nothing over it, which is the one moment
+in the whole move where it would show. It also means the drawings have to name
+their own hues in the markup — all three copies, the untinted one included —
+or the surface-level hue would recolour the layer the cut is hiding under.
+
+Two triples, one per block, out of one family, for the same reason the drift
+steps its copies in pairs: one field reading two ways is the composition, and
+the same hue on both would flatten the mirrored pair into one object. Which
+family is the *rail's* answer — a night field on the light rail, an ember one
+on the dark — so the card is always the thing in the rail that is not the
+colour of the page around it. The values sit in `preview.html`'s own `<style>`
+against the same `[data-theme]` the shared ground hangs off, and the script
+only names them, so a switch reaches the hover hues with no listener of their
+own.
+
+It asked `prefers-color-scheme` first, and that is a different question wearing
+the same word. The rail carries its own light and dark, and it can be dark
+under a light desktop — where the night colourway landed dark on a dark ground
+and the card went muddy at exactly the moment it was being looked at. The theme
+a card sits *in* is the one worth answering; the desktop's is the index's
+business, upstream of here.
+
+Ink was the first version of this: hover moving what the field settles *to*,
+from the page's ground to ink. It eases where the stops cannot — `--night`
+moves the base, the border and the shadow and nothing else, all animatable —
+and it is still the wrong half to spend. A base arriving under the fill reads
+as the card getting darker; the drawing dissolving into the stop list that was
+hand-tuned to imitate it is the argument the two recipes are having, made in
+one move on one surface. The pools move instead, and the base stays on the
+page's ground, which is what the stopped end of the mix washes out to.
+`--night` is in quick look, on the dot that crosses it with the five themes
+and on the one that puts it under a card, where it can be compared rather than
+glimpsed.
 
 The other thing hover could have moved is the settle *direction* — swapping
 `--rise` onto the lower block, so the pair fades inward instead of outward.
@@ -734,8 +765,12 @@ is one of the six rather than all of them, which is also the only place the
 themes can be compared instead of remembered.
 
 Two things hold it together. Every surface that can carry both recipes carries
-both — `--mix`, not `--drawn` — so being looked at means one thing in all six:
-the drawing dissolves and the stop list underneath is what is left. A `--drawn`
+both — `--mix`, not `--drawn` — so the recipe half of being looked at means one
+thing in all six: the drawing dissolves and the stop list underneath is what is
+left. The colour half is the card's alone, and that is the line: the set, the
+shapes and the themes are showing what a drawing, a geometry and a theme *are*,
+and a pointer that recoloured them would be arguing with the thing on screen —
+the themes dot most of all, where the five hues are the subject. A `--drawn`
 or `--raw` tile is left alone, because there the drawing *is* the surface and
 taking its opacity to zero empties the tile rather than revealing anything;
 that is why the raw half of every pair in the set holds still. And a
