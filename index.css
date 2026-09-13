@@ -803,8 +803,21 @@ body.is-locked {
   transition: transform 520ms var(--ease);
 }
 
-.piece:hover,
 .piece:focus-within { transform: translateY(-6px); }
+
+/* The hover half of every card state is behind (hover: hover), and that is a
+   performance rule as much as a correctness one. A touch browser has no hover
+   to report, so it reports one anyway: iOS applies :hover to whatever is under
+   the finger and leaves it there. Dragging across the rail therefore ran five
+   transitions on every card the finger passed — this lift, the frame's shadow,
+   the quick-look button, the underline and its arrow — each of them starting
+   in the middle of the gesture and none of them asked for. The touch half of
+   these states is elsewhere and already answered: the read-position card plays
+   its component, and the quick-look button is permanently visible under
+   (hover: none) below. */
+@media (hover: hover) {
+  .piece:hover { transform: translateY(-6px); }
+}
 
 /* .is-active marks the card in the read position. It drives the counter and,
    on touch, which preview plays — but it is deliberately not painted: lifting
@@ -823,10 +836,16 @@ body.is-locked {
     border-color 520ms var(--ease);
 }
 
-.piece:hover .piece__frame,
 .piece:focus-within .piece__frame {
   border-color: var(--hairline-strong);
   box-shadow: var(--shadow-lift);
+}
+
+@media (hover: hover) {
+  .piece:hover .piece__frame {
+    border-color: var(--hairline-strong);
+    box-shadow: var(--shadow-lift);
+  }
 }
 
 .piece__preview {
@@ -926,11 +945,17 @@ body.is-locked {
     border-color 320ms var(--ease);
 }
 
-.piece:hover .piece__expand,
 .piece:focus-within .piece__expand,
 .piece__expand:focus-visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+@media (hover: hover) {
+  .piece:hover .piece__expand {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .piece__expand:hover { border-color: var(--hairline-strong); }
@@ -1037,8 +1062,11 @@ body.is-locked {
   transition: background-size 420ms var(--ease);
 }
 
-.piece:hover .piece__cta-text,
 .piece:focus-within .piece__cta-text { background-size: 100% 1px; }
+
+@media (hover: hover) {
+  .piece:hover .piece__cta-text { background-size: 100% 1px; }
+}
 
 .piece__cta svg {
   width: 0.8rem;
@@ -1047,8 +1075,11 @@ body.is-locked {
   transition: transform 420ms var(--ease);
 }
 
-.piece:hover .piece__cta svg,
 .piece:focus-within .piece__cta svg { transform: translate(2px, -2px); }
+
+@media (hover: hover) {
+  .piece:hover .piece__cta svg { transform: translate(2px, -2px); }
+}
 
 /* --- the empty slot at the end ---------------------------------------- */
 

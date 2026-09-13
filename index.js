@@ -585,12 +585,23 @@
     return touching || dragging || stepFrame !== 0;
   }
 
-  function settleWork() {
-    handoff();
+  // The two halves settle at different moments, because they are waiting on
+  // different things. A load only has to be off the finger: started when the
+  // hand lifts, it runs under the step that follows and the card is ready
+  // before it has finished arriving — where waiting for the step to end left
+  // the landed card showing its skeleton for a quarter of a second, all of it
+  // after the movement had stopped. Playing waits for the step, because that
+  // is the expensive one and the step is still motion.
+  function drainWork() {
     if (!waiting.size) return;
     const due = Array.from(waiting);
     waiting.clear();
     due.forEach((job) => job());
+  }
+
+  function settleWork() {
+    handoff();
+    drainWork();
   }
 
   function loadPreview(piece) {
@@ -1072,6 +1083,19 @@
   // way past. Whatever is animating while the rail moves is animating against
   // the movement, so the handoff waits for the rail to stop and then happens
   // once.
+  // Stopping is cheap and starting is not, so the two halves of a handoff are
+  // not deferred together. The card being dragged away from stops the moment
+  // the gesture begins — it is no longer the one being read, and leaving it
+  // playing means the expensive half of a component animating through the
+  // whole drag on a card nobody is looking at. The card being dragged toward
+  // waits until it has landed.
+  function hush() {
+    if (told < 0) return;
+    const list = real();
+    if (list[told]) tell(list[told], false);
+    told = -1;
+  }
+
   function handoff() {
     if (!coarse.matches || told === currentActive) return;
     const list = real();
@@ -1329,9 +1353,13 @@
     // ourselves keeps the rate just as honest and asks the browser nothing.
     driftPos += DRIFT_SPEED * dt;
 
-    // The whole pixels go to the scroll, the fraction to the cards. Writing the
-    // fraction to scrollLeft achieves nothing — it is rounded away — and what
-    // is rounded away at this speed is most of the movement.
+    // scrollLeft takes whole pixels and rounds the rest away, so at this speed
+    // it is handed 0.37 of one a frame and most frames it does not move at all.
+    // Carried as a float here so the rate stays honest across the rounding —
+    // what the rounding costs in smoothness is a separate question, and an
+    // open one: paying the fraction out as a translate instead fixes the
+    // motion exactly and doubles this page's dropped frames, because it moves
+    // the live thumbnails every frame rather than every third.
     track.scrollLeft = driftPos;
 
     // The reason there is no longer anything to see at the end of the row.
@@ -1537,6 +1565,7 @@
       // not end the drift; the pointer being over the track is already holding
       // it, and it picks up again when that pointer leaves.
       driftStop(true, false);
+      hush();
       track.setPointerCapture(event.pointerId);
     }
     if (moved) {
@@ -1566,6 +1595,7 @@
     // Swallow the click the drag would otherwise fire on a card link.
     if (moved) {
       if (event.type === 'pointerup') swallowNextClick();
+      drainWork();
       release();
     } else {
       // A tap, not a drag — but snap has been off since the contact, and the
@@ -1638,6 +1668,7 @@
     // finger landing on a drifting rail is not yanked backwards.
     track.classList.add('is-dragging');
     driftStop(true, false);
+    hush();
   }, { passive: true });
 
   // Sampled off the scroll rather than off the touch, because the scroll is
@@ -1657,6 +1688,8 @@
     if (!touching) return;
     touching = false;
     sampleTouch();
+    // Before release(), which starts the step and would defer these again.
+    drainWork();
     // release() reads originScroll and speed, so the gesture is handed over in
     // those terms: speed is negated because it measures the scroll rather than
     // the pointer, and the two run opposite ways.
