@@ -112,6 +112,7 @@
       'foot.stackVal': 'HTML og CSS, intet byggetrin',
       'foot.studies': 'Studier',
       'foot.builtBy': 'Bygget af',
+      'foot.coffee': 'Giv en kop kaffe',
       'foot.backToTop': 'Til toppen',
       'a11y.elsewhere': 'Andre steder',
       'a11y.carousel': 'Karrusel',

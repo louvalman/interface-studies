@@ -790,16 +790,42 @@
       </div>
 
       <div class="foot__bar">
-        <p class="foot__line">
-          <span data-i18n="foot.builtBy">Built by</span>
+        <!-- The byline and the tip jar are one group, so the bar keeps its two
+           ends: credits on the left, the control on the right. The coffee link
+           is not in foot__social above — that row is handles, and a tip jar is
+           not one — and it is labelled rather than an icon on its own, because
+           a cup with no word beside it could be anything. -->
+        <div class="foot__credit">
+          <p class="foot__line">
+            <span data-i18n="foot.builtBy">Built by</span>
+            <a
+              class="foot__author"
+              href="https://github.com/louvalman"
+              target="_blank"
+              rel="noopener noreferrer">louval</a>
+            <span aria-hidden="true">&middot;</span>
+            2026
+          </p>
           <a
-            class="foot__author"
-            href="https://github.com/louvalman"
+            class="foot__coffee"
+            href="https://buymeacoffee.com/ou2jlyzlvg"
             target="_blank"
-            rel="noopener noreferrer">louval</a>
-          <span aria-hidden="true">&middot;</span>
-          2026
-        </p>
+            rel="noopener noreferrer">
+            <svg
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true">
+              <path d="M2.5 6.5h9v4a3 3 0 0 1-3 3h-3a3 3 0 0 1-3-3z" />
+              <path d="M11.5 7.5h1.25a1.75 1.75 0 0 1 0 3.5H11.5" />
+              <path class="foot__steam" d="M5 4V2.5M8 4V2.5M11 4V2.5" />
+            </svg>
+            <span data-i18n="foot.coffee">Buy me a coffee</span>
+          </a>
+        </div>
         <a class="foot__top" href="#top">
           <span data-i18n="foot.backToTop">Back to top</span>
           <svg
