@@ -3,24 +3,28 @@
   The thumbnail the landing page iframes.
 
   A deviation from the usual "one instance, no second copy", and a deliberate
-  one: what this study offers is a construction that comes in six materials, and
-  a single bar cannot advertise that. The card shows three of them; the variant
-  dots step into one bar and its states, where a panel has somewhere to open. No
-  captions and no state labels either way — the materials are the picture.
+  one: what this study offers is one surface that changes shape, and a component
+  whose argument is a transition cannot make it standing still in a single frame.
+  So the card is one bar, in the material it ships in, at three points in its own
+  behaviour — at rest on Origin, with the search field open, with the log panel
+  open — and the variant dots step into one of them at full size, where a panel
+  has room to be read rather than recognised. No captions and no state labels
+  either way: the states are the picture.
 
-  Three rather than all six, because the card is 336px wide and six bars at
-  1.5rem apart filled 492px of a 600px frame — a swatch chart with 54px of air,
-  where the eye counts rows before it reads a toolbar. Three is still a set, and
-  the three are the ends and the middle: basalt, the default moss, alabaster.
-  What the stack is advertising is that one construction takes a whole palette,
-  which a lightness ramp says and a hue survey does not; carnelian, slate and
-  crystal are four more points on a line the first three have already drawn, and
-  demo.html is where the full set belongs. Crystal is the one that most wants
-  dropping here anyway — at 7% tint it is carried by its rim, and beside
-  alabaster at 0.7 scale the two read as one sheet drawn twice.
+  States rather than the material set, which is what this card showed first. Six
+  bars at rest filled 492px of the 600px frame with six near-identical rows, and
+  cutting it to three tints fixed the density while leaving the card answering
+  the wrong question — six tints of one bar say what the component is made of,
+  and a rail of thumbnails is asking what it does. The six are still in
+  component.css and still shown in demo.html, which is the page enumerating a
+  palette. What it costs: the bar is 62px and the open panel is 300px, so the
+  stack is bottom-heavy at rest, a triangle growing downward. That reads as the
+  escalation it is.
 
   Kept in step with component.html by hand: each sheet below is that file's
-  markup, unedited apart from the material class and its aria-label.
+  markup, unedited apart from its aria-label. The material class is gone from all
+  three — every sheet is the default now, and what separates them is the state
+  the script dresses them in.
 -->
 <html lang="en">
 <head>
@@ -160,7 +164,7 @@
 <body>
   <div class="preview__stack" data-stack>
 
-      <nav class="liquid-glass-toolbar liquid-glass-toolbar--basalt" aria-label="Primary, basalt">
+      <nav class="liquid-glass-toolbar" aria-label="Primary">
         <div class="liquid-glass-toolbar__shell">
 
           <div class="liquid-glass-toolbar__bar">
@@ -322,7 +326,7 @@
 
         </div>
       </nav>
-      <nav class="liquid-glass-toolbar" aria-label="Primary, moss">
+      <nav class="liquid-glass-toolbar" aria-label="Primary, search open">
         <div class="liquid-glass-toolbar__shell">
 
           <div class="liquid-glass-toolbar__bar">
@@ -484,7 +488,7 @@
 
         </div>
       </nav>
-      <nav class="liquid-glass-toolbar liquid-glass-toolbar--alabaster" aria-label="Primary, alabaster">
+      <nav class="liquid-glass-toolbar" aria-label="Primary, log open">
         <div class="liquid-glass-toolbar__shell">
 
           <div class="liquid-glass-toolbar__bar">
@@ -668,26 +672,43 @@
       if (!sheets.length) return;
 
       /*
-        The sheet the single-bar variants use. Found by asking which one carries
-        no material modifier rather than by taking the first, because the stack
-        is ordered darkest to lightest and the default is no longer at the top —
-        those variants are about behaviour, so they should run on the material
-        the component ships with. The list below is component.css's five, not the
-        stack's two: it is asking "is this the default material", and it stays
-        right if the sheets shown here are ever swapped for other ones.
+        The sheet the single-bar variants use. Every sheet in the stack is the
+        default material now, so this is simply the first — it used to have to
+        be found, because the stack was ordered darkest to lightest and the
+        default was not at the top.
       */
-      var lead = sheets.filter(function (el) {
-        return !/liquid-glass-toolbar--(alabaster|slate|basalt|crystal|carnelian)/.test(el.className);
-      })[0] || sheets[0];
+      var lead = sheets[0];
 
-      // First entry is the resting state, and it is what the card shows: the
-      // whole set. The rest step into one sheet, where a panel can open.
-      var VARIANTS = [
-        { id: 'materials', label: 'Materials', stack: true, current: 0, classes: [] },
-        { id: 'origin', label: 'Origin', stack: false, current: 0, classes: [] },
-        { id: 'search', label: 'Search', stack: false, current: null, classes: ['searching'] },
-        { id: 'log', label: 'Log', stack: false, current: null, classes: ['open'] }
+      /*
+        The three states the stack holds, one per sheet, in the order the sheets
+        are in the markup. This is what the card is: one bar, the material it
+        ships in, photographed at three points in its own behaviour — at rest on
+        Origin, with the search field open, and with the log panel open. It used
+        to be one state in six materials, which showed what the component is
+        made of and nothing about what it does.
+
+        `current` is an index into the sheet's items that carry `aria-current`;
+        null means none of them is the current place, because the sheet is
+        morphing and the label belongs to the morph.
+      */
+      var STATES = [
+        { id: 'origin', label: 'Origin', current: 0, classes: [] },
+        { id: 'search', label: 'Search', current: null, classes: ['searching'] },
+        { id: 'log', label: 'Log', current: null, classes: ['open'] }
       ];
+
+      /*
+        First entry is the resting state, and it is what the card shows: the
+        three states stacked. The rest step into one sheet at full size, which is
+        where a panel has the room to be read rather than just recognised. The
+        dots are the same three states plus the stack, so nothing quick look can
+        reach is absent from the card and nothing on the card is unreachable.
+      */
+      var VARIANTS = [{ id: 'states', label: 'States', stack: true }].concat(
+        STATES.map(function (st) {
+          return { id: st.id, label: st.label, stack: false, state: st };
+        })
+      );
 
       var MODIFIERS = ['searching', 'open'];
       var showing = VARIANTS[0];
@@ -702,7 +723,7 @@
           /*
             appendChild moves a node that is already here, which is how the
             whole list in order restores the missing sheets and puts them back
-            darkest-to-lightest — but a move is a removal and an insertion, and
+            in state order — but a move is a removal and an insertion, and
             a re-inserted element has no before-change style, so every running
             transition is cancelled and the next one never starts. Hover goes
             through here, and on hover the stack is already built: appending
@@ -720,24 +741,16 @@
         if (!lead.parentNode) stack.appendChild(lead);
       }
 
-      function dress(el, variant, active) {
+      function dress(el, state, active) {
         MODIFIERS.forEach(function (m) { el.classList.remove(BASE + m); });
-        variant.classes.forEach(function (m) { el.classList.add(BASE + m); });
-
-        // The search field is what the card plays while it is being looked at:
-        // one line of shape change, legible at thumbnail size, and a width this
-        // file sets rather than one the copy decides.
-        var morphing = variant.classes.some(function (m) {
-          return MODIFIERS.indexOf(m) !== -1;
-        });
-        if (active && !morphing) el.classList.add(BASE + 'searching');
+        state.classes.forEach(function (m) { el.classList.add(BASE + m); });
 
         var searching = el.classList.contains(BASE + 'searching');
         var open = el.classList.contains(BASE + 'open');
 
         var places = el.querySelectorAll('.liquid-glass-toolbar__action[aria-current]');
         Array.prototype.forEach.call(places, function (a, i) {
-          var on = !open && !searching && i === variant.current;
+          var on = !open && !searching && i === state.current;
           a.setAttribute('aria-current', on ? 'page' : 'false');
         });
         var panel = el.querySelector('.liquid-glass-toolbar__action--panel');
@@ -745,12 +758,14 @@
       }
 
       /*
-        Every rim, sheen and inner edge in this component is one CSS pixel, and
-        on the thinnest materials the rim is most of what there is to see — a
-        sheet at 7% tint is carried by its edges, not by its body. A card lays
-        this out at 480px and shows it at 336, so that line is rasterised at 0.7
-        of the pixel it asked for; on a 1x screen it falls under one device
-        pixel, stops being drawn as a line and washes out to a grey suggestion.
+        Every rim, sheen and inner edge in this component is one CSS pixel, and a
+        translucent sheet is carried by its edges rather than by its body — moss
+        sits at a 28% tint, so what separates it from the paper behind it is that
+        line. A card lays this out at 480px and shows it at 336, so the line is
+        rasterised at 0.7 of the pixel it asked for; on a 1x screen it falls under
+        one device pixel, stops being drawn as a line and washes out to a grey
+        suggestion. It mattered more when this card carried crystal at 7% and it
+        still matters at 28%.
 
         The frame cannot measure the factor itself — over file:// the parent is
         behind an opaque origin — so the index reports it and the hairline is
@@ -769,11 +784,38 @@
         });
       }
 
+      /*
+        In the stack every sheet takes its own state, by position. On a single
+        sheet the lead takes the variant's, and the other two are out of the
+        document — so they keep whatever they were last dressed in and are
+        re-dressed on the way back in.
+
+        Hover rotates the assignment by one rather than morphing a sheet into a
+        state the stack is already showing. The card at rest is three endpoints;
+        what it cannot say standing still is that they are the *same surface*
+        changing shape rather than three components in a row, and one rotation
+        says it — every sheet moves at once, each along the leg the sheet below
+        it was already holding, so the states are unchanged and only which sheet
+        wears which has moved. The stagger in the style block spends 70ms a row
+        on it, which turns the rotation into a roll down the stack.
+
+        It costs the stack's height nothing over the move: the panel closing on
+        one sheet is the panel opening on another, and the two cross. What the
+        old rule did instead was add `searching` to whichever sheet was not
+        already morphing, which was defensible when the stack was one state in
+        six materials and is not now — it would put a second search field next
+        to the one on sheet two and leave the panel untouched.
+      */
       function apply(variant, active) {
         setStack(variant.stack);
-        (variant.stack ? sheets : [lead]).forEach(function (el) {
-          dress(el, variant, active);
-        });
+        if (variant.stack) {
+          var shift = active ? 1 : 0;
+          sheets.forEach(function (el, i) {
+            dress(el, STATES[(i + shift) % STATES.length], active);
+          });
+          return;
+        }
+        dress(lead, variant.state, active);
       }
 
       window.addEventListener('message', function (event) {
