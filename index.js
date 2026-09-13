@@ -97,7 +97,10 @@
       'cta.openDemo': 'Åbn demo',
       'cta.quickLook': 'Hurtigt kig',
       'cta.quickLookOf': 'Hurtigt kig: Kort med detaljeafsløring',
-      'ghost.next': 'Den næste kommer her — kopiér _template/',
+      'ghost.title': 'Kommende studie',
+      'ghost.month.oct': 'oktober',
+      'ghost.month.nov': 'november',
+      'ghost.month.dec': 'december',
       'foot.blurb': 'Hvert studie er selvstændigt. Kopiér en mappe ud, og den '
         + 'virker uden noget andet herfra — intet delt stylesheet, intet '
         + 'byggetrin, ingen afhængighed af denne side.',
@@ -436,6 +439,8 @@
     // usually already right, so the common case touches no DOM at all.
     if (sorted.every((piece, n) => piece === list[n])) return;
 
+    // Before the first of the slots, so every study lands ahead of all three
+    // and the three keep the order they are written in.
     const ghost = track.querySelector('.piece--ghost');
     sorted.forEach((piece) => track.insertBefore(piece, ghost));
   }
@@ -496,10 +501,52 @@
     );
   }
 
+  // Two reasons a preview is paused, and either on its own is enough: the rail
+  // is moving, or the card is parked — far enough out of the scrollport that
+  // animating it is work nobody can see. Held per card and posted only on a
+  // change, so a gesture starting over a parked card sends nothing.
+  function wantPaused(piece) {
+    return pausedAll || piece.dataset.parked === 'true';
+  }
+
+  function syncPause(piece) {
+    const frame = piece.querySelector('[data-preview]');
+    if (!frame || frame.dataset.loaded !== 'true') return;
+    const want = wantPaused(piece) ? 'true' : 'false';
+    if (frame.dataset.paused === want) return;
+    frame.dataset.paused = want;
+    pausePreview(piece, want === 'true');
+  }
+
   function pauseAll(paused) {
     if (paused === pausedAll) return;
     pausedAll = paused;
-    real().forEach((piece) => pausePreview(piece, paused));
+    real().forEach(syncPause);
+  }
+
+  // Parking is what a card well past the scrollport gets now, in place of
+  // being unloaded.
+  //
+  // Unloading meant navigating the frame to about:blank and back, and the way
+  // back was the visible fault: the skeleton returned, so the card flashed its
+  // ground as it came into view, then the document parsed and the component
+  // played its entry animation from the top — a card you had already seen,
+  // introducing itself again. It also put an iframe navigation in the middle
+  // of roughly every third drag, which is the chop that survived pausing.
+  //
+  // A parked preview keeps its document and stops animating, which is nearly
+  // all of what unloading bought and none of what it cost. The frame still
+  // composites while the card moves, but a paused document is a picture.
+  function parkPreview(piece) {
+    if (piece.dataset.parked === 'true') return;
+    piece.dataset.parked = 'true';
+    syncPause(piece);
+  }
+
+  function wakePreview(piece) {
+    if (piece.dataset.parked !== 'true') return;
+    delete piece.dataset.parked;
+    syncPause(piece);
   }
 
   // A preview may not have parsed its listener yet when the pointer arrives,
@@ -516,6 +563,14 @@
     // Always, not only on the first pass: markReady is a one-shot, and the
     // ready message is the one moment a preview is known to be listening.
     tellScale(piece.querySelector('[data-preview]'), cardScale());
+    // Including the pause, and for the same reason. A document that has just
+    // announced itself is holding none of the state the index thinks it is —
+    // markReady would return early on a card that is already ready and never
+    // reach it, which left a fresh preview animating through a gesture that
+    // every other card had stopped for.
+    const held = piece.querySelector('[data-preview]');
+    if (held) delete held.dataset.paused;
+    syncPause(piece);
     markReady(piece);
   });
 
@@ -548,7 +603,7 @@
     // Loads drain when the hand lifts, so one can arrive while the step that
     // follows is still running. It joins the others paused rather than being
     // the one card animating through the landing.
-    if (pausedAll) pausePreview(piece, true);
+    syncPause(piece);
     if (piece.dataset.active === 'true') tell(piece, true);
   }
 
@@ -671,6 +726,7 @@
     }
 
     delete frame.dataset.loaded;
+    delete frame.dataset.paused;
     clearTimeout(readyTimers.get(piece));
     // The skeleton comes back with it: the card is about to hold a blank
     // document, and lifting the cover off that is worse than covering it.
@@ -679,26 +735,51 @@
     frame.setAttribute('src', 'about:blank');
   }
 
-  // These margins are a quarter and three quarters of the rail's own
-  // scrollport, not of a card — and they are as tight as they are because a
-  // preview nobody can see costs exactly what one they are looking at costs.
-  // Every frame of it runs on this page's main thread: a same-origin iframe
-  // shares one. At the previous quarter-and-double, a phone kept three alive
-  // to show two, and the third was enough on its own to drop four frames in
-  // five. Loading later risks a skeleton on approach, which is a thing you see
-  // once; the alternative is a page that stutters the whole time.
+  // Three bands, measured against the rail's own scrollport rather than against
+  // a card. A preview loads and wakes a scrollport-width before it arrives,
+  // parks once it is two scrollport-widths past, and is only unloaded four out
+  // past that.
+  //
+  // The near margin is wide where it used to be a quarter, and that is the
+  // point: a quarter put the load a third of a card-width before the card
+  // arrived, so you watched it happen — the frame flashed its ground and the
+  // component introduced itself, right as you were dragging onto it. A load has
+  // to finish before it is looked at, so it has to start well before.
+  //
+  // It can afford to now. The cost that made these margins tight was animation,
+  // not existence: a same-origin iframe shares this page's main thread, so a
+  // preview animating off screen cost what one under your eyes cost. Parking
+  // takes that away without taking the document, so the number of live
+  // documents stopped being the thing to minimise.
+  //
+  // Unloading is still here, as a ceiling rather than a routine: five studies
+  // is six documents and that is fine to hold, five hundred would not be. At
+  // this margin nothing in the current set ever reaches it.
   if ('IntersectionObserver' in window) {
     const near = new IntersectionObserver(
-      (entries) => entries.forEach((e) => { if (e.isIntersecting) loadPreview(e.target); }),
-      { root: track, rootMargin: '0px 25% 0px 25%' }
+      (entries) => entries.forEach((e) => {
+        if (!e.isIntersecting) return;
+        loadPreview(e.target);
+        wakePreview(e.target);
+      }),
+      { root: track, rootMargin: '0px 100% 0px 100%' }
     );
 
     const far = new IntersectionObserver(
-      (entries) => entries.forEach((e) => { if (!e.isIntersecting) dropPreview(e.target); }),
-      { root: track, rootMargin: '0px 75% 0px 75%' }
+      (entries) => entries.forEach((e) => { if (!e.isIntersecting) parkPreview(e.target); }),
+      { root: track, rootMargin: '0px 200% 0px 200%' }
     );
 
-    allPieces().forEach((piece) => { near.observe(piece); far.observe(piece); });
+    const gone = new IntersectionObserver(
+      (entries) => entries.forEach((e) => { if (!e.isIntersecting) dropPreview(e.target); }),
+      { root: track, rootMargin: '0px 600% 0px 600%' }
+    );
+
+    allPieces().forEach((piece) => {
+      near.observe(piece);
+      far.observe(piece);
+      gone.observe(piece);
+    });
   } else {
     // No observer: load the lot, which is what the page did before.
     allPieces().forEach(loadPreview);
@@ -732,7 +813,7 @@
   // with the part of the set you are most likely to want and does not
   // reshuffle itself every time a study is added.
   const filterRow = document.querySelector('[data-rail-filter]');
-  const ghost = track.querySelector('.piece--ghost');
+  const ghosts = Array.from(track.querySelectorAll('.piece--ghost'));
 
   const FILTER_ALL = '*';
 
@@ -775,7 +856,9 @@
     });
 
     // "Next one goes here" is about the set, not about one type of it.
-    if (ghost) ghost.classList.toggle('is-filtered', filterType !== FILTER_ALL);
+    // All of them. A filter narrows the rail to one type, and a forthcoming
+    // slot has no type to be narrowed to.
+    ghosts.forEach((el) => el.classList.toggle('is-filtered', filterType !== FILTER_ALL));
 
     filterBtns.forEach((btn) => {
       btn.setAttribute('aria-pressed', btn.dataset.type === filterType ? 'true' : 'false');

@@ -559,16 +559,41 @@ only file outside the study folder that a new study may touch.
 
 The preview iframe carries its path in `data-src`, not `src`. Every card on the
 page is a live component — which is the point, and also what it costs: one
-thumbnail alone runs 289 dots on their own animations, on screen or not, and
-the rail drifts, so every card eventually arrives. `index.js` loads a preview
-when it comes within a quarter of the rail's scrollport and drops it again
-three quarters past, so only what is on screen and its immediate neighbour is
-ever alive. Those margins are tight because an unseen preview is not a cheaper
-one: a same-origin iframe shares this page's main thread, so a thumbnail
-animating off screen costs what one under your eyes costs. A card
-whose preview has been dropped shows its skeleton, not an empty frame. This
-does mean no previews at all without JavaScript; the index already needs it for
-the rail's order, its numbers and its counts.
+thumbnail alone runs 289 dots on their own animations, and the rail drifts, so
+every card eventually arrives. `index.js` works three bands against the rail's
+own scrollport: a preview loads and wakes a scrollport-width before it arrives,
+is parked once it is two widths past, and is unloaded only six out — which in
+the current set is never.
+
+Parked is `preview:pause`, and it replaced unloading because unloading was
+visible. Navigating the frame to `about:blank` and back brought the skeleton
+with it, so a card you had already seen flashed its ground as it came into
+view and then played its entry animation from the top, introducing itself
+again; and it put an iframe navigation into roughly every third drag. Measured
+over eight drags through the set: thirteen navigations and six of those
+flashes, against one and none once parking replaced it.
+
+The margins could widen because the cost was animation rather than existence. A
+same-origin iframe shares this page's main thread, so a preview animating off
+screen cost exactly what one under your eyes cost — which is what made the old
+margins as tight as a quarter and three quarters, and what made a load land a
+third of a card before the card did, where you could watch it happen. A parked
+document animates nothing, so the number of live documents stopped being the
+thing to minimise, and a load can start far enough out to be finished before it
+is looked at. Unloading stays as a ceiling: five studies is a handful of
+documents and that is fine to hold, five hundred would not be.
+
+A card whose preview has not loaded yet shows its skeleton, not an empty frame.
+This does mean no previews at all without JavaScript; the index already needs it
+for the rail's order, its numbers and its counts.
+
+The three cards at the end of the rail are forthcoming slots — a month, a year
+and a title, in a dashed frame. They are in the ring and recycle with the rest;
+`real()` skips them, so the counts and the progress bar go on counting studies,
+and the filter hides all three at once because a slot has no type to be narrowed
+to. Three rather than one because the row reads as a set and a single trailing
+placeholder reads as an accident. When a study lands, replace the slot whose
+month it is.
 
 The type filter above the rail is built by `index.js` from the `type.*` key on
 each card's badge, so a study of a new type needs nothing added to it. Filtering
