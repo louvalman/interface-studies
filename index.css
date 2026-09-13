@@ -41,12 +41,16 @@
      rather than as textured. So the paper's grain is the same drawing at
      twice the wavelength — baseFrequency 0.4 on a 320px tile, a feature about
      two pixels across — which survives the averaging and reads as tooth.
-     Measured, not guessed: sampled at two CSS pixels, the paper's grain now
-     carries the same amplitude the ink's does.
+     Measured, not guessed: sampled at two CSS pixels, the paper's grain
+     carries 1.72 against the ink's 2.12 at 1x, and 1.60 against 1.62 at 2x.
 
-     Alpha differs too, and the other way round from what that suggests: 0.26
+     Alpha differs too, and the other way round from what that suggests: 0.21
      on paper against 0.18 on ink, because a dark speck on a dark ground shows
-     more of itself than one on paper does.
+     more of itself than one on paper does. It was 0.26 for a day, matched to
+     the ink's amplitude measured at 1x — and on a 2x screen, where the coarse
+     tile keeps more of itself than the fine one does, that put the paper's
+     grain above the ink's. The rule is that it never exceeds it at the density
+     the reader is on, which is this.
 
      On this side the grain is only texture. The dark theme's is also doing a
      second job — an 8-bit wash across two thousand pixels bands on ink, and
@@ -54,15 +58,16 @@
      that problem.
 
      --page-base is --paper, lightened by the seven units of luminance the
-     grain takes back out of it, so the page still renders at --paper. Only
+     grain takes back out of it, so the page still renders at --paper. Re-measure
+     it if the alpha above moves: the two are one setting in two places. Only
      the body's ground reads it: everywhere else --paper means the colour the
      page ends up, not the colour it starts from. */
-  --page-base: #fefdfa;
+  --page-base: #fcfbf8;
   --page-wash:
     radial-gradient(58% 46% at 12% 0%, rgba(180, 85, 47, 0.07), transparent 68%),
     radial-gradient(46% 38% at 92% 4%, rgba(78, 110, 190, 0.06), transparent 70%);
   --page-grain:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.4' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='320' height='320' filter='url(%23n)' opacity='0.26'/%3E%3C/svg%3E");
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.4' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='320' height='320' filter='url(%23n)' opacity='0.21'/%3E%3C/svg%3E");
 
   /* Chips. --chip-bg is the one that sits on the page (the language and theme
      controls); --chip-over-preview and its -strong pair sit on a thumbnail,
