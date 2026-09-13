@@ -1,0 +1,468 @@
+/* 2026-09-detail-reveal-card — self-contained, no globals, no imports. */
+
+.detail-reveal-card {
+  /* --- tunables ------------------------------------------------------- */
+  --detail-reveal-card-width: 21rem;
+  --detail-reveal-card-ratio: 0.72;
+  --detail-reveal-card-radius: 1.25rem;
+  --detail-reveal-card-pad: 1.75rem;
+
+  --detail-reveal-card-bg: #f2f1ef;
+  --detail-reveal-card-ink: #14171c;
+  --detail-reveal-card-muted: #8a919c;
+  --detail-reveal-card-accent: #4c5fd7;
+  --detail-reveal-card-rule: rgba(20, 23, 28, 0.13);
+  --detail-reveal-card-border: 1px solid rgba(20, 23, 28, 0.07);
+  --detail-reveal-card-pill-bg: #fff;
+  --detail-reveal-card-pill-ink: #3a3f47;
+
+  --detail-reveal-card-shadow: 0 1px 2px rgba(20, 23, 28, 0.05);
+  --detail-reveal-card-shadow-open: 0 26px 52px -26px rgba(20, 23, 28, 0.42);
+  --detail-reveal-card-lift: -4px;
+
+  --detail-reveal-card-font: "Plus Jakarta Sans", system-ui, sans-serif;
+  --detail-reveal-card-mono: "JetBrains Mono", ui-monospace, monospace;
+  --detail-reveal-card-title-size: 1.75rem;
+  --detail-reveal-card-title-weight: 600;
+  --detail-reveal-card-body-size: 0.9375rem;
+  --detail-reveal-card-label-size: 0.75rem;
+  --detail-reveal-card-label-tracking: 0.18em;
+  --detail-reveal-card-micro-size: 0.6875rem;
+
+  --detail-reveal-card-gap: 1rem;
+  --detail-reveal-card-rise: 0.75rem;
+
+  --detail-reveal-card-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --detail-reveal-card-duration: 420ms;
+  --detail-reveal-card-stagger: 55ms;
+
+  /* Rings are off in the base card — the --map modifier turns them on. They
+     radiate from the same origin as the pin, so moving one moves both. */
+  --detail-reveal-card-ring: transparent;
+  --detail-reveal-card-pin-x: 64%;
+  --detail-reveal-card-pin-y: 34%;
+  --detail-reveal-card-pin-size: 0.5rem;
+  --detail-reveal-card-ping-duration: 2.2s;
+
+  --detail-reveal-card-art-opacity: 1;
+  --detail-reveal-card-art-opacity-open: 0.45;
+  --detail-reveal-card-rings:
+    repeating-radial-gradient(
+      circle at var(--detail-reveal-card-pin-x) var(--detail-reveal-card-pin-y),
+      transparent 0 27px,
+      var(--detail-reveal-card-ring) 27px 28px);
+  --detail-reveal-card-art:
+    linear-gradient(152deg, rgba(76, 95, 215, 0.18), transparent 58%),
+    radial-gradient(72% 58% at 80% 10%, rgba(76, 95, 215, 0.12), transparent 70%),
+    radial-gradient(60% 50% at 12% 88%, rgba(20, 23, 28, 0.06), transparent 72%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.72), transparent 52%);
+  /* -------------------------------------------------------------------- */
+
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  box-sizing: border-box;
+  /* The width is what the card wants, not what it insists on. A phone column
+     is narrower than 21rem, and a fixed width there pushes a scrollbar across
+     the whole page rather than the card shrinking into its container. The
+     ratio holds either way, so the card stays the same card. */
+  width: var(--detail-reveal-card-width);
+  max-width: 100%;
+  aspect-ratio: var(--detail-reveal-card-ratio);
+  padding: var(--detail-reveal-card-pad);
+
+  background: var(--detail-reveal-card-bg);
+  border: var(--detail-reveal-card-border);
+  border-radius: var(--detail-reveal-card-radius);
+  box-shadow: var(--detail-reveal-card-shadow);
+  color: var(--detail-reveal-card-ink);
+  font-family: var(--detail-reveal-card-font);
+  text-decoration: none;
+
+  transform: translateY(0);
+  transition:
+    transform var(--detail-reveal-card-duration) var(--detail-reveal-card-ease),
+    box-shadow var(--detail-reveal-card-duration) var(--detail-reveal-card-ease);
+}
+
+/* --- artwork ---------------------------------------------------------- */
+
+.detail-reveal-card__art {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image:
+    var(--detail-reveal-card-rings),
+    var(--detail-reveal-card-art);
+  opacity: var(--detail-reveal-card-art-opacity);
+  transform: scale(1);
+  transition:
+    opacity var(--detail-reveal-card-duration) var(--detail-reveal-card-ease),
+    transform var(--detail-reveal-card-duration) var(--detail-reveal-card-ease);
+}
+
+/* --- header ----------------------------------------------------------- */
+
+.detail-reveal-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.detail-reveal-card__title {
+  font-size: var(--detail-reveal-card-title-size);
+  font-weight: var(--detail-reveal-card-title-weight);
+  letter-spacing: -0.015em;
+  line-height: 1.1;
+}
+
+.detail-reveal-card__pill {
+  flex: none;
+  padding: 0.4em 0.85em;
+  border-radius: 999px;
+  background: var(--detail-reveal-card-pill-bg);
+  color: var(--detail-reveal-card-pill-ink);
+  font-family: var(--detail-reveal-card-mono);
+  font-size: var(--detail-reveal-card-micro-size);
+  letter-spacing: 0.06em;
+}
+
+/* --- bottom panel ----------------------------------------------------- */
+
+.detail-reveal-card__panel {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-reveal-card__row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.detail-reveal-card__label {
+  display: flex;
+  align-items: baseline;
+  font-family: var(--detail-reveal-card-mono);
+  font-size: var(--detail-reveal-card-label-size);
+  letter-spacing: var(--detail-reveal-card-label-tracking);
+  text-transform: uppercase;
+  color: var(--detail-reveal-card-muted);
+  transition: color var(--detail-reveal-card-duration) var(--detail-reveal-card-ease);
+}
+
+/* Grows in from zero width, pushing the label right. */
+.detail-reveal-card__mark {
+  display: inline-block;
+  width: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition:
+    width var(--detail-reveal-card-duration) var(--detail-reveal-card-ease),
+    opacity calc(var(--detail-reveal-card-duration) / 2) ease;
+}
+
+.detail-reveal-card__arrow {
+  flex: none;
+  width: 1.125rem;
+  height: 1.125rem;
+  color: var(--detail-reveal-card-accent);
+  opacity: 1;
+  transform: translate(0, 0);
+  transition:
+    opacity calc(var(--detail-reveal-card-duration) / 2) ease,
+    transform var(--detail-reveal-card-duration) var(--detail-reveal-card-ease);
+}
+
+/* --- the reveal ------------------------------------------------------- */
+
+.detail-reveal-card__reveal {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--detail-reveal-card-duration) var(--detail-reveal-card-ease);
+}
+
+.detail-reveal-card__reveal-inner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.detail-reveal-card__kicker,
+.detail-reveal-card__detail,
+.detail-reveal-card__meta {
+  opacity: 0;
+  transform: translateY(var(--detail-reveal-card-rise));
+  transition:
+    opacity calc(var(--detail-reveal-card-duration) / 2) ease,
+    transform var(--detail-reveal-card-duration) var(--detail-reveal-card-ease);
+}
+
+/* Optional mono micro-line at the top of the reveal. */
+.detail-reveal-card__kicker {
+  display: block;
+  margin-top: calc(var(--detail-reveal-card-gap) * 0.9);
+  font-family: var(--detail-reveal-card-mono);
+  font-size: var(--detail-reveal-card-micro-size);
+  letter-spacing: 0.08em;
+  color: var(--detail-reveal-card-muted);
+}
+
+.detail-reveal-card__detail {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin-top: var(--detail-reveal-card-gap);
+  padding-top: var(--detail-reveal-card-gap);
+  /* Hairline that fades out to the right — a border would draw a hard edge. */
+  background-image: linear-gradient(to right, var(--detail-reveal-card-rule), transparent);
+  background-size: 100% 1px;
+  background-repeat: no-repeat;
+  background-position: left top;
+  font-size: var(--detail-reveal-card-body-size);
+  line-height: 1.45;
+}
+
+.detail-reveal-card__line--muted {
+  color: var(--detail-reveal-card-muted);
+}
+
+.detail-reveal-card__meta {
+  display: block;
+  margin-top: calc(var(--detail-reveal-card-gap) * 1.5);
+  font-family: var(--detail-reveal-card-mono);
+  font-size: var(--detail-reveal-card-micro-size);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--detail-reveal-card-muted);
+}
+
+/* --- open state ------------------------------------------------------- */
+/* Delays live here only, so leaving the card snaps back without a stagger. */
+
+.detail-reveal-card:hover,
+.detail-reveal-card:focus-visible,
+.detail-reveal-card--open {
+  transform: translateY(var(--detail-reveal-card-lift));
+  box-shadow: var(--detail-reveal-card-shadow-open);
+}
+
+.detail-reveal-card:hover .detail-reveal-card__art,
+.detail-reveal-card:focus-visible .detail-reveal-card__art,
+.detail-reveal-card--open .detail-reveal-card__art {
+  opacity: var(--detail-reveal-card-art-opacity-open);
+  transform: scale(1.04);
+}
+
+.detail-reveal-card:hover .detail-reveal-card__reveal,
+.detail-reveal-card:focus-visible .detail-reveal-card__reveal,
+.detail-reveal-card--open .detail-reveal-card__reveal {
+  grid-template-rows: 1fr;
+}
+
+.detail-reveal-card:hover .detail-reveal-card__label,
+.detail-reveal-card:focus-visible .detail-reveal-card__label,
+.detail-reveal-card--open .detail-reveal-card__label {
+  color: var(--detail-reveal-card-ink);
+}
+
+.detail-reveal-card:hover .detail-reveal-card__mark,
+.detail-reveal-card:focus-visible .detail-reveal-card__mark,
+.detail-reveal-card--open .detail-reveal-card__mark {
+  width: 1.35em;
+  opacity: 1;
+}
+
+.detail-reveal-card:hover .detail-reveal-card__arrow,
+.detail-reveal-card:focus-visible .detail-reveal-card__arrow,
+.detail-reveal-card--open .detail-reveal-card__arrow {
+  opacity: 0;
+  transform: translate(0.5rem, -0.5rem);
+}
+
+.detail-reveal-card:hover .detail-reveal-card__kicker,
+.detail-reveal-card:hover .detail-reveal-card__detail,
+.detail-reveal-card:hover .detail-reveal-card__meta,
+.detail-reveal-card:focus-visible .detail-reveal-card__kicker,
+.detail-reveal-card:focus-visible .detail-reveal-card__detail,
+.detail-reveal-card:focus-visible .detail-reveal-card__meta,
+.detail-reveal-card--open .detail-reveal-card__kicker,
+.detail-reveal-card--open .detail-reveal-card__detail,
+.detail-reveal-card--open .detail-reveal-card__meta {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.detail-reveal-card:hover .detail-reveal-card__reveal-inner > :nth-child(1),
+.detail-reveal-card:focus-visible .detail-reveal-card__reveal-inner > :nth-child(1),
+.detail-reveal-card--open .detail-reveal-card__reveal-inner > :nth-child(1) {
+  transition-delay: var(--detail-reveal-card-stagger);
+}
+
+.detail-reveal-card:hover .detail-reveal-card__reveal-inner > :nth-child(2),
+.detail-reveal-card:focus-visible .detail-reveal-card__reveal-inner > :nth-child(2),
+.detail-reveal-card--open .detail-reveal-card__reveal-inner > :nth-child(2) {
+  transition-delay: calc(var(--detail-reveal-card-stagger) * 2);
+}
+
+.detail-reveal-card:hover .detail-reveal-card__reveal-inner > :nth-child(3),
+.detail-reveal-card:focus-visible .detail-reveal-card__reveal-inner > :nth-child(3),
+.detail-reveal-card--open .detail-reveal-card__reveal-inner > :nth-child(3) {
+  transition-delay: calc(var(--detail-reveal-card-stagger) * 3);
+}
+
+.detail-reveal-card:hover .detail-reveal-card__reveal-inner > :nth-child(4),
+.detail-reveal-card:focus-visible .detail-reveal-card__reveal-inner > :nth-child(4),
+.detail-reveal-card--open .detail-reveal-card__reveal-inner > :nth-child(4) {
+  transition-delay: calc(var(--detail-reveal-card-stagger) * 4);
+}
+
+.detail-reveal-card:focus-visible {
+  outline: 2px solid var(--detail-reveal-card-ink);
+  outline-offset: 3px;
+}
+
+/* --- map modifier ----------------------------------------------------- */
+/* Turns the neutral wash into an abstract map: a duotone mesh, contour rings,
+   and a pin. Add the __pin element to the markup to get the ambient pulse. */
+
+.detail-reveal-card--map {
+  --detail-reveal-card-bg: #eef1f4;
+  --detail-reveal-card-accent: #ff5a3c;
+  --detail-reveal-card-ring: rgba(20, 23, 28, 0.055);
+  --detail-reveal-card-art-opacity-open: 0.28;
+  --detail-reveal-card-art:
+    radial-gradient(38% 30% at 64% 34%, rgba(255, 120, 90, 0.38), transparent 70%),
+    radial-gradient(50% 40% at 28% 24%, rgba(90, 150, 220, 0.42), transparent 72%),
+    radial-gradient(46% 42% at 80% 74%, rgba(60, 190, 178, 0.34), transparent 72%),
+    radial-gradient(60% 50% at 40% 82%, rgba(120, 108, 224, 0.28), transparent 74%),
+    radial-gradient(90% 70% at 50% 40%, rgba(255, 255, 255, 0.52), transparent 70%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.55), transparent 46%);
+}
+
+.detail-reveal-card__pin {
+  position: absolute;
+  top: var(--detail-reveal-card-pin-y);
+  left: var(--detail-reveal-card-pin-x);
+  width: var(--detail-reveal-card-pin-size);
+  height: var(--detail-reveal-card-pin-size);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: var(--detail-reveal-card-accent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--detail-reveal-card-accent) 20%, transparent);
+}
+
+/* The ambient ping — the only thing moving at rest. */
+.detail-reveal-card__pin::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 1px solid var(--detail-reveal-card-accent);
+  animation: detail-reveal-card-ping var(--detail-reveal-card-ping-duration)
+    var(--detail-reveal-card-ease) infinite;
+}
+
+@keyframes detail-reveal-card-ping {
+  0% { transform: scale(1); opacity: 0.6; }
+  70%, 100% { transform: scale(4.6); opacity: 0; }
+}
+
+/* --- dark modifier ---------------------------------------------------- */
+
+.detail-reveal-card--dark {
+  --detail-reveal-card-bg: #15171c;
+  --detail-reveal-card-ink: #f3f4f6;
+  --detail-reveal-card-muted: #838a95;
+  --detail-reveal-card-accent: #8b9cff;
+  --detail-reveal-card-rule: rgba(255, 255, 255, 0.14);
+  --detail-reveal-card-border: 1px solid rgba(255, 255, 255, 0.08);
+  --detail-reveal-card-pill-bg: rgba(255, 255, 255, 0.08);
+  --detail-reveal-card-pill-ink: #d7dae0;
+  --detail-reveal-card-art-opacity-open: 0.5;
+  --detail-reveal-card-art:
+    linear-gradient(152deg, rgba(120, 140, 255, 0.22), transparent 58%),
+    radial-gradient(72% 58% at 80% 10%, rgba(120, 140, 255, 0.15), transparent 70%),
+    radial-gradient(60% 50% at 12% 88%, rgba(255, 255, 255, 0.05), transparent 72%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 52%);
+}
+
+/* Two classes, so this wins over both --map and --dark regardless of order. */
+.detail-reveal-card--map.detail-reveal-card--dark {
+  --detail-reveal-card-accent: #ff7a5c;
+  --detail-reveal-card-ring: rgba(255, 255, 255, 0.06);
+  --detail-reveal-card-art-opacity-open: 0.42;
+  --detail-reveal-card-art:
+    radial-gradient(40% 32% at 64% 34%, rgba(255, 120, 90, 0.5), transparent 70%),
+    radial-gradient(52% 42% at 26% 22%, rgba(70, 120, 210, 0.5), transparent 72%),
+    radial-gradient(48% 44% at 82% 74%, rgba(40, 180, 168, 0.44), transparent 72%),
+    radial-gradient(60% 52% at 42% 84%, rgba(120, 92, 232, 0.42), transparent 74%),
+    radial-gradient(100% 80% at 50% 30%, rgba(255, 255, 255, 0.06), transparent 70%);
+}
+
+/* --- no hover to give -------------------------------------------------- */
+
+/* The reveal is a hover behaviour, and a touch device has no hover to spend
+   on it — left at that, the panel is unreachable on a phone and the card is
+   just a title. `:active` gives it back to the press: the panel opens under
+   the finger and closes when it lifts, which is the nearest honest equivalent
+   of moving a pointer on and off. Kept behind `(hover: none)` so a mouse,
+   which fires `:active` on the way to following the link, is untouched. */
+
+@media (hover: none) {
+  .detail-reveal-card:active {
+    transform: translateY(var(--detail-reveal-card-lift));
+    box-shadow: var(--detail-reveal-card-shadow-open);
+  }
+
+  .detail-reveal-card:active .detail-reveal-card__art {
+    opacity: var(--detail-reveal-card-art-opacity-open);
+    transform: scale(1.04);
+  }
+
+  .detail-reveal-card:active .detail-reveal-card__reveal {
+    grid-template-rows: 1fr;
+  }
+
+  .detail-reveal-card:active .detail-reveal-card__label {
+    color: var(--detail-reveal-card-ink);
+  }
+
+  .detail-reveal-card:active .detail-reveal-card__mark {
+    width: 1.35em;
+    opacity: 1;
+  }
+
+  .detail-reveal-card:active .detail-reveal-card__arrow {
+    opacity: 0;
+    transform: translate(0.5rem, -0.5rem);
+  }
+
+  .detail-reveal-card:active .detail-reveal-card__kicker,
+  .detail-reveal-card:active .detail-reveal-card__detail,
+  .detail-reveal-card:active .detail-reveal-card__meta {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* No stagger on the way in here. A press is short, and content that arrives
+     over 200ms of delays is still arriving when the finger lifts. */
+}
+
+/* --- reduced motion --------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .detail-reveal-card,
+  .detail-reveal-card * {
+    transition-duration: 1ms;
+    transition-delay: 0ms;
+  }
+  .detail-reveal-card__pin::after {
+    animation: none;
+  }
+}
