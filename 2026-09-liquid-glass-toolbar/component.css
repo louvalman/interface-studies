@@ -1,0 +1,1265 @@
+/*
+  Liquid glass toolbar — self-contained styles.
+
+  One glass surface. The bar and the log panel are not two sheets that
+  slide over each other: `.liquid-glass-toolbar__shell` is the only thing with a
+  backdrop filter, a rim and a shadow, and everything else changes its shape.
+
+  State is read straight off the ARIA the component already needs — the CSS never
+  waits for a class to be added. `component.js` only writes `aria-current` and
+  `aria-expanded`; the search field is `:focus-within` and needs no script at all.
+  Two modifiers exist as outside handles, for callers that cannot synthesise the
+  event: `--open` pins the panel, `--searching` pins the search field. The index
+  thumbnail needs both — an iframe with pointer events off can neither click a
+  button nor put a caret in an input, and a preview that reaches in to call
+  focus() steals it from the page around it.
+*/
+
+.liquid-glass-toolbar {
+  /* --- geometry -------------------------------------------------------- */
+  --liquid-glass-toolbar-hit: 3rem;          /* one collapsed action, square */
+  --liquid-glass-toolbar-icon: 1.5rem;
+  --liquid-glass-toolbar-pad: 0.375rem;        /* glass inset around the row */
+  --liquid-glass-toolbar-gap: 0.1875rem;
+  --liquid-glass-toolbar-split: 4.5rem;    /* between the cluster and the trailing item */
+  --liquid-glass-toolbar-radius: 999px;         /* closed: a pill */
+  /* Open, the surface is a card — but its corner is derived, not chosen: the
+     pad plus half a pill is exactly the radius that runs concentric with the
+     corner actions inside it. Closed, `999px` clamps to half the bar's height
+     and lands on the same number, so the corner is the one thing that does not
+     change through the morph. The height does the work. */
+  --liquid-glass-toolbar-radius-open:
+    calc(var(--liquid-glass-toolbar-pad) + var(--liquid-glass-toolbar-hit) / 2);
+  --liquid-glass-toolbar-search-w: 14rem;
+  /*
+    And the ceiling that width is capped to, because 14rem is a fixed length
+    inside a surface that clips: on any container under about 31rem the field
+    was cut off mid-placeholder rather than opening to what there was room for.
+    It is measured, not chosen — everything the row still has to show with the
+    field open comes off the container first and the field takes the rest: five
+    squares, the five gaps between the six flex items, the surface's own
+    padding, and the trailing allowance the lit pill is given. The split is not
+    in the sum, because it is the one elastic thing in the row and gives its
+    space up before anything else does.
+  */
+  --liquid-glass-toolbar-search-max: calc(100cqi - (
+    5 * var(--liquid-glass-toolbar-hit) +
+    5 * var(--liquid-glass-toolbar-gap) +
+    2 * var(--liquid-glass-toolbar-pad) +
+    var(--liquid-glass-toolbar-label-trail)));
+  --liquid-glass-toolbar-panel-w: 30rem;        /* a floor, not a width */
+  --liquid-glass-toolbar-label-gap: 0.5625rem;
+  /* An optical allowance, not a measurement error. A collapsed action is padded
+     symmetrically, but the icon does not fill its box, so an expanded pill has
+     that bearing as free air before the glyph and nothing answering it after
+     the text. The trail is that bearing, handed to the trailing side.
+
+     Every icon here is symmetric inside its own box, but the bearing is not the
+     same from one to the next — measured at a 24px icon: the drawers 2.6, the
+     sliders 2.8, the ring 4.0, the ledger 4.0. --icon/7 is 3.43 against a mean of
+     3.35 across the four that carry a label, so one constant is as close as a
+     single value gets; the residual is under a pixel either way.
+
+     It tracks the glyphs, so it moves when they do. This was --icon/9 while the
+     first item was a benchmark triangle and the panel item four bars — a set
+     whose mean bearing was 2.75. Redrawing two of the five moved the mean to
+     3.35, and a trail left at the old value would have run the pills 0.7px tight
+     on the trailing side across the board. Redraw an icon, re-measure this.
+
+     It used to be --icon/6, which is the mean plus a deliberate 1.35px on top —
+     text reads tighter against a stadium's curve than a roundish glyph does, so
+     the trailing side was given back more than it was owed. That overshoot was
+     set against a 16px label. At 13px the word is smaller and sits further from
+     where the curve actually closes in, and the correction had grown larger than
+     the thing it corrects: the pill was carrying nearly 2px more air after the
+     word than before the glyph on the narrowest bearing in the set, which is
+     also the item the thumbnail shows at rest. The worst residual is 0.83px
+     now, on Versions. */
+  --liquid-glass-toolbar-label-trail: calc(var(--liquid-glass-toolbar-icon) / 7);
+
+  /* the feed. Sized off the row height so the whole panel scales with one
+     value, the way the bar scales off --hit. */
+  --liquid-glass-toolbar-row-h: 3.5rem;
+  --liquid-glass-toolbar-row-gap: 0.75rem;
+  --liquid-glass-toolbar-row-radius: 1rem;
+  --liquid-glass-toolbar-avatar: 2.375rem;   /* the row's specimen chip */
+  --liquid-glass-toolbar-chip-radius: 0.6875rem;
+  --liquid-glass-toolbar-dot: 0.5rem;
+  /* The unread mark. A rule under the glyph, not a dot on its corner — see
+     the badge rule below for why the shape matters on a translucent bar. */
+  --liquid-glass-toolbar-badge: 1.125rem;        /* its length: 0.75 of the glyph */
+  --liquid-glass-toolbar-badge-weight: 0.125rem;
+  --liquid-glass-toolbar-badge-drop: 0.25rem;    /* clear of the glyph's box */
+
+  /* --- glass ----------------------------------------------------------- */
+  /* Moss, not grey. The tint is the only thing carrying the hue: the rim, the
+     sheen and the ink are all warm off-whites pulled a few points towards the
+     same green, so nothing has to be re-tuned when the tint moves. */
+  --liquid-glass-toolbar-tint: rgba(24, 72, 48, 0.28);
+  --liquid-glass-toolbar-blur: 8px;
+  --liquid-glass-toolbar-saturate: 2.2;
+  /* Two more scalars on the same filter, and they are identity here — a tinted
+     sheet does not need them. They exist because a nearly clear one does: when
+     the tint is thin enough to see the ground through, blur and saturation
+     alone leave the backdrop looking untouched, and a surface that does not
+     change what is behind it is not a surface. See --crystal. */
+  --liquid-glass-toolbar-brightness: 0.56;
+  --liquid-glass-toolbar-contrast: 1.12;
+  --liquid-glass-toolbar-rim: rgba(226, 240, 222, 0.4);
+  --liquid-glass-toolbar-sheen: rgba(234, 246, 230, 0.62);
+  /* A second inner edge, off by default. The sheen is the light landing on the
+     top of the sheet; this is the light that went through it and came back off
+     the inside of the bottom face. Only worth paying for on glass thin enough
+     for the far edge to be visible at all. */
+  --liquid-glass-toolbar-edge:
+    0 calc(-1 * var(--liquid-glass-toolbar-hairline)) 0 0 rgba(226, 240, 220, 0.2);
+
+  /* Every rim, sheen and edge in the file is this wide. It is a tunable and not
+     a literal because the thumbnail has to restate it: a card lays this out at
+     480px and shows it at 336, so a 1px line is rasterised at 0.7 of a pixel,
+     and on a 1x screen that is below the one device pixel it takes to draw a
+     line at all. The preview sets this against the scale the index reports. */
+  --liquid-glass-toolbar-hairline: 1px;
+  --liquid-glass-toolbar-drop:
+    0 1.5rem 3rem -1rem rgba(18, 30, 22, 0.4),
+    0 0.125rem 0.5rem -0.25rem rgba(18, 30, 22, 0.22);
+
+  /* The lit lozenge that travels between actions, and it is a rim rather than
+     a fill: a thicker piece of the same glass, not a paler patch of paint. The
+     body is thin enough to keep the label on the darkest part of the sheet,
+     which is also where the label has the most contrast to stand on. */
+  --liquid-glass-toolbar-lit: rgba(224, 241, 216, 0.12);
+  --liquid-glass-toolbar-lit-rim: rgba(228, 244, 220, 0.5);
+  --liquid-glass-toolbar-lit-sheen: rgba(238, 249, 232, 0.6);
+
+  /* the same lozenge, dimmer, for a row under the pointer */
+  --liquid-glass-toolbar-warm: rgba(222, 240, 214, 0.08);
+  --liquid-glass-toolbar-warm-rim: rgba(226, 242, 218, 0.24);
+
+  /* --- ink ------------------------------------------------------------- */
+  --liquid-glass-toolbar-font: "Plus Jakarta Sans", system-ui, sans-serif;
+  --liquid-glass-toolbar-fg: rgba(243, 249, 240, 0.97);
+  --liquid-glass-toolbar-muted: rgba(226, 238, 222, 0.64);
+  --liquid-glass-toolbar-dim: rgba(226, 238, 222, 0.46);
+  /* Clay, across from the green. The one saturated colour in the component,
+     and it is spent on the two things that mean "unread". */
+  --liquid-glass-toolbar-accent: #d5793f;
+
+  /* Bar chrome, not body copy. A label here is a caption on a glyph — it names
+     the destination the lozenge is already pointing at — so it is set a step
+     under the surrounding text rather than level with it. At 16px/600 beside a
+     24px icon the word was the heaviest mass in the component and the pill had
+     to grow to hold it; at 13px the icon leads and the label follows, which is
+     the order the component is about. Tracking flips sign with the size: the
+     small negative that keeps a 16px word from looking loose closes the
+     counters up at 13px, so it opens out instead — by a hair, not a caps-style
+     track. */
+  --liquid-glass-toolbar-label-size: 0.8125rem;
+  /* 600, and it buys legibility rather than emphasis. On the dark materials the
+     label sits at about 4:1 against the lit pill, and 500 at 13px gives that up
+     — the stroke thins faster than the contrast can carry. This is not the 600
+     at 16px that made the word the heaviest thing on the bar: the size was what
+     read as clunky, the weight is what keeps the word on the surface. */
+  --liquid-glass-toolbar-label-weight: 600;
+  --liquid-glass-toolbar-label-track: 0.005em;
+  /* Room handed back to ascenders and descenders after the line box is trimmed
+     to the cap block — see __label. Symmetric, so it does not move the centre;
+     it only keeps the 'g' in "Log" inside the reveal's `overflow: hidden`.
+     It has to clear the taller of the two: 0.26em of ascender above the cap, and
+     0.23em of descent below the baseline. */
+  --liquid-glass-toolbar-label-leading: calc(var(--liquid-glass-toolbar-label-size) * 0.4);
+  /* The feed is prose, and it is not chained to the label above it. One token
+     served both until the label came down, and dragging a sentence to 13px to
+     keep them equal would have been the tail wagging: a notification row is
+     read, a pill label is recognised. */
+  --liquid-glass-toolbar-row-size: 0.9375rem;
+  --liquid-glass-toolbar-time-size: 0.8125rem;
+
+  /* --- motion ---------------------------------------------------------- */
+  /*
+    No overshoot, and this is the important one. A curve that passes 1 and
+    settles back is lovely on a transform and wrong here: everything this
+    component animates is a *layout* property, so an overshoot makes the bar
+    grow wider than its final width and come back — and because the surface is
+    centred, the whole thing slides out and in again. That reads as a wobble,
+    not as bounce.
+
+    Two durations, because one number cannot serve both. A label opens about
+    60px; the panel unfolds about ten times that. At a single duration the
+    label feels sluggish and the panel feels rushed. Splitting them also stages
+    the compound move — open the panel and the label arrives first, the card
+    follows it down.
+  */
+  --liquid-glass-toolbar-morph: 300ms cubic-bezier(0.33, 1, 0.68, 1);
+  --liquid-glass-toolbar-reveal: 220ms cubic-bezier(0.33, 1, 0.68, 1);
+  --liquid-glass-toolbar-fade: 140ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* --- state, written by the one block below --------------------------- */
+  --liquid-glass-toolbar-radius-now: var(--liquid-glass-toolbar-radius);
+  --liquid-glass-toolbar-panel-rows: 0fr;
+  --liquid-glass-toolbar-panel-width: 0px;
+  --liquid-glass-toolbar-feed-opacity: 0;
+  --liquid-glass-toolbar-feed-delay: 0ms;
+  /* ---------------------------------------------------------------------- */
+
+  display: flex;
+  justify-content: center;
+  /*
+    Full width, and centring the surface inside it, rather than shrinking to fit
+    around it. That is what makes the line below safe: `container-type:
+    inline-size` applies inline containment, so a container whose width comes
+    from its own contents resolves to zero — the whole component vanishes. The
+    width has to come from the parent instead. A nav filling its column and
+    centring its bar is the ordinary behaviour anyway; the surface is still the
+    thing that hugs.
+  */
+  width: 100%;
+  max-width: 100%;
+  font-family: var(--liquid-glass-toolbar-font);
+  color: var(--liquid-glass-toolbar-fg);
+
+  /* Queried by the block at the foot of this file. It has to be a container
+     query and not a media query: what decides whether five targets fit is the
+     width of the box this is dropped into, and a component that reads the
+     viewport instead is wrong the moment it lands in a sidebar. */
+  container-type: inline-size;
+  container-name: liquid-glass-toolbar;
+}
+
+/* The open state, declared once. Everything downstream reads these variables,
+   so opening the panel is five values rather than five selectors repeated at
+   every rule that cares. `--open` is the outside handle; the :has() is the
+   truth, because the button's aria-expanded is what a screen reader is told. */
+.liquid-glass-toolbar--open,
+.liquid-glass-toolbar:has(.liquid-glass-toolbar__action--panel[aria-expanded="true"]) {
+  --liquid-glass-toolbar-radius-now: var(--liquid-glass-toolbar-radius-open);
+  --liquid-glass-toolbar-panel-rows: 1fr;
+  --liquid-glass-toolbar-panel-width: var(--liquid-glass-toolbar-panel-w);
+  --liquid-glass-toolbar-feed-opacity: 1;
+  /* Declared only in the open state, so closing snaps the feed out instead of
+     leaving text hanging in a box that has already collapsed. */
+  --liquid-glass-toolbar-feed-delay: 60ms;
+}
+
+/* --- the surface -------------------------------------------------------- */
+
+.liquid-glass-toolbar__shell {
+  /* fit-content is what lets the surface breathe: nothing here transitions
+     `width`, but an auto-width box re-measures its children every frame, so a
+     label opening from 0fr drags the whole pill wider with it. */
+  width: fit-content;
+  max-width: 100%;
+
+  display: grid;
+  /* Not `grid-template-columns: auto`. An auto track takes the widest thing in
+     it — here the panel, which asks for its floor in rem — and the percentages
+     inside then resolve against that track rather than against the surface, so
+     nothing is ever capped. A track that may shrink breaks the loop: it is the
+     shell's own width, and the bar and the feed both squeeze into it. */
+  grid-template-columns: minmax(0, 1fr);
+  overflow: hidden;
+  border-radius: var(--liquid-glass-toolbar-radius-now);
+  background: var(--liquid-glass-toolbar-tint);
+
+  -webkit-backdrop-filter:
+    blur(var(--liquid-glass-toolbar-blur))
+    saturate(var(--liquid-glass-toolbar-saturate))
+    brightness(var(--liquid-glass-toolbar-brightness))
+    contrast(var(--liquid-glass-toolbar-contrast));
+  backdrop-filter:
+    blur(var(--liquid-glass-toolbar-blur))
+    saturate(var(--liquid-glass-toolbar-saturate))
+    brightness(var(--liquid-glass-toolbar-brightness))
+    contrast(var(--liquid-glass-toolbar-contrast));
+
+  /* Four shadows doing four jobs: the hairline that separates glass from
+     whatever is behind it, the highlight along the top edge that says the sheet
+     has thickness, the far edge lighting up from the inside, and the drop that
+     lifts it off the page. The third is `0 0 0 0 transparent` unless a material
+     asks for it, so it costs the other four nothing. */
+  box-shadow:
+    inset 0 0 0 var(--liquid-glass-toolbar-hairline) var(--liquid-glass-toolbar-rim),
+    inset 0 var(--liquid-glass-toolbar-hairline) 0 0 var(--liquid-glass-toolbar-sheen),
+    inset var(--liquid-glass-toolbar-edge),
+    var(--liquid-glass-toolbar-drop);
+
+  transition: border-radius var(--liquid-glass-toolbar-morph);
+}
+
+/* --- the row ------------------------------------------------------------ */
+
+.liquid-glass-toolbar__bar {
+  display: flex;
+  align-items: center;
+  gap: var(--liquid-glass-toolbar-gap);
+  padding: var(--liquid-glass-toolbar-pad);
+  min-width: 0;
+}
+
+/*
+  The split. This bar is not five evenly spaced icons — it is a cluster of four
+  and one trailing item, which is what makes a closed pill read as a toolbar
+  rather than as a row of buttons.
+
+  It is also the only elastic thing in the bar, and it gives in both directions.
+  Squeezed, it is the first to go, so a label opening or a 320px column eats
+  into empty space before it starts clipping text. Given slack, it takes all of
+  it: the bar stretches to the surface, and when the open panel makes the
+  surface wider than the row needs — the panel has a floor of its own — that
+  extra has to land somewhere. Without a grow factor it piled up past the last
+  action, which left the trailing icon stranded short of the edge it is supposed
+  to be pinned to. Growing the gap instead is `margin-inline-start: auto` with a
+  minimum, and the minimum is the point: `auto` alone would collapse the split
+  entirely whenever the bar is exactly its content width, which is most of the
+  time.
+
+  A pseudo-element rather than a spacer element, ordered between the two groups,
+  so component.html carries no markup that exists only to hold space. Both this
+  and the trailing action take `order: 1`; within one order value the box tree
+  decides, and ::before is the bar's first child, so it lands between them.
+*/
+.liquid-glass-toolbar__bar::before {
+  content: "";
+  order: 1;
+  /* `width`, not `flex-basis`. A flex-basis on a pseudo-element is not counted
+     in the bar's max-content contribution, so the surface sized itself as if
+     the gap were not there and then the gap took its space out of the labels. */
+  width: var(--liquid-glass-toolbar-split);
+  flex: 1 6 auto;
+  min-width: 0;
+  /* For the one state that takes it to zero — a narrow container opening the
+     search field. Everywhere else the flex algorithm is already re-solving this
+     every frame, and a transition on a value nothing sets does nothing. */
+  transition: width var(--liquid-glass-toolbar-reveal);
+}
+
+.liquid-glass-toolbar__action--trailing {
+  order: 1;
+}
+
+.liquid-glass-toolbar__action {
+  /* A collapsed action is exactly --hit wide: the icon plus a pad that is half
+     the difference. Square at rest, so five of them make an honest pill. */
+  --liquid-glass-toolbar-action-pad: calc(
+    (var(--liquid-glass-toolbar-hit) - var(--liquid-glass-toolbar-icon)) / 2
+  );
+
+  display: flex;
+  align-items: center;
+  flex: 0 1 auto;
+  min-width: var(--liquid-glass-toolbar-hit);
+  height: var(--liquid-glass-toolbar-hit);
+  padding-inline: var(--liquid-glass-toolbar-action-pad);
+  box-sizing: border-box;
+
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--liquid-glass-toolbar-muted);
+  /* Declared transparent rather than left at `none`, so lighting a pill
+     interpolates two colours instead of growing a shadow out of nothing. */
+  box-shadow:
+    inset 0 0 0 var(--liquid-glass-toolbar-hairline) transparent,
+    inset 0 var(--liquid-glass-toolbar-hairline) 0 0 transparent;
+
+  font: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+
+  transition:
+    padding-inline-end var(--liquid-glass-toolbar-reveal),
+    background-color var(--liquid-glass-toolbar-fade),
+    box-shadow var(--liquid-glass-toolbar-fade),
+    color var(--liquid-glass-toolbar-fade);
+}
+
+.liquid-glass-toolbar__action:hover {
+  color: var(--liquid-glass-toolbar-fg);
+}
+
+.liquid-glass-toolbar__action:focus-visible {
+  outline: 2px solid var(--liquid-glass-toolbar-fg);
+  outline-offset: 2px;
+}
+
+.liquid-glass-toolbar__icon {
+  position: relative;
+  flex: none;
+  width: var(--liquid-glass-toolbar-icon);
+  height: var(--liquid-glass-toolbar-icon);
+  /* Two lengths, so the one state that takes an icon out of the row — a narrow
+     container opening the search field — can travel instead of snapping. It
+     costs nothing elsewhere: the width is otherwise constant within a scale. */
+  transition: width var(--liquid-glass-toolbar-reveal);
+}
+
+.liquid-glass-toolbar__icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/*
+  The unread mark is a rule beneath the glyph, not a dot on its corner.
+
+  A corner dot is the platform idiom and it is the wrong object here: it is
+  opaque, it is round, and it sits *on* the surface — the one thing on a bar
+  whose whole argument is that everything is either the material or seen
+  through it. Set under the glyph it reads as part of the item instead, and it
+  is the lozenge's own shape at a fifth of the size: the bar already says
+  "current" with a stadium, so it can say "unread" with one too.
+
+  Centred on the glyph rather than pinned to a corner, so it travels with the
+  icon instead of being left behind when one collapses to zero width.
+*/
+.liquid-glass-toolbar__badge {
+  position: absolute;
+  left: 50%;
+  bottom: calc(-1 * var(--liquid-glass-toolbar-badge-drop));
+  width: var(--liquid-glass-toolbar-badge);
+  height: var(--liquid-glass-toolbar-badge-weight);
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: var(--liquid-glass-toolbar-accent);
+  /* Slightly short of full strength: the mark is under the surface with
+     everything else, and an accent at 1 is the only thing on the bar that
+     would not be. */
+  opacity: 0.88;
+  transition: opacity var(--liquid-glass-toolbar-fade);
+}
+
+/* --- the reveal --------------------------------------------------------- */
+
+/*
+  One mechanism, two payloads. A 0fr -> 1fr column is the only thing that
+  animates; whatever sits in the track — a text label, a search input — is
+  clipped to it and reaches its natural width when the track opens. Nothing here
+  knows which of the two it is holding, which is why the search field and the
+  nav labels move as one piece of the same surface.
+*/
+.liquid-glass-toolbar__reveal {
+  display: grid;
+  grid-template-columns: 0fr;
+  min-width: 0;
+  /* The track goes to zero; without this the payload keeps its own width and
+     spills out of the pill instead of being clipped by it. */
+  overflow: hidden;
+  transition: grid-template-columns var(--liquid-glass-toolbar-reveal);
+}
+
+.liquid-glass-toolbar__reveal > * {
+  min-width: 0;
+  /* border-box, or the padding that spaces a label off its icon survives the
+     collapse as a stripe of nothing beside every square. */
+  box-sizing: border-box;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/*
+  The search field is the one payload measured in a length rather than in `fr`.
+  A text input has no max-content worth the name — its intrinsic width comes from
+  the `size` attribute, not from anything CSS can set — so the track states the
+  width it wants and the input fills it.
+*/
+.liquid-glass-toolbar__action--search .liquid-glass-toolbar__reveal {
+  grid-template-columns: 0px;
+}
+
+.liquid-glass-toolbar__label {
+  /* text-indent, not padding. A box cannot be narrower than its own padding, so
+     a padded label collapses to an 11px stripe of nothing beside every square
+     icon rather than to zero. An indent is part of the line, not part of the
+     box: it disappears with the text and still counts towards the max-content
+     width the open track measures. */
+  text-indent: var(--liquid-glass-toolbar-label-gap);
+  font-size: var(--liquid-glass-toolbar-label-size);
+  font-weight: var(--liquid-glass-toolbar-label-weight);
+  letter-spacing: var(--liquid-glass-toolbar-label-track);
+  /* The fallback centring, and it is a near miss by construction: a line box is
+     centred on the em box, and an em box is not symmetric about the letters.
+     Plus Jakarta Sans is 1.0em up and 0.23em down, so its midpoint sits above
+     the middle of a cap block — and a word with no descenders, which is all four
+     of these, ends up half a pixel below the centre it was aimed at. The icon is
+     exactly centred in its own box (measured: all five land on 12.00 of 24), so
+     the label was the one out of step. */
+  line-height: var(--liquid-glass-toolbar-hit);
+}
+
+/*
+  The fix, where the platform has it. `trim-both cap alphabetic` cuts the line
+  box down to the cap block itself — cap height at the top, baseline at the
+  bottom — so the flex centring the action already does lands the letters on the
+  icon's centre rather than the em box's. The padding is that trim's own cost:
+  trimmed to the baseline, a descender hangs outside the box and the reveal's
+  `overflow: hidden` would take it off. It goes on the label rather than on the
+  reveal because the reveal also holds the search input at full --hit, and it is
+  padding-block, which the label can carry safely where padding-inline would
+  floor its collapsed width at something other than zero.
+
+  What is left is 0.34px, and it is rounding rather than error: the face declares
+  a cap height of 0.744em and the rasteriser puts 'H' on a whole pixel, 9 instead
+  of 9.67, at 13px. The trim is aligned to the metric the font states; the
+  remainder moves with size and device ratio and is gone by the second pixel.
+  Without `text-box` the label keeps the line-height above and sits 0.5px low,
+  which is what it did before and is not visible at 1x.
+*/
+@supports (text-box: trim-both cap alphabetic) {
+  .liquid-glass-toolbar__label {
+    text-box: trim-both cap alphabetic;
+    padding-block: var(--liquid-glass-toolbar-label-leading);
+  }
+}
+
+.liquid-glass-toolbar__input {
+  width: 100%;
+  height: var(--liquid-glass-toolbar-hit);
+  padding-inline: var(--liquid-glass-toolbar-label-gap)
+    calc(var(--liquid-glass-toolbar-label-gap) * 0.375);
+  border: 0;
+  background: transparent;
+  color: var(--liquid-glass-toolbar-fg);
+  font-family: inherit;
+  font-size: var(--liquid-glass-toolbar-label-size);
+  font-weight: var(--liquid-glass-toolbar-label-weight);
+  letter-spacing: var(--liquid-glass-toolbar-label-track);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.liquid-glass-toolbar__input:focus { outline: none; }
+
+.liquid-glass-toolbar__input::placeholder {
+  color: var(--liquid-glass-toolbar-dim);
+}
+
+/* --- what "selected" looks like ----------------------------------------- */
+
+/*
+  The label is not a tooltip — it is the selection indicator. Exactly one action
+  carries it, and that action is the one the lozenge is under. There is no
+  separate sliding element: the outgoing pill shrinks back to a square while the
+  incoming one grows, and because they are adjacent in a flex row the highlight
+  reads as one mass travelling rather than two fading.
+*/
+.liquid-glass-toolbar__action[aria-current="page"],
+.liquid-glass-toolbar__action[aria-expanded="true"],
+.liquid-glass-toolbar__action--search:focus-within,
+.liquid-glass-toolbar--open .liquid-glass-toolbar__action--panel,
+.liquid-glass-toolbar--searching .liquid-glass-toolbar__action--search {
+  background: var(--liquid-glass-toolbar-lit);
+  color: var(--liquid-glass-toolbar-fg);
+  padding-inline-end: calc(
+    var(--liquid-glass-toolbar-action-pad) + var(--liquid-glass-toolbar-label-trail)
+  );
+  box-shadow:
+    inset 0 0 0 var(--liquid-glass-toolbar-hairline) var(--liquid-glass-toolbar-lit-rim),
+    inset 0 var(--liquid-glass-toolbar-hairline) 0 0 var(--liquid-glass-toolbar-lit-sheen);
+}
+
+.liquid-glass-toolbar__action[aria-current="page"] .liquid-glass-toolbar__reveal,
+.liquid-glass-toolbar__action[aria-expanded="true"] .liquid-glass-toolbar__reveal,
+.liquid-glass-toolbar__action--search:focus-within .liquid-glass-toolbar__reveal,
+.liquid-glass-toolbar--open .liquid-glass-toolbar__action--panel .liquid-glass-toolbar__reveal,
+.liquid-glass-toolbar--searching .liquid-glass-toolbar__action--search .liquid-glass-toolbar__reveal {
+  grid-template-columns: 1fr;
+}
+
+/*
+  And the open field does not take part in the squeeze, which is what makes that
+  ceiling hold. Flex shrink is proportional, not ordered: the split has six times
+  the shrink factor and still only absorbed two thirds of an overflow, handing
+  the rest to the field — so a track sized to exactly fit was clipped anyway.
+  Frozen, the deficit lands on the split until it is at zero, and the four other
+  actions cannot take it either, because their min-width floors them at a square.
+
+  Only the field. An open *label* stays shrinkable on purpose: it is the thing
+  that should give at the boundary, and freezing it would push the overflow back
+  out to the trailing action, which is the failure this whole section exists to
+  stop.
+*/
+.liquid-glass-toolbar__action--search:focus-within,
+.liquid-glass-toolbar--searching .liquid-glass-toolbar__action--search {
+  flex-shrink: 0;
+}
+
+.liquid-glass-toolbar__action--search:focus-within .liquid-glass-toolbar__reveal,
+.liquid-glass-toolbar--searching .liquid-glass-toolbar__action--search .liquid-glass-toolbar__reveal {
+  /* The width it wants, capped at the width there is. clamp's floor is what
+     keeps a container narrower than the closed row from resolving to a
+     negative track, which would drop the declaration and leave the field in an
+     `auto` column — wider than the one it was clipped out of. */
+  grid-template-columns: clamp(
+    0px,
+    var(--liquid-glass-toolbar-search-max),
+    var(--liquid-glass-toolbar-search-w));
+}
+
+/*
+  One expanded action at a time. Focusing the search field or opening the panel
+  puts every other action back to a square, and it has to be CSS rather than the
+  script, because the search field's state is :focus-within and the script never
+  hears about it.
+*/
+.liquid-glass-toolbar__bar:has(.liquid-glass-toolbar__action--search:focus-within)
+  .liquid-glass-toolbar__action:not(.liquid-glass-toolbar__action--search),
+.liquid-glass-toolbar--searching .liquid-glass-toolbar__bar
+  .liquid-glass-toolbar__action:not(.liquid-glass-toolbar__action--search),
+.liquid-glass-toolbar--open .liquid-glass-toolbar__bar
+  .liquid-glass-toolbar__action:not(.liquid-glass-toolbar__action--panel) {
+  background: transparent;
+  padding-inline-end: var(--liquid-glass-toolbar-action-pad);
+  box-shadow:
+    inset 0 0 0 var(--liquid-glass-toolbar-hairline) transparent,
+    inset 0 var(--liquid-glass-toolbar-hairline) 0 0 transparent;
+}
+
+.liquid-glass-toolbar__bar:has(.liquid-glass-toolbar__action--search:focus-within)
+  .liquid-glass-toolbar__action:not(.liquid-glass-toolbar__action--search) .liquid-glass-toolbar__reveal,
+.liquid-glass-toolbar--searching .liquid-glass-toolbar__bar
+  .liquid-glass-toolbar__action:not(.liquid-glass-toolbar__action--search) .liquid-glass-toolbar__reveal,
+.liquid-glass-toolbar--open .liquid-glass-toolbar__bar
+  .liquid-glass-toolbar__action:not(.liquid-glass-toolbar__action--panel) .liquid-glass-toolbar__reveal {
+  grid-template-columns: 0fr;
+}
+
+.liquid-glass-toolbar--open .liquid-glass-toolbar__bar
+  .liquid-glass-toolbar__action--search .liquid-glass-toolbar__reveal {
+  grid-template-columns: 0px;
+}
+
+/* --- the panel ---------------------------------------------------------- */
+
+.liquid-glass-toolbar__panel {
+  display: grid;
+  grid-template-rows: var(--liquid-glass-toolbar-panel-rows);
+  overflow: hidden;
+
+  /*
+    Three width declarations, because a closed panel still has an opinion about
+    how wide the surface should be. `width` is the only one the shell measures:
+    at 0 the closed pill hugs the bar, and opening animates it out to the floor
+    the panel wants. The two percentages never reach intrinsic sizing at all —
+    they just make the panel fill whatever the surface settled on, so a bar made
+    wider than the floor by its own expanded label does not leave the feed
+    sitting in a short column.
+  */
+  width: var(--liquid-glass-toolbar-panel-width);
+  min-width: 100%;
+  max-width: 100%;
+
+  transition:
+    grid-template-rows var(--liquid-glass-toolbar-morph),
+    width var(--liquid-glass-toolbar-morph);
+}
+
+.liquid-glass-toolbar__feed {
+  min-height: 0;
+  margin: 0;
+  /*
+    No padding here, and that is load-bearing. This is the item of a row that
+    collapses to 0fr when the panel is closed, and a box cannot be shorter than
+    its own padding — so a padding-bottom survived the collapse as a strip of
+    dead height inside the shell. It pushed every pill above the bar's centre
+    and, because the surface was then taller than the row it wrapped, stopped
+    the outer radius nesting round the inner ones. The inset is re-provided as
+    margin, which does not floor a box. `overflow` is what keeps the last row's
+    margin from collapsing straight back out.
+  */
+  padding: 0;
+  overflow: hidden;
+  list-style: none;
+  opacity: var(--liquid-glass-toolbar-feed-opacity);
+  transition: opacity var(--liquid-glass-toolbar-fade) var(--liquid-glass-toolbar-feed-delay);
+}
+
+.liquid-glass-toolbar__feed > li:last-child {
+  margin-block-end: var(--liquid-glass-toolbar-pad);
+}
+
+.liquid-glass-toolbar__row {
+  display: grid;
+  margin-inline: var(--liquid-glass-toolbar-pad);
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--liquid-glass-toolbar-row-gap);
+  min-height: var(--liquid-glass-toolbar-row-h);
+  padding-inline: calc(
+      (var(--liquid-glass-toolbar-row-h) - var(--liquid-glass-toolbar-avatar)) / 2
+    )
+    calc(var(--liquid-glass-toolbar-row-gap) * 0.9);
+  border-radius: var(--liquid-glass-toolbar-row-radius);
+  color: var(--liquid-glass-toolbar-muted);
+  text-decoration: none;
+  box-shadow: inset 0 0 0 var(--liquid-glass-toolbar-hairline) transparent;
+  transition:
+    background-color var(--liquid-glass-toolbar-fade),
+    box-shadow var(--liquid-glass-toolbar-fade);
+}
+
+.liquid-glass-toolbar__row:hover {
+  background: var(--liquid-glass-toolbar-warm);
+  box-shadow: inset 0 0 0 var(--liquid-glass-toolbar-hairline) var(--liquid-glass-toolbar-warm-rim);
+}
+
+.liquid-glass-toolbar__row:focus-visible {
+  outline: 2px solid var(--liquid-glass-toolbar-fg);
+  outline-offset: -2px;
+}
+
+/*
+  The chip is a specimen, not an avatar. Each row is a decision that was taken,
+  so the thing at the head of it is a drawing of the *kind* of decision — a
+  three-step ramp for type, a half-filled disc for tint, a measured gap for
+  spacing, a filleted corner for radius. A face, or a generic bell, says only
+  who or what delivered the row; a diagram says what it is about before the
+  line beside it is read, which is the one job something 19px wide can do.
+
+  Square with a soft corner rather than a circle, for the same reason: a round
+  frame around a technical diagram reads as an avatar with a picture in it, and
+  the chips are plates.
+*/
+.liquid-glass-toolbar__chip {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: var(--liquid-glass-toolbar-avatar);
+  height: var(--liquid-glass-toolbar-avatar);
+  border-radius: var(--liquid-glass-toolbar-chip-radius);
+  background: var(--liquid-glass-toolbar-warm);
+  box-shadow: inset 0 0 0 var(--liquid-glass-toolbar-hairline) var(--liquid-glass-toolbar-warm-rim);
+  color: var(--liquid-glass-toolbar-fg);
+}
+
+.liquid-glass-toolbar__chip svg {
+  display: block;
+  width: calc(var(--liquid-glass-toolbar-avatar) * 0.5);
+  height: calc(var(--liquid-glass-toolbar-avatar) * 0.5);
+}
+
+/* Unread is a dot on the chip, never a background on the row — the row
+   background is spent on the pointer, and a list where half the rows are
+   already tinted has nowhere left to show which one you are about to open. */
+.liquid-glass-toolbar__row--unread .liquid-glass-toolbar__chip::after {
+  content: "";
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  width: var(--liquid-glass-toolbar-dot);
+  height: var(--liquid-glass-toolbar-dot);
+  border-radius: 50%;
+  background: var(--liquid-glass-toolbar-accent);
+}
+
+.liquid-glass-toolbar__line {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--liquid-glass-toolbar-row-size);
+  line-height: 1.35;
+}
+
+.liquid-glass-toolbar__topic {
+  font-weight: 600;
+  color: var(--liquid-glass-toolbar-fg);
+}
+
+.liquid-glass-toolbar__time {
+  flex: none;
+  font-size: var(--liquid-glass-toolbar-time-size);
+  font-variant-numeric: tabular-nums;
+  color: var(--liquid-glass-toolbar-dim);
+}
+
+/* --- no pointer to spend ------------------------------------------------ */
+
+/*
+  Almost all of this survives a phone on its own: the morph is driven by taps and
+  by focus, not by hover. What does not survive is the two hover tints — the row
+  under the pointer, and the icon that brightens before you commit to it. A press
+  stands in for both, for as long as the finger is down.
+*/
+/*
+  A focused input under 16px makes a mobile browser zoom the page to reach it,
+  and it does not zoom back out: the viewport stays magnified and scrolled, so
+  the study around it is left sideways and clipped mid-word. It is the label's
+  13px that does it — the field inherits the bar's type, which is set for chrome
+  rather than for a text box, and 16px is the threshold every mobile engine uses.
+
+  So the input, and only the input, comes back up to 16px where the pointer is
+  coarse. The label keeps 13px because a label is not focusable and never
+  triggers it, and the two are never on screen together anyway — the field is
+  what replaces the label in that slot. `max()` rather than a flat 1rem so a
+  caller who themes the bar larger keeps their size.
+*/
+@media (pointer: coarse) {
+  .liquid-glass-toolbar__input {
+    font-size: max(1rem, var(--liquid-glass-toolbar-label-size));
+  }
+}
+
+@media (hover: none) {
+  .liquid-glass-toolbar__action:active {
+    color: var(--liquid-glass-toolbar-fg);
+  }
+
+  .liquid-glass-toolbar__row:active {
+    background: var(--liquid-glass-toolbar-warm);
+    box-shadow: inset 0 0 0 var(--liquid-glass-toolbar-hairline) var(--liquid-glass-toolbar-warm-rim);
+  }
+}
+
+/* --- the other three materials ------------------------------------------ */
+
+/*
+  Five materials, one construction. Nothing below the variable block changes for
+  any of them, which is the test of whether the glass was written as a recipe or
+  as a set of colours. Moss is the default and has no modifier; the four here
+  are alabaster, slate, basalt and crystal.
+
+  Each is a whole palette rather than a hue rotation, because the ink has to
+  move with the tint — alabaster and crystal are the two that flip to dark ink,
+  and the accent moves too, since a warm mark that reads on moss is not the same
+  warm that reads on a near-black.
+*/
+.liquid-glass-toolbar--alabaster {
+  /*
+    Alabaster, not white, and not a pale version of the dark theme either. Two
+    things are going on here.
+
+    The first is that pure white is opaque by implication: the eye reads #fff as
+    paint however low the alpha under it is, because nothing in the world is
+    whiter, so a lit pill in white stops looking like a thicker part of the
+    sheet and starts looking like a sticker on one. Everything below is an
+    off-white, and the lit pill is thin rather than pale — 0.6 against the
+    surface's 0.48 — because a glaze is a transparent body with a lit edge, not
+    a lighter colour. The rim goes the other way, and the sheen is the one place
+    actual white is still allowed: a specular highlight really is white however
+    off-white the thing beneath it is.
+
+    The second is that a light theme is not the dark one turned up. Tinting this
+    with the dark theme's moss gave a green-grey glass sitting on warm paper,
+    which reads as a cast rather than as a material — the ground is warm, so a
+    surface that is honestly transparent has to come back warm too. It is bone
+    now, with warm ink, and the two themes are two materials of one
+    construction rather than one material at two brightnesses.
+  */
+  --liquid-glass-toolbar-tint: rgba(248, 243, 233, 0.44);
+  --liquid-glass-toolbar-blur: 11px;
+  --liquid-glass-toolbar-saturate: 1.6;
+  --liquid-glass-toolbar-brightness: 1.02;
+  --liquid-glass-toolbar-contrast: 1.04;
+  --liquid-glass-toolbar-rim: rgba(255, 253, 247, 0.8);
+  --liquid-glass-toolbar-sheen: rgba(255, 254, 250, 0.92);
+  --liquid-glass-toolbar-edge: 0 calc(-1 * var(--liquid-glass-toolbar-hairline)) 0 0 rgba(255, 255, 255, 0.45);
+  --liquid-glass-toolbar-drop:
+    0 1.5rem 3rem -1rem rgba(48, 40, 30, 0.22),
+    0 0.125rem 0.5rem -0.25rem rgba(48, 40, 30, 0.14);
+
+  /* The body of the lit pill is thin and off-white; the rim is nearly opaque
+     and the sheen is the one place actual white is allowed. That split is the
+     whole effect — a glaze is not a pale colour, it is a transparent body with
+     a lit edge, and a specular highlight really is white however off-white the
+     thing under it is. */
+  --liquid-glass-toolbar-lit: rgba(250, 246, 238, 0.5);
+  --liquid-glass-toolbar-lit-rim: rgba(255, 253, 248, 0.95);
+  --liquid-glass-toolbar-lit-sheen: rgba(255, 255, 255, 0.75);
+
+  --liquid-glass-toolbar-warm: rgba(250, 246, 238, 0.38);
+  --liquid-glass-toolbar-warm-rim: rgba(255, 253, 248, 0.8);
+
+  /* Not a near-black. This is the only material with dark ink, and ink that
+     dark on a surface this soft reads as printed on top of the glass rather
+     than seen through it — the sheet is the lightest thing in the component and
+     the type was the heaviest. Softened to a warm greige, with the secondary
+     tones taken *up* in alpha to compensate, so what moves is the weight of the
+     strong text rather than the legibility of the quiet text — dropping the ink
+     without that correction takes the muted line down with it, and the muted
+     line was the one with no contrast to spare. Against this surface the strong
+     text goes 12.5:1 -> 7.0:1, which is all headroom it did not need, while the
+     muted line comes up 4.1:1 -> 4.5:1. */
+  --liquid-glass-toolbar-fg: #554d45;
+  --liquid-glass-toolbar-muted: rgba(85, 77, 69, 0.82);
+  --liquid-glass-toolbar-dim: rgba(85, 77, 69, 0.6);
+  --liquid-glass-toolbar-accent: #b4552f;
+}
+
+/*
+  Slate. A cool blue-grey, and the one that most wants the saturation kept low —
+  a blue glass with the saturate pushed up starts tinting everything behind it
+  and reads as a filter rather than as a surface.
+*/
+.liquid-glass-toolbar--slate {
+  --liquid-glass-toolbar-tint: rgba(28, 50, 78, 0.3);
+  --liquid-glass-toolbar-blur: 9px;
+  --liquid-glass-toolbar-saturate: 1.7;
+  --liquid-glass-toolbar-brightness: 0.6;
+  --liquid-glass-toolbar-contrast: 1.1;
+  --liquid-glass-toolbar-rim: rgba(224, 234, 246, 0.38);
+  --liquid-glass-toolbar-sheen: rgba(232, 242, 252, 0.6);
+  --liquid-glass-toolbar-edge: 0 calc(-1 * var(--liquid-glass-toolbar-hairline)) 0 0 rgba(224, 236, 248, 0.18);
+  --liquid-glass-toolbar-drop:
+    0 1.5rem 3rem -1rem rgba(16, 24, 36, 0.42),
+    0 0.125rem 0.5rem -0.25rem rgba(16, 24, 36, 0.22);
+
+  --liquid-glass-toolbar-lit: rgba(214, 230, 246, 0.11);
+  --liquid-glass-toolbar-lit-rim: rgba(220, 234, 248, 0.48);
+  --liquid-glass-toolbar-lit-sheen: rgba(236, 244, 252, 0.58);
+
+  --liquid-glass-toolbar-warm: rgba(214, 230, 246, 0.08);
+  --liquid-glass-toolbar-warm-rim: rgba(220, 234, 248, 0.22);
+
+  --liquid-glass-toolbar-fg: rgba(238, 245, 252, 0.97);
+  --liquid-glass-toolbar-muted: rgba(222, 234, 246, 0.64);
+  --liquid-glass-toolbar-dim: rgba(222, 234, 246, 0.46);
+  --liquid-glass-toolbar-accent: #e08a4a;
+}
+
+/*
+  Basalt. Nearly black, and nearly neutral — the tint carries a couple of points
+  of blue only so it does not go dead grey. The rim does more work here than in
+  any of the others: against a light ground a dark sheet has plenty of contrast
+  at its face and none at all at its edge, so without a hairline it stops
+  reading as glass and starts reading as a hole.
+*/
+.liquid-glass-toolbar--basalt {
+  --liquid-glass-toolbar-tint: rgba(12, 14, 18, 0.4);
+  --liquid-glass-toolbar-blur: 8px;
+  --liquid-glass-toolbar-saturate: 1.3;
+  --liquid-glass-toolbar-brightness: 0.4;
+  --liquid-glass-toolbar-contrast: 1.14;
+  --liquid-glass-toolbar-rim: rgba(238, 239, 242, 0.32);
+  --liquid-glass-toolbar-sheen: rgba(246, 247, 250, 0.5);
+  --liquid-glass-toolbar-edge: 0 calc(-1 * var(--liquid-glass-toolbar-hairline)) 0 0 rgba(238, 240, 246, 0.16);
+  --liquid-glass-toolbar-drop:
+    0 1.5rem 3rem -1rem rgba(6, 7, 9, 0.46),
+    0 0.125rem 0.5rem -0.25rem rgba(6, 7, 9, 0.26);
+
+  --liquid-glass-toolbar-lit: rgba(240, 241, 244, 0.1);
+  --liquid-glass-toolbar-lit-rim: rgba(244, 245, 248, 0.42);
+  --liquid-glass-toolbar-lit-sheen: rgba(252, 252, 254, 0.52);
+
+  --liquid-glass-toolbar-warm: rgba(240, 241, 244, 0.07);
+  --liquid-glass-toolbar-warm-rim: rgba(244, 245, 248, 0.2);
+
+  --liquid-glass-toolbar-fg: rgba(246, 247, 250, 0.97);
+  --liquid-glass-toolbar-muted: rgba(238, 239, 244, 0.62);
+  --liquid-glass-toolbar-dim: rgba(238, 239, 244, 0.44);
+  --liquid-glass-toolbar-accent: #e2924f;
+}
+
+/*
+  Crystal. The one that is actually glass rather than a tinted sheet.
+
+  The other four are 42–64% opaque: they are surfaces with a colour, and the
+  backdrop filter is a texture underneath that colour. Crystal is 14%, which is
+  a different problem. At that thinness a tint decides almost nothing and the
+  whole material has to be carried by what it does to the light passing through
+  it and by its edges — which is what glass is, and why this one needs the two
+  scalars and the second edge that the others leave at their defaults.
+
+  Four moves, and each of them is doing a job the tint used to do:
+
+  Blur comes *down*, from 14px to 7px. This is the counter-intuitive one. Blur
+  is frost, not glass — a frosted sheet is opaque to detail, and past about 10px
+  the ground behind it stops being a place and becomes a wash. Clear glass
+  displaces what is behind it; it does not hide it.
+
+  Saturation and contrast come up, and they are what replaces the tint. A sheet
+  that changes nothing about what is behind it is not a sheet, it is a hole with
+  a rim — so the ground is not obscured, it is *graded*: colour pushed, the
+  range opened, the whole thing lifted a couple of points. You can read the
+  ground straight through it and still see exactly where the glass stops.
+
+  The edges do the rest, and they take most of the budget. The rim goes to 0.66
+  and the sheen to near-white, because on a body this thin the specular line is
+  most of what says "solid object" — the eye finds a piece of glass by its
+  highlights. `--edge` is the second one: a hairline along the inside of the
+  bottom, which is light that went through the sheet and came back off the far
+  face. It is the cheapest possible stand-in for refraction, which CSS cannot
+  do, and it is the single thing that makes this read as having thickness rather
+  than as a lightened rectangle.
+
+  And the drop gains a second, tight shadow. One soft shadow lifts an opaque
+  card fine; a nearly clear one needs the contact shadow too, or it reads as
+  painted onto the page rather than resting above it.
+
+  The ink is dark, and darker than alabaster's — this is the material with the
+  least of its own body, so the type is standing on the ground rather than on
+  the sheet, and the ground is the darkest thing under any of the five. Against
+  the paper the strong text runs about 8:1 and the muted line about 5.4:1; the
+  timestamps, at 3.8:1, are the honest cost of glass this thin and are the
+  reason the feed's ink is not thinned any further.
+
+  What it gives up: crystal is the only material that needs its ground. Moss on
+  a white page is still moss; crystal on a flat white page is a rim and a
+  shadow with nothing inside them.
+*/
+/*
+  Carnelian, and it is the thickest sheet in the set at 0.44 — the top of the
+  range, where moss sits at 0.28.
+
+  That is not a licence, it is what an orange costs here. `saturate` works on
+  the backdrop, and the backdrop is near-neutral paper, so there is nothing in
+  it to amplify: on this ground the filter's saturation barely moves the hue and
+  the colour is carried almost entirely by the tint's alpha. Greens survive that
+  — moss reads as a clear green at 0.28 — but a red at the same alpha over a
+  neutral goes to brick and then to dusty rose, which is four drafts' worth of
+  finding out. Red has the least chroma to spare of any hue in the set, so it
+  gets the most alpha, and the two facts are the same fact.
+
+  Its accent is the set's only one that cannot separate by hue. Every other
+  sheet marks unread with a clay or an amber against a ground nowhere near it;
+  here the ground *is* that hue, and the set's own amber measured to within
+  0.004 of the sheet's luminance — a mark the same brightness as what it sits on
+  is not a mark, whatever its hue. A jade read cleanly and read alien: it was the
+  only cool value in the component and it announced itself as an exception.
+
+  So this one separates on lightness instead, and stays in the family: the same
+  amber walked up until it clears the sheet, and no further. Past about #ffd992
+  it stops being a colour and starts being a highlight, which loses the thing
+  the accent is for.
+*/
+.liquid-glass-toolbar--carnelian {
+  --liquid-glass-toolbar-tint: rgba(196, 72, 18, 0.44);
+  --liquid-glass-toolbar-blur: 9px;
+  --liquid-glass-toolbar-saturate: 2;
+  --liquid-glass-toolbar-brightness: 0.56;
+  --liquid-glass-toolbar-contrast: 1.12;
+  --liquid-glass-toolbar-rim: rgba(252, 230, 220, 0.4);
+  --liquid-glass-toolbar-sheen: rgba(255, 240, 232, 0.62);
+  --liquid-glass-toolbar-edge: 0 calc(-1 * var(--liquid-glass-toolbar-hairline)) 0 0 rgba(252, 228, 218, 0.2);
+  --liquid-glass-toolbar-drop:
+    0 1.5rem 3rem -1rem rgba(46, 14, 8, 0.42),
+    0 0.125rem 0.5rem -0.25rem rgba(46, 14, 8, 0.22);
+
+  --liquid-glass-toolbar-lit: rgba(252, 226, 214, 0.12);
+  --liquid-glass-toolbar-lit-rim: rgba(255, 234, 222, 0.5);
+  --liquid-glass-toolbar-lit-sheen: rgba(255, 242, 234, 0.6);
+
+  --liquid-glass-toolbar-warm: rgba(250, 224, 212, 0.08);
+  --liquid-glass-toolbar-warm-rim: rgba(252, 232, 220, 0.24);
+
+  --liquid-glass-toolbar-fg: rgba(255, 243, 237, 0.97);
+  --liquid-glass-toolbar-muted: rgba(250, 230, 222, 0.64);
+  --liquid-glass-toolbar-dim: rgba(250, 230, 222, 0.46);
+  --liquid-glass-toolbar-accent: #f8cb72;
+}
+
+.liquid-glass-toolbar--crystal {
+  --liquid-glass-toolbar-tint: rgba(252, 250, 245, 0.07);
+  --liquid-glass-toolbar-blur: 6px;
+  --liquid-glass-toolbar-saturate: 1.6;
+  --liquid-glass-toolbar-brightness: 0.97;
+  --liquid-glass-toolbar-contrast: 1.06;
+  --liquid-glass-toolbar-rim: rgba(255, 255, 255, 0.74);
+  --liquid-glass-toolbar-sheen: rgba(255, 255, 255, 1);
+  --liquid-glass-toolbar-edge: 0 calc(-1 * var(--liquid-glass-toolbar-hairline)) 0 0 rgba(255, 255, 255, 0.58);
+  --liquid-glass-toolbar-drop:
+    0 1.75rem 3.5rem -1.25rem rgba(46, 40, 30, 0.3),
+    0 0.125rem 0.5rem -0.25rem rgba(46, 40, 30, 0.16);
+
+  /* The lozenge is a thicker piece of the same glass, not a paler colour: the
+     body stays transparent and the rim is what jumps. */
+  --liquid-glass-toolbar-lit: rgba(255, 255, 255, 0.24);
+  --liquid-glass-toolbar-lit-rim: rgba(255, 255, 255, 0.9);
+  --liquid-glass-toolbar-lit-sheen: rgba(255, 255, 255, 1);
+
+  --liquid-glass-toolbar-warm: rgba(255, 255, 255, 0.18);
+  --liquid-glass-toolbar-warm-rim: rgba(255, 255, 255, 0.55);
+
+  /* The only ink in the set that follows the page rather than the sheet, and
+     the reason is the 7% above: crystal is the one material thin enough to
+     *become* its ground. The other five carry enough tint to stay themselves
+     over anything — alabaster is still a light plate on a dark page, basalt
+     still a dark one on a light page — so their ink is settled once, against
+     their own body. Crystal has no body to settle against. On light paper it
+     is a pale sheet and takes dark ink; on a dark page it is a dark sheet, and
+     dark ink vanishes into it. Measured before this: 1.3:1.
+
+     `light-dark()` reads the page's own `color-scheme`, so it follows an
+     explicit theme toggle and the OS default alike, and it stays inside the
+     component — nothing here names a selector outside it. A page that declares
+     no scheme resolves light, which is the ground this was drawn for. */
+  --liquid-glass-toolbar-fg: light-dark(#35312b, rgba(247, 248, 250, 0.97));
+  --liquid-glass-toolbar-muted: light-dark(rgba(53, 49, 43, 0.82), rgba(238, 240, 245, 0.64));
+  --liquid-glass-toolbar-dim: light-dark(rgba(53, 49, 43, 0.7), rgba(238, 240, 245, 0.46));
+  --liquid-glass-toolbar-accent: light-dark(#b4552f, #e2924f);
+}
+
+/* --- too narrow for five full targets ------------------------------------ */
+
+/*
+  Five actions at --hit, the gaps between them and the surface's own padding
+  need about 264px. Below that the row cannot fit, and because the surface
+  clips, what overflowed was the trailing action — the component quietly lost
+  its last item rather than getting tight. Nothing shrinks its way out of that:
+  the actions hold a min-width so they stay tappable, and their padding is not a
+  flex length, so an action forced narrower just spills its icon into its
+  neighbour.
+
+  So the component scales instead of squeezing. One breakpoint, and it moves
+  only the values the rest of the file is already derived from — padding, the
+  action's own inner pad and the corner radius all follow --hit and --icon, so
+  it stays the same component, smaller. The targets land at 40px rather than
+  48px, which is the honest cost of a container this narrow and still a great
+  deal better than an icon that is not there.
+
+  The breakpoint is 25rem and not the 264px that sum comes to, because 264px is
+  what the *collapsed* row needs and this bar is never collapsed: one action
+  always carries its label, and the label is the widest thing in the component.
+  Five squares plus the split plus an open "Versions" — the longest label in the
+  set — is about 400px, so every
+  phone held upright sat in the band between the two numbers — wide enough to
+  stay at full scale, too narrow to show the word, and the surface clipped the
+  label to its first letter rather than the component standing down to the
+  scale that fits. 25rem clears the widest label with the split still off zero
+  at the boundary. It is a literal because a container query condition cannot
+  read a custom property: a caller that moves --hit far from 3rem moves the
+  width this should switch at, and has to move this with it.
+*/
+@container liquid-glass-toolbar (max-width: 25rem) {
+  .liquid-glass-toolbar__shell {
+    --liquid-glass-toolbar-hit: 2.5rem;
+    --liquid-glass-toolbar-icon: 1.25rem;
+    --liquid-glass-toolbar-pad: 0.3125rem;
+    --liquid-glass-toolbar-gap: 0.125rem;
+    --liquid-glass-toolbar-split: 1.25rem;
+    --liquid-glass-toolbar-row-size: 0.875rem;
+    --liquid-glass-toolbar-row-h: 3rem;
+    --liquid-glass-toolbar-avatar: 2rem;
+
+    /* The field's ceiling is a different sum at this scale, because the row
+       clears itself out of the way for it below: one square, the gaps, the
+       padding and the trailing allowance. It is only ever read in the searching
+       state, so it can be restated here rather than under that state. */
+    --liquid-glass-toolbar-search-max: calc(100cqi - (
+      var(--liquid-glass-toolbar-hit) +
+      5 * var(--liquid-glass-toolbar-gap) +
+      2 * var(--liquid-glass-toolbar-pad) +
+      var(--liquid-glass-toolbar-label-trail)));
+
+    /* And the width it *wants* has to come up with the ceiling, or the ceiling
+       never gets read. The track is `clamp(0px, --search-max, --search-w)`, so
+       --search-w is the upper bound: restating only the sum above left the
+       field pinned at the wide layout's 14rem while the row had already cleared
+       a whole bar for it — 224px of field in 239px of room on a 390px phone,
+       and the shell hugging 15px short of the surface it was told to open
+       across. At this scale the field wants everything and --search-max is the
+       only thing that should trim it. */
+    --liquid-glass-toolbar-search-w: 100cqi;
+  }
+
+  /*
+    And the label does not open at all. Five scaled targets leave about 50px
+    for it, which is not a word — it is the first two letters of one, clipped
+    by the surface. Shutting the track is the honest version of the same
+    answer, and it costs nothing that is not already covered: the lit pill is
+    the selection indicator too, and the label was never its only channel.
+
+    These selectors are the open-state ones repeated, and they win on source
+    order rather than on specificity — same weight, later in the file. The
+    trailing pad has to come back with them, or the pill keeps the extra air
+    it was given to sit beside a word that is no longer there.
+  */
+  .liquid-glass-toolbar__action[aria-current="page"],
+  .liquid-glass-toolbar__action[aria-expanded="true"],
+  .liquid-glass-toolbar--open .liquid-glass-toolbar__action--panel {
+    padding-inline-end: var(--liquid-glass-toolbar-action-pad);
+  }
+
+  .liquid-glass-toolbar__action[aria-current="page"] .liquid-glass-toolbar__reveal,
+  .liquid-glass-toolbar__action[aria-expanded="true"] .liquid-glass-toolbar__reveal,
+  .liquid-glass-toolbar--open .liquid-glass-toolbar__action--panel .liquid-glass-toolbar__reveal {
+    grid-template-columns: 0fr;
+  }
+
+  /*
+    The search field is the one payload that cannot stand down the way the label
+    does: an input that is not there is not a search. But five squares, their
+    gaps and the padding leave about 12px of it in a 320px column, which is a
+    field in name only, so at this scale the row gives it everything instead.
+    The other four actions go — icon to zero width, padding to zero, badge out —
+    and the field opens across the surface. It is the same trade the label makes
+    one line up, only the other way round: there is room for one of the two, and
+    while the caret is in the field the field is the one that matters.
+
+    Both halves travel rather than snapping. Nothing here animates `width` on
+    the action itself — that would be interpolating from `auto` and would not
+    move — the action is auto-width around two lengths that do animate, its own
+    padding and the icon's width, so it follows them down.
+  */
+  .liquid-glass-toolbar__bar:has(.liquid-glass-toolbar__action--search:focus-within)
+    .liquid-glass-toolbar__action:not(.liquid-glass-toolbar__action--search),
+  .liquid-glass-toolbar--searching .liquid-glass-toolbar__bar
+    .liquid-glass-toolbar__action:not(.liquid-glass-toolbar__action--search) {
+    min-width: 0;
+    padding-inline: 0;
+  }
+
+  /*
+    And once it is alone in the bar the lit pill has to stop being a pill. Its
+    job in a row is to say which of five items you are on; with the other four
+    gone it is saying it about the only thing there, and what you see instead is
+    its rim tracing the shell's rim five pixels inside it — two stadiums drawing
+    the same shape, which is the one thing this component is not. The surface
+    changes shape; it does not grow a second edge.
+
+    So in this state the pill gives its edge and its body back to the shell and
+    the field sits directly on the glass. The trailing allowance goes with them:
+    `--label-trail` balances an icon's bearing against a *word*, and there is no
+    word here — left it on, the field sat 7px from one end of the shell and 13px
+    from the other, off-centre in the only thing it shares the bar with.
+
+    Written as transparent rather than `none` so it still interpolates: the two
+    shadows match the base declaration slot for slot, which is why that one is
+    declared transparent rather than left at `none` in the first place.
+  */
+  .liquid-glass-toolbar__bar:has(.liquid-glass-toolbar__action--search:focus-within)
+    .liquid-glass-toolbar__action--search,
+  .liquid-glass-toolbar--searching .liquid-glass-toolbar__bar
+    .liquid-glass-toolbar__action--search {
+    background: transparent;
+    box-shadow:
+      inset 0 0 0 var(--liquid-glass-toolbar-hairline) transparent,
+      inset 0 var(--liquid-glass-toolbar-hairline) 0 0 transparent;
+    padding-inline-end: var(--liquid-glass-toolbar-action-pad);
+  }
+
+  .liquid-glass-toolbar__bar:has(.liquid-glass-toolbar__action--search:focus-within)
+    .liquid-glass-toolbar__action:not(.liquid-glass-toolbar__action--search)
+    .liquid-glass-toolbar__icon,
+  .liquid-glass-toolbar--searching .liquid-glass-toolbar__bar
+    .liquid-glass-toolbar__action:not(.liquid-glass-toolbar__action--search)
+    .liquid-glass-toolbar__icon {
+    width: 0;
+  }
+
+  .liquid-glass-toolbar__bar:has(.liquid-glass-toolbar__action--search:focus-within)
+    .liquid-glass-toolbar__badge,
+  .liquid-glass-toolbar--searching .liquid-glass-toolbar__badge {
+    opacity: 0;
+  }
+
+  /* And the split with them, or the field opens into a pill with 20px of dead
+     air pinned to its end — the gap was holding a trailing action that is no
+     longer there to be held apart from anything. */
+  .liquid-glass-toolbar__bar:has(.liquid-glass-toolbar__action--search:focus-within)::before,
+  .liquid-glass-toolbar--searching .liquid-glass-toolbar__bar::before {
+    width: 0;
+  }
+}
+
+/* --- reduced motion ----------------------------------------------------- */
+
+/* The states are all still reachable; they just arrive rather than travel. */
+@media (prefers-reduced-motion: reduce) {
+  .liquid-glass-toolbar {
+    --liquid-glass-toolbar-morph: 1ms linear;
+    --liquid-glass-toolbar-reveal: 1ms linear;
+    --liquid-glass-toolbar-fade: 1ms linear;
+  }
+}

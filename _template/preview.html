@@ -1,0 +1,153 @@
+<!doctype html>
+<!--
+  The thumbnail the landing page iframes: ONE instance of the component,
+  centred on the demo's background, with no captions and no other states.
+
+  Keep it minimal — it is rendered small. It links component.css and never
+  redefines it, exactly like demo.html. If you change the component's markup,
+  change it here too; this file and component.html should stay in step.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>YYYY-MM-slug — preview</title>
+
+  <!-- Same font loading as demo.html. -->
+  <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=..."> -->
+
+  <link rel="stylesheet" href="component.css">
+
+  <!-- The ground, before the first paint. The index loads this frame with
+     ?theme= on the src, so a thumbnail is never drawn on the wrong one and
+     then corrected. Opened on its own, with no query, it keeps the light
+     ground. -->
+  <script>
+    var theme = new URLSearchParams(location.search).get('theme');
+    if (theme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+  </script>
+
+  <style>
+    /* Thumbnail scaffolding only. Nothing here may name a component class. */
+
+    /* The shared ground, and the only colour this page writes. Both values are
+       literals repeated in every folder rather than shared from anywhere — the
+       folder has to survive being copied out — but they have to be the same
+       two numbers in all of them, or the rail stops reading as one set of
+       cards. That is what this ground is for: it is the rail's, not the
+       component's, which is why it follows the index into dark rather than
+       staying lit under it. Copy both lines as they are. */
+    :root { --preview-ground: #f3f2ef; }
+    :root[data-theme="dark"] { --preview-ground: #191b1e; }
+
+    /* <html> carries it as well as <body>, so the background does not
+       propagate to the viewport canvas and leave a seam at the frame edge. */
+    html { background-color: var(--preview-ground); }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background-color: var(--preview-ground);
+      font-family: system-ui, sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <!-- paste component.html markup here -->
+  <article class="slug">
+    <p class="slug__label">Label</p>
+    <h2 class="slug__title">Title</h2>
+    <p class="slug__body">Body copy that carries no branding from the reference.</p>
+  </article>
+
+  <!--
+    Optional, and thumbnail scaffolding only. Two jobs, both driven by the
+    index, both inert when this file is opened on its own. Delete whichever
+    the component has no use for.
+
+      1. A card's iframe has pointer events off, so the component's :hover can
+         never fire there. The index says when a card is being looked at; this
+         file decides what that means — usually the modifier the component
+         already has for its open state.
+      2. Quick look steps through the variants listed here. The list lives in
+         this file because the index must never name a component class: it is
+         handed labels and draws dots.
+
+    Note that toggling a variant element with the `hidden` attribute fails if
+    component.css gives it a `display` — an author rule beats the UA one. Add
+    and remove the node instead.
+  -->
+  <script>
+    (function () {
+      var CHANNEL = 'interface-studies';
+      var root = document.querySelector('.slug');
+      if (!root) return;
+
+      // One entry per variant, first is the resting state the card shows.
+      var VARIANTS = [
+        { id: 'default', label: 'Default', classes: [] },
+        { id: 'dark', label: 'Dark', classes: ['slug--dark'] }
+      ];
+
+      function apply(variant) {
+        VARIANTS.forEach(function (v) {
+          v.classes.forEach(function (c) { root.classList.remove(c); });
+        });
+        variant.classes.forEach(function (c) { root.classList.add(c); });
+      }
+
+      window.addEventListener('message', function (event) {
+        var data = event.data;
+        if (!data || data.source !== CHANNEL) return;
+
+        if (data.type === 'preview') {
+          root.classList.toggle('slug--open', data.active === true);
+        }
+
+        if (data.type === 'preview:variant') {
+          var variant = VARIANTS[data.index];
+          if (variant) apply(variant);
+        }
+
+        // Which theme the index is in. Keep this: the ground above is the
+        // rail's rather than this study's, and every thumbnail moves with the
+        // page together or the rail stops reading as one set of cards. What
+        // the component sits on beyond the ground is the study's own, and is
+        // not touched here.
+        if (data.type === 'preview:theme') {
+          if (data.theme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+          } else {
+            document.documentElement.removeAttribute('data-theme');
+          }
+        }
+      });
+
+      // Quick look runs this file with pointer events live, so the pointer —
+      // and with it the focus — ends up inside this document. Keys pressed
+      // here fire against *this* document and never reach the index, which is
+      // where the overlay's Escape handler lives: click the component, press
+      // Escape, and nothing happens. So the one key the overlay owns is handed
+      // back across the channel. Only Escape. Anything else is the component's
+      // to interpret — arrows move a caret in a field the component may have.
+      if (window.parent !== window) {
+        document.addEventListener('keydown', function (event) {
+          if (event.key !== 'Escape') return;
+          window.parent.postMessage({ source: CHANNEL, type: 'preview:key', key: 'Escape' }, '*');
+        });
+      }
+
+      if (window.parent !== window) {
+        window.parent.postMessage({
+          source: CHANNEL,
+          type: 'preview:ready',
+          variants: VARIANTS.map(function (v) { return { id: v.id, label: v.label }; })
+        }, '*');
+      }
+    })();
+  </script>
+
+</body>
+</html>
