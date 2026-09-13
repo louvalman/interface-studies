@@ -1081,7 +1081,7 @@ body.is-locked {
   .piece:hover .piece__cta svg { transform: translate(2px, -2px); }
 }
 
-/* --- the empty slot at the end ---------------------------------------- */
+/* --- the forthcoming slots at the end ---------------------------------- */
 
 .piece--ghost .piece__frame {
   display: grid;
@@ -1098,16 +1098,38 @@ body.is-locked {
   box-shadow: none;
 }
 
-.piece__ghost-text {
-  max-width: 14rem;
+/* The month is what tells the three apart, so it is what the frame holds, at a
+   size that survives the thumbnail. The year sits under it small: all three
+   share it, and it is not the part being read. */
+.piece__ghost-when {
+  display: grid;
+  justify-items: center;
+  gap: 0.35rem;
   padding: 1.5rem;
+  max-width: 100%;
   text-align: center;
   font-family: var(--mono);
-  font-size: 0.6875rem;
-  line-height: 1.9;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
   color: var(--muted);
+}
+
+.piece__ghost-month {
+  font-size: 1.125rem;
+  letter-spacing: 0.02em;
+}
+
+.piece__ghost-year {
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  color: var(--hairline-strong);
+}
+
+/* A title that is not a link and never will be: the title's size, the note's
+   weight of colour. It has to read as a card in the row without appearing to
+   offer anything to open. */
+.piece__title--ghost {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 400;
 }
 
 /* --- quick look -------------------------------------------------------- */

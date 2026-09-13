@@ -649,11 +649,55 @@
           </div>
         </article>
 
-        <div class="piece piece--ghost" aria-hidden="true">
+        <!-- The slots at the end of the rail. Three, because the row reads as a
+             set and one trailing placeholder reads as an accident. They carry a
+             card's anatomy — the frame, the slug, a title — rather than a line of
+             instructions to whoever is adding the next study, because the rail is
+             something a reader scrolls and the note to self belongs in CLAUDE.md.
+             They are in the ring and recycle with everything else; real() skips
+             them, so the counts and the progress bar go on counting studies. -->
+        <div class="piece piece--ghost">
           <div class="piece__frame">
-            <span class="piece__ghost-text" data-i18n="ghost.next">
-              Next one goes here &mdash; copy _template/
+            <span class="piece__ghost-when">
+              <span class="piece__ghost-month" data-i18n="ghost.month.oct">October</span>
+              <span class="piece__ghost-year">2026</span>
             </span>
+          </div>
+          <div class="piece__body">
+            <span class="piece__slug">2026 &middot; 10</span>
+            <p class="piece__title piece__title--ghost" data-i18n="ghost.title">
+              Forthcoming study
+            </p>
+          </div>
+        </div>
+
+        <div class="piece piece--ghost">
+          <div class="piece__frame">
+            <span class="piece__ghost-when">
+              <span class="piece__ghost-month" data-i18n="ghost.month.nov">November</span>
+              <span class="piece__ghost-year">2026</span>
+            </span>
+          </div>
+          <div class="piece__body">
+            <span class="piece__slug">2026 &middot; 11</span>
+            <p class="piece__title piece__title--ghost" data-i18n="ghost.title">
+              Forthcoming study
+            </p>
+          </div>
+        </div>
+
+        <div class="piece piece--ghost">
+          <div class="piece__frame">
+            <span class="piece__ghost-when">
+              <span class="piece__ghost-month" data-i18n="ghost.month.dec">December</span>
+              <span class="piece__ghost-year">2026</span>
+            </span>
+          </div>
+          <div class="piece__body">
+            <span class="piece__slug">2026 &middot; 12</span>
+            <p class="piece__title piece__title--ghost" data-i18n="ghost.title">
+              Forthcoming study
+            </p>
           </div>
         </div>
       </div>
