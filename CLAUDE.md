@@ -677,41 +677,22 @@ A card whose preview has not loaded yet shows its skeleton, not an empty frame.
 This does mean no previews at all without JavaScript; the index already needs it
 for the rail's order, its numbers and its counts.
 
-### A still card
-
-`data-still` on a `.piece` means the rail shows a render of the component rather
-than running it. `2026-09-raster-pulse` is the only one, and it is there because
-it had to be: its field is 289 elements on their own animations, and isolating
-one study at a time on a throttled phone, it costs what all five previews
-together cost. Every other card holds a drag at 16.7ms a frame; that one alone
-takes it to 50ms, in every phase — the drag, the settle and the rest after it.
-Pausing does not save it, because a same-origin iframe takes part in this page's
-style and layout passes whether or not it animates: paused, it still measured
-2.6 times a card with no document at all. `content-visibility: hidden` and
+`2026-09-raster-pulse` is far and away the most expensive of them, and worth
+knowing about before measuring anything on this page. Isolating one study at a
+time on a throttled phone, it costs what all five previews together cost: every
+other card held a drag at 16.7ms a frame and that one alone took it to 50ms.
+Pausing does not save it — a same-origin iframe takes part in this page's style
+and layout passes whether or not it animates, and paused it still measured 2.6
+times a card holding no document at all. `content-visibility: hidden` and
 `visibility: hidden` on the frame were both tried and neither helped, for the
-same reason — the child's lifecycle is not the parent's to skip.
+same reason: the child's lifecycle is not the parent's to skip.
 
-What it costs is the index's premise, on one card out of five, and the premise
-is only bent rather than broken: quick look still opens the live component, at
-full size, with nothing else on the page moving. The rail is where the premise
-was unaffordable, not the study.
-
-`still.png` lives in the study folder and is a photograph of `preview.html` the
-way `og.png` is one of the masthead — a render kept as a file because nothing
-runs the page to make it. Render it at `--preview-w` by `--preview-h` at 2x,
-with the page background forced transparent, so the rail's own ground shows
-through in both themes and one file is right in each. It is not `ref.png`, which
-is someone else's interface and never goes on this page.
-
-The frame stays in the markup and is never loaded. The path lives on it, and
-quick look, the theme rewrite and the date fallback all read it; `loadPreview`
-returns early on a still card, and CSS takes the frame out of the layout and
-drops the skeleton, which has nothing to wait for.
-
-Reach for this only with the measurement in hand. A study is allowed to be
-expensive — that is a decision it is entitled to make — and the rail is the
-wrong place to litigate it. This is what to do when one study's cost is the
-whole page's.
+It ran as a still render in the rail for a while because of that, and it does
+not need to any more. What made the rail feel bad was never the previews: it was
+the landing being animated from script, and with that gone — the gesture and its
+fling both on the compositor — a heavy preview costs a busy main thread that
+nothing is waiting on. The lesson is the order to look in. Measure the thread
+only after establishing that something on it is in the way.
 
 The three cards at the end of the rail are forthcoming slots — a month, a year
 and a title, in a dashed frame. They are in the ring and recycle with the rest;
