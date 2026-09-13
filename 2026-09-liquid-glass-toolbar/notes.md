@@ -34,10 +34,10 @@ paper — at 0.7 scale beside three near-white neighbours the card read as a
 different kind of object before it read as a component, which is the opposite
 of what a thumbnail is for. So preview.html takes the shared paper and
 demo.html's stage keeps the ramps. The glass survives the trade because the
-thumbnail is not showing one sheet: it stacks three, and the third has its panel
-open, so there is a 300px plate of tinted glass on that paper with its own rim,
-sheen and drop shadow. A single sheet at rest on flat paper would be the failure
-above; a bar, an open field and an open panel on it are a component doing
+thumbnail is not showing one sheet: it stacks two, and the lower one has its
+panel open, so there is a 300px plate of tinted glass on that paper with its own
+rim, sheen and drop shadow. A single sheet at rest on flat paper would be the
+failure above; an open field and an open panel on it are a component doing
 something.
 
 The icons are drawn rather than borrowed: a dot inside a ring, a magnifier, two
@@ -590,23 +590,23 @@ table are static strings in the file. Material names are not translated — they
 are shown as the class that selects them, which makes them class-name hints
 rather than page prose.
 
-The card stacks one bar three times, in one material, at three points in its own
-behaviour: at rest on Origin, with the search field open, and with the log panel
-open. That is a deliberate departure from this repo's rule that a thumbnail holds
-one instance and no second copy. The rule is there to stop a thumbnail turning
-into a small demo page, and it is the right rule — but what this study offers is
-one surface that changes shape, and a component whose whole argument is a
-transition cannot make it standing still in a single frame. So the card is the
-sequence, with no captions and no state labels, and the variant dots step into a
-single bar at full size where each state has room to be read rather than
-recognised. The stagger down the stack costs nothing to add from outside, because
-the motion is a custom property whose value is a whole shorthand: a delay goes on
-the end of it without the component knowing. The sheets are added and removed
-rather than hidden — `component.css` gives the root a `display`, and an author
-rule beats the user-agent `[hidden]` one, which would have left all three on
+The card stacks one bar twice, in one material, at the two points in its
+behaviour that cannot be guessed from a picture of the other: with the search
+field open, and with the log panel open. That is a deliberate departure from this
+repo's rule that a thumbnail holds one instance and no second copy. The rule is
+there to stop a thumbnail turning into a small demo page, and it is the right
+rule — but what this study offers is one surface that changes shape, and a
+component whose whole argument is a transition cannot make it standing still in a
+single frame. So the card is the pair, with no captions and no state labels, and
+the variant dots step into a single bar at full size where each state has room to
+be read rather than recognised. The stagger costs nothing to add from outside,
+because the motion is a custom property whose value is a whole shorthand: a delay
+goes on the end of it without the component knowing. The sheets are added and
+removed rather than hidden — `component.css` gives the root a `display`, and an
+author rule beats the user-agent `[hidden]` one, which would have left both on
 screen.
 
-States rather than materials, and it took two passes to get there. The card
+States rather than materials, and it took three passes to get there. The card
 showed the material set first — one bar at rest, in all six — which filled 492px
 of the 600px frame with six near-identical rows. That is a swatch chart: the eye
 counts rows before it reads a toolbar, which is the same failure as a thumbnail
@@ -616,14 +616,25 @@ question. What a rail of thumbnails is being asked is *what is this thing*, and
 six tints of one bar answer what it is made of. The states answer what it does,
 and they are the reason to open the study.
 
-So one material — moss, the one the component ships as — and the three legs of
-its behaviour. The full six are still in `component.css` and still shown in
+So one material — moss, the one the component ships as — and the legs of its
+behaviour. The full six are still in `component.css` and still shown in
 `demo.html`, which is the page making that argument; the card is not the place
-to enumerate a palette. The heights are the cost and they are worth it: the bar
-is 62px and the open panel is 300px, so the stack is 488px of the 600px frame
-and the composition is bottom-heavy at rest, a triangle growing downward. That
-reads as the escalation it is — rest, then a field, then a panel — which a
-balanced arrangement of the same three would not.
+to enumerate a palette.
+
+Two legs rather than three, and the one dropped is the resting bar. It is the
+state a reader can already infer: both of the others are visibly a bar that has
+*opened*, so the closed one is implied by either of them, while a field where an
+icon was and a panel unfolding out of the same corner are implied by nothing.
+Three sheets ran 488px of the 600px frame with 56px of air and a silhouette that
+grew downward — defensible as an escalation, but it spent the card's best row on
+the one picture the other two already contain. Two run 394px with 103px of air,
+and the pair reads as one surface shown twice rather than as a row of specimens.
+
+Origin is still a dot in the variant row, which is the one asymmetry between the
+card and quick look and is deliberate. Quick look is the full-size viewer and the
+bar the component ships as is worth being able to see in it; the card is 336px
+wide and has to spend its rows on what cannot be inferred. The contract asks only
+that the first entry be what the thumbnail shows.
 
 The gap is 2rem rather than the 1.5rem the six had. Each sheet's drop is
 `0 1.5rem 3rem -1rem`, so at 24px the shadow landed on the sheet below and the
@@ -686,21 +697,32 @@ opened the search field on whichever sheet was not already morphing: one line of
 shape change, legible at any scale, and a width the preview sets rather than one
 the copy decides. That was right while the stack was one state in six materials
 and became wrong the moment the stack was the states themselves — it would have
-put a second search field beside the one already on sheet two and left the panel
+put a second search field beside the one already on the card and left the panel
 alone.
 
-So hover rotates the assignment by one instead. Each sheet takes the state of the
-sheet below it, which changes nothing about which three states are on screen and
-everything about what the card is saying: standing still it is three endpoints,
-and one rotation says they are the same surface changing shape rather than three
-components in a row. The stagger spends 70ms a row on it, so the rotation arrives
-as a roll down the stack rather than as three things moving at once.
+Then it rotated the assignment by one, which with two sheets was a swap: the one
+holding the field opened its panel, the one holding the panel closed into the
+field, and they traded without either state leaving the frame. That said the
+right thing — these are one surface, not two components in a row — and said it by
+moving both surfaces at once, which on a rail of thumbnails reads as a shuffle. A
+card that rearranges itself when a pointer crosses it is asking to be watched
+rather than read.
+
+So hover moves one item inside one bar instead. The top sheet closes its search
+field and steps along to the next destination, Versions; nothing changes
+position, and the panel below is left alone — it is the slower, larger state, and
+it has nothing to gain from reshuffling under a passing pointer. The rest state
+is where the card says these are two shapes of one surface. Hover is where it
+says the surface goes places, which is a smaller claim and the one a thumbnail
+can actually make.
 
 It costs the frame nothing, which is the part that had to be measured rather than
-hoped for. The panel closing on one sheet is the panel opening on another and the
-two cross: the stack is 488px tall at rest, 488px at every frame of the rotation,
-and 488px settled. Nothing below it reflows, and the card does not resize under a
-pointer that is only passing over it.
+hoped for, and this version costs it less than the swap did: a bar at rest and a
+bar with its search field open are both 62px, only the pill's width differing, so
+neither sheet changes height at all. 394px at rest, 394px at every frame, 394px
+settled, with the individual sheets holding 62 and 300 throughout. Nothing below
+it reflows and the card does not resize under a pointer that is only passing over
+it.
 
 Inspiration: https://x.com/renzobianchi_/status/2097400239162351924 — three
 frames of a glass toolbar, of which `ref.png` is the resting one. What it
