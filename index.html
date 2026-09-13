@@ -1,0 +1,853 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Interface Studies</title>
+    <meta
+      name="description"
+      content="A showcase of small interface studies, each built in plain HTML and CSS and kept self-contained." />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" />
+
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+
+    <!-- What a link to this page looks like when it is pasted somewhere: a
+       title, a sentence and a card image, rather than a bare URL. og.png is a
+       1200x630 render of the masthead, kept as a file because no scraper runs
+       the page — Slack, Discord, iMessage and LinkedIn read these tags off the
+       raw HTML and fetch the image, and none of them will rasterise an SVG.
+
+       The paths are relative, which Slack, Discord and iMessage resolve
+       against the page they fetched. Facebook and LinkedIn want absolute ones:
+       when this gets a host, prefix both with it and add a matching og:url and
+       <link rel="canonical">. Nothing else here changes. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Interface Studies" />
+    <meta
+      property="og:title"
+      content="Interface Studies — small studies in interface design" />
+    <meta
+      property="og:description"
+      content="Each study takes a different approach to one interface detail — a type pair, a spacing rhythm, a hover behaviour — and builds just that, in plain HTML and CSS." />
+    <meta property="og:image" content="og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Interface Studies: small studies in interface design." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:creator" content="@LouisDyrhauge" />
+
+    <link rel="stylesheet" href="index.css" />
+
+    <!-- The theme, before the first paint. The toggle and everything else
+       about it live in index.js, but the answer has to be on <html> by the
+       time the stylesheet draws, or a page set to dark opens with a frame of
+       white paper — which is why these six lines are here and inline rather
+       than at the foot of the page with the rest.
+
+       The stored choice, or the system's when there is none. index.js does
+       the same on load and keeps following the system while nothing is
+       stored; the attribute is the only thing index.css reads, so this is
+       where the two inputs become one. -->
+    <script>
+      try {
+        var t = localStorage.getItem('interface-studies:theme');
+        if (t !== 'dark' && t !== 'light') {
+          t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        document.documentElement.setAttribute('data-theme', t);
+      } catch (err) { /* private mode, or no matchMedia: the page stays light */ }
+    </script>
+  </head>
+  <body>
+    <!-- The page's two controls, in one cluster at the top-right corner.
+
+       Language: every translatable string in this file carries a data-i18n
+       key; index.js swaps them. Study folders are not touched — a demo page
+       is its own document and keeps its own copy.
+
+       Theme: site chrome only, for the same reason. The previews are separate
+       documents that own their own ground, so they stay lit under a dark
+       page. -->
+    <div class="controls">
+      <div class="lang" role="group" aria-label="Language">
+        <button
+          class="lang__btn"
+          type="button"
+          data-lang="en"
+          aria-pressed="true">
+          EN
+        </button>
+        <span class="lang__sep" aria-hidden="true"></span>
+        <button
+          class="lang__btn"
+          type="button"
+          data-lang="da"
+          aria-pressed="false">
+          DA
+        </button>
+      </div>
+
+      <!-- One shape for both states: a disc with a bite out of it, plus the
+         rays. The bite slides off the disc and the rays come in, so the moon
+         becomes the sun rather than being swapped for it. aria-pressed is the
+         state; the label stays put, which is what lets it be read once. -->
+      <button
+        class="theme"
+        type="button"
+        data-theme-toggle
+        aria-pressed="false"
+        data-i18n-aria="a11y.theme"
+        aria-label="Dark mode">
+        <svg class="theme__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <mask id="theme-bite">
+            <rect width="24" height="24" fill="#fff" />
+            <circle class="theme__cut" cx="12" cy="12" r="9" />
+          </mask>
+          <circle class="theme__disc" cx="12" cy="12" r="9" mask="url(#theme-bite)" />
+          <g class="theme__rays">
+            <path d="M12 1v2M12 21v2M3.9 3.9l1.4 1.4M18.7 18.7l1.4 1.4M1 12h2M21 12h2M3.9 20.1l1.4-1.4M18.7 5.3l1.4-1.4" />
+          </g>
+        </svg>
+      </button>
+    </div>
+
+    <header class="head" id="top">
+      <p class="head__eyebrow">
+        <!-- The site mark: the field favicon.svg draws, minus the tile — the page
+           is already that ground. A dot's size falls with its distance from the
+           centre, which is the reference's own `phase` read as a still frame: the
+           corners sit furthest out and so are smallest, and the mark is a burst
+           rather than a dice face. Three tiers evenly stepped rather than scaled
+           straight off the radius — linear on the radius puts the edge and corner
+           dots within half a pixel of each other at the size this actually renders.
+           Three lines of three, so the source reads as the field it draws. -->
+        <svg class="logo" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <circle class="logo__wave" cx="12" cy="12" r="3.7" />
+          <circle class="logo__dot" cx="3.5" cy="3.5" r="2.15" /><circle class="logo__dot" cx="12" cy="3.5" r="2.95" /><circle class="logo__dot" cx="20.5" cy="3.5" r="2.15" />
+          <circle class="logo__dot" cx="3.5" cy="12" r="2.95" /><circle class="logo__core" cx="12" cy="12" r="3.7" /><circle class="logo__dot" cx="20.5" cy="12" r="2.95" />
+          <circle class="logo__dot" cx="3.5" cy="20.5" r="2.15" /><circle class="logo__dot" cx="12" cy="20.5" r="2.95" /><circle class="logo__dot" cx="20.5" cy="20.5" r="2.15" />
+        </svg>
+        Interface Studies
+      </p>
+      <h1 class="head__title" data-i18n="head.title">
+        Small studies in interface design.
+      </h1>
+      <!-- The closing sentence tells you how to work the rail, and that is
+         not the same instruction on a phone as on a laptop — so it is written
+         by index.js from the pointer type, the way the rail's hint is, and
+         only the part that holds true either way is markup. -->
+      <p class="head__lede">
+        <span data-i18n="head.lede">
+          Each study takes a different approach to one interface detail — a
+          type pair, a spacing rhythm, a hover behaviour — and builds just
+          that, in plain HTML and CSS with no framework.
+        </span>
+        <span data-lede-hint>
+          Hover a card to run it in place, or open it at full size.
+        </span>
+      </p>
+
+      <!-- Both halves are facts the page can count, and neither is in the
+         lede. "Scope — a few decisions" and "Each study — stands alone" used
+         to sit here: the lede says the first in its own first sentence and the
+         footer says the second in full, so the row spent ninety pixels
+         repeating what was already on the page twice. A count and a date say
+         how much is here and whether it is still moving, which is what a
+         masthead is for and what nothing else on the page states. Both are
+         written by index.js from the cards. -->
+      <dl class="head__meta">
+        <div class="head__meta-item">
+          <dt class="head__meta-key" data-i18n="meta.latest">Latest</dt>
+          <dd class="head__meta-val" id="meta-latest">&mdash;</dd>
+        </div>
+      </dl>
+    </header>
+
+    <section class="rail">
+      <div class="rail__bar">
+        <p class="rail__count">
+          <span data-i18n="rail.study">Study</span>
+          <span id="rail-index">01</span>
+          /
+          <span id="rail-total">01</span>
+        </p>
+        <nav
+          class="rail__nav"
+          data-i18n-aria="a11y.carousel"
+          aria-label="Carousel">
+          <!-- The rail drifts on its own, so it needs a way to be stopped:
+             anything moving by itself for more than five seconds owes the
+             reader a pause (WCAG 2.2.2), and prefers-reduced-motion is a
+             separate mechanism rather than a substitute for one. index.js
+             hides this button outright when there is no drift to pause —
+             reduced motion, or a viewport wide enough to hold every card.
+             Its label is state, so it lives in index.js with the wrap
+             labels rather than carrying a data-i18n-aria key here. -->
+          <button
+            class="rail__btn rail__btn--drift"
+            type="button"
+            hidden
+            data-rail-drift
+            data-drift="on"
+            aria-label="Pause the carousel">
+            <svg
+              class="rail__btn-icon rail__btn-icon--pause"
+              viewBox="0 0 16 16"
+              fill="currentColor"
+              aria-hidden="true">
+              <rect x="5" y="4" width="2" height="8" rx="0.6" />
+              <rect x="9" y="4" width="2" height="8" rx="0.6" />
+            </svg>
+            <svg
+              class="rail__btn-icon rail__btn-icon--play"
+              viewBox="0 0 16 16"
+              fill="currentColor"
+              aria-hidden="true">
+              <path d="M5.4 3.6a.6.6 0 0 1 .92-.5l6 4.4a.6.6 0 0 1 0 1l-6 4.4a.6.6 0 0 1-.92-.5z" />
+            </svg>
+          </button>
+          <button
+            class="rail__btn"
+            type="button"
+            data-rail-prev
+            data-i18n-aria="a11y.previous"
+            aria-label="Previous">
+            <svg
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.4"
+              aria-hidden="true">
+              <path
+                d="M10 2 4 8l6 6"
+                stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+          </button>
+          <button
+            class="rail__btn"
+            type="button"
+            data-rail-next
+            data-i18n-aria="a11y.next"
+            aria-label="Next">
+            <svg
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.4"
+              aria-hidden="true">
+              <path
+                d="M6 2l6 6-6 6"
+                stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+          </button>
+        </nav>
+      </div>
+
+      <!-- Type filter. The buttons are written by index.js from the types the
+         cards actually declare, so this row is empty markup until it runs and
+         a study of a new type needs nothing added here. It reads the same
+         `type.*` key the card's badge carries — the type is stated once per
+         card and this is not a second place to state it. -->
+      <div
+        class="rail__filter"
+        data-rail-filter
+        role="group"
+        data-i18n-aria="a11y.filter"
+        aria-label="Filter by type"
+        hidden></div>
+
+      <!-- Add a study: copy one <article class="piece"> block and point the
+         iframe at the new folder's preview.html and the title link at its
+         demo.html. Keep the newest first. Everything the quick-look overlay
+         shows is read back out of this block, so nothing is declared twice.
+         Two things here are not yours to set. index.js sorts the rail by
+         data-date, newest first, so where you paste the block does not matter
+         — set the date and let it land. And the number is written from the
+         card's position afterwards, so leave the em dash alone. Both were a
+         second source of truth for something already stated once, and a card
+         added at the front used to invalidate every number below it. -->
+      <div
+        class="rail__track"
+        data-rail-track
+        tabindex="0"
+        role="region"
+        data-i18n-aria="a11y.railRegion"
+        aria-label="Study carousel">
+        <article class="piece" data-piece data-date="2026-09-10T12:00">
+          <div class="piece__frame">
+            <iframe
+              class="piece__preview"
+              data-src="2026-09-liquid-glass-toolbar/preview.html"
+              loading="lazy"
+              scrolling="no"
+              tabindex="-1"
+              aria-hidden="true"
+              data-preview></iframe>
+            <span class="piece__type" data-i18n="type.navigation">
+              Navigation
+            </span>
+            <span class="piece__no">&mdash;</span>
+            <button
+              class="piece__expand"
+              type="button"
+              data-expand
+              data-i18n-aria="cta.quickLookToolbar"
+              aria-label="Quick look: Liquid glass toolbar">
+              <svg
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+                aria-hidden="true">
+                <path
+                  d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+              <span class="piece__expand-text" data-i18n="cta.quickLook">
+                Quick look
+              </span>
+            </button>
+          </div>
+          <div class="piece__body">
+            <span class="piece__slug">2026 &middot; 09</span>
+            <h2 class="piece__title">
+              <a
+                class="piece__link"
+                href="2026-09-liquid-glass-toolbar/demo.html"
+                data-lang-link="2026-09-liquid-glass-toolbar/demo.html"
+                data-i18n="piece.liquidGlassToolbar.title">
+                Liquid glass toolbar
+              </a>
+            </h2>
+            <p
+              class="piece__note"
+              data-note
+              data-i18n="piece.liquidGlassToolbar.note">
+              One glass surface that changes shape &mdash; the selected item
+              opens into a labelled pill, search into a field, the log into a
+              panel &mdash; in six materials off a single recipe.
+            </p>
+            <span class="piece__cta">
+              <span class="piece__cta-text" data-i18n="cta.openDemo">
+                Open demo
+              </span>
+              <svg
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+                aria-hidden="true">
+                <path
+                  d="M4 12 12 4M6 4h6v6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+            </span>
+          </div>
+        </article>
+
+        <article class="piece" data-piece data-date="2026-09-10T11:16">
+          <div class="piece__frame">
+            <iframe
+              class="piece__preview"
+              data-src="2026-09-inked-plate-card/preview.html"
+              loading="lazy"
+              scrolling="no"
+              tabindex="-1"
+              aria-hidden="true"
+              data-preview></iframe>
+            <span class="piece__type" data-i18n="type.card">Card</span>
+            <span class="piece__no">&mdash;</span>
+            <button
+              class="piece__expand"
+              type="button"
+              data-expand
+              data-i18n-aria="cta.quickLookInked"
+              aria-label="Quick look: Inked plate card">
+              <svg
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+                aria-hidden="true">
+                <path
+                  d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+              <span class="piece__expand-text" data-i18n="cta.quickLook">
+                Quick look
+              </span>
+            </button>
+          </div>
+          <div class="piece__body">
+            <span class="piece__slug">2026 &middot; 09</span>
+            <h2 class="piece__title">
+              <a
+                class="piece__link"
+                href="2026-09-inked-plate-card/demo.html"
+                data-lang-link="2026-09-inked-plate-card/demo.html"
+                data-i18n="piece.inkedPlate.title">
+                Inked plate card
+              </a>
+            </h2>
+            <p
+              class="piece__note"
+              data-note
+              data-i18n="piece.inkedPlate.note">
+              An artwork plate and a caption plate with their facing corners
+              cut, over a crop-marked dot grid. The line drawing inks itself on
+              load in pure CSS &mdash; every path declares a length of 1, so one
+              keyframe pair draws all of them without measuring any.
+            </p>
+            <span class="piece__cta">
+              <span class="piece__cta-text" data-i18n="cta.openDemo">
+                Open demo
+              </span>
+              <svg
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+                aria-hidden="true">
+                <path
+                  d="M4 12 12 4M6 4h6v6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+            </span>
+          </div>
+        </article>
+
+        <article class="piece" data-piece data-date="2026-09-10T10:52">
+          <div class="piece__frame">
+            <iframe
+              class="piece__preview"
+              data-src="2026-09-raster-pulse/preview.html"
+              loading="lazy"
+              scrolling="no"
+              tabindex="-1"
+              aria-hidden="true"
+              data-preview></iframe>
+            <span class="piece__type" data-i18n="type.card">Card</span>
+            <span class="piece__no">&mdash;</span>
+            <button
+              class="piece__expand"
+              type="button"
+              data-expand
+              data-i18n-aria="cta.quickLookRaster"
+              aria-label="Quick look: Raster pulse">
+              <svg
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+                aria-hidden="true">
+                <path
+                  d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+              <span class="piece__expand-text" data-i18n="cta.quickLook">
+                Quick look
+              </span>
+            </button>
+          </div>
+          <div class="piece__body">
+            <span class="piece__slug">2026 &middot; 09</span>
+            <h2 class="piece__title">
+              <a
+                class="piece__link"
+                href="2026-09-raster-pulse/demo.html"
+                data-lang-link="2026-09-raster-pulse/demo.html"
+                data-i18n="piece.rasterPulse.title">
+                Raster pulse
+              </a>
+            </h2>
+            <p
+              class="piece__note"
+              data-note
+              data-i18n="piece.rasterPulse.note">
+              A poster card whose dot field works out its own shape. Every dot
+              carries nothing but its grid coordinate; CSS derives whether it
+              belongs to the pattern, which of two tones it takes, and where it
+              sits in the pulse travelling through the field.
+            </p>
+            <span class="piece__cta">
+              <span class="piece__cta-text" data-i18n="cta.openDemo">
+                Open demo
+              </span>
+              <svg
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+                aria-hidden="true">
+                <path
+                  d="M4 12 12 4M6 4h6v6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+            </span>
+          </div>
+        </article>
+
+        <article class="piece" data-piece data-date="2026-09-10T00:27">
+          <div class="piece__frame">
+            <iframe
+              class="piece__preview"
+              data-src="2026-09-drawn-gradients/preview.html"
+              loading="lazy"
+              scrolling="no"
+              tabindex="-1"
+              aria-hidden="true"
+              data-preview></iframe>
+            <span class="piece__type" data-i18n="type.aesthetic">
+              Aesthetic
+            </span>
+            <span class="piece__no">&mdash;</span>
+            <button
+              class="piece__expand"
+              type="button"
+              data-expand
+              data-i18n-aria="cta.quickLookGradients"
+              aria-label="Quick look: Drawn gradients">
+              <svg
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+                aria-hidden="true">
+                <path
+                  d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+              <span class="piece__expand-text" data-i18n="cta.quickLook">
+                Quick look
+              </span>
+            </button>
+          </div>
+          <div class="piece__body">
+            <span class="piece__slug">2026 &middot; 09</span>
+            <h2 class="piece__title">
+              <a
+                class="piece__link"
+                href="2026-09-drawn-gradients/demo.html"
+                data-lang-link="2026-09-drawn-gradients/demo.html"
+                data-i18n="piece.drawnGradients.title">
+                Drawn gradients
+              </a>
+            </h2>
+            <p
+              class="piece__note"
+              data-note
+              data-i18n="piece.drawnGradients.note">
+              Gradient fields made by drawing a few overlapping SVG shapes in
+              flat colour and blurring them past recognition. A stepped
+              silhouette then puts the fill inside a block of type, its treads
+              landing on the same lines.
+            </p>
+            <span class="piece__cta">
+              <span class="piece__cta-text" data-i18n="cta.openDemo">
+                Open demo
+              </span>
+              <svg
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+                aria-hidden="true">
+                <path
+                  d="M4 12 12 4M6 4h6v6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+            </span>
+          </div>
+        </article>
+
+        <article class="piece" data-piece data-date="2026-09-09T00:45">
+          <div class="piece__frame">
+            <iframe
+              class="piece__preview"
+              data-src="2026-09-detail-reveal-card/preview.html"
+              loading="lazy"
+              scrolling="no"
+              tabindex="-1"
+              aria-hidden="true"
+              data-preview></iframe>
+            <span class="piece__type" data-i18n="type.card">Card</span>
+            <span class="piece__no">&mdash;</span>
+            <button
+              class="piece__expand"
+              type="button"
+              data-expand
+              data-i18n-aria="cta.quickLookOf"
+              aria-label="Quick look: Detail reveal card">
+              <svg
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+                aria-hidden="true">
+                <path
+                  d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+              <span class="piece__expand-text" data-i18n="cta.quickLook">
+                Quick look
+              </span>
+            </button>
+          </div>
+          <div class="piece__body">
+            <span class="piece__slug">2026 &middot; 09</span>
+            <h2 class="piece__title">
+              <a
+                class="piece__link"
+                href="2026-09-detail-reveal-card/demo.html"
+                data-lang-link="2026-09-detail-reveal-card/demo.html"
+                data-i18n="piece.detailReveal.title">
+                Detail reveal card
+              </a>
+            </h2>
+            <p
+              class="piece__note"
+              data-note
+              data-i18n="piece.detailReveal.note">
+              A detail panel that rises from the bottom edge on hover, pushing
+              the resting label up ahead of it. Takes any content; a map variant
+              adds contour rings and a pulsing pin.
+            </p>
+            <span class="piece__cta">
+              <span class="piece__cta-text" data-i18n="cta.openDemo">
+                Open demo
+              </span>
+              <svg
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+                aria-hidden="true">
+                <path
+                  d="M4 12 12 4M6 4h6v6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+            </span>
+          </div>
+        </article>
+
+        <div class="piece piece--ghost" aria-hidden="true">
+          <div class="piece__frame">
+            <span class="piece__ghost-text" data-i18n="ghost.next">
+              Next one goes here &mdash; copy _template/
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="rail__progress" data-rail-progress></div>
+    </section>
+
+    <footer class="foot">
+      <div class="foot__main">
+        <div class="foot__brand">
+          <p class="foot__mark">
+            <!-- The site mark: the field favicon.svg draws, minus the tile — the page
+               is already that ground. A dot's size falls with its distance from the
+               centre, which is the reference's own `phase` read as a still frame: the
+               corners sit furthest out and so are smallest, and the mark is a burst
+               rather than a dice face. Three tiers evenly stepped rather than scaled
+               straight off the radius — linear on the radius puts the edge and corner
+               dots within half a pixel of each other at the size this actually renders.
+               Three lines of three, so the source reads as the field it draws. -->
+            <svg class="logo" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <circle class="logo__wave" cx="12" cy="12" r="3.7" />
+              <circle class="logo__dot" cx="3.5" cy="3.5" r="2.15" /><circle class="logo__dot" cx="12" cy="3.5" r="2.95" /><circle class="logo__dot" cx="20.5" cy="3.5" r="2.15" />
+              <circle class="logo__dot" cx="3.5" cy="12" r="2.95" /><circle class="logo__core" cx="12" cy="12" r="3.7" /><circle class="logo__dot" cx="20.5" cy="12" r="2.95" />
+              <circle class="logo__dot" cx="3.5" cy="20.5" r="2.15" /><circle class="logo__dot" cx="12" cy="20.5" r="2.95" /><circle class="logo__dot" cx="20.5" cy="20.5" r="2.15" />
+            </svg>
+            Interface Studies
+          </p>
+          <p class="foot__blurb" data-i18n="foot.blurb">
+            Every study is self-contained. Copy a folder out and it works
+            with nothing else from here — no shared stylesheet, no build step,
+            no dependency on this page.
+          </p>
+
+          <!-- Where the studies came from. It sits down here rather than
+             in the masthead because it is provenance, not a pitch: the
+             sources are credited in the folders, and the folders are where
+             someone checking would look. -->
+          <p class="foot__note" data-i18n="foot.sources">
+            Some studies start from an interface found elsewhere; none is a
+            copy of one. Each folder's notes.md names its source and the
+            decisions the build keeps.
+          </p>
+
+          <!-- Handles live here and nowhere else. -->
+          <nav
+            class="foot__social"
+            data-i18n-aria="a11y.elsewhere"
+            aria-label="Elsewhere">
+            <a
+              class="foot__icon"
+              href="https://github.com/louvalman"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="GitHub">
+              <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                <path
+                  d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8Z" />
+              </svg>
+            </a>
+            <a
+              class="foot__icon"
+              href="https://x.com/LouisDyrhauge"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="X">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path
+                  d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+              </svg>
+            </a>
+          </nav>
+        </div>
+
+        <dl class="foot__meta">
+          <div class="foot__row">
+            <dt class="foot__key" data-i18n="foot.typefaces">Typefaces</dt>
+            <dd class="foot__val">Plus Jakarta Sans &middot; JetBrains Mono</dd>
+          </div>
+          <div class="foot__row">
+            <dt class="foot__key" data-i18n="foot.stack">Stack</dt>
+            <dd class="foot__val" data-i18n="foot.stackVal">
+              HTML and CSS, no build step
+            </dd>
+          </div>
+          <div class="foot__row">
+            <dt class="foot__key" data-i18n="foot.studies">Studies</dt>
+            <dd class="foot__val" id="foot-count">&mdash;</dd>
+          </div>
+        </dl>
+      </div>
+
+      <div class="foot__bar">
+        <p class="foot__line">
+          <span data-i18n="foot.builtBy">Built by</span>
+          <a
+            class="foot__author"
+            href="https://github.com/louvalman"
+            target="_blank"
+            rel="noopener noreferrer">louval</a>
+          <span aria-hidden="true">&middot;</span>
+          2026
+        </p>
+        <a class="foot__top" href="#top">
+          <span data-i18n="foot.backToTop">Back to top</span>
+          <svg
+            viewBox="0 0 16 16"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.4"
+            aria-hidden="true">
+            <path
+              d="M8 13V3M3.5 7.5 8 3l4.5 4.5"
+              stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+        </a>
+      </div>
+    </footer>
+
+    <!-- Quick look. The iframe runs the same preview.html the card does, at its
+       full logical size and with pointer events live, so the component's own
+       hover and focus states work exactly as they do on the demo page. -->
+    <div class="lightbox" data-lightbox hidden>
+      <div class="lightbox__scrim" data-lightbox-close></div>
+      <div
+        class="lightbox__panel"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="lightbox-title">
+        <header class="lightbox__bar">
+          <div class="lightbox__heading">
+            <p class="lightbox__eyebrow" data-lightbox-slug></p>
+            <h2 class="lightbox__title" id="lightbox-title"></h2>
+          </div>
+          <button
+            class="lightbox__close"
+            type="button"
+            data-lightbox-close
+            data-i18n-aria="a11y.closeQuickLook"
+            aria-label="Close quick look">
+            <svg
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              aria-hidden="true">
+              <path d="M4 4l8 8M12 4l-8 8" stroke-linecap="round" />
+            </svg>
+          </button>
+        </header>
+
+        <div class="lightbox__stage">
+          <iframe
+            class="lightbox__frame"
+            data-i18n-title="a11y.livePreview"
+            title="Live component preview"
+            data-lightbox-frame></iframe>
+        </div>
+
+        <!-- Dots are built from whatever variants the preview reports; the
+           index never knows what any of them mean. -->
+        <nav
+          class="lightbox__variants"
+          data-lightbox-variants
+          data-i18n-aria="a11y.variants"
+          aria-label="Variants"
+          hidden>
+          <div class="lightbox__dots" data-lightbox-dots></div>
+          <p
+            class="lightbox__variant-label"
+            data-lightbox-variant-label
+            aria-live="polite"></p>
+        </nav>
+
+        <footer class="lightbox__foot">
+          <p class="lightbox__note" data-lightbox-note></p>
+          <a class="lightbox__link" href="#" data-lightbox-demo>
+            <span data-i18n="cta.openDemo">Open demo</span>
+            <svg
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.4"
+              aria-hidden="true">
+              <path
+                d="M4 12 12 4M6 4h6v6"
+                stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+          </a>
+        </footer>
+      </div>
+    </div>
+
+    <script src="index.js"></script>
+  </body>
+</html>
