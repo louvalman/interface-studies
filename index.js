@@ -543,29 +543,23 @@
   // const further down the file would be a TDZ error on that path.
   const arrivals = new WeakMap();
 
-  // How many cards are inside their grace right now, so the sweep below costs
-  // nothing at all in the usual case, which is none.
-  let graces = 0;
-
   function endGrace(piece) {
     clearTimeout(arrivals.get(piece));
     arrivals.delete(piece);
     if (piece.dataset.arriving !== 'true') return;
     delete piece.dataset.arriving;
-    graces = Math.max(0, graces - 1);
     syncPause(piece);
   }
 
-  // The grace is granted off screen and has to be taken back when the card
-  // stops being off screen: a card travels while its grace runs, so a preview
-  // that loaded out of sight can come into view still performing, which is the
-  // thing the read mark is for. Run from sync, so it revokes at the same moment
-  // everything else about the rail's position is read.
-  function revokeGraces() {
-    if (!graces) return;
-    if (performance.now() - bornAt < SETTLE_IN) return;
+  // Whether each card is on screen, so a card coming into view on a still rail
+  // starts and one leaving stops. Only the ones that changed are told, and the
+  // rects cost the same order as activeIndex's, which sync already pays.
+  function syncVisibility() {
     real().forEach((piece) => {
-      if (piece.dataset.arriving === 'true' && !offScreen(piece)) endGrace(piece);
+      const seen = offScreen(piece) ? 'false' : 'true';
+      if (piece.dataset.seen === seen) return;
+      piece.dataset.seen = seen;
+      syncPause(piece);
     });
   }
 
@@ -577,9 +571,17 @@
     // happens a scrollport out, so this runs itself off screen and what arrives
     // is the finished drawing rather than the drawing being made.
     if (piece.dataset.arriving === 'true') return false;
-    // At the mark, not merely nearest it: nearest flips halfway between two
-    // cards, and half a card in is not being read.
-    return !(onMark && piece.classList.contains('is-active'));
+    // Nothing to see. A loaded card a scrollport away would otherwise go on
+    // running its field forever for nobody, which is the whole of what this
+    // saves once the rail is still.
+    if (offScreen(piece)) return true;
+    // On screen, and not the card being read: it rests, and a resting state is
+    // still a state. What holds it is the rail moving, and the drift is the
+    // rail moving — it writes scrollLeft from a frame callback, so a field
+    // animating under it is animating on the thread it needs. Measured on a
+    // throttled phone profile: the drift's median frame goes 16.7ms to 33.3ms
+    // with the resting fields live, 25 dropped frames in 700 against 457.
+    return drift === 'on';
   }
 
   function syncPause(piece) {
@@ -594,6 +596,12 @@
   function pauseAll(paused) {
     if (paused === pausedAll) return;
     pausedAll = paused;
+    refreshPause();
+  }
+
+  // The drift starting or stopping changes the answer for every card at once,
+  // the way a gesture does. Cheap: syncPause posts only where the answer moved.
+  function refreshPause() {
     real().forEach(syncPause);
   }
 
@@ -670,7 +678,6 @@
     // all, and under the drift it sits there empty for ten seconds. A component
     // drawing itself while the page loads is the page loading.
     if (offScreen(piece) || performance.now() - bornAt < SETTLE_IN) {
-      if (piece.dataset.arriving !== 'true') graces += 1;
       piece.dataset.arriving = 'true';
       clearTimeout(arrivals.get(piece));
       arrivals.set(piece, setTimeout(() => endGrace(piece), SETTLE_IN));
@@ -816,6 +823,7 @@
 
     delete frame.dataset.loaded;
     delete frame.dataset.paused;
+    delete piece.dataset.seen;
     endGrace(piece);
     clearTimeout(readyTimers.get(piece));
     // The skeleton comes back with it: the card is about to hold a blank
@@ -1405,7 +1413,7 @@
       metaLatest.textContent = key ? key.slice(0, 7).replace('-', ' · ') : '—';
     }
 
-    revokeGraces();
+    syncVisibility();
 
     const read = activeIndex();
     const active = read.index;
@@ -1814,6 +1822,7 @@
     track.classList.add('is-drifting');
     cancelAnimationFrame(driftFrame);
     driftFrame = requestAnimationFrame(driftTick);
+    refreshPause();
     syncDriftBtn();
     renderNav();
   }
@@ -1826,6 +1835,7 @@
     drift = 'held';
     cancelAnimationFrame(driftFrame);
     unnudge();
+    refreshPause();
     renderNav();
   }
 
@@ -1858,6 +1868,7 @@
     // Before the settle, so snap measures the cards where they actually are.
     unnudge();
     if (wasRunning && settleAfter !== false) settle();
+    refreshPause();
     syncDriftBtn();
     renderNav();
   }

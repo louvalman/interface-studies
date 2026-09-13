@@ -348,11 +348,19 @@ animating while the rail is being dragged is animating against the drag, on the
 thread the drag needs — and a live component is the whole of what this index
 shows, so every card on screen would be doing it at once.
 
-Paused is the default, and running is the exception: a preview runs only while
-its card is the one at the read mark, or while a pointer is on it. It is sent
-`true` on load, whenever the rail starts moving, and whenever the mark leaves
-its card; `false` when the mark arrives, when a pointer does, and when the rail
-lands.
+What it holds is the rail moving, not the card being off the mark. A preview
+runs while its card is on screen and the rail is still, and stops while the rail
+travels — under a hand, in a step, or on the drift. Off screen it is stopped
+too, since nothing is being shown. It is sent `true` when the rail starts
+moving and when its card leaves the scrollport; `false` when the rail lands,
+when the card comes back into view, and on load once its settling-in grace is
+up.
+
+Holding a card off the mark was the earlier rule and it was too broad: a
+component's resting state is a state, and a preview frozen at its first frame
+shows the component stopped rather than at rest. What keeps a card from
+performing early is `active`, which is the read mark's, and it is untouched by
+any of this.
 
 At the mark means arrived, not nearest. Nearest flips at the halfway point
 between two cards, which is the right answer for the counter and the progress
@@ -668,42 +676,76 @@ thumbnail alone runs 289 dots on their own animations, and the rail drifts, so
 every card eventually arrives. So two things are decided separately: whether a
 preview's document exists, and whether it animates.
 
-**Whether it animates is the read mark.** The card the rail is sitting on runs;
-every other card is paused, however much of it is on screen. A pointer on a card
-runs it too, which is what hover has always meant here. Nothing else does.
+**Whether it animates is whether the rail is still.** A card on screen runs
+while the rail is stopped; everything pauses the moment it moves, and a card
+with none of it on screen is paused whatever the rail is doing.
 
-Proximity used to decide this, and it was the wrong rule. A preview woke a
+The drift counts as moving. It writes `scrollLeft` from a frame callback, so a
+field animating under it is animating on the thread it needs — measured on a
+throttled phone profile, the drift's median frame goes 16.7ms to 33.3ms with
+the resting fields live, and 25 dropped frames in 700 becomes 457. So the rail
+is alive between gestures and still while it travels, which is the same bargain
+the pause was introduced to make: nothing animates against the motion.
+
+**What the read mark governs is performing**, which is a different question and
+`active` is what carries it. The card at the mark is told to perform; a pointer
+on a card tells it too, which is what hover has always meant here. Nothing else
+is. A component's open state, its entry, its loud version — all of it hangs off
+`active`, so a card that is merely on screen shows its resting state and not its
+performance.
+
+Proximity used to decide performing, and it was the wrong rule. A preview woke a
 scrollport before it arrived, so a card a third of the way onto the screen was
 already running its open state, and a component that introduces itself on load —
 the plate that inks its own line drawing — did the introducing off to the side.
 By the time the card was yours to look at, the thing worth seeing had already
-happened next to it. Pausing holds an animation at its first frame, so entries
-now play on arrival.
+happened next to it.
 
-The exception is the moment a preview loads, and it is there because holding a
-component at its first frame assumes there is something on that frame. For one
+The two were one rule for a while, and that was the error: paused was the
+default and the mark was the only exception, so a card off the mark was frozen
+rather than resting. A resting state is still a state — `2026-09-raster-pulse`
+is a field that breathes and `2026-09-detail-reveal-card` has a ping that is the
+only thing moving in it — and holding those at their first frame does not show
+the component at rest, it shows it stopped. A rail of stopped cards reads as a
+page that has crashed.
+
+The cost is real and it is worth knowing where it lands. Letting the fields run
+while the rail moves is what the numbers above rule out. Letting them run while
+it is still costs the head of the next gesture, because the pause is a message
+into five documents that then restyle everything they are animating:
+`2026-09-raster-pulse` alone has 289 dots to re-state. Measured from
+`pointerdown`, the worst frame in the first ten of a drag is 17ms unthrottled
+either way, 67ms against 17ms at 2x, and 150ms against 33ms at 4x. So there is
+nothing in it on a desktop and something in it on a slow phone, for the tenth
+of a second before the hush lands. If that ever reads as a hitch, the rule to
+narrow is this one — not the read mark, which is about something else.
+
+A preview still loads paused, because a card off screen is paused and loading
+happens a scrollport out. The exception is the moment it loads, and it is there
+because holding a component at its first frame assumes there is something on
+that frame. For one
 that draws itself — the plate, again — the first frame is an empty card, and
 under the drift it sits in view empty for ten seconds before it reaches the mark.
 So a freshly loaded preview gets `SETTLE_IN` to reach its resting state before
 the pause takes it: long enough for the slowest entry in the set, measured.
 
-Granted off screen only, which loading a full scrollport out makes the ordinary
-case — a card you can see follows the read mark like every other card, and
-giving the grace to one already a third onto the screen is the thing the read
-mark exists to prevent. It is revoked, not merely withheld: a card travels while
-its grace runs, so `revokeGraces` ends it the moment the card is no longer off
-screen, from `sync`, where the rail's position is read anyway.
+Granted off screen, which loading a full scrollport out makes the ordinary case,
+and on the page's own first pass, because nothing has been read yet: the whole
+rail arrives at once and the second card is a third on screen whatever the rail
+does, so holding it at its first frame is not a card introducing itself early,
+it is a card that never introduces itself at all. A component drawing itself
+while the page loads is the page loading.
 
-The page's own first pass is the second exception. Nothing has been read yet,
-the whole rail arrives at once, and the second card is a third on screen
-whatever the rail does — so holding it at its first frame is not a card
-introducing itself early, it is a card that never introduces itself at all. A
-component drawing itself while the page loads is the page loading.
+The grace runs a component once, off screen, and what arrives at the mark is the
+finished drawing. The card then performs on arrival the way every other one does
+— the plate re-inks under `--live`, so the drawing is still made in front of you
+when it is yours to look at.
 
-The grace runs a component once, at rest, off screen. What arrives at the mark
-is the finished drawing, and the card then performs on arrival the way every
-other one does — the plate re-inks under `--live`, so the drawing is still made
-in front of you when it is yours to look at.
+`syncVisibility` is what carries the on-screen half, from `sync` so it is read
+at the same moment as everything else about the rail's position. It posts only
+where the answer moved, and its rects are the same order `activeIndex` already
+pays for: measured, the sweep on its own costs nothing at all — 33ms worst frame
+in the first ten of a drag, the same as without it.
 
 **Whether the document exists is two bands**, and they only load and unload.
 Loading starts a full scrollport out, where it used to start a quarter of one —
