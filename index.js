@@ -675,6 +675,7 @@
   // point would be a ReferenceError on that path.
   let landing = false;
   let landTimer = 0;
+  let landTarget = null;
 
   function gesturing() {
     return touching || dragging || landing || stepFrame !== 0;
@@ -1423,50 +1424,86 @@
     settleWork();
   }
 
-  // A touch release is landed by the browser: its own momentum, its own snap.
+  // A touch release: the rail picks the card, the platform runs the animation.
   //
-  // Taking the landing back was what felt wrong — the gesture is scrolled on
-  // the compositor and then a rAF loop wrote scrollLeft for 240ms on this
-  // thread instead. But aiming a scrollTo at a computed target was only half a
-  // fix, and it broke where the cards stop: momentum is still running when the
-  // finger lifts, so a scroll animation started against it lands where the two
-  // happen to meet rather than on a card — a card in the middle of the
-  // scrollport instead of on the mark.
+  // Three things have to be true at once, and each previous attempt had two.
+  // The animation must not run on this thread — a rAF loop writing scrollLeft
+  // for 240ms is what "laggy between cards" was. The rail must land on the
+  // mark, left-aligned, every time. And one swipe must be one study.
   //
-  // Snap already knows where the cards are, and mandatory snap applies at the
-  // end of a scroll including its momentum. So the whole of the landing is:
-  // give the class back and wait. Nothing here writes scrollLeft, which is why
-  // nothing here can fight what the platform is doing.
+  // Leaving it all to momentum and snap gave the first two and lost the third:
+  // scroll-snap-stop only governs a fling if snap is on when the browser plans
+  // it, and snap is off for the length of the gesture so that a finger landing
+  // on a drifting rail is not yanked. The fling is planned unconstrained, so it
+  // stops on a snap point but not on the next one.
   //
-  // Waiting matters as much as not touching it. The rail counts itself as
-  // moving until the scroll stops, so the recycle holds off — a write would cut
-  // the momentum short — and the read mark does not start a card until it has
-  // arrived.
+  // So the card is chosen here and the travelling is the platform's. The fling
+  // is cancelled first — an instant write aborts what the browser had in
+  // flight, which is the step the previous attempt was missing, and why a
+  // smooth scroll aimed at a target used to land wherever it met the momentum.
+  // Snap stays off until it arrives, because by then the rail is already on a
+  // snap position and giving the class back moves nothing.
   let settleEnd = null;
+
+  // The lattice the cards actually sit on. A gesture that began on a drifting
+  // rail began between two of them, and every target has to be one of them
+  // whatever the arithmetic started from.
+  function snapPos(at) {
+    const w = step();
+    const row = laidOut();
+    if (!row.length || w <= 0) return at;
+    const base = row[0].offsetLeft - sized().inset;
+    return base + Math.round((at - base) / w) * w;
+  }
 
   function endLanding() {
     if (!landing) return;
     landing = false;
     clearTimeout(landTimer);
     if (settleEnd) { track.removeEventListener('scrollend', settleEnd); settleEnd = null; }
+    // The backstop for an engine that let the fling through anyway: the rail is
+    // supposed to be on the mark by now, and if it is not this puts it there
+    // without an animation to argue with.
+    if (landTarget !== null && Math.abs(track.scrollLeft - landTarget) > 1) {
+      track.scrollLeft = landTarget;
+    }
+    landTarget = null;
+    track.classList.remove('is-dragging');
     recycle();
     settleWork();
   }
 
   function land() {
-    // Snap comes back now, while the scroll is still travelling. Restored to a
-    // rail that has already stopped, it jumps to the nearest card — the yank
-    // .is-dragging exists to prevent. Restored mid-flight it is what chooses
-    // where the momentum ends.
-    track.classList.remove('is-dragging');
+    const w = step();
+    if (w <= 0) { landing = true; endLanding(); return; }
+
+    const here = track.scrollLeft;
+    // Finger travel only: momentum has not happened yet at touchend, so this is
+    // a clean measure of what was asked for rather than of what the platform
+    // was about to add to it.
+    const covered = (here - touchFrom) / w;
+    let cards = 0;
+    if (Math.abs(covered) >= SNAP_FRACTION) {
+      // At least one, and more only if the finger itself crossed more than one.
+      // Momentum is not consulted, which is what stops a flick running through
+      // three studies.
+      cards = Math.sign(covered) * Math.max(1, Math.round(Math.abs(covered)));
+    }
+
+    const target = snapPos(touchFrom) + cards * w;
+    landTarget = target;
     landing = true;
+
     clearTimeout(landTimer);
     settleEnd = () => endLanding();
     track.addEventListener('scrollend', settleEnd);
-    // scrollend is not everywhere yet, and momentum that is interrupted may
-    // never send one. The timeout is the backstop, longer than a flick takes to
-    // run out.
-    landTimer = setTimeout(endLanding, 1200);
+    landTimer = setTimeout(endLanding, 900);
+
+    // Cancel the fling, then travel. Two scrolls in the same task: the instant
+    // one aborts whatever was in flight, the smooth one is the only thing left
+    // moving the rail.
+    track.scrollLeft = here;
+    track.scrollTo({ left: target, behavior: reduced.matches ? 'auto' : 'smooth' });
   }
 
   function scrollBy(direction) {
@@ -1938,9 +1975,12 @@
   // stopped between cards: it decided a target from where the finger lifted,
   // while the momentum it could not see carried on past it.
   let touching = false;
+  let touchFrom = 0;      // scroll position at touchstart, and the only thing
+                          // the gesture records: how far the finger took it
 
   track.addEventListener('touchstart', () => {
     touching = true;
+    touchFrom = track.scrollLeft;
     // Snap comes off for the length of the gesture only, so a finger landing on
     // a drifting rail is not yanked to the nearest card under it. land() gives
     // it back while the scroll is still travelling, which is what lets snap

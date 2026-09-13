@@ -521,29 +521,42 @@ it, running on the one thread everything else is on, and that swap is what
 is already driven from script and a scripted settle matches what came before
 it; on touch it replaced something better.
 
-Aiming a `scrollTo` at a computed target was only half the fix, and it broke
-where the cards stop. Momentum is still running when the finger lifts, so a
-scroll animation started against it lands where the two happen to meet rather
-than on a card — which put cards in the middle of the scrollport instead of on
-the mark. The rail cannot see the momentum and should not be guessing at it.
+Three things have to be true at once, and each attempt at this had two of them.
+The animation must not run on this thread. The rail must land on the mark, left
+aligned, every time. And one swipe must be one study.
 
-So `land()` decides nothing. It gives `.is-dragging` back while the scroll is
-still travelling — mandatory snap applies at the end of a scroll including its
-momentum, so restoring it mid-flight is what chooses where the momentum ends,
-where restoring it to an already-stopped rail is the yank the class exists to
-prevent — and then waits for `scrollend`, with a timeout as the backstop for
-engines that do not send one or a scroll that is interrupted. Nothing in the
-landing writes `scrollLeft`, which is why nothing in it can fight the platform.
+Leaving the whole landing to momentum and snap gave the first two and lost the
+third. `scroll-snap-stop: always` only governs a fling if snap is on when the
+browser *plans* it, and snap is off for the length of the gesture so a finger
+landing on a drifting rail is not yanked — so the fling is planned
+unconstrained and stops on a snap point, but not on the next one. It went too
+far, and nothing made a small drag advance at all.
 
-Waiting matters as much as not touching it: `gesturing()` counts the landing as
-the rail still moving, so the recycle holds off — a write would cut the momentum
-short — and the read mark does not start a card until it has arrived.
+Aiming a `scrollTo` at a computed target gave the first and third and lost the
+second, because momentum is still running when the finger lifts: an animation
+started against it lands where the two happen to meet, which is a card in the
+middle of the scrollport.
 
-`scroll-snap-stop: always` on `.piece` is where "one swipe, one study" is now
-stated, in place of arithmetic over the speed at `touchend`. What that costs is
-a small deliberate drag: snap returns it to the card it started on, where the
-old rule advanced on a tenth of a card. That is the price of the landing being
-the browser's, and the browser's is the one that lands on the mark every time.
+So `land()` chooses the card and the platform does the travelling. The fling is
+cancelled first — an instant write aborts what the browser had in flight, and
+that is the step the aiming attempt was missing — and only then does the smooth
+scroll start, with nothing left to argue with it. `snapPos()` puts the target on
+the lattice the cards actually sit on, because a gesture that began on a
+drifting rail began between two of them. Snap stays off until it arrives, by
+which point the rail is already on a snap position and giving the class back
+moves nothing. `endLanding` carries a backstop: if the rail is not on the mark
+after all, it is put there without an animation to argue with.
+
+How far it goes is the finger's, never momentum's. `covered` is read at
+`touchend`, before momentum has added anything, so it measures what was asked
+for: past `SNAP_FRACTION` it is at least one card, and more only if the finger
+itself crossed more than one. That is what stops a flick running through three
+studies.
+
+Waiting matters as much as the choosing: `gesturing()` counts the landing as
+the rail still moving, so the recycle holds off — a write would cut the
+animation short — and the read mark does not start a card until it has arrived.
+`scrollend` ends it, with a timeout backstop for engines that do not send one.
 
 The pointer path still steps itself, through `stepTo`, and keeps the old
 arithmetic — `SNAP_FRACTION`, the flick floor, all of it. There is nothing
