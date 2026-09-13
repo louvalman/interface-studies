@@ -521,22 +521,36 @@ it, running on the one thread everything else is on, and that swap is what
 is already driven from script and a scripted settle matches what came before
 it; on touch it replaced something better.
 
-`glide()` hands the landing to `scrollTo({ behavior: 'smooth' })` — the same
-animation the platform uses for its own snapping, running where the scrolling
-runs. What it costs is that it cannot be steered mid-flight: a `scrollLeft`
-write cancels a native smooth scroll, so the recycle and the scroll handler
-both hold off until it lands, and `gesturing()` counts a glide as the rail
-still moving. The row carries three cards of slack either side, which is more
-than one settle can spend. Snap comes back only when it has arrived, because
-mandatory snap restored mid-flight yanks the scroll to the nearest card instead
-of letting it land — the same reason the release has always run before
-`.is-dragging` comes off. `scrollend` ends it, with a timeout as the backstop
-where that event is missing or the scroll is interrupted.
+Aiming a `scrollTo` at a computed target was only half the fix, and it broke
+where the cards stop. Momentum is still running when the finger lifts, so a
+scroll animation started against it lands where the two happen to meet rather
+than on a card — which put cards in the middle of the scrollport instead of on
+the mark. The rail cannot see the momentum and should not be guessing at it.
 
-The pointer path still steps itself, through `stepTo`. There is nothing native
-to defer to there: the drag is scripted from `pointermove`, so the settle is
-consistent with it, and a recycle mid-step has to be able to move both ends of
-the animation underneath it.
+So `land()` decides nothing. It gives `.is-dragging` back while the scroll is
+still travelling — mandatory snap applies at the end of a scroll including its
+momentum, so restoring it mid-flight is what chooses where the momentum ends,
+where restoring it to an already-stopped rail is the yank the class exists to
+prevent — and then waits for `scrollend`, with a timeout as the backstop for
+engines that do not send one or a scroll that is interrupted. Nothing in the
+landing writes `scrollLeft`, which is why nothing in it can fight the platform.
+
+Waiting matters as much as not touching it: `gesturing()` counts the landing as
+the rail still moving, so the recycle holds off — a write would cut the momentum
+short — and the read mark does not start a card until it has arrived.
+
+`scroll-snap-stop: always` on `.piece` is where "one swipe, one study" is now
+stated, in place of arithmetic over the speed at `touchend`. What that costs is
+a small deliberate drag: snap returns it to the card it started on, where the
+old rule advanced on a tenth of a card. That is the price of the landing being
+the browser's, and the browser's is the one that lands on the mark every time.
+
+The pointer path still steps itself, through `stepTo`, and keeps the old
+arithmetic — `SNAP_FRACTION`, the flick floor, all of it. There is nothing
+native to defer to there: the drag is scripted from `pointermove`, so a
+scripted settle is consistent with it, there is no momentum to fight, and a
+recycle mid-step has to be able to move both ends of the animation underneath
+it.
 
 Cards run their preview in place, via the message contract above. The quick-look
 overlay iframes the same `preview.html` again at full logical size with pointer

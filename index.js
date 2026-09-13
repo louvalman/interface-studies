@@ -669,16 +669,15 @@
   // remembered rather than done, and the rail catches up the moment it settles.
   const waiting = new Set();
 
-  // Declared here rather than beside glide(), which is far below: gesturing()
+  // Declared here rather than beside land(), which is far below: gesturing()
   // is called from loadPreview, and loadPreview runs synchronously during setup
   // on a browser with no IntersectionObserver. A `let` declared after this
   // point would be a ReferenceError on that path.
-  let gliding = false;
-  let glideTimer = 0;
-  let glideEnd = null;
+  let landing = false;
+  let landTimer = 0;
 
   function gesturing() {
-    return touching || dragging || gliding || stepFrame !== 0;
+    return touching || dragging || landing || stepFrame !== 0;
   }
 
   // The two halves settle at different moments, because they are waiting on
@@ -1424,55 +1423,50 @@
     settleWork();
   }
 
-  // A touch release is landed by the browser, not by a rAF loop.
+  // A touch release is landed by the browser: its own momentum, its own snap.
   //
-  // The gesture itself is scrolled natively — on the compositor, off this
-  // thread — and then the rail used to take the landing back and animate
-  // scrollLeft itself for 240ms. On a phone that swaps the platform's own
-  // momentum for an imitation of it, running on the one thread everything else
-  // is on, and that swap is what "not smooth between cards" was. Desktop never
-  // showed it because the drag there is already driven from script, so a
-  // scripted settle matches what came before it; on touch it replaces
-  // something better.
+  // Taking the landing back was what felt wrong — the gesture is scrolled on
+  // the compositor and then a rAF loop wrote scrollLeft for 240ms on this
+  // thread instead. But aiming a scrollTo at a computed target was only half a
+  // fix, and it broke where the cards stop: momentum is still running when the
+  // finger lifts, so a scroll animation started against it lands where the two
+  // happen to meet rather than on a card — a card in the middle of the
+  // scrollport instead of on the mark.
   //
-  // scrollTo with behavior: smooth is the same animation the platform uses for
-  // its own snapping, and it runs where the scrolling runs. What it costs is
-  // that it cannot be steered mid-flight — a scrollLeft write cancels it — so
-  // the recycle holds off until it lands. The row carries three cards of slack
-  // either side, which is more than one settle can spend.
-  function endGlide() {
-    if (!gliding) return;
-    gliding = false;
-    clearTimeout(glideTimer);
-    if (glideEnd) { track.removeEventListener('scrollend', glideEnd); glideEnd = null; }
-    // Snap comes back only now. It is mandatory, so restoring it mid-flight
-    // would yank the scroll to the nearest card instead of letting it arrive —
-    // the same reason release() has always run before this class comes off.
-    track.classList.remove('is-dragging');
+  // Snap already knows where the cards are, and mandatory snap applies at the
+  // end of a scroll including its momentum. So the whole of the landing is:
+  // give the class back and wait. Nothing here writes scrollLeft, which is why
+  // nothing here can fight what the platform is doing.
+  //
+  // Waiting matters as much as not touching it. The rail counts itself as
+  // moving until the scroll stops, so the recycle holds off — a write would cut
+  // the momentum short — and the read mark does not start a card until it has
+  // arrived.
+  let settleEnd = null;
+
+  function endLanding() {
+    if (!landing) return;
+    landing = false;
+    clearTimeout(landTimer);
+    if (settleEnd) { track.removeEventListener('scrollend', settleEnd); settleEnd = null; }
     recycle();
     settleWork();
   }
 
-  function glide(target) {
-    // Nothing to travel: a tap, or a gesture that asked for the card it was
-    // already on. Finishing here rather than waiting on a scrollend that will
-    // never fire, because no scroll is about to happen.
-    if (Math.abs(target - track.scrollLeft) < 1) {
-      track.classList.remove('is-dragging');
-      recycle();
-      settleWork();
-      return;
-    }
-
-    gliding = true;
-    clearTimeout(glideTimer);
-    glideEnd = () => endGlide();
-    track.addEventListener('scrollend', glideEnd);
-    // scrollend is not everywhere yet, and a smooth scroll that is interrupted
-    // may never send one. The timeout is the backstop.
-    glideTimer = setTimeout(endGlide, 700);
-
-    track.scrollTo({ left: target, behavior: reduced.matches ? 'auto' : 'smooth' });
+  function land() {
+    // Snap comes back now, while the scroll is still travelling. Restored to a
+    // rail that has already stopped, it jumps to the nearest card — the yank
+    // .is-dragging exists to prevent. Restored mid-flight it is what chooses
+    // where the momentum ends.
+    track.classList.remove('is-dragging');
+    landing = true;
+    clearTimeout(landTimer);
+    settleEnd = () => endLanding();
+    track.addEventListener('scrollend', settleEnd);
+    // scrollend is not everywhere yet, and momentum that is interrupted may
+    // never send one. The timeout is the backstop, longer than a flick takes to
+    // run out.
+    landTimer = setTimeout(endLanding, 1200);
   }
 
   function scrollBy(direction) {
@@ -1529,8 +1523,9 @@
     // of itself.
     // Never under a glide either: a scrollLeft write cancels a native smooth
     // scroll, and the recycle would stop it halfway.
-    if (!stepFrame && !dragging && !touching && !gliding && drift !== 'on') recycle();
-    if (touching) sampleTouch();
+    // Never while a landing is still travelling: a scrollLeft write would cut
+    // the momentum short, and the browser is mid-decision about where to snap.
+    if (!stepFrame && !dragging && !touching && !landing && drift !== 'on') recycle();
     syncSoon();
   }, { passive: true });
 
@@ -1905,13 +1900,9 @@
   // originScroll is the scroll the drag started from, kept in step with every
   // recycle underneath it — so counting cards from there is counting them from
   // where the hand started, whatever the row did on the way.
-  function release(native) {
+  function release() {
     const w = step();
-    if (w <= 0) {
-      if (native) { track.classList.remove('is-dragging'); settleWork(); }
-      else settle();
-      return;
-    }
+    if (w <= 0) { settle(); return; }
 
     const covered = (track.scrollLeft - originScroll) / w;
     const whole = Math.trunc(covered);
@@ -1932,65 +1923,44 @@
       cards = -Math.sign(speed);
     }
 
-    const target = originScroll + cards * w;
-    if (native) glide(target);
-    else stepTo(target, RELEASE_MS);
+    stepTo(originScroll + cards * w, RELEASE_MS);
   }
 
   // --- the touch gesture ------------------------------------------------
 
-  // Watched rather than driven. The browser scrolls the rail; this records
-  // where the gesture started and how fast it was going when it ended, and
-  // hands both to the same release() the mouse drag uses — so a swipe lands on
-  // the next study the way a drag does, without any of it running through the
-  // main thread while the finger is down.
+  // Watched, not driven, and now not measured either. The browser scrolls the
+  // rail, carries its own momentum and picks the card to snap to; this only
+  // notes that a finger is down, so that everything else — the recycle, the
+  // read mark, the drift — knows to keep out of the way.
+  //
+  // It used to sample the scroll's speed and hand it to release() to work out
+  // where the gesture meant to land. That arithmetic was the reason the rail
+  // stopped between cards: it decided a target from where the finger lifted,
+  // while the momentum it could not see carried on past it.
   let touching = false;
-  let touchFrom = 0;      // scroll position at touchstart, moved by any recycle
-  let touchPos = 0;       // last sampled position
-  let touchAt = 0;        // and when it was sampled
-  let touchSpeed = 0;     // px per ms of scroll, signed the way scrollLeft runs
 
   track.addEventListener('touchstart', () => {
     touching = true;
-    touchFrom = track.scrollLeft;
-    touchPos = touchFrom;
-    touchAt = performance.now();
-    touchSpeed = 0;
-    // Snap comes off for the gesture, so the browser does not land it on the
-    // nearest card before release() has said which one it should be — and so a
-    // finger landing on a drifting rail is not yanked backwards.
+    // Snap comes off for the length of the gesture only, so a finger landing on
+    // a drifting rail is not yanked to the nearest card under it. land() gives
+    // it back while the scroll is still travelling, which is what lets snap
+    // choose where the momentum ends.
     track.classList.add('is-dragging');
     driftStop(true, false);
     hush();
     pauseAll(true);
   }, { passive: true });
 
-  // Sampled off the scroll rather than off the touch, because the scroll is
-  // what actually moved: on a momentum surface the finger and the rail part
-  // company, and it is the rail's speed that says where it was headed.
-  function sampleTouch() {
-    const now = performance.now();
-    const dt = now - touchAt;
-    if (dt <= 0) return;
-    const at = track.scrollLeft;
-    touchSpeed = (at - touchPos) / dt;
-    touchPos = at;
-    touchAt = now;
-  }
-
   function endTouch() {
     if (!touching) return;
     touching = false;
-    sampleTouch();
-    // Before release(), which starts the step and would defer these again.
+    // Before the landing, which would defer these again for as long as the
+    // momentum runs.
     drainWork();
-    // release() reads originScroll and speed, so the gesture is handed over in
-    // those terms: speed is negated because it measures the scroll rather than
-    // the pointer, and the two run opposite ways.
-    originScroll = touchFrom;
-    speed = -touchSpeed;
-    // The browser lands it. .is-dragging comes off when it has — see glide().
-    release(true);
+    // Nothing is decided here. Where a flick ends is momentum's, and which card
+    // it stops on is snap's — see land(). The rail's only job is to stop
+    // holding snap off, and to wait.
+    land();
   }
 
   track.addEventListener('touchend', endTouch, { passive: true });
