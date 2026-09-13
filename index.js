@@ -521,9 +521,62 @@
   // parsed before the card lands, or you watch it arrive instead. It just
   // arrives stopped. A paused animation holds at its first frame, so the entry
   // plays on arrival rather than having played on approach.
+  // How long a freshly loaded preview may run before the pause takes it. Long
+  // enough for the slowest entry in the set: the inked plate's line drawing is
+  // 520ms with up to 570ms of stagger behind it.
+  const SETTLE_IN = 1200;
+
+  // When this page's own previews were born, so the first pass can be told
+  // apart from a card scrolling into view later.
+  const bornAt = performance.now();
+
+  // Nothing of it within the scrollport. Costs a pair of rects, and is only
+  // read when a preview announces itself.
+  function offScreen(piece) {
+    const tr = track.getBoundingClientRect();
+    const r = piece.getBoundingClientRect();
+    return r.right <= tr.left || r.left >= tr.right;
+  }
+
+  // One timer per card for the settling-in grace. Declared up here with the
+  // rest of the grace: dropPreview ends a grace and runs during setup, so a
+  // const further down the file would be a TDZ error on that path.
+  const arrivals = new WeakMap();
+
+  // How many cards are inside their grace right now, so the sweep below costs
+  // nothing at all in the usual case, which is none.
+  let graces = 0;
+
+  function endGrace(piece) {
+    clearTimeout(arrivals.get(piece));
+    arrivals.delete(piece);
+    if (piece.dataset.arriving !== 'true') return;
+    delete piece.dataset.arriving;
+    graces = Math.max(0, graces - 1);
+    syncPause(piece);
+  }
+
+  // The grace is granted off screen and has to be taken back when the card
+  // stops being off screen: a card travels while its grace runs, so a preview
+  // that loaded out of sight can come into view still performing, which is the
+  // thing the read mark is for. Run from sync, so it revokes at the same moment
+  // everything else about the rail's position is read.
+  function revokeGraces() {
+    if (!graces) return;
+    if (performance.now() - bornAt < SETTLE_IN) return;
+    real().forEach((piece) => {
+      if (piece.dataset.arriving === 'true' && !offScreen(piece)) endGrace(piece);
+    });
+  }
+
   function wantPaused(piece) {
     if (pausedAll) return true;                        // the rail is moving
     if (piece.dataset.active === 'true') return false; // hovered, focused, handed off
+    // A component that draws itself on load has nothing on screen until it has
+    // done so, and paused at its first frame that is an empty card. Loading
+    // happens a scrollport out, so this runs itself off screen and what arrives
+    // is the finished drawing rather than the drawing being made.
+    if (piece.dataset.arriving === 'true') return false;
     // At the mark, not merely nearest it: nearest flips halfway between two
     // cards, and half a card in is not being read.
     return !(onMark && piece.classList.contains('is-active'));
@@ -598,6 +651,30 @@
     // Loads drain when the hand lifts, so one can arrive while the step that
     // follows is still running. It joins the others paused rather than being
     // the one card animating through the landing.
+    // ...but not before it has had SETTLE_IN to reach its resting state, which
+    // for a component that draws itself is the difference between a thumbnail
+    // and an empty frame.
+    //
+    // Off screen, or on the page's own first pass. A card you can see follows
+    // the read mark like every other card does — the grace is for the one
+    // arriving from outside, and granting it to a card already a third onto the
+    // screen is the thing the read mark exists to prevent. Loading starts a
+    // scrollport out, so off screen is the ordinary case; what it rules out is
+    // the load that drains late enough in a step that the card has come into
+    // view under it.
+    //
+    // The first pass is the exception because nothing has been read yet: the
+    // whole rail arrives at once and the second card is a third on screen
+    // whatever the rail does, so holding it at its first frame is not a card
+    // introducing itself early — it is a card that never introduced itself at
+    // all, and under the drift it sits there empty for ten seconds. A component
+    // drawing itself while the page loads is the page loading.
+    if (offScreen(piece) || performance.now() - bornAt < SETTLE_IN) {
+      if (piece.dataset.arriving !== 'true') graces += 1;
+      piece.dataset.arriving = 'true';
+      clearTimeout(arrivals.get(piece));
+      arrivals.set(piece, setTimeout(() => endGrace(piece), SETTLE_IN));
+    }
     syncPause(piece);
     if (piece.dataset.active === 'true') tell(piece, true);
   }
@@ -675,6 +752,7 @@
   // point would be a ReferenceError on that path.
   let landing = false;
   let landTimer = 0;
+  let quietPoll = 0;
 
   function gesturing() {
     return touching || dragging || landing || stepFrame !== 0;
@@ -738,6 +816,7 @@
 
     delete frame.dataset.loaded;
     delete frame.dataset.paused;
+    endGrace(piece);
     clearTimeout(readyTimers.get(piece));
     // The skeleton comes back with it: the card is about to hold a blank
     // document, and lifting the cover off that is worse than covering it.
@@ -1326,6 +1405,8 @@
       metaLatest.textContent = key ? key.slice(0, 7).replace('-', ' · ') : '—';
     }
 
+    revokeGraces();
+
     const read = activeIndex();
     const active = read.index;
     const w = step();
@@ -1479,6 +1560,8 @@
 
   function stopWaiting() {
     clearTimeout(landTimer);
+    clearInterval(quietPoll);
+    quietPoll = 0;
     if (landEnd) { track.removeEventListener('scrollend', landEnd); landEnd = null; }
   }
 
@@ -1499,6 +1582,28 @@
     stopWaiting();
     landEnd = () => finishLanding();
     track.addEventListener('scrollend', landEnd);
+
+    // scrollend is the proper signal, and this is what covers an engine that is
+    // late with it or does not send one. Waiting out the backstop instead left
+    // the card sitting on the mark for the better part of a second before it was
+    // told to perform — dead air between arriving and anything happening.
+    //
+    // Quiet alone is not enough to go on. scrollLeft quantises to whole pixels,
+    // so the tail of an ease-out sits on one of them for longer than these two
+    // ticks while the scroll is still live, and finishing there would recycle
+    // the rail mid-motion — which is the seam jump. So the rail has to be quiet
+    // AND on a snap position: landed, not merely slow. Anything else waits out
+    // the backstop, which is what it is for.
+    let was = track.scrollLeft;
+    let still = 0;
+    quietPoll = setInterval(() => {
+      const at = track.scrollLeft;
+      if (at !== was) { was = at; still = 0; return; }
+      if (++still < 2) return;
+      if (Math.abs(at - snapPos(at)) > 1) return;
+      finishLanding();
+    }, 45);
+
     landTimer = setTimeout(finishLanding, wait);
   }
 

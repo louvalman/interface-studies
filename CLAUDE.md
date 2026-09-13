@@ -563,6 +563,19 @@ off and giving it back to a rail standing between two cards is the yank.
 `gesturing()` counts the landing as the rail still moving, so the recycle holds
 off and the read mark does not start a card until it has arrived.
 
+What ends the landing is `scrollend`, and a backstop timer behind it in case
+none comes. The backstop alone was a second of dead air: the card was on the
+mark, visibly stopped, and nothing had started — the animation is told to run by
+`settleWork`, which the landing has to finish first. So a quiet poll sits beside
+`scrollend` and ends it as soon as the rail has stopped moving, about 90ms.
+
+Quiet is not enough on its own to go on. `scrollLeft` quantises to whole pixels,
+so the tail of an ease-out sits on one of them for longer than those two ticks
+while the scroll is still live, and ending the landing there would recycle the
+rail mid-motion — which is the seam jump. The poll therefore wants the rail
+quiet *and* on a snap position: landed, not merely slow. Anything else waits out
+the backstop, which is what it is for.
+
 **On testing this.** A throttled Chromium reported the rAF version as flawless —
 every frame 16.7ms, nothing dropped — on code that stuttered plainly on an
 iPhone. It has no touch scrolling and no momentum, so the fling path cannot be
@@ -666,6 +679,31 @@ the plate that inks its own line drawing — did the introducing off to the side
 By the time the card was yours to look at, the thing worth seeing had already
 happened next to it. Pausing holds an animation at its first frame, so entries
 now play on arrival.
+
+The exception is the moment a preview loads, and it is there because holding a
+component at its first frame assumes there is something on that frame. For one
+that draws itself — the plate, again — the first frame is an empty card, and
+under the drift it sits in view empty for ten seconds before it reaches the mark.
+So a freshly loaded preview gets `SETTLE_IN` to reach its resting state before
+the pause takes it: long enough for the slowest entry in the set, measured.
+
+Granted off screen only, which loading a full scrollport out makes the ordinary
+case — a card you can see follows the read mark like every other card, and
+giving the grace to one already a third onto the screen is the thing the read
+mark exists to prevent. It is revoked, not merely withheld: a card travels while
+its grace runs, so `revokeGraces` ends it the moment the card is no longer off
+screen, from `sync`, where the rail's position is read anyway.
+
+The page's own first pass is the second exception. Nothing has been read yet,
+the whole rail arrives at once, and the second card is a third on screen
+whatever the rail does — so holding it at its first frame is not a card
+introducing itself early, it is a card that never introduces itself at all. A
+component drawing itself while the page loads is the page loading.
+
+The grace runs a component once, at rest, off screen. What arrives at the mark
+is the finished drawing, and the card then performs on arrival the way every
+other one does — the plate re-inks under `--live`, so the drawing is still made
+in front of you when it is yours to look at.
 
 **Whether the document exists is two bands**, and they only load and unload.
 Loading starts a full scrollport out, where it used to start a quarter of one —
