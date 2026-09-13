@@ -747,12 +747,34 @@ preview's document exists, and whether it animates.
 while the rail is stopped; everything pauses the moment it moves, and a card
 with none of it on screen is paused whatever the rail is doing.
 
-While the rail drifts, the card at the mark runs and the rest do not. The drift
-writes `scrollLeft` from a frame callback, so a field animating under it is
-animating on the thread it needs, and five at once cost it plainly: measured on
-a throttled phone profile, the drift's median frame went 16.7ms to 33.3ms with
-every resting field live, and 25 dropped frames in 700 became 457. One field is
-free — 20 and 22 dropped against main's 29.
+While the rail drifts, the card at the mark runs and so does the one arriving
+behind it. Everything else is held. The drift writes `scrollLeft` from a frame
+callback, so a field animating under it is animating on the thread it needs, and
+every visible card at once costs it plainly: measured on a throttled phone
+profile, the drift's median frame goes 16.7ms to 33.3ms with all of them live.
+Two keeps the median.
+
+The arriving card is there because one alone was not enough to look at. A field
+held at its first frame while it crosses the screen, starting only once it
+lands, reads as broken rather than as resting — and the study this is noticed on
+is the one whose whole subject is a wave, which has already missed its entrance
+by the time it arrives. `markActive` stamps `data-next` on the card after the
+mark; ring order is arrival order, so that is simply the next one, and it wraps
+because a looping rail has no last card.
+
+What that spends is headroom and nothing else, which is worth separating from
+the thing it looks like it would spend. Dropped frame callbacks go from 9-34 in
+699 to 305-336, and the rail's own motion is untouched: the drift integrates
+`dt`, so the rendered advance stays even at 0 stalled frames in 599 with
+sub-pixel variance (sd 0.086 to 0.254). A finger landing mid-drift still hushes
+everything in 14ms against 13. So the frames it drops are frames nothing was
+waiting for — the same lesson as the heavy preview further down: measure the
+thread only after establishing that something on it is in the way.
+
+None of this is `active`. The arriving card rests visibly; it does not perform.
+`driftrun` and `invariant` both stay at zero samples of a card performing before
+the mark, which is the rule that keeps a component from introducing itself off
+to the side.
 
 Holding *all* of them during the drift was the first answer and it was too much,
 for a reason that is easy to miss: `handoff` is a coarse-pointer path — it is
