@@ -57,10 +57,12 @@
       'head.title': 'Udforskning af interaktion og æstetik.',
       'head.lede': 'Hvert studie er én komponent, bygget i kode og holdt så '
         + 'lille, at den er til at gennemskue.',
-      'head.ledeHint': 'Hold musen over et kort for at afspille det, eller åbn '
-        + 'det for beslutningerne bag.',
-      'head.ledeHintTouch': 'Tryk på hurtigt kig for at afspille et kort, eller '
-        + 'åbn det for beslutningerne bag.',
+      'head.ledeHint': 'Hold musen over et kort for at afspille det, tag et '
+        + 'hurtigt kig på dets varianter, eller åbn studiet for '
+        + 'beslutningerne og teknikkerne bag.',
+      'head.ledeHintTouch': 'Tryk på hurtigt kig for at afspille et kort og '
+        + 'bladre gennem dets varianter, eller åbn studiet for '
+        + 'beslutningerne og teknikkerne bag.',
       'meta.latest': 'Seneste',
       'rail.study': 'Studie',
       'type.card': 'Kort',
@@ -3016,10 +3018,11 @@
   // --- go ---------------------------------------------------------------
 
   const LEDE_EN = {
-    pointer: 'Hover a card to run it in place, or open it for the decisions '
+    pointer: 'Hover a card to run it in place, take a quick look at its '
+      + 'variants, or open the study for the decisions and techniques '
       + 'behind it.',
-    touch: 'Tap quick look to run a card in place, or open it for the '
-      + 'decisions behind it.'
+    touch: 'Tap quick look to run a card and step through its variants, or '
+      + 'open the study for the decisions and techniques behind it.'
   };
 
   // Held so a pointer-type change can re-render without waiting for the next
