@@ -1,7 +1,7 @@
 # Interface studies
 
-Exploring interaction design and interface aesthetics. Each study is one
-component, built in code and kept small enough to stay legible. Some start from
+Exploring interaction and aesthetics. Each study is one component, built in
+code and kept small enough to stay legible. Some start from
 an interface seen elsewhere and keep its construction rather than its content;
 others are built from scratch against an original Figma design.
 

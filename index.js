@@ -44,15 +44,17 @@
 
   const COPY = {
     da: {
-      // Danish builds compounds, and 'interfacedesign' is one word at a 36px
-      // hero — wider than a 320px line has to give, which is a sideways
-      // scrollbar across the whole page. The soft hyphen is the compound's own
-      // seam: invisible until the line actually needs it, breaking where a
-      // Danish reader would break the word, and needing no hyphenation
-      // dictionary, which is what `hyphens: auto` would be waiting on. A new
-      // long compound in this table wants one too.
-      'head.title': 'Udforskning af interak\u00ADtions\u00ADdesign og '
-        + 'interface\u00ADæstetik.',
+      // Danish builds compounds, and one of them at a 36px hero can be wider
+      // than a 320px line has to give — a sideways scrollbar across the whole
+      // page. The headline carried \u00AD for that reason while it read
+      // 'interfacedesign'; the current one has no word long enough to need it,
+      // and .head__title's overflow-wrap is the backstop either way. A new
+      // long compound in this table wants one: the soft hyphen is the
+      // compound's own seam, invisible until the line needs it, breaking
+      // where a Danish reader would break the word, and needing no
+      // hyphenation dictionary, which is what `hyphens: auto` would be
+      // waiting on.
+      'head.title': 'Udforskning af interaktion og æstetik.',
       'head.lede': 'Hvert studie er én komponent, bygget i kode og holdt så '
         + 'lille, at den er til at gennemskue.',
       'head.ledeHint': 'Hold musen over et kort for at afspille det, eller åbn '
