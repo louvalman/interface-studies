@@ -883,10 +883,9 @@ everything in 14ms against 13. So the frames it drops are frames nothing was
 waiting for — the same lesson as the heavy preview further down: measure the
 thread only after establishing that something on it is in the way.
 
-None of this is `active`. The arriving card rests visibly; it does not perform.
-`driftrun` and `invariant` both stay at zero samples of a card performing before
-the mark, which is the rule that keeps a component from introducing itself off
-to the side.
+None of this is `active`. The arriving card rests visibly; it does not perform —
+the pause is about what animates, and the wave below is what performs, and the
+two ask different questions of the same card.
 
 Holding *all* of them during the drift was the first answer and it was too much,
 for a reason that is easy to miss: `handoff` is a coarse-pointer path — it is
@@ -900,71 +899,115 @@ the drift sets off and then stopping dead.
 
 **What the read mark governs is performing**, which is a different question and
 `active` is what carries it. The card at the mark is told to perform; a pointer
-on a card tells it too, which is what hover has always meant here. Nothing else
-is. A component's open state, its entry, its loud version — all of it hangs off
-`active`, so a card that is merely on screen shows its resting state and not its
-performance.
+on a card tells it too, which is what hover has always meant here; and the demo
+wave below tells the cards on screen in turn. A component's open state, its
+entry, its loud version — all of it hangs off `active`, so nothing performs
+because it merely exists, and a card the rail has not brought most of the way on
+yet shows its resting state.
 
 ### The rail demonstrates itself
 
-Every `DEMO_EVERY` the card at the mark performs on its own for `DEMO_HOLD` and
-settles back. It is there because of an asymmetry that is invisible in the code:
-`handoff` is what tells a card at the mark to perform, and it returns early
-unless `coarse.matches`. On a phone the card being read introduces itself; on a
-desktop no card is ever told to perform except by a pointer already on it. So
-the rail a desktop reader watches drift past is five resting states, and the
-thing each study is actually about — the panel that rises, the toolbar that
-morphs, the plate that re-inks — stays invisible until they happen to point at
-one. The drift moves the cards; it never showed what they do.
+Every `DEMO_EVERY` the cards on screen perform on their own for `DEMO_HOLD` and
+settle back, the card at the read mark leading and the rest following a beat
+apart. It is a wave crossing the rail rather than everything flashing at once,
+and the stagger is not decoration — a performing card is an unpaused card, so
+every card starting together is every preview restyling on one frame.
 
-It introduces no new rule. The mark picks the card, so it is the same card
-`handoff` picks on touch, told the same thing, and the invariant that nothing
-performs before the mark is untouched — measured over 50s of drift, 54 samples
-of a card performing and none of them off the mark, none with two at once.
+It is there because of an asymmetry that is invisible in the code: `handoff` is
+what tells a card at the mark to perform, and it returns early unless
+`coarse.matches`. On a phone the card being read introduces itself; on a desktop
+no card is ever told to perform except by a pointer already on it. So the rail a
+desktop reader watches drift past is five resting states, and the thing each
+study is actually about — the panel that rises, the toolbar that morphs, the
+plate that re-inks — stays invisible until they happen to point at one. The
+drift moves the cards; it never showed what they do.
 
-**A reader always outranks it.** `hoveredPiece` is what the demo asks, and it is
-tracked from `pointerenter`/`pointerleave` rather than read off `:hover` — a
-card that performs can move its own box out from under a stationary cursor, so
-the pseudo-class goes stale exactly when the answer matters. Entering a card
-drops the demo's claim without releasing it, so its timer never turns off a
-state a pointer is holding, and release re-checks both pointer and focus rather
-than trusting what was true when the hold began.
+The studies whose resting state already animates are what it is measured
+against. The gradient field and the dot field look alive on the rail on their
+own, and a card whose whole subject is a hover behaviour read as broken sitting
+still beside them.
 
-Leaving a card costs a full beat before the rail starts up again. Without that
-the retry below is simply the next thing to run: measured, the same card opened
-again 500ms after the pointer left and sat there for its whole hold, which reads
-as the card following the cursor off rather than as the rail carrying on.
+**It reaches every card on screen, and it always reaches the mark.** Those are
+two rules rather than one, and the second is not implied by the first. The mark
+is whichever card has *arrived*, which under the drift can be one the rail has
+already carried most of the way off — so holding it to the same `DEMO_SHOWN`
+three quarters as everything else dropped it out of its own wave and let a card
+behind it perform instead. Measured: a wave at 63 seconds with the mark nowhere
+in it. The mark is therefore exempt from the visibility test wherever that test
+is asked — building the wave, starting a card late off the stagger, and pruning
+one the rail has carried away. The card being read performs; that is what the
+mark means.
 
-`DEMO_EVERY` is the **period**, one performance to the next, not the quiet
-between them — the timers are set to `DEMO_REST`, which is that minus the hold.
-Worth stating because the two are easy to confuse and the confusion is visible:
-taken as the rest, the cadence ran at 8.2s and read as slower than it was asked
-to be.
+`DEMO_SHOWN` is what is left of the older rule that nothing performs before the
+mark, and it is the half of it that was load-bearing. What went wrong when
+proximity decided performing was a card a third of the way in running its open
+state: the thing worth seeing happened off to the side and was over by the time
+the card was yours to look at. A card three quarters in is not arriving, it is
+there. So the rule narrowed rather than went — it is about a card that has not
+landed, not about a card that is not the one being read.
 
-It reschedules from the last performance rather than running off an interval.
-On an interval it is not a cadence at all — every beat landing while the rail is
+**A reader always outranks it.** `hoveredPiece` is what the wave asks, tracked
+from `pointerenter`/`pointerleave` rather than read off `:hover` — a card that
+performs can move its own box out from under a stationary cursor, so the
+pseudo-class goes stale exactly when the answer matters. A pointer arriving ends
+the whole wave rather than only the card it landed on: with several open at
+once, leaving the rest performing under a hand that has arrived is the rail
+carrying on over the top of them. The card being entered is *dropped* rather
+than closed, since it is about to be told to perform anyway and the wave's own
+release would otherwise turn off a state the pointer is holding. Release
+re-checks pointer and focus rather than trusting what was true when the hold
+began.
+
+Leaving a card costs a full beat before the rail starts up again. Without it the
+retry is simply the next thing to run: measured, the same card opened again
+500ms after the pointer left and sat there for its whole hold, which reads as
+the card following the cursor off rather than as the rail carrying on.
+
+`DEMO_EVERY` is the **period**, one wave to the next, not the quiet between them
+— the timers are set to `DEMO_REST`, which is that minus the hold, and the next
+wave is scheduled for the moment the last card in this one closes. Worth stating
+because the two are easy to confuse and the confusion is visible: taken as the
+rest, the cadence ran at 8.2s and read as slower than it was asked to be.
+
+It reschedules from the last wave rather than running off an interval. On an
+interval it is not a cadence at all — every beat landing while the rail is
 between marks is dropped, and a dropped beat costs a whole period: measured over
 20s of drift, three beats due and one performance. A beat that cannot run asks
-again on `DEMO_RETRY` instead, because everything it waits on — a card back on
-the mark, a pointer gone, the overlay closed — arrives without announcing
-itself. Under the drift that still leaves the occasional 7-8.5s gap against the
-6s norm, which is the rail being honestly between cards.
+again on `DEMO_RETRY`, because everything it waits on — a pointer gone, the
+overlay closed, a gesture ended — arrives without announcing itself.
+
+**What it costs, measured.** Four cards perform at once at the peak of a wave,
+which is the case `wantPaused` holds down to two during the drift. Over 25s of
+drift against the same page with one card: unthrottled it is not there at all —
+median 16.7ms either way, p95 33.4ms either way, and the wave's worst frame is
+the better of the two at 83ms against 100ms. At 4x it is real: p95 83ms to
+117ms, worst 467ms to 933ms, and 355 frames rendered against 466. So it spends
+headroom on a slow CPU and nothing on a fast one — and the profile where that
+would hurt most never runs it, because `coarse.matches` silences the whole thing
+and a phone is what coarse means.
 
 Four things silence it, and each is the same rule stated elsewhere. A coarse
-pointer, because `handoff` already holds that card performing and a second
+pointer, because `handoff` already holds the mark's card performing and a second
 source of `active` would fight it. Reduced motion, which is what
 `driftsUnasked` asks of the drift for the same reason — content that performs
 unasked is the whole of the preference, and a pointer still works, which is the
 half it does not forbid. A hidden document. And quick look being open, since its
 own frame runs the component with real hover on the thread the overlay needs.
 
-`hush` releases it too, and before its `told` guard rather than after: on a fine
-pointer `told` is never set, so returning there would leave a demonstrating card
-performing through an entire gesture, which is the one thing `hush` exists to
-prevent. `markActive` releases it when the mark moves, rather than leaving it to
-its own timer — under the drift the mark moves every few seconds, and a card
-that kept performing as it travelled off would still be going when the next one
-arrived.
+The drift is deliberately not in that list. A card three quarters on screen is
+there to be looked at whether or not the rail is still carrying it, and gating
+on stillness would mean the wave essentially never ran: the rail drifts for all
+but the seconds a pointer is resting on it.
+
+`hush` clears it, and before its `told` guard rather than after: on a fine
+pointer `told` is never set, so returning there would leave every demonstrating
+card performing through an entire gesture, which is the one thing `hush` exists
+to prevent. `markActive` **prunes** rather than clears — the mark moving is not
+the wave's business, since the wave was never only the mark's, and clearing on
+every mark change would truncate nearly every wave the drift ever sees. What it
+does drop is a held card the rail has since carried off, which `markActive` is
+the cheapest place to notice because it already runs off `sync`'s rects.
+
 
 Proximity used to decide performing, and it was the wrong rule. A preview woke a
 scrollport before it arrived, so a card a third of the way onto the screen was
