@@ -1,14 +1,13 @@
 # Interface studies
 
-Studies in interface detail. Each one takes a few decisions — a type pair, a
-spacing rhythm, a border treatment, a hover behaviour — and builds only those,
-in plain HTML and CSS. Some start from an interface found elsewhere and keep
-its construction rather than its content; others are built from scratch against
-an original Figma design.
+Exploring interaction and aesthetics. Each study is one component, built in
+code and kept small enough to stay legible. Some start from
+an interface seen elsewhere and keep its construction rather than its content;
+others are built from scratch against an original Figma design.
 
-The purpose is the isolation. A study is small enough that the decisions behind
-it stay legible, and self-contained enough to survive being copied out — every
-study stands alone, and no code is shared between them by design.
+The purpose is the isolation. Every study stands alone and no code is shared
+between them by design, so a folder can be copied out and go on working
+wherever it lands.
 
 ## Structure
 

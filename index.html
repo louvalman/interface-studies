@@ -6,7 +6,7 @@
     <title>Interface Studies</title>
     <meta
       name="description"
-      content="A showcase of small interface studies, each built in plain HTML and CSS and kept self-contained." />
+      content="Exploring interaction and aesthetics. Each study is one component, built in code and kept small enough to stay legible." />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -30,16 +30,16 @@
     <meta property="og:site_name" content="Interface Studies" />
     <meta
       property="og:title"
-      content="Interface Studies — small studies in interface design" />
+      content="Interface Studies — exploring interaction and aesthetics" />
     <meta
       property="og:description"
-      content="Each study takes a different approach to one interface detail — a type pair, a spacing rhythm, a hover behaviour — and builds just that, in plain HTML and CSS." />
+      content="Each study is one component, built in code and kept small enough to stay legible. Open one for the decisions behind it." />
     <meta property="og:image" content="og.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta
       property="og:image:alt"
-      content="Interface Studies: small studies in interface design." />
+      content="Interface Studies: exploring interaction and aesthetics." />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:creator" content="@LouisDyrhauge" />
 
@@ -137,20 +137,43 @@
         Interface Studies
       </p>
       <h1 class="head__title" data-i18n="head.title">
-        Small studies in interface design.
+        Exploring interaction and aesthetics.
       </h1>
       <!-- The closing sentence tells you how to work the rail, and that is
-         not the same instruction on a phone as on a laptop — so it is written
+         not the same instruction on a phone as on a laptop, so it is written
          by index.js from the pointer type, the way the rail's hint is, and
-         only the part that holds true either way is markup. -->
+         only the part that holds true either way is markup.
+
+         It carries the pointer to the study pages rather than the sentence
+         before it. Both halves wanted to say "open": the lede to send a
+         reader to the decisions, the hint to say what the second affordance
+         on a card does. Two of them back to back read as two instructions
+         for what is one action, so the hint says it once and says what
+         opening is for.
+
+         All three affordances are named, because two of them were invisible
+         to anyone who had not tried them. A card does three separate things
+         and only the first announces itself: hovering runs the component in
+         place, quick look runs it full size with real hover and the variant
+         dots, and the title opens the study. Naming only the hover left the
+         variants, five to seven per study, behind a button nobody had a
+         reason to press.
+
+         It costs the lede a fourth line, and the first card 28px of the
+         810px fold: 191px of it showing, against 163px. Measured, the line
+         is the third clause rather than its length — a 92-character version
+         saying the same three things in as few words as it can sets the same
+         four lines. So the sentence is as full as it can afford to be
+         instead, which is where "and techniques" comes from: at 129
+         characters it still stops on the fourth line. -->
       <p class="head__lede">
         <span data-i18n="head.lede">
-          Each study takes a different approach to one interface detail — a
-          type pair, a spacing rhythm, a hover behaviour — and builds just
-          that, in plain HTML and CSS with no framework.
+          Each study is one component, built in code and kept small enough to
+          stay legible.
         </span>
         <span data-lede-hint>
-          Hover a card to run it in place, or open it at full size.
+          Hover a card to run it in place, take a quick look at its variants,
+          or open the study for the decisions and techniques behind it.
         </span>
       </p>
 
@@ -731,19 +754,27 @@
             Interface Studies
           </p>
           <p class="foot__blurb" data-i18n="foot.blurb">
-            Every study is self-contained. Copy a folder out and it works
-            with nothing else from here — no shared stylesheet, no build step,
-            no dependency on this page.
+            Every study is a folder that stands on its own: its own markup,
+            its own stylesheet, its own tokens. Copy one out and it keeps
+            working.
           </p>
 
           <!-- Where the studies came from. It sits down here rather than
              in the masthead because it is provenance, not a pitch: the
-             sources are credited in the folders, and the folders are where
-             someone checking would look. -->
-          <p class="foot__note" data-i18n="foot.sources">
-            Some studies start from an interface found elsewhere; none is a
-            copy of one. Each folder's notes.md names its source and the
-            decisions the build keeps.
+             folders carry it, and the folders are where someone checking
+             would look.
+
+             It states the practice and stops there. The earlier version
+             ended "none is a copy of one", which is the disclaimer CLAUDE.md
+             tells every notes.md not to write — it argues with a charge
+             nobody made, and it spends the footer's last paragraph on the
+             references rather than on the studies. It also said "source",
+             which is a second word for something the files already call
+             Inspiration. -->
+          <p class="foot__note" data-i18n="foot.inspiration">
+            Some studies start from an interface seen elsewhere. Where one
+            does, the Inspiration line at the end of its notes.md carries the
+            link; where the design is original, that line says so.
           </p>
 
           <!-- Handles live here and nowhere else. -->
@@ -786,6 +817,14 @@
             <dd class="foot__val" data-i18n="foot.stackVal">
               HTML and CSS, no build step
             </dd>
+          </div>
+          <!-- What the set covers, not just how much of it there is. The
+             values are written by index.js off the cards' own type badges,
+             so a study of a new type needs nothing added here — the same
+             single declaration the filter chips read. -->
+          <div class="foot__row">
+            <dt class="foot__key" data-i18n="foot.types">Types</dt>
+            <dd class="foot__val" id="foot-types">&mdash;</dd>
           </div>
           <div class="foot__row">
             <dt class="foot__key" data-i18n="foot.studies">Studies</dt>

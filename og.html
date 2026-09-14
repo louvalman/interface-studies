@@ -143,9 +143,10 @@
         gap: 48px;
       }
 
-      /* Measured to break in three even lines, not to a reading measure. This
-         is a caption under a headline at card size, and a fourth line carrying
-         two words reads as an accident. Re-check it when the lede changes. */
+      /* Measured, not set to a reading measure: this is a caption under a
+         headline at card size, and a last line carrying two words reads as an
+         accident. It broke in three even lines while the lede was the long
+         one; the current lede takes two. Re-check it when the lede changes. */
       .lede {
         margin: 0;
         max-width: 42ch;
@@ -174,8 +175,13 @@
         color: var(--muted);
       }
 
+      /* nowrap because these are labels rather than prose, and the row has
+         the width for them: "One component" is three characters longer than
+         the "One detail" it replaced, which was enough to wrap all three
+         values onto two lines each and make the row read as a paragraph. */
       .meta__val {
         margin: 0;
+        white-space: nowrap;
         font-family: var(--mono);
         font-size: 16px;
         color: var(--ink);
@@ -200,17 +206,20 @@
       </p>
 
       <!-- Word for word the index's h1. -->
-      <h1 class="title">Small studies in interface design.</h1>
+      <h1 class="title">Exploring interaction and aesthetics.</h1>
 
       <div class="rule"></div>
 
       <div class="foot">
-        <!-- The index's lede, less "with no framework" — the sentence has to
-           hold three lines at this size, and the stack row already says it. -->
+        <!-- Word for word the index's lede. It used to be the index's less
+           "with no framework", because the old sentence ran to three lines at
+           this size; the current one fits, so the two are the same string
+           again and there is one less difference to remember. The hint
+           sentence after it on the page is not here: it tells a reader how to
+           work the rail, and there is no rail in a PNG. -->
         <p class="lede">
-          Each study takes a different approach to one interface detail — a
-          type pair, a spacing rhythm, a hover behaviour — and builds just
-          that, in plain HTML and CSS.
+          Each study is one component, built in code and kept small enough to
+          stay legible.
         </p>
 
         <!-- Not the masthead's meta row any more, and it cannot be. The page
@@ -220,11 +229,18 @@
            here to begin with. So this row states the three things about the
            set that do not move. It is the one place og.html and index.html
            are allowed to differ; the h1 and the lede above still have to
-           match word for word. -->
+           match word for word.
+
+           The first slot said "Scope — One component", which framed the set
+           by what it holds itself to, the way the old lede's "builds just
+           that" did. It states what the studies are about instead. That
+           repeats a word of the headline above it, which is the cost, and
+           cheap against a card whose only three facts were a bound, a stack
+           and a property of the folders. -->
         <dl class="meta">
           <div class="meta__item">
-            <dt class="meta__key">Scope</dt>
-            <dd class="meta__val">One detail</dd>
+            <dt class="meta__key">Exploring</dt>
+            <dd class="meta__val">Interaction, aesthetics</dd>
           </div>
           <div class="meta__item">
             <dt class="meta__key">Stack</dt>
