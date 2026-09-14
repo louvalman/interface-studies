@@ -1850,6 +1850,39 @@ body.is-locked {
 }
 
 @media (max-width: 40rem) {
+  /* The cluster keeps its own corner rather than joining the masthead's top
+     line, but it stops crowding it. At 1.25rem its bottom edge crossed the
+     site mark's cap line by six pixels — near-tangency, which reads as a
+     header that has come apart rather than as two things one above the other.
+
+     So it drops a little and the masthead opens to meet it: the mark now has
+     the same air above it as below, 1.5rem either side, which is what makes
+     the offset read as placed rather than missed. The padding is that sum —
+     the cluster's inset, its touch-sized height (2.65rem), and the eyebrow's
+     own bottom margin. It costs 42px of the fold on a phone, which is the
+     price of the corner not being shared.
+
+     Why it stays in the corner, since the corner is what costs the 42px and
+     the skew: everything else on a phone hangs off one left rail — the mark,
+     the title, the lede, the rail's own count and chips — so the cluster is
+     the only thing off it, and at 390px the page reads top-right first and
+     then jumps back down-left to start. Two arrangements answer that, and
+     both were built and looked at: the cluster on the eyebrow's own line, and
+     the cluster ending the masthead on the meta row, where there is a hole in
+     the right half waiting for it.
+
+     Neither was taken, for reasons that outrank the composition. Controls at
+     the top-right corner is a convention strong enough that a reader who
+     wants one looks there first and nowhere else. And the language switch is
+     not only a control here: EN/DA at the top of the page says who the page
+     is for before a word of it has been read, which is the whole of what a
+     Danish reader, an international one, or someone arriving to judge the
+     work needs to know about it up front. A setting can be moved down the
+     page; that cannot. */
+  .controls { top: 2rem; }
+
+  .head { padding-top: 6.125rem; }
+
   .foot__bar {
     flex-direction: column;
     align-items: flex-start;

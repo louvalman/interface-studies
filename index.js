@@ -302,6 +302,11 @@
   // the rail uses for everything else — reloading a live thumbnail to change
   // one colour would drop its animation and flash the skeleton back.
   //
+  // Neither reaches a document that is loading at this moment: its src was
+  // written before the switch and its listener does not exist yet, so the
+  // message is dropped and the card is left on the old ground. The rail's
+  // preview:ready handler re-states the theme for that case — see tellTheme.
+  //
   // What each preview does with it is the folder's business, and most do
   // nothing: a thumbnail is a picture of the component, and the light ground
   // four of them sit on is the component's own staging rather than the page's.
@@ -320,7 +325,7 @@
           { source: 'interface-studies', type: 'preview:theme', theme: theme },
           '*'
         );
-      } catch (err) { /* not loaded yet: the src it loads with carries it */ }
+      } catch (err) { /* not loaded yet: the ready re-send catches it */ }
     });
   }
 
@@ -645,6 +650,7 @@
     // Always, not only on the first pass: markReady is a one-shot, and the
     // ready message is the one moment a preview is known to be listening.
     tellScale(piece.querySelector('[data-preview]'), cardScale());
+    tellTheme(piece.querySelector('[data-preview]'));
     // Including the pause, and for the same reason. A document that has just
     // announced itself is holding none of the state the index thinks it is —
     // markReady would return early on a card that is already ready and never
@@ -669,6 +675,38 @@
     if (!frame || !frame.contentWindow || !(scale > 0)) return;
     frame.contentWindow.postMessage(
       { source: CHANNEL, type: 'preview:scale', scale: scale },
+      '*'
+    );
+  }
+
+  // Which theme the rail is in, re-sent at the one moment a preview is known
+  // to be listening.
+  //
+  // The theme arrives twice over — as ?theme= on the src a preview is loaded
+  // with, and as preview:theme if the index is switched while it is already on
+  // screen — and between the two sits the case neither covers: a document that
+  // is loading right now. Its src was written before the switch, so it carries
+  // the old theme; the message that would correct it lands in a document that
+  // has not parsed its listener yet, and is dropped. The card is then on the
+  // wrong ground for as long as it stays loaded, which is until the rail drops
+  // it — the rest of the session, at the current margins.
+  //
+  // Toggling during the page's own first pass strands the whole rail that way;
+  // toggling later strands whichever card the drift happened to be loading.
+  // That is the "not all of them" shape of it.
+  //
+  // So theme joins the scale and the pause as state the ready message
+  // re-states. <html>'s own attribute is the source read, because it is where
+  // the theme module has already resolved the stored choice, the query string
+  // and the system preference into one answer.
+  function tellTheme(frame) {
+    if (!frame || !frame.contentWindow) return;
+    const theme =
+      document.documentElement.getAttribute('data-theme') === 'dark'
+        ? 'dark'
+        : 'light';
+    frame.contentWindow.postMessage(
+      { source: CHANNEL, type: 'preview:theme', theme: theme },
       '*'
     );
   }
@@ -2545,6 +2583,7 @@
       if (!data || data.source !== CHANNEL || data.type !== 'preview:ready') return;
       if (box.hidden || event.source !== frame.contentWindow) return;
       tellScale(frame, lightboxScale);
+      tellTheme(frame);
       buildDots(data.variants);
       playForTouch();
     });
