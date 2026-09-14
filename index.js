@@ -307,10 +307,16 @@
   // message is dropped and the card is left on the old ground. The rail's
   // preview:ready handler re-states the theme for that case — see tellTheme.
   //
-  // What each preview does with it is the folder's business, and most do
-  // nothing: a thumbnail is a picture of the component, and the light ground
-  // four of them sit on is the component's own staging rather than the page's.
-  // The one that acts on it is the study whose authored page is ink.
+  // Every preview acts on it, and takes it the same way: --preview-ground is
+  // the rail's ground rather than the component's staging, so it follows the
+  // index into dark in all of them. What a folder does *beyond* moving that
+  // ground is its own business — correcting an ink colour for type that sits
+  // on the ground, or resting on whichever of two cards the rail is not.
+  //
+  // This comment described four previews as doing nothing with the theme and
+  // named one that did. That stopped being true when the shared ground became
+  // the contract; it is the rail reading as one set of cards, which is an
+  // argument about this page and not about any study in it.
   function tellPreviews(theme) {
     document.querySelectorAll('[data-preview]').forEach((frame) => {
       const src = frame.getAttribute('data-src');
