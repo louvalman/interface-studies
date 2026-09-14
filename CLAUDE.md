@@ -95,12 +95,27 @@ the design specifies.
 |---|---|
 | `card` | just that component |
 | `button` | just that component |
-| `layout` | structure with placeholder content, and no styling opinions beyond the grid |
+| `layout` | the arrangement, with tiles finished enough to prove it holds |
 | `aesthetic` | a token block plus 2–3 sample elements that demonstrate it |
 | `navigation` | just that component |
 
-Don't build more than the type calls for. A `layout` study does not get a
-beautifully styled card sitting inside it; it gets a grey box.
+Don't build more than the type calls for. The scope is about what a study is
+*about*, not about how finished it is allowed to look.
+
+`layout` used to end "and it gets a grey box" — no styling opinions past the
+grid. That was the wrong line to draw. A grid is a set of relationships between
+things of different weights, and grey boxes have no weight: a bento whose tiles
+are all the same flat rectangle proves the tracks resolve and nothing else.
+Whether the arrangement *works* — whether the tile meant to lead actually leads,
+whether the reflow keeps at one column the hierarchy it had at four — cannot be
+seen until the tiles have enough treatment to have a hierarchy at all. So a
+`layout` study styles its tiles, and styles them properly.
+
+What the type still scopes is the subject. The tiles are one set in one system
+— a shared palette, a shared type scale, one border treatment — and they are
+there to be arranged. If one of them is the thing you look at and the grid
+around it is the thing you look past, what has been built is a `card` study with
+a grid behind it, and it should be filed as one.
 
 ## component.css
 

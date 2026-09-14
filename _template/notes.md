@@ -2,7 +2,8 @@ type: card
 <!-- One of: card | button | layout | aesthetic | navigation.
      Must be the first line. It scopes what gets built:
        card / button / navigation -> just that component
-       layout                     -> structure + placeholder content, grid only
+       layout                     -> the arrangement; tiles styled, but the
+                                     grid is the subject
        aesthetic                  -> a token block + 2-3 sample elements -->
 
 <!-- Open on the component, in its own terms: one short paragraph saying what
