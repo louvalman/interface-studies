@@ -20,6 +20,21 @@
 
   --paper: #f5f4f1;
   --surface: #fbfaf8;
+  /* The ground a thumbnail arrives on, and the one the card frame and its
+     skeleton are painted in so the handover is not a step. It is the
+     preview contract's `--preview-ground`, repeated here as a literal for
+     the same reason every folder repeats it — this stylesheet cannot reach
+     into a framed document to ask. The two have to stay equal: a frame
+     painted in anything else shows that difference for the length of the
+     load, as the skeleton dissolves into a thumbnail of another colour.
+
+     It was --surface until it was measured. In dark the two are the same
+     value and the handover was already seamless; in light --surface is
+     #fbfaf8 against a #f3f2ef ground, so every card lightened for the
+     length of its skeleton and dropped 2.4 OKL the moment its preview
+     landed. --surface keeps its other work — the quick-look panel, the
+     rail buttons — where being the page's raised surface is the point. */
+  --well: #f3f2ef;
   --ink: #17181a;
   --ink-soft: #55565a;
   --muted: #6c6b67;
@@ -141,6 +156,9 @@
      also, not coincidentally, what makes the surface look matte. */
   --paper: #121316;
   --surface: #191b1e;
+  /* The dark rail's `--preview-ground`. Equal to --surface here, which is
+     what made the light theme's mismatch easy to miss. */
+  --well: #191b1e;
   --ink: #e9e8e4;
   --ink-soft: #a4a39f;
   --muted: #7e7d79;
@@ -915,7 +933,9 @@ body.is-locked {
   width: 100%;
   aspect-ratio: 4 / 5;
   border-radius: 1rem;
-  background: var(--surface);
+  /* The ground the thumbnail inside will arrive on, not the page's raised
+     surface — see --well. */
+  background: var(--well);
   border: 1px solid var(--hairline);
   box-shadow: var(--shadow-card);
   transition:
@@ -961,7 +981,7 @@ body.is-locked {
   inset: 0;
   background:
     linear-gradient(100deg, transparent 20%, var(--shimmer) 50%, transparent 80%)
-    var(--surface);
+    var(--well);
   background-size: 220% 100%;
   animation: piece-shimmer 1.5s linear infinite;
   transition: opacity 420ms var(--ease);
