@@ -51,14 +51,23 @@
       font-family: "Plus Jakarta Sans", system-ui, sans-serif;
     }
 
-    /* One variant here is a dark card, and it wants a surround of its own
-       rather than the rail's — that tone is the variant's, not the page's, so
-       it is the same colour in both themes. The script sets data-tone and the
-       rule does the rest; it used to write the colour inline, and an inline
-       style beat the ground token above, which is how this thumbnail stayed
-       lit while every other card went dark. */
-    body[data-tone="dark"] { background-color: #101216; }
-  
+    /* The dark card used to bring a #101216 surround with it, on the argument
+       that the tone is the variant's rather than the page's. It is gone, and
+       the ground above is the only one this file writes.
+
+       It survived the sweep that took the inked plate's plotter grid off its
+       thumbnail because it was never visible on the rail: the resting card
+       was the light one, so the rule only ever fired inside quick look. The
+       moment the resting card became the dark one — see the script — it would
+       have fired on the card, and card 04 would have been the single card in
+       a light rail carrying its own dark ground. That is the thing the shared
+       ground exists to prevent, and it does not stop being that because the
+       surface is the variant's own.
+
+       Nothing is lost by it. A dark plate on paper is what the inversion is
+       for: it is the widest separation this study's edge has ever had, where
+       on its own ground the plate met a backdrop three ΔE away. */
+
     /* The index has told this thumbnail that the rail is moving under a
        finger. Every animation in the document stops for the length of the
        gesture and picks up where it left off.
@@ -193,17 +202,21 @@
         return el;
       }
 
+      // What is showing, so a theme switch can tell a card at rest from one
+      // quick look has stepped somewhere.
+      var current = null;
+
       function apply(variant) {
+        current = variant;
         // Only the variant classes are touched, so --open survives a switch.
         VARIANTS.forEach(function (v) {
           v.classes.forEach(function (c) { root.classList.remove(BASE + c); });
         });
         variant.classes.forEach(function (c) { root.classList.add(BASE + c); });
 
-        // The tone drives the surround from the stylesheet above. Written as
-        // an attribute rather than as an inline colour, so the ground token
-        // still applies to every tone that is not the dark one.
-        document.body.setAttribute('data-tone', variant.tone);
+        // `tone` is read by ordered() to pick the resting card against the
+        // rail, and by nothing else — it no longer paints a surround. The
+        // ground is the rail's in every variant.
 
         title.textContent = variant.title;
         pill.textContent = variant.pill;
@@ -226,7 +239,37 @@
         inner.appendChild(span(BASE + '__meta', variant.meta));
       }
 
-      apply(VARIANTS[0]);
+      // The card at rest is the one the rail is NOT the colour of: the dark
+      // card on a light rail, the light card on a dark one.
+      //
+      // It is an edge problem before it is a taste one. This component's
+      // light card is #f2f1ef and the light rail's ground is #f3f2ef —
+      // measured at 0.30 OK ΔE, which is to say the same colour, and the
+      // card's own edge did no work at all. Every other answer was worse:
+      // moving the shared ground trades this study's edge for another's,
+      // since the five components in the set span OKL 92 to 100 and any one
+      // ground lands on top of one of them; and a border added in the
+      // preview would be the thumbnail reaching into the component, which
+      // the contract forbids. Inverting spends nothing — a dark card is
+      // already one of the things this study is.
+      //
+      // Rotated to the front rather than merely applied, because quick look
+      // takes index 0 as what is showing: it opens on that dot and prints
+      // that label. Applying one variant while reporting another as first
+      // would leave the overlay naming the wrong card.
+      function ordered(dark) {
+        var want = dark ? 'light' : 'dark';
+        var rest = VARIANTS.filter(function (v) { return v.tone === want; })[0];
+        if (!rest) return VARIANTS.slice();
+        return [rest].concat(VARIANTS.filter(function (v) { return v !== rest; }));
+      }
+
+      function isDark() {
+        return document.documentElement.getAttribute('data-theme') === 'dark';
+      }
+
+      var list = ordered(isDark());
+      apply(list[0]);
 
       window.addEventListener('message', function (event) {
         var data = event.data;
@@ -236,9 +279,6 @@
           root.classList.toggle(BASE + '--open', data.active === true);
         }
 
-        // The index was switched while this thumbnail was on screen. Only the
-        // ground moves: the component is not touched, and it is the same
-        // component in both themes.
         // The rail is moving under a finger, or stepping to a card. Everything
         // in here stops until it lands — see the paused rule in the style
         // block above. Resuming picks the animations up where they were
@@ -252,16 +292,29 @@
           }
         }
 
+        // The index was switched while this thumbnail was on screen. The
+        // ground moves, and so does which card rests on it — the inversion
+        // above is about the rail's colour, so it has to answer a rail that
+        // changes colour under a card already on screen.
+        //
+        // Only at rest. Quick look loads its own frame with ?theme= on the
+        // src, so it is never the document being switched here; but a card
+        // being driven through its variants has been asked for a particular
+        // one, and re-resting it underneath that would take it away.
         if (data.type === 'preview:theme') {
-          if (data.theme === 'dark') {
+          var dark = data.theme === 'dark';
+          if (dark) {
             document.documentElement.setAttribute('data-theme', 'dark');
           } else {
             document.documentElement.removeAttribute('data-theme');
           }
+          var resting = current === list[0];
+          list = ordered(dark);
+          if (resting) apply(list[0]);
         }
 
         if (data.type === 'preview:variant') {
-          var variant = VARIANTS[data.index];
+          var variant = list[data.index];
           if (variant) apply(variant);
         }
       });
@@ -287,7 +340,7 @@
         window.parent.postMessage({
           source: CHANNEL,
           type: 'preview:ready',
-          variants: VARIANTS.map(function (v) { return { id: v.id, label: v.label }; })
+          variants: list.map(function (v) { return { id: v.id, label: v.label }; })
         }, '*');
       }
     })();

@@ -346,11 +346,31 @@ Where the study has a whole dark version of the component rather than a
 corrected palette, it declares it as a modifier in `component.css`, as a
 decision of the study, and the preview applies the modifier. That is worth
 separating from the correction above: `2026-09-detail-reveal-card` carries a
-dark card because a dark card is one of the things it is, and it reports both
-as quick-look variants — so the dark one shows on a light rail and the light
-one on a dark rail, which is the point of them being variants rather than a
-theme. Answering the ground is the preview's job; having two versions is the
-study's.
+dark card because a dark card is one of the things it is, not because the rail
+went dark. Answering the ground is the preview's job; having two versions is
+the study's.
+
+A preview holding two of them may rest on whichever the rail is *not* — the
+dark card on a light rail, the light card on a dark one — and that folder does.
+It is an edge decision rather than a theme one: its light card is #f2f1ef
+against the light ground's #f3f2ef, 0.30 OK ΔE, so the card had no edge there at
+all. Rest it on the opposite tone and the separation is the widest in the set,
+using only what the study already had.
+
+Rotate the resting variant to the front of the reported list rather than merely
+applying it. Quick look takes index 0 as what is showing — it opens on that dot
+and prints that label — so applying one variant while reporting another first
+leaves the overlay naming the wrong card. Re-rest on `preview:theme` too, and
+only when the preview is at rest: a card quick look has stepped somewhere has
+been asked for that variant, and re-resting underneath it takes it away.
+
+The inversion is also what caught the last surface still painting its own
+ground. That preview darkened the page under its dark card, which never showed
+on the rail while the light card was the resting one — so it outlived the sweep
+that took the plotter grid off the inked plate's thumbnail. Resting on the dark
+card would have put it on the rail. A variant's own tone is not an exception to
+the ground: the ground is the rail's in every variant, and a study whose plate
+needs a backdrop needs a different plate.
 
 None of this reaches `component.css` from the preview, and none of it is a
 `prefers-color-scheme` query. The theme the card sits *in* is the index's,
@@ -518,6 +538,15 @@ Which theme a folder's bare `:root` holds is the folder's business.
 study's own staging, not a default it inherited — so its `:root` carries the
 dark theme and it declares `:root[data-theme="light"]` instead. The attribute
 selects either way.
+
+So is the ground itself, but there is a default and `_template/` carries it:
+`#f3f2ef` light, `#121316` dark, which is what three of the five studies use. A
+study may depart from it — the inked plate's ink, the liquid-glass toolbar's
+warm stone for the cross-lit stage it needs — and a departure is a decision that
+says so in that folder's `notes.md`. What is not allowed is a third thing: the
+template sat on `#ddd9d0` / `#161512` for a while, neither the default nor a
+departure and with nothing written down, so every study was born on a ground no
+study used.
 
 `component.css` is not in it, in any folder. A component owns its colours in
 both themes and no demo rule may reach into them, so on a dark page it sits as
@@ -759,6 +788,17 @@ The preview iframe renders at a fixed logical viewport (`--preview-w` /
 `--preview-h`) and is scaled down to the card by `--preview-scale`. That factor
 must equal `--card-w / --preview-w` exactly, at every breakpoint, or the
 thumbnail will not fill its frame.
+
+`--well` is the second cross-file invariant, and it is the same shape: it must
+equal the `--preview-ground` every folder declares — `#f3f2ef` light, `#191b1e`
+dark — because this stylesheet cannot reach into a framed document to ask. The
+card frame and its loading skeleton are painted in it, so the skeleton dissolves
+into the thumbnail rather than stepping to it. It was `--surface` until it was
+measured: in dark the two are the same value and nothing showed, but in light
+`--surface` is `#fbfaf8` against that `#f3f2ef` ground, so every card sat 2.4
+OKL light for the length of its skeleton and dropped the moment its preview
+landed. `--surface` keeps the work where being the page's raised surface is the
+point — the quick-look panel, the rail buttons.
 
 The index is bilingual (EN/DA). Every translatable string in `index.html`
 carries a `data-i18n` key — or `data-i18n-aria` / `data-i18n-title` for the
