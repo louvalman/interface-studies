@@ -905,6 +905,67 @@ is. A component's open state, its entry, its loud version — all of it hangs of
 `active`, so a card that is merely on screen shows its resting state and not its
 performance.
 
+### The rail demonstrates itself
+
+Every `DEMO_EVERY` the card at the mark performs on its own for `DEMO_HOLD` and
+settles back. It is there because of an asymmetry that is invisible in the code:
+`handoff` is what tells a card at the mark to perform, and it returns early
+unless `coarse.matches`. On a phone the card being read introduces itself; on a
+desktop no card is ever told to perform except by a pointer already on it. So
+the rail a desktop reader watches drift past is five resting states, and the
+thing each study is actually about — the panel that rises, the toolbar that
+morphs, the plate that re-inks — stays invisible until they happen to point at
+one. The drift moves the cards; it never showed what they do.
+
+It introduces no new rule. The mark picks the card, so it is the same card
+`handoff` picks on touch, told the same thing, and the invariant that nothing
+performs before the mark is untouched — measured over 50s of drift, 54 samples
+of a card performing and none of them off the mark, none with two at once.
+
+**A reader always outranks it.** `hoveredPiece` is what the demo asks, and it is
+tracked from `pointerenter`/`pointerleave` rather than read off `:hover` — a
+card that performs can move its own box out from under a stationary cursor, so
+the pseudo-class goes stale exactly when the answer matters. Entering a card
+drops the demo's claim without releasing it, so its timer never turns off a
+state a pointer is holding, and release re-checks both pointer and focus rather
+than trusting what was true when the hold began.
+
+Leaving a card costs a full beat before the rail starts up again. Without that
+the retry below is simply the next thing to run: measured, the same card opened
+again 500ms after the pointer left and sat there for its whole hold, which reads
+as the card following the cursor off rather than as the rail carrying on.
+
+`DEMO_EVERY` is the **period**, one performance to the next, not the quiet
+between them — the timers are set to `DEMO_REST`, which is that minus the hold.
+Worth stating because the two are easy to confuse and the confusion is visible:
+taken as the rest, the cadence ran at 8.2s and read as slower than it was asked
+to be.
+
+It reschedules from the last performance rather than running off an interval.
+On an interval it is not a cadence at all — every beat landing while the rail is
+between marks is dropped, and a dropped beat costs a whole period: measured over
+20s of drift, three beats due and one performance. A beat that cannot run asks
+again on `DEMO_RETRY` instead, because everything it waits on — a card back on
+the mark, a pointer gone, the overlay closed — arrives without announcing
+itself. Under the drift that still leaves the occasional 7-8.5s gap against the
+6s norm, which is the rail being honestly between cards.
+
+Four things silence it, and each is the same rule stated elsewhere. A coarse
+pointer, because `handoff` already holds that card performing and a second
+source of `active` would fight it. Reduced motion, which is what
+`driftsUnasked` asks of the drift for the same reason — content that performs
+unasked is the whole of the preference, and a pointer still works, which is the
+half it does not forbid. A hidden document. And quick look being open, since its
+own frame runs the component with real hover on the thread the overlay needs.
+
+`hush` releases it too, and before its `told` guard rather than after: on a fine
+pointer `told` is never set, so returning there would leave a demonstrating card
+performing through an entire gesture, which is the one thing `hush` exists to
+prevent. `markActive` releases it when the mark moves, rather than leaving it to
+its own timer — under the drift the mark moves every few seconds, and a card
+that kept performing as it travelled off would still be going when the next one
+arrived.
+
 Proximity used to decide performing, and it was the wrong rule. A preview woke a
 scrollport before it arrived, so a card a third of the way onto the screen was
 already running its open state, and a component that introduces itself on load —
