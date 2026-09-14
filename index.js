@@ -101,15 +101,16 @@
       'ghost.month.oct': 'oktober',
       'ghost.month.nov': 'november',
       'ghost.month.dec': 'december',
-      'foot.blurb': 'Hvert studie er selvstændigt. Kopiér en mappe ud, og den '
-        + 'virker uden noget andet herfra — intet delt stylesheet, intet '
-        + 'byggetrin, ingen afhængighed af denne side.',
-      'foot.sources': 'Nogle studier tager udgangspunkt i en grænseflade '
-        + 'fundet andre steder; ingen er en kopi af en. Hver mappes notes.md '
-        + 'nævner sin kilde og de beslutninger, den holder fast i.',
+      'foot.blurb': 'Hvert studie er en mappe, der står for sig selv: sin egen '
+        + 'markup, sit eget stylesheet, sine egne tokens. Kopiér en ud, og '
+        + 'den virker videre.',
+      'foot.inspiration': 'Hver notes.md slutter med en Inspiration-linje — et '
+        + 'link, hvor studiet tager udgangspunkt i noget set andre steder, og '
+        + 'designet det er bygget efter, hvor det ikke gør.',
       'foot.typefaces': 'Skrifttyper',
       'foot.stack': 'Stack',
       'foot.stackVal': 'HTML og CSS, intet byggetrin',
+      'foot.types': 'Typer',
       'foot.studies': 'Studier',
       'foot.builtBy': 'Bygget af',
       'foot.coffee': 'Giv en kop kaffe',
@@ -401,6 +402,7 @@
   const totalOut = document.getElementById('rail-total');
   const metaLatest = document.getElementById('meta-latest');
   const footCount = document.getElementById('foot-count');
+  const footTypes = document.getElementById('foot-types');
   const ledeHint = document.querySelector('[data-lede-hint]');
 
   const pieces = () => Array.from(track.children);
@@ -1233,14 +1235,43 @@
     sync();
   }
 
-  function buildFilter() {
-    if (!filterRow) return;
-
+  // How many cards of each type, and the order the types are listed in:
+  // commonest first, alphabetical where two are level. Two places read it —
+  // the filter chips and the footer's Types row — and a row that ordered them
+  // differently from the chips above would read as a different set of things.
+  function typeCounts() {
     const counts = new Map();
     allPieces().forEach((piece) => {
       const type = typeOf(piece);
       if (type) counts.set(type, (counts.get(type) || 0) + 1);
     });
+    return counts;
+  }
+
+  function typeOrder(counts) {
+    return Array.from(counts.keys()).sort((a, b) => {
+      const d = counts.get(b) - counts.get(a);
+      return d !== 0 ? d : a.localeCompare(b);
+    });
+  }
+
+  // The footer says what the set covers. It reads the badges rather than
+  // holding a list of its own, so the types are declared once per card and
+  // nowhere else — and it counts what exists rather than what the rail is
+  // showing, which is the same split the Studies row beneath it keeps: a
+  // filter narrowing the rail to one type is not four types ceasing to exist.
+  function renderFootTypes() {
+    if (!footTypes) return;
+    const order = typeOrder(typeCounts());
+    footTypes.textContent = order.length
+      ? order.map(typeLabel).join(' \u00b7 ')
+      : '\u2014';
+  }
+
+  function buildFilter() {
+    if (!filterRow) return;
+
+    const counts = typeCounts();
 
     // One type is not a choice, and no types means no keys to read.
     if (counts.size < 2) {
@@ -1249,10 +1280,7 @@
       return;
     }
 
-    const order = Array.from(counts.keys()).sort((a, b) => {
-      const d = counts.get(b) - counts.get(a);
-      return d !== 0 ? d : a.localeCompare(b);
-    });
+    const order = typeOrder(counts);
 
     filterRow.textContent = '';
     filterBtns = [FILTER_ALL].concat(order).map((type) => {
@@ -1329,6 +1357,9 @@
       btn.firstChild.textContent =
         type === FILTER_ALL ? filterText('filter.all') : typeLabel(type);
     });
+    // Same strings, further down the page: the footer's Types row is the card
+    // badges too, so it turns over with them rather than carrying its own.
+    renderFootTypes();
     // Danish labels are not the width English ones were, so the row may have
     // gained or lost the overflow the fade is reporting.
     syncFilterFade();
@@ -3031,6 +3062,7 @@
   renderLedeHint(null);
   order();
   buildFilter();   // after order(), so the chips count a settled rail
+  renderFootTypes();
   number();
 
   // After order(), which is the last thing that touches the DOM order the ring

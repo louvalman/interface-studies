@@ -731,19 +731,27 @@
             Interface Studies
           </p>
           <p class="foot__blurb" data-i18n="foot.blurb">
-            Every study is self-contained. Copy a folder out and it works
-            with nothing else from here — no shared stylesheet, no build step,
-            no dependency on this page.
+            Every study is a folder that stands on its own: its own markup,
+            its own stylesheet, its own tokens. Copy one out and it keeps
+            working.
           </p>
 
           <!-- Where the studies came from. It sits down here rather than
              in the masthead because it is provenance, not a pitch: the
-             sources are credited in the folders, and the folders are where
-             someone checking would look. -->
-          <p class="foot__note" data-i18n="foot.sources">
-            Some studies start from an interface found elsewhere; none is a
-            copy of one. Each folder's notes.md names its source and the
-            decisions the build keeps.
+             folders carry it, and the folders are where someone checking
+             would look.
+
+             It states the practice and stops there. The earlier version
+             ended "none is a copy of one", which is the disclaimer CLAUDE.md
+             tells every notes.md not to write — it argues with a charge
+             nobody made, and it spends the footer's last paragraph on the
+             references rather than on the studies. It also said "source",
+             which is a second word for something the files already call
+             Inspiration. -->
+          <p class="foot__note" data-i18n="foot.inspiration">
+            Every notes.md ends on an Inspiration line — a link, where the
+            study started from something seen elsewhere, and the design it
+            was built against, where it did not.
           </p>
 
           <!-- Handles live here and nowhere else. -->
@@ -786,6 +794,14 @@
             <dd class="foot__val" data-i18n="foot.stackVal">
               HTML and CSS, no build step
             </dd>
+          </div>
+          <!-- What the set covers, not just how much of it there is. The
+             values are written by index.js off the cards' own type badges,
+             so a study of a new type needs nothing added here — the same
+             single declaration the filter chips read. -->
+          <div class="foot__row">
+            <dt class="foot__key" data-i18n="foot.types">Types</dt>
+            <dd class="foot__val" id="foot-types">&mdash;</dd>
           </div>
           <div class="foot__row">
             <dt class="foot__key" data-i18n="foot.studies">Studies</dt>
