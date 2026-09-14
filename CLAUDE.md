@@ -791,7 +791,11 @@ and opens as another.
 Its meta row is the exception, and deliberately not a copy: the masthead's row
 is the newest study's date, read off the cards at runtime, and baked into a PNG
 that is wrong from the next study onward. The card states three things about
-the set that do not move instead.
+the set that do not move instead — what the studies explore, what they are made
+of, and that each one stands alone. The first of those used to be a scope
+("One component"), which framed the set by what it holds itself to rather than
+by what it is about; that is the register the masthead and the footer were both
+taken out of, and the card was the last thing left in it.
 
 The rail ends on its own rule: `.rail__progress` is both the scroll position
 and the line under the cards, so its track is always drawn and only the fill is
@@ -1144,6 +1148,43 @@ edge is not something CSS can ask. The rail counts what it is showing and the fo
 counts what exists — the masthead states neither, because the rail's own
 "Study 01 / 05" is where a reader takes the total from.
 
+### The footer says each thing once, and says none of it twice
+
+Two paragraphs and a meta list: what a folder is, where a study started, and
+the facts about the set.
+
+**The blurb states the self-containment positively and once.** It was three
+negations for a while — "no shared stylesheet, no build step, no dependency on
+this page" — and the middle one was repeated verbatim one column to the right,
+where the `Stack` row says it as a fact. A claim stated as what it is not, next
+to the same claim stated as what it is, is the page arguing with itself in two
+registers.
+
+**The disclaimer rule binds here too.** It is written above for `notes.md` and
+it is the same rule: this paragraph ended "none is a copy of one", which argues
+with a charge nobody made, in the footer's last paragraph, about the references
+rather than about the studies. It states the practice and stops.
+
+It also says *some* studies rather than every one of them, because a study
+built against an original design started from no one else's interface — and it
+calls the thing an `Inspiration` line, which is what the files call it. It said
+"source" for a while, a second word for something already named, in the one
+place a reader is being sent to go and look at it.
+
+The meta list is four rows and each says something the others do not: what the
+page is set in, what the studies are made of, what types they cover, and how
+many there are. The last two are written from the cards, so neither is a number
+anyone keeps by hand.
+
+The `Types` row reads the same badges the chips do, through the same
+`typeCounts`/`typeOrder`, so both list them commonest-first in the same order —
+a row ordering them differently from the chips a screen above would read as a
+different set of things. It is written once at boot and again on `lang:change`,
+never from `sync()`: the set of types is static, and `sync()` is on the scroll
+path. And like the `Studies` count beside it, it counts what exists rather than
+what the rail is showing, so narrowing the rail to one type is not the other
+three ceasing to exist.
+
 ### The type is stated twice, and that is the best available
 
 `notes.md` declares `type:` and the card's badge declares `type.card`. They have
@@ -1157,3 +1198,9 @@ the second declaration into the folder and adds a third file to keep in step.
 So: two places, checked by hand, and the filter reads the one that is already
 there rather than introducing a third. If this ever gets a build step, this is
 the first thing to derive.
+
+Two places, however many things read them. The footer's `Types` row is a second
+reader of the badge, not a third declaration, which is why it needed nothing
+added to it — and it is the test of whether that rule is holding: anything new
+that wants to know a study's type reads the badge, and a change that has it
+write the type down somewhere is the thing this section is about.
