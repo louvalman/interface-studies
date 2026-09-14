@@ -1,0 +1,101 @@
+<!--
+  The component markup, and nothing else — the exact markup component.css
+  expects, and what gets copied out.
+
+  The board is a list, because the tiles are peers. Dense packing means the
+  order they appear in on screen is not the order they are written in, so the
+  order they are WRITTEN in is the one that has to be right: it is what a
+  screen reader announces and what Tab follows.
+
+  Seven tiles, twelve cells: one 2x2, one 2x1, one 1x2 and four 1x1. Twelve
+  divides by four, three, two and one, so the board fills its rectangle
+  exactly at every rung of the ladder instead of going ragged along the
+  bottom. Changing the mix means re-checking that.
+-->
+
+<div class="bento-grid">
+  <ul class="bento-grid__board">
+
+    <!-- The lead. The only tile with a fill rather than a surface, which is
+         what makes it read as the lead at any column count. -->
+    <li class="bento-grid__tile bento-grid__tile--feature">
+      <p class="bento-grid__label">Plate 01</p>
+      <h3 class="bento-grid__title">Burnt Umber</h3>
+      <div class="bento-grid__foot">
+        <p class="bento-grid__meta">#6B5844</p>
+        <p class="bento-grid__meta">Matte &middot; opaque</p>
+      </div>
+    </li>
+
+    <li class="bento-grid__tile bento-grid__tile--wide">
+      <h3 class="bento-grid__label">Tone ladder</h3>
+      <div class="bento-grid__ramp" role="img" aria-label="Seven tones mixed from the plate pigment, lightest to full strength">
+        <span class="bento-grid__step"></span>
+        <span class="bento-grid__step"></span>
+        <span class="bento-grid__step"></span>
+        <span class="bento-grid__step"></span>
+        <span class="bento-grid__step"></span>
+        <span class="bento-grid__step"></span>
+        <span class="bento-grid__step"></span>
+      </div>
+      <div class="bento-grid__foot">
+        <p class="bento-grid__meta">7 steps</p>
+        <p class="bento-grid__meta">Oklab</p>
+      </div>
+    </li>
+
+    <li class="bento-grid__tile bento-grid__tile--tall">
+      <h3 class="bento-grid__label">Grain</h3>
+      <div class="bento-grid__grain">
+        <div class="bento-grid__grain-row">
+          <p class="bento-grid__meta">Coarse</p>
+          <div class="bento-grid__hatch bento-grid__hatch--coarse"></div>
+        </div>
+        <div class="bento-grid__grain-row">
+          <p class="bento-grid__meta">Medium</p>
+          <div class="bento-grid__hatch bento-grid__hatch--medium"></div>
+        </div>
+        <div class="bento-grid__grain-row">
+          <p class="bento-grid__meta">Fine</p>
+          <div class="bento-grid__hatch bento-grid__hatch--fine"></div>
+        </div>
+      </div>
+    </li>
+
+    <li class="bento-grid__tile">
+      <h3 class="bento-grid__label">Weight</h3>
+      <div class="bento-grid__foot">
+        <p class="bento-grid__figure">180</p>
+        <p class="bento-grid__meta">gsm</p>
+      </div>
+    </li>
+
+    <li class="bento-grid__tile">
+      <h3 class="bento-grid__label">Mark</h3>
+      <svg class="bento-grid__mark" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true" focusable="false">
+        <circle cx="24" cy="24" r="21" stroke-dasharray="99 33" stroke-linecap="round" />
+        <circle cx="24" cy="24" r="14" stroke-dasharray="66 22" stroke-linecap="round" transform="rotate(120 24 24)" />
+        <circle cx="24" cy="24" r="7" stroke-dasharray="33 11" stroke-linecap="round" transform="rotate(240 24 24)" />
+      </svg>
+    </li>
+
+    <li class="bento-grid__tile">
+      <h3 class="bento-grid__label">Sheets</h3>
+      <div class="bento-grid__foot">
+        <p class="bento-grid__figure">24</p>
+        <p class="bento-grid__meta">in stock</p>
+      </div>
+    </li>
+
+    <li class="bento-grid__tile">
+      <h3 class="bento-grid__label">Mix</h3>
+      <div class="bento-grid__mix" role="img" aria-label="Four chips crossing the plate pigment with the accent">
+        <span class="bento-grid__chip"></span>
+        <span class="bento-grid__chip"></span>
+        <span class="bento-grid__chip"></span>
+        <span class="bento-grid__chip"></span>
+      </div>
+    </li>
+
+  </ul>
+</div>

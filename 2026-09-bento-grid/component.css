@@ -1,0 +1,416 @@
+/*
+  Bento grid — a board of tiles that declare the room they want, and a grid
+  that decides what they get.
+
+  Self-contained: copy this file and component.html into an unrelated project
+  and both keep working. No resets, no global selectors, no font loading, no
+  imports. Every tunable is a custom property on the root class, so the board
+  can be re-themed and re-proportioned from outside without editing anything
+  below the token block.
+*/
+
+/* The column count is animated by the `--cycling` modifier further down, and a
+   plain custom property cannot be animated — the browser has no idea it holds
+   an integer rather than an arbitrary token stream. Registering it says so,
+   and is what lets the ladder step rather than jump straight to its last rung.
+
+   This is an at-rule, not a global selector: it registers one property, under
+   this component's own namespaced name, and touches nothing it does not own. */
+@property --bento-grid-cols {
+  syntax: "<integer>";
+  inherits: true;
+  initial-value: 4;
+}
+
+.bento-grid {
+  /* --- tunables ------------------------------------------------------- */
+
+  /* Rhythm. --bento-grid-row is the height of one grid track; every tile is a
+     whole number of them, which is what keeps the board a board rather than a
+     set of boxes that happen to be near each other. It is written in `cqi` —
+     one percent of this element's inline size — so the tiles keep their
+     proportion as the board narrows instead of growing gangly. The unit
+     resolves against the nearest ancestor container, and that is this element,
+     so the value is declared here and used on the descendants below. */
+  --bento-grid-row: clamp(7rem, 17cqi, 9.5rem);
+  --bento-grid-gap: 0.75rem;
+  --bento-grid-pad: 1.125rem;
+  /* The gap INSIDE a tile, which is not the gap between them. A single-row
+     tile has about four rem of content box once its padding is taken, so a
+     pad-sized gap between three children spent more than it had and the ramp
+     and the chips were shrunk to hairlines to pay for it. */
+  --bento-grid-tile-gap: 0.625rem;
+  --bento-grid-radius: 0.875rem;
+
+  /* Surface. A matte paper plate with a hairline edge and a one-pixel inner
+     highlight — the highlight is what makes it read as a raised sheet rather
+     than as a filled rectangle, and it costs one shadow. */
+  --bento-grid-surface: #fbfaf7;
+  --bento-grid-ink: #1b1814;
+  --bento-grid-muted: #6f685e;
+  --bento-grid-line: rgba(27, 24, 20, 0.11);
+  /* The two values that are drawn in device pixels rather than in layout
+     ones, pulled out because something rendering this shrunk — a thumbnail
+     scaled to 0.7 — has to be able to hand them back. A hairline asked for at
+     1px and rasterised at 0.7 of one stops being antialiased and starts being
+     a grey smear, and the hatch below is forty of them side by side. */
+  --bento-grid-line-weight: 1px;
+  --bento-grid-hatch-weight: 1px;
+  --bento-grid-line-strong: rgba(27, 24, 20, 0.28);
+  --bento-grid-sheen: rgba(255, 255, 255, 0.75);
+  --bento-grid-shadow: 0 1px 2px rgba(27, 24, 20, 0.05);
+  --bento-grid-shadow-lift: 0 6px 18px rgba(27, 24, 20, 0.1);
+
+  /* One pigment, and the whole board is derived from it: the lead tile is a
+     plate of it, the tone ladder is seven mixes of it, the mix tile crosses it
+     with the accent. Override this one value and everything re-tones together.
+     That is the test the token block exists to pass. */
+  --bento-grid-pigment: #6b5844;
+  --bento-grid-pigment-ink: #f7f2e8;
+  --bento-grid-accent: #b4542c;
+  /* The plate carries a fill rather than a surface, so its edge cannot be the
+     surface hairline — it needs one dark enough to show against the pigment. */
+  --bento-grid-plate-line: rgba(27, 24, 20, 0.2);
+
+  /* Type. Three sizes and nothing between them: a 10px mono label, a body
+     step, and one figure size that the lead tile doubles. */
+  --bento-grid-font: system-ui, sans-serif;
+  --bento-grid-mono: ui-monospace, "SF Mono", Menlo, monospace;
+  --bento-grid-label-size: 0.625rem;
+  --bento-grid-label-tracking: 0.16em;
+  --bento-grid-body-size: 0.8125rem;
+  --bento-grid-figure-size: clamp(1.5rem, 5.5cqi, 2.125rem);
+  --bento-grid-title-size: clamp(1.375rem, 5cqi, 2.125rem);
+
+  /* Motion. --bento-grid-cycle is one full pass of the column ladder: four
+     rungs, so a quarter of it per rung. */
+  /* The specimens inside a tile. Small, but a size is a size: re-theming this
+     from outside should not mean opening the file and editing its internals. */
+  --bento-grid-ramp-h: 1.75rem;
+  --bento-grid-mark-size: 4rem;
+  --bento-grid-specimen-gap: 0.5rem;
+  --bento-grid-specimen-label-gap: 0.3rem;
+  --bento-grid-specimen-min: 1.25rem;
+  --bento-grid-chip-gap: 0.25rem;
+  --bento-grid-foot-gap: 0.5rem;
+  --bento-grid-hatch-coarse: 9px;
+  --bento-grid-hatch-medium: 5px;
+  --bento-grid-hatch-fine: 3px;
+
+  --bento-grid-lift: -2px;
+  --bento-grid-ease: 200ms cubic-bezier(0.16, 1, 0.3, 1);
+  --bento-grid-cycle: 2.4s;
+  /* -------------------------------------------------------------------- */
+
+  /* The board reflows on its OWN width, not the viewport's. This is the line
+     that decides whether the component survives being copied out: dropped into
+     a 24rem sidebar on a 1600px page, a viewport media query would still hand
+     it four columns and it would overflow. Establishing a container here is
+     what lets the queries below ask the right question. */
+  container-type: inline-size;
+
+  /* What it wants is what it is given; what it will accept is its column. */
+  max-width: 100%;
+}
+
+.bento-grid__board {
+  /* The one number. Every span below clamps itself against it, so the queries
+     that follow change this and nothing else. */
+  --bento-grid-cols: 1;
+
+  display: grid;
+  grid-template-columns: repeat(var(--bento-grid-cols), minmax(0, 1fr));
+  grid-auto-rows: var(--bento-grid-row);
+
+  /* `dense` is what makes it a bento rather than a stack: a tile too big for
+     the gap the cursor is sitting on does not push everything down, it waits,
+     and a later unit tile backfills the hole. The cost is that visual order
+     stops matching DOM order, which is a decision rather than a bug — see
+     notes.md. Reading order stays the DOM's, and the tiles are written in the
+     order they should be read. */
+  grid-auto-flow: row dense;
+  gap: var(--bento-grid-gap);
+  max-width: 100%;
+
+  /* The board is a list: the tiles are peers, and the order they are written
+     in is the order they are meant to be read in. These three lines are the
+     whole cost of saying so. */
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* The ladder, stated once. Mobile-first, so the bare declaration above is the
+   single column and each query adds a rung. Nothing here names a tile: the
+   spans clamp themselves.
+
+   These three widths are the one set of numbers in this file that cannot be
+   custom properties, and not for want of trying: a container or media query's
+   condition is evaluated before custom properties are substituted, so
+   `@container (min-width: var(--x))` never matches. They are the rule rather
+   than a value the rule reads, which is the same reason they are the only
+   thing a re-theme cannot move. Override --bento-grid-cols directly instead —
+   an inline value beats these, which is how the preview holds a rung. */
+@container (min-width: 22rem) { .bento-grid__board { --bento-grid-cols: 2; } }
+@container (min-width: 29rem) { .bento-grid__board { --bento-grid-cols: 3; } }
+@container (min-width: 44rem) { .bento-grid__board { --bento-grid-cols: 4; } }
+
+/* --- tiles ------------------------------------------------------------- */
+
+.bento-grid__tile {
+  --bento-grid-tile-cols: 1;
+  --bento-grid-tile-rows: 1;
+
+  /* The fallback, for anything that will not do arithmetic in an integer
+     position: every tile is a unit tile and the board is a plain grid. */
+  grid-column: span 1;
+  /* And the rule. A tile asks for two columns; in a two-column board it gets
+     two, and in a one-column board `min()` hands it one rather than letting
+     the grid grow a phantom track to accommodate it. Measured: without the
+     clamp, a one-column board resolves to `134px 8px` and the wide tiles sit
+     16px proud of the narrow ones. */
+  grid-column: span min(var(--bento-grid-tile-cols), var(--bento-grid-cols));
+  /* Rows are not clamped, and deliberately. A tile that was the tall one at
+     four columns is still the tall one at one, which is how the hierarchy
+     survives the reflow instead of flattening into a list. */
+  grid-row: span var(--bento-grid-tile-rows);
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--bento-grid-tile-gap);
+  /* A grid item's automatic minimum size is its content, which is how a long
+     word in one tile widens the track it sits in and racks the whole board. */
+  min-width: 0;
+  min-height: 0;
+  padding: var(--bento-grid-pad);
+  box-sizing: border-box;
+  overflow: hidden;
+
+  border: var(--bento-grid-line-weight) solid var(--bento-grid-line);
+  border-radius: var(--bento-grid-radius);
+  background: var(--bento-grid-surface);
+  color: var(--bento-grid-ink);
+  box-shadow: inset 0 1px 0 var(--bento-grid-sheen), var(--bento-grid-shadow);
+
+  font-family: var(--bento-grid-font);
+  transition:
+    transform var(--bento-grid-ease),
+    border-color var(--bento-grid-ease),
+    box-shadow var(--bento-grid-ease);
+}
+
+.bento-grid__tile--feature {
+  --bento-grid-tile-cols: 2;
+  --bento-grid-tile-rows: 2;
+
+  /* The lead tile is a plate of the pigment itself. It is the one tile with a
+     fill rather than a surface, which is the whole of why it reads as the
+     lead — at any column count, and in a photograph of the board with the type
+     too small to read. */
+  --bento-grid-ink: var(--bento-grid-pigment-ink);
+  --bento-grid-muted: rgba(247, 242, 232, 0.66);
+  --bento-grid-sheen: rgba(255, 255, 255, 0.14);
+  background: var(--bento-grid-pigment);
+  border-color: var(--bento-grid-plate-line);
+}
+
+.bento-grid__tile--wide { --bento-grid-tile-cols: 2; }
+.bento-grid__tile--tall { --bento-grid-tile-rows: 2; }
+
+/* One behaviour, on the tile rather than the board: it lifts a couple of
+   pixels and its edge comes up out of the paper. */
+.bento-grid__tile:hover {
+  transform: translateY(var(--bento-grid-lift));
+  border-color: var(--bento-grid-line-strong);
+  box-shadow: inset 0 1px 0 var(--bento-grid-sheen), var(--bento-grid-shadow-lift);
+}
+
+/* A finger cannot hover, so the same state is reachable for the length of a
+   press. Without this the lift simply does not exist on a phone. */
+@media (hover: none) {
+  .bento-grid__tile:active {
+    transform: translateY(var(--bento-grid-lift));
+    border-color: var(--bento-grid-line-strong);
+    box-shadow: inset 0 1px 0 var(--bento-grid-sheen), var(--bento-grid-shadow-lift);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bento-grid__tile { transition: none; }
+}
+
+/* --- the ladder, stepped ----------------------------------------------- */
+
+/*
+  What the board is about is what it does when it loses a column, and that is
+  the one thing a still picture of it cannot show. Under `--cycling` it steps
+  its own ladder: four columns to one and back, a quarter of --bento-grid-cycle
+  on each rung, with `steps(1, end)` so each count holds for its whole beat
+  rather than being interpolated through.
+
+  It is a modifier rather than a hover, so whatever drives it — a demo page, a
+  thumbnail being read — decides when. At rest the board is simply a board.
+*/
+@keyframes bento-grid-ladder {
+  0%   { --bento-grid-cols: 4; }
+  25%  { --bento-grid-cols: 3; }
+  50%  { --bento-grid-cols: 2; }
+  75%  { --bento-grid-cols: 1; }
+}
+
+.bento-grid--cycling .bento-grid__board {
+  animation: bento-grid-ladder var(--bento-grid-cycle) steps(1, end) infinite;
+}
+
+/* Content that moves without being asked is the whole of the preference. */
+@media (prefers-reduced-motion: reduce) {
+  .bento-grid--cycling .bento-grid__board { animation: none; }
+}
+
+/* --- tile contents ------------------------------------------------------ */
+
+.bento-grid__label {
+  margin: 0;
+  font-family: var(--bento-grid-mono);
+  font-size: var(--bento-grid-label-size);
+  letter-spacing: var(--bento-grid-label-tracking);
+  text-transform: uppercase;
+  color: var(--bento-grid-muted);
+}
+
+.bento-grid__title {
+  margin: 0;
+  font-size: var(--bento-grid-title-size);
+  font-weight: 600;
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.bento-grid__figure {
+  margin: 0;
+  font-size: var(--bento-grid-figure-size);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.bento-grid__meta {
+  margin: 0;
+  font-family: var(--bento-grid-mono);
+  font-size: var(--bento-grid-label-size);
+  letter-spacing: 0.06em;
+  color: var(--bento-grid-muted);
+}
+
+.bento-grid__note {
+  margin: 0;
+  font-size: var(--bento-grid-body-size);
+  line-height: 1.45;
+  color: var(--bento-grid-muted);
+  text-wrap: pretty;
+}
+
+.bento-grid__foot {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--bento-grid-foot-gap);
+}
+
+/* The tone ladder: seven steps mixed from the one pigment token, so the ramp
+   is derived rather than declared. Flush, with no gap between the steps — the
+   join is the point, and a gap would turn a ramp into seven swatches. */
+.bento-grid__ramp {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  flex: none;
+  height: var(--bento-grid-ramp-h);
+  border-radius: calc(var(--bento-grid-radius) / 2);
+  overflow: hidden;
+}
+
+.bento-grid__step { background: var(--bento-grid-step); }
+
+.bento-grid__step:nth-child(1) { --bento-grid-step: color-mix(in oklab, var(--bento-grid-pigment) 16%, var(--bento-grid-surface)); }
+.bento-grid__step:nth-child(2) { --bento-grid-step: color-mix(in oklab, var(--bento-grid-pigment) 29%, var(--bento-grid-surface)); }
+.bento-grid__step:nth-child(3) { --bento-grid-step: color-mix(in oklab, var(--bento-grid-pigment) 43%, var(--bento-grid-surface)); }
+.bento-grid__step:nth-child(4) { --bento-grid-step: color-mix(in oklab, var(--bento-grid-pigment) 57%, var(--bento-grid-surface)); }
+.bento-grid__step:nth-child(5) { --bento-grid-step: color-mix(in oklab, var(--bento-grid-pigment) 71%, var(--bento-grid-surface)); }
+.bento-grid__step:nth-child(6) { --bento-grid-step: color-mix(in oklab, var(--bento-grid-pigment) 86%, var(--bento-grid-surface)); }
+.bento-grid__step:nth-child(7) { --bento-grid-step: var(--bento-grid-pigment); }
+
+/* Three grain specimens, drawn as hatching at three pitches rather than as an
+   image, so the tile carries no asset and re-tones with the pigment. */
+.bento-grid__grain {
+  display: grid;
+  gap: var(--bento-grid-specimen-gap);
+  flex: 1;
+  min-height: 0;
+  /* Three equal shares of whatever the tile has left, so each specimen is a
+     band rather than a hairline with air around it. Spreading them with
+     `space-between` instead put a third of the tile between each label and
+     the next, which at two rows tall read as three unrelated things. */
+  grid-auto-rows: minmax(0, 1fr);
+}
+
+.bento-grid__grain-row {
+  display: grid;
+  /* The label takes what it needs; the specimen takes the rest of the band. */
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: var(--bento-grid-specimen-label-gap);
+  min-height: 0;
+}
+
+.bento-grid__hatch {
+  min-height: var(--bento-grid-specimen-min);
+  border-radius: calc(var(--bento-grid-radius) / 3);
+  background-image: repeating-linear-gradient(
+    90deg,
+    var(--bento-grid-hatch-ink) 0 var(--bento-grid-hatch-weight),
+    transparent var(--bento-grid-hatch-weight) var(--bento-grid-hatch-pitch)
+  );
+  background-color: color-mix(in oklab, var(--bento-grid-pigment) 8%, var(--bento-grid-surface));
+}
+
+.bento-grid__hatch {
+  --bento-grid-hatch-ink: color-mix(in oklab, var(--bento-grid-pigment) 70%, transparent);
+}
+
+.bento-grid__hatch--coarse { --bento-grid-hatch-pitch: var(--bento-grid-hatch-coarse); }
+.bento-grid__hatch--medium { --bento-grid-hatch-pitch: var(--bento-grid-hatch-medium); }
+.bento-grid__hatch--fine   { --bento-grid-hatch-pitch: var(--bento-grid-hatch-fine); }
+
+/* The mark: concentric arcs, drawn in currentColor so it takes the tile's ink
+   and needs no colour of its own. */
+.bento-grid__mark {
+  display: block;
+  width: 100%;
+  max-width: var(--bento-grid-mark-size);
+  height: auto;
+  /* Centred in whatever the label leaves, both ways. */
+  margin: auto;
+  color: var(--bento-grid-pigment);
+}
+
+/* Four chips: the pigment, the accent, and the two halfway between them. */
+.bento-grid__mix {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--bento-grid-chip-gap);
+  flex: 1;
+  min-height: 0;
+}
+
+.bento-grid__chip {
+  border-radius: calc(var(--bento-grid-radius) / 3);
+  background: var(--bento-grid-chip);
+}
+
+.bento-grid__chip:nth-child(1) { --bento-grid-chip: var(--bento-grid-pigment); }
+.bento-grid__chip:nth-child(2) { --bento-grid-chip: color-mix(in oklab, var(--bento-grid-pigment) 62%, var(--bento-grid-accent)); }
+.bento-grid__chip:nth-child(3) { --bento-grid-chip: color-mix(in oklab, var(--bento-grid-pigment) 28%, var(--bento-grid-accent)); }
+.bento-grid__chip:nth-child(4) { --bento-grid-chip: var(--bento-grid-accent); }
