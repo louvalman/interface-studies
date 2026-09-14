@@ -51,14 +51,14 @@
       // Danish reader would break the word, and needing no hyphenation
       // dictionary, which is what `hyphens: auto` would be waiting on. A new
       // long compound in this table wants one too.
-      'head.title': 'Små studier i interface\u00ADdesign.',
-      'head.lede': 'Hvert studie tager en anden tilgang til én interfacedetalje '
-        + '— et typografipar, en spatieringsrytme, en hover-adfærd — og bygger '
-        + 'kun den, i ren HTML og CSS uden framework.',
+      'head.title': 'Udforskning af interak\u00ADtions\u00ADdesign og '
+        + 'interface\u00ADæstetik.',
+      'head.lede': 'Hvert studie er én komponent, bygget i kode og holdt så '
+        + 'lille, at den er til at gennemskue.',
       'head.ledeHint': 'Hold musen over et kort for at afspille det, eller åbn '
-        + 'det i fuld størrelse.',
+        + 'det for beslutningerne bag.',
       'head.ledeHintTouch': 'Tryk på hurtigt kig for at afspille et kort, eller '
-        + 'åbn det i fuld størrelse.',
+        + 'åbn det for beslutningerne bag.',
       'meta.latest': 'Seneste',
       'rail.study': 'Studie',
       'type.card': 'Kort',
@@ -104,9 +104,10 @@
       'foot.blurb': 'Hvert studie er en mappe, der står for sig selv: sin egen '
         + 'markup, sit eget stylesheet, sine egne tokens. Kopiér en ud, og '
         + 'den virker videre.',
-      'foot.inspiration': 'Hver notes.md slutter med en Inspiration-linje — et '
-        + 'link, hvor studiet tager udgangspunkt i noget set andre steder, og '
-        + 'designet det er bygget efter, hvor det ikke gør.',
+      'foot.inspiration': 'Nogle studier tager udgangspunkt i en grænseflade '
+        + 'set andre steder. Når de gør, står linket på Inspiration-linjen '
+        + 'sidst i mappens notes.md; er designet originalt, står det der i '
+        + 'stedet.',
       'foot.typefaces': 'Skrifttyper',
       'foot.stack': 'Stack',
       'foot.stackVal': 'HTML og CSS, intet byggetrin',
@@ -3013,8 +3014,10 @@
   // --- go ---------------------------------------------------------------
 
   const LEDE_EN = {
-    pointer: 'Hover a card to run it in place, or open it at full size.',
-    touch: 'Tap quick look to run a card in place, or open it at full size.'
+    pointer: 'Hover a card to run it in place, or open it for the decisions '
+      + 'behind it.',
+    touch: 'Tap quick look to run a card in place, or open it for the '
+      + 'decisions behind it.'
   };
 
   // Held so a pointer-type change can re-render without waiting for the next
