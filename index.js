@@ -935,20 +935,159 @@
 
   // --- hover and focus --------------------------------------------------
 
+  // Which card the pointer is on, or null. The demo below needs it for two
+  // different questions — whether to run at all, and whether the card it is
+  // holding has since been taken over by a reader — and neither can be asked
+  // of `:hover`: a card that performs can move its own box out from under a
+  // stationary cursor, so the pseudo-class goes stale exactly when the answer
+  // matters. What the pointer last entered is the honest record.
+  let hoveredPiece = null;
+
   real().forEach((piece) => {
     piece.addEventListener('pointerenter', () => {
       if (coarse.matches) return;   // touch drives this off the active card
+      hoveredPiece = piece;
+      // A reader is pointing, so the rail stops demonstrating and hands the
+      // card over. Dropped rather than released: this card is about to be told
+      // to perform anyway, and the demo's own release would later turn off a
+      // state the pointer is still holding.
+      demoDrop(piece);
       tell(piece, true);
     });
     piece.addEventListener('pointerleave', () => {
       if (coarse.matches) return;
+      if (hoveredPiece === piece) hoveredPiece = null;
       tell(piece, false);
+      // A full beat before the rail demonstrates anything again. Without it
+      // the retry is the next thing to run — measured, the same card opened
+      // again 500ms after the pointer left and sat there for its whole hold,
+      // which reads as the card following the cursor off rather than as the
+      // rail carrying on by itself.
+      demoSoon(DEMO_REST);
     });
-    piece.addEventListener('focusin', () => tell(piece, true));
+    piece.addEventListener('focusin', () => { demoDrop(piece); tell(piece, true); });
     piece.addEventListener('focusout', (event) => {
       if (!piece.contains(event.relatedTarget)) tell(piece, false);
     });
   });
+
+  // --- the rail demonstrates itself -------------------------------------
+
+  // Every few seconds the card at the read mark performs, the way it would
+  // under a pointer, and then settles back.
+  //
+  // It exists because of an asymmetry nobody would guess from the code:
+  // `handoff` is what tells a card at the mark to perform, and it returns
+  // early unless `coarse.matches`. On a phone the card being read introduces
+  // itself; on a desktop no card is ever told to perform except by a pointer
+  // that is already on it. So the rail a desktop reader watches drift past is
+  // five resting states, and the thing each study is actually about — the
+  // panel that rises, the toolbar that morphs, the plate that re-inks — is
+  // invisible until they happen to point at one. The drift moves the cards; it
+  // does not show what they do.
+  //
+  // The mark is what picks the card, so this introduces nothing the read mark
+  // did not already govern: it is the same card `handoff` would pick on touch,
+  // told the same thing, and the invariant that no card performs before the
+  // mark is untouched.
+  // The period, one performance to the next, not the quiet between them — so
+  // the rest below is this minus the hold. Stated this way because it is the
+  // number a reader actually experiences, and because the two are easy to
+  // confuse: taking it as the rest put the cadence at 8.2s and read as slower
+  // than it was asked to be.
+  //
+  // Rescheduled from the last performance rather than run off a fixed clock.
+  // On an interval it is not a cadence at all: every beat that lands while the
+  // rail is between marks is dropped, and a dropped beat costs a whole period
+  // — measured over 20 seconds of drift, three beats due and one performance.
+  const DEMO_EVERY = 6000;
+  // Long enough to read. The slowest open state in the set settles inside a
+  // second, so this is the entry, a beat to look at it, and the way back out
+  // with room before the next card is due.
+  const DEMO_HOLD = 2200;
+  // A beat that could not run asks again on this, rather than waiting out the
+  // full gap. The conditions it is waiting on — a card on the mark, a pointer
+  // gone, the overlay closed — come and go on their own schedule and none of
+  // them announces itself.
+  const DEMO_RETRY = 900;
+  // The quiet between one performance and the next, which is what the timers
+  // are actually set to. Floored at the retry so that shortening the period
+  // below the hold cannot turn the rail into a card that never closes.
+  const DEMO_REST = Math.max(DEMO_RETRY, DEMO_EVERY - DEMO_HOLD);
+
+  let demoPiece = null;
+  let demoHoldTimer = 0;
+  let demoNextTimer = 0;
+
+  function demoSoon(delay) {
+    clearTimeout(demoNextTimer);
+    demoNextTimer = setTimeout(demoTick, delay);
+  }
+
+  // A pointer, or focus, has taken the card. Forget it without turning it off
+  // — whoever took it owns its state now.
+  function demoDrop(piece) {
+    if (demoPiece !== piece) return;
+    clearTimeout(demoHoldTimer);
+    demoHoldTimer = 0;
+    demoPiece = null;
+    demoSoon(DEMO_REST);
+  }
+
+  // The hold is up, or something moved underneath it.
+  function demoRelease() {
+    clearTimeout(demoHoldTimer);
+    demoHoldTimer = 0;
+    const piece = demoPiece;
+    demoPiece = null;
+    if (!piece) return;
+    demoSoon(DEMO_REST);
+    // Never turn off a state a reader is holding. Both halves are checked at
+    // release rather than trusted from when the hold started: a pointer can
+    // arrive on the card mid-hold, and `demoDrop` covers the card it enters
+    // but focus can move without a pointerenter at all.
+    if (hoveredPiece === piece) return;
+    if (piece.contains(document.activeElement)) return;
+    tell(piece, false);
+  }
+
+  function demoable() {
+    // Touch has handoff, which holds the mark's card performing for as long as
+    // it is the mark's. Nothing to add there, and a second source of `active`
+    // on the same card would fight it.
+    if (coarse.matches) return false;
+    // Content that performs unasked is the whole of what the preference is
+    // about — the same test `driftsUnasked` makes for the drift. A pointer
+    // still works, which is the half the preference does not forbid.
+    if (reduced.matches) return false;
+    if (document.hidden) return false;
+    // A reader is pointing at the rail; hover is the truth while they are.
+    if (hoveredPiece) return false;
+    // Quick look is open. Its own frame runs the component with real hover and
+    // steps its variants on a timer of its own, and the rail behind the scrim
+    // is not being looked at — performing there is work on the thread the
+    // overlay is using.
+    if (document.body.classList.contains('is-locked')) return false;
+    // The same gate handoff uses. `onMark` is what keeps a card from
+    // performing on its way in, and `gesturing` keeps one from being started
+    // into a drag or a step.
+    return onMark && !gesturing();
+  }
+
+  function demoTick() {
+    demoNextTimer = 0;
+    if (demoPiece) return;          // one still running; its release schedules
+    if (!demoable()) { demoSoon(DEMO_RETRY); return; }
+    const piece = real()[currentActive];
+    // Already performing under a pointer or focus — nothing to demonstrate,
+    // and claiming it would hand us a release that turns off someone's hover.
+    if (!piece || piece.dataset.active === 'true') { demoSoon(DEMO_RETRY); return; }
+    demoPiece = piece;
+    tell(piece, true);
+    demoHoldTimer = setTimeout(demoRelease, DEMO_HOLD);
+  }
+
+  demoSoon(DEMO_REST);
 
   // --- type filter ------------------------------------------------------
 
@@ -1409,6 +1548,12 @@
   // whole drag on a card nobody is looking at. The card being dragged toward
   // waits until it has landed.
   function hush() {
+    // The demo's card stops with everything else. It is released before the
+    // `told` guard rather than after, because on a fine pointer `told` is
+    // never set — handoff is the coarse path — so a return here would leave a
+    // demonstrating card performing through the whole gesture, which is the
+    // one thing hush exists to prevent.
+    demoRelease();
     if (told < 0) return;
     const list = real();
     if (list[told]) tell(list[told], false);
@@ -1430,6 +1575,13 @@
 
     const list = real();
     const leaving = moved ? list[currentActive] : null;
+
+    // The mark has moved on, so a card the demo is holding is no longer the
+    // one being read. Released here rather than left to its own timer: under
+    // the drift the mark moves every few seconds, and a card that kept
+    // performing as it travelled off would be the second card performing by
+    // the time the next one arrived.
+    if (moved) demoRelease();
 
     if (moved) {
       // The card arriving next, marked so the drift can run it as it comes in.
