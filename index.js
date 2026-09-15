@@ -75,13 +75,13 @@
         + 'valgte punkt folder sig ud til en pille med etiket, søgning til et '
         + 'felt, loggen til et panel — i seks materialer fra én opskrift.',
       'cta.quickLookToolbar': 'Hurtigt kig: Værktøjslinje i flydende glas',
-      'piece.bentoGrid.title': 'Bento-gitter',
+      'piece.bentoGrid.title': 'Interaktivt bento-gitter',
       'piece.bentoGrid.note': 'Syv fliser, der hver angiver den plads, de '
         + 'ønsker, på et gitter der afkorter hvert spænd efter sit eget '
         + 'antal kolonner. Hver flise svarer på den plads, den lander i, '
         + 'frem for på den modifikator, den fik — og åbner man én, pakkes '
         + 'tavlen om omkring den.',
-      'cta.quickLookBento': 'Hurtigt kig: Bento-gitter',
+      'cta.quickLookBento': 'Hurtigt kig: Interaktivt bento-gitter',
       'piece.inkedPlate.title': 'Kort med tegnede plader',
       'piece.inkedPlate.note': 'En billedplade og en tekstplade med afskårne '
         + 'hjørner mod hinanden, over et punktgitter med snitmærker. '

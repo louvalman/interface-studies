@@ -10,7 +10,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Bento grid &mdash; Interface Studies</title>
+  <title>Interactive bento grid &mdash; Interface Studies</title>
 
   <!-- Font loading is the demo's job, never the component's. -->
   <!-- <link rel="preconnect" href="https://fonts.googleapis.com"> -->
@@ -27,7 +27,7 @@
      picture and keeps the title and the sentence. -->
   <meta property="og:type" content="article" />
   <meta property="og:site_name" content="Interface Studies" />
-  <meta property="og:title" content="Bento grid &mdash; Interface Studies" />
+  <meta property="og:title" content="Interactive bento grid &mdash; Interface Studies" />
   <meta property="og:description" content="Seven tiles that declare the room they want, on a grid that clamps every span against its own column count. Each tile answers for the slot it lands in, and opening one re-packs the board around it." />
   <meta property="og:image" content="../og.png" />
   <meta property="og:image:width" content="1200" />
@@ -607,7 +607,7 @@
 
     <header class="demo__intro">
       <p class="demo__kicker">2026-09 &middot; <span data-i18n="type">Layout</span></p>
-      <h1 class="demo__heading" data-i18n="heading">Bento grid</h1>
+      <h1 class="demo__heading" data-i18n="heading">Interactive bento grid</h1>
       <p class="demo__lede" data-i18n="lede">
         Seven tiles that declare the room they want, on a grid that clamps every
         span against its own column count. Each tile answers for the slot it
@@ -815,8 +815,7 @@
                   <span class="bento-grid__cue" aria-hidden="true"></span>
                   <h3 class="bento-grid__label">Wool</h3>
                   <p class="bento-grid__aside">
-                    Undyed in the ground, so the colour sits on a grey rather than a
-                    white.
+                    Undyed in the ground, so colour sits on grey, not white.
                   </p>
                   <div class="bento-grid__foot">
                     <p class="bento-grid__figure">100</p>
@@ -1107,8 +1106,7 @@
                     <span class="bento-grid__cue" aria-hidden="true"></span>
                     <h3 class="bento-grid__label">Wool</h3>
                     <p class="bento-grid__aside">
-                      Undyed in the ground, so the colour sits on a grey rather than a
-                      white.
+                      Undyed in the ground, so colour sits on grey, not white.
                     </p>
                     <div class="bento-grid__foot">
                       <p class="bento-grid__figure">100</p>
@@ -1328,8 +1326,7 @@
                   <span class="bento-grid__cue" aria-hidden="true"></span>
                   <h3 class="bento-grid__label">Wool</h3>
                   <p class="bento-grid__aside">
-                    Undyed in the ground, so the colour sits on a grey rather than a
-                    white.
+                    Undyed in the ground, so colour sits on grey, not white.
                   </p>
                   <div class="bento-grid__foot">
                     <p class="bento-grid__figure">100</p>
@@ -1435,7 +1432,14 @@
               flow is dense, and the tile re-composes because it has just become
               large enough to answer both slot queries. One gesture, both
               mechanisms, and no script: disclosure is what that element already
-              is, keyboard, screen reader and find-in-page included.</p>
+              is, keyboard, screen reader and find-in-page included. A grid
+              cannot tween a re-pack &mdash; track counts are not interpolable
+              and neither is a tile's placement &mdash; so what softens it is a
+              dip: the promoted tile settles in over 300ms, the revealed detail
+              arrives rather than appears, and under <code>--cycling</code>
+              every tile dips and returns on the ladder's own clock. Genuinely
+              tweening the re-pack needs the View Transitions API, and
+              therefore script.</p>
           </li>
           <li>
             <h3 class="demo__notes-head">Flat, unlit colour, and the adjacencies are meant to disagree.</h3>
@@ -1449,7 +1453,19 @@
         </ol>
 
         <p class="demo__notes-lede">
-          Two things cost a measurement each. An unnamed <code>@container</code>
+          The row height is measured rather than chosen. A tile's face gets the
+          row less 48px, and the tallest thing any face has to hold is the motif
+          tile's 117px; 11rem is the first round figure that clears it. Every
+          earlier value clipped something, and quietly &mdash; at 7rem six
+          tiles, at 9rem four, by 2 to 37 pixels each. A figure set at
+          <code>line-height: 1</code> overflows its own line box by about
+          0.15em, which with an auto margin pinning it to the bottom lands
+          exactly on the clip. And an aside gets two lines: about sixty
+          characters at the narrowest width one appears at.
+        </p>
+
+        <p class="demo__notes-lede">
+          Three things cost a measurement each. An unnamed <code>@container</code>
           asks the <em>nearest</em> ancestor container, so once the tiles became
           containers a board-level rule was silently being answered by a 201px
           tile and every tile in a four-column board took the wide composition;
@@ -1457,7 +1473,11 @@
           <code>--bento-grid-cols</code> is registered with
           <code>@property</code> as an <code>&lt;integer&gt;</code> &mdash;
           without that it cannot be animated at all, and the ladder above jumps
-          straight to its last rung.
+          straight to its last rung. And <code>container-type: size</code>
+          applies size containment, so a tile is laid out as though it had no
+          contents and <code>grid-auto-rows: minmax(var(--row), auto)</code> can
+          never grow a row to fit an opened tile &mdash; height-based slot
+          queries and rows that grow to their content are mutually exclusive.
         </p>
 
         <!-- Where it started, last: the block opens on the component, and the
@@ -1524,7 +1544,7 @@
         'notes.inspiration': 'Inspiration',
         'notes.full': '\u2014 hele optegnelsen, ogs\u00e5 det der blev pr\u00f8vet og forkastet',
         'type': 'Layout',
-        'heading': 'Bento-gitter',
+        'heading': 'Interaktivt bento-gitter',
         'lede': 'Syv fliser, der angiver den plads, de \u00f8nsker, p\u00e5 et gitter, '
           + 'der afkorter hvert sp\u00e6nd efter sit eget antal kolonner. Hver flise '
           + 'svarer p\u00e5 den plads, den lander i, frem for p\u00e5 den modifikator, '
