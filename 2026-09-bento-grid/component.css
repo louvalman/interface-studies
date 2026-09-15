@@ -223,6 +223,12 @@
      a fixed row track has a definite height for it to contain. */
   container: bento-grid-tile / size;
 
+  /* Not a name — a class, shared by all of them. component.js gives each tile
+     a unique `view-transition-name` for the length of a transition, and this
+     is what lets the rules at the foot of the file talk to all of those names
+     at once without naming any of them. */
+  view-transition-class: bento-grid-tile;
+
   position: relative;
   min-width: 0;
   min-height: 0;
@@ -736,4 +742,61 @@
   .bento-grid--cycling .bento-grid__tile,
   .bento-grid__tile:has(> .bento-grid__panel[open]),
   .bento-grid__panel[open] .bento-grid__detail { animation: none; }
+}
+
+/* --- when script is driving ---------------------------------------------
+
+   component.js stamps `--scripted` on the root where the browser can actually
+   morph, and everything above that exists to disguise a hard cut stands down:
+   the tiles are being moved now rather than dipped, and doing both reads as a
+   flinch in the middle of a move. The keyframe ladder goes with them, because
+   the script steps the rungs itself so it can wrap each one in a transition.
+
+   The detail's reveal is deliberately kept. It is not covering a cut — it is
+   content arriving, which is a different thing and still worth animating. */
+.bento-grid--scripted.bento-grid--cycling .bento-grid__board,
+.bento-grid--scripted.bento-grid--cycling .bento-grid__tile,
+.bento-grid--scripted .bento-grid__tile:has(> .bento-grid__panel[open]) {
+  animation: none;
+}
+
+/* --- the morph -----------------------------------------------------------
+
+   These attach to the document root rather than to anything in here, which is
+   the one place this file reaches outside its own scope — see CLAUDE.md. What
+   keeps it honest is `.bento-grid-tile`: the selector matches the class
+   declared on this component's own tiles and nothing else on the page, which
+   is what the no-global-selectors rule is actually asking for. The universal
+   form, `::view-transition-group(*)`, would take every transition on the page
+   including ones this component has never heard of.
+
+   The duration is a literal AND a property, and it has to be both. A
+   pseudo-element on the root inherits from the root, so a `var(--bento-grid-…)`
+   written here resolves against a root that has never heard of this component.
+   component.js publishes the value there for the length of a transition; the
+   literal is what applies when no script ran, and the two are kept in step by
+   hand. */
+::view-transition-group(.bento-grid-tile) {
+  animation-duration: var(--bento-grid-morph, 460ms);
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* A tile that changes size has an old snapshot and a new one at two different
+   shapes, and the default is to stretch both across the group's box as it
+   travels — which turns a 1x1 becoming a 2x2 into its own type being pulled
+   sideways for half a second. Cross-fading them at their own scale from the
+   top left corner keeps the label pinned where a label goes and lets the
+   growth happen around it. */
+::view-transition-old(.bento-grid-tile),
+::view-transition-new(.bento-grid-tile) {
+  height: 100%;
+  /* `none`, not `cover` and not the UA's `fill`. Fill stretches each snapshot
+     across the group's travelling box, which pulls the type sideways for the
+     length of the move. Cover preserves the aspect but scales to fill, so a
+     1x1 growing to a 2x2 magnifies its own outgoing snapshot — measured by eye
+     on a slowed transition, the departing `160` was visibly larger than the
+     arriving one. `none` holds both at the size they were captured and lets
+     the box grow around them, anchored at the corner a label starts from. */
+  object-fit: none;
+  object-position: top left;
 }

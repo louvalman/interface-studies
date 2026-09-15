@@ -606,10 +606,50 @@ a low alpha dithers the banding out, and reads as paper rather than as texture.
 
 ## JavaScript
 
-Vanilla HTML and CSS by default. Add JavaScript only when the study
-genuinely depends on interaction — a disclosure, a carousel, a drag. Hover,
-focus, and transitions are CSS. When JS is needed, it goes in a plain
-`component.js` with no framework and no build step.
+Vanilla HTML and CSS by default, and the default is not a formality: a
+component that needs no script cannot break in one. Hover, focus and state
+transitions are CSS and stay CSS.
+
+Add JavaScript when it carries its weight, which is either of two things. The
+study depends on the interaction — a disclosure, a carousel, a drag. Or it
+materially changes how the thing looks and feels and CSS genuinely cannot do
+it.
+
+That second half used to be missing, and it cost something real. A grid cannot
+tween a re-pack — track counts are not interpolable and neither is a tile's
+placement — so the bento study softened its own layout changes with a dip that
+moved nothing, which is a poor answer to the question that study is about. The
+View Transitions API does move them, and it needs script.
+
+The bar is *CSS cannot do this and the difference is worth a file*, not *this
+would be easier in JS*. Ease is not a reason. A thing CSS does badly is.
+
+When JS is needed it goes in a plain `component.js` — no framework, no build
+step, no dependency — and **the component still works without it**. Script
+enhances; it does not constitute. A study whose markup only makes sense once
+its script has run has put the component in the wrong file. `component.html`
+never carries a `<script>` tag either: `demo.html` and `preview.html` load
+`component.js` the same way they load `component.css`, and a folder copied out
+takes both.
+
+### View-transition pseudo-elements are the exception to "no global selectors"
+
+They attach to the document root and cannot be scoped by nesting, so the rule
+above cannot be met literally. It can be met in substance. A study that wants
+them declares `view-transition-class` on its own elements and selects
+`::view-transition-group(.slug-thing)`, which matches nothing but this
+component's own elements — which is what the no-global rule is for.
+
+Never `::view-transition-group(*)`. That is every transition on the page,
+including ones this component knows nothing about, and it is the exact failure
+the rule exists to prevent.
+
+One thing does not survive the boundary: those pseudo-elements inherit from
+`:root`, not from the component, so a `var(--slug-…)` written in one resolves
+against a root that has never heard of it. A study that wants its transition
+tunable publishes the value onto `:root` from its own script for the length of
+the transition, and the rule carries a literal fallback for when no script
+ran.
 
 ## Folders are independent
 

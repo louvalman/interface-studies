@@ -36,6 +36,10 @@
 
   <link rel="stylesheet" href="component.css">
 
+  <!-- Enhancement only: the component works with this deleted. See
+       component.js and the JavaScript section of CLAUDE.md. -->
+  <script src="component.js" defer></script>
+
   <style>
     /* Page scaffolding only. Nothing here may name a component class. */
     /* Matches the index's --gutter exactly. The pages are separate documents
@@ -1432,14 +1436,25 @@
               flow is dense, and the tile re-composes because it has just become
               large enough to answer both slot queries. One gesture, both
               mechanisms, and no script: disclosure is what that element already
-              is, keyboard, screen reader and find-in-page included. A grid
-              cannot tween a re-pack &mdash; track counts are not interpolable
-              and neither is a tile's placement &mdash; so what softens it is a
-              dip: the promoted tile settles in over 300ms, the revealed detail
-              arrives rather than appears, and under <code>--cycling</code>
-              every tile dips and returns on the ladder's own clock. Genuinely
-              tweening the re-pack needs the View Transitions API, and
-              therefore script.</p>
+              is, keyboard, screen reader and find-in-page included.</p>
+          </li>
+          <li>
+            <h3 class="demo__notes-head">The re-pack is moved, not disguised, and that is what <code>component.js</code> is for.</h3>
+            <p>A grid cannot tween one: track counts are not interpolable and
+              neither is a tile's placement, so every tile is simply somewhere
+              else on the next frame. The View Transitions API is the only thing
+              that moves them &mdash; it snapshots the old layout, lets the
+              change happen, snapshots the new one and animates each named
+              element between the two. A name must be unique per document and
+              this page carries four boards, so it is the board's index and the
+              tile's, set for the length of a transition and taken off after.
+              The stylesheet reaches it through
+              <code>view-transition-class</code> rather than
+              <code>::view-transition-group(*)</code>, which would take every
+              transition on the page. Everything the script does is enhancement:
+              deleted, the tiles are still <code>&lt;details&gt;</code>, the
+              ladder falls back to its keyframes, and the softening it replaced
+              comes back with it.</p>
           </li>
           <li>
             <h3 class="demo__notes-head">Flat, unlit colour, and the adjacencies are meant to disagree.</h3>
