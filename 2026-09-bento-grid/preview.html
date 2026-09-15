@@ -1,0 +1,468 @@
+<!doctype html>
+<!--
+  The thumbnail the landing page iframes: one instance of the board, centred on
+  the rail's shared ground, with no captions and no second copy. It links
+  component.css and never redefines it.
+
+  Keep the markup below in step with component.html.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bento grid &mdash; preview</title>
+
+  <link rel="stylesheet" href="component.css">
+
+  <!-- The ground, before the first paint. The index loads this frame with
+       ?theme= on the src, so a thumbnail is never drawn on the wrong one and
+       then corrected. -->
+  <script>
+    var theme = new URLSearchParams(location.search).get('theme');
+    if (theme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+  </script>
+
+  <style>
+    /* Thumbnail scaffolding only. Nothing here may name a component class. */
+
+    /* The rail's ground, not this study's — two literals repeated in every
+       folder so the row reads as one set of cards, which is why it follows the
+       index into dark rather than staying lit under it. Nothing is painted on
+       top of them. */
+    :root { --preview-ground: #f3f2ef; }
+    :root[data-theme="dark"] { --preview-ground: #191b1e; }
+
+    /* No scrollbars: the stage below is laid out wider than this frame and
+       scaled down into it, so its unscaled box overhangs on both sides before
+       the transform takes it. The frame is loaded with scrolling="no" anyway. */
+    html, body { overflow: hidden; }
+
+    html { background-color: var(--preview-ground); }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      position: relative;
+      background-color: var(--preview-ground);
+      font-family: system-ui, sans-serif;
+    }
+
+    /* The stage is laid out at a desktop width and scaled into the frame,
+       rather than being given the frame's 440px to reflow against.
+
+       This is the one study where that matters. The frame is 480x600, and a
+       board reflowing honestly at 440px is two columns — which is 732px tall
+       and does not fit. Forcing four columns into 440px instead gives 101px
+       tiles, wraps every label and clips "% Gotland": a picture of the
+       component misrepresenting it. Laying out at 880px and halving it is what
+       a thumbnail is — the component at its real proportions, small.
+
+       Scaffolding, on the stage wrapper. No rule here names a component class
+       and the component is not told about any of it. */
+    .preview-stage {
+      --preview-stage-w: 880px;
+      --preview-stage-scale: 0.5;
+
+      /* Centred by hand rather than by `place-items: center`, which does not
+         do it: a grid item wider than its container is clamped to the start
+         edge instead of overflowing both ways, so the stage sat at x=0 and
+         scaled to the right-hand half of the frame.
+
+         transform-origin is top left so the two steps are separable. The
+         translate runs first, in unscaled units, moving the stage by half its
+         own box; the scale then takes that offset down with it, to
+         scale/2 x (-w/2, -h/2). The scaled box is w x scale by h x scale, so
+         half of it is exactly that — and the stage's centre lands on the
+         frame's. Verified: centre at (240, 300) in a 480x600 frame. */
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: var(--preview-stage-w);
+      transform-origin: top left;
+      transform: scale(var(--preview-stage-scale)) translate(-50%, -50%);
+    }
+
+    /* The rail is moving, so every animation in here stops and picks up where
+       it left off. Global on purpose: it has to reach the component without
+       naming one of its classes. Transitions are left out deliberately —
+       stopping those mid-gesture makes states snap instead of settle. */
+    :root[data-preview-paused] *,
+    :root[data-preview-paused] *::before,
+    :root[data-preview-paused] *::after {
+      animation-play-state: paused !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="preview-stage">
+
+    <div class="bento-grid">
+      <ul class="bento-grid__board">
+
+        <!-- The lead. The only tile with a fill rather than a surface, which is
+             what makes it read as the lead at any column count. It opens by
+             default; closing it drops it to a unit tile and the board re-packs. -->
+        <li class="bento-grid__tile bento-grid__tile--feature bento-grid__plate">
+          <details class="bento-grid__panel">
+            <summary class="bento-grid__face">
+              <span class="bento-grid__cue" aria-hidden="true"></span>
+              <p class="bento-grid__label">Edition 04 &middot; hand-knotted</p>
+              <h3 class="bento-grid__title">Nine colours that argue</h3>
+              <svg
+                class="bento-grid__field"
+                viewBox="0 0 220 120"
+                preserveAspectRatio="xMidYMid meet"
+                role="img"
+                aria-label="The woven field: a cream ground inside a striped border, carrying a brick disc, an ochre stepped diamond and two olive bars.">
+                <rect x="0" y="0" width="220" height="120" fill="var(--bento-grid-c9)" />
+                <g fill="var(--bento-grid-c8)">
+                  <rect x="0" y="0" width="220" height="7" />
+                  <rect x="0" y="113" width="220" height="7" />
+                </g>
+                <g fill="var(--bento-grid-c2)">
+                  <rect x="10" y="14" width="8" height="92" />
+                  <rect x="26" y="14" width="8" height="92" />
+                  <rect x="186" y="14" width="8" height="92" />
+                  <rect x="202" y="14" width="8" height="92" />
+                </g>
+                <circle cx="78" cy="60" r="30" fill="var(--bento-grid-c1)" />
+                <path d="M148 30 L172 60 L148 90 L124 60 Z" fill="var(--bento-grid-c5)" />
+                <path d="M148 44 L160 60 L148 76 L136 60 Z" fill="var(--bento-grid-c2)" />
+                <g fill="var(--bento-grid-c3)">
+                  <rect x="48" y="16" width="60" height="9" />
+                  <rect x="48" y="95" width="60" height="9" />
+                </g>
+                <circle cx="78" cy="60" r="11" fill="var(--bento-grid-c6)" />
+              </svg>
+              <div class="bento-grid__foot">
+                <p class="bento-grid__meta">200 &times; 300 cm</p>
+                <p class="bento-grid__meta">Gotland wool</p>
+              </div>
+            </summary>
+            <p class="bento-grid__detail">
+              Knotted on a cotton warp over eleven weeks. The border is carried in
+              two pitches so it reads as one band at a distance and as two up close.
+            </p>
+          </details>
+        </li>
+
+        <li class="bento-grid__tile bento-grid__tile--wide">
+          <details class="bento-grid__panel">
+            <summary class="bento-grid__face">
+              <span class="bento-grid__cue" aria-hidden="true"></span>
+              <h3 class="bento-grid__label">Colourway</h3>
+              <p class="bento-grid__aside">
+                Dyed in one bath, so nothing quite matches and nothing quite
+                clashes.
+              </p>
+              <div class="bento-grid__way" role="img" aria-label="The nine colours of the edition, flush, brick through cream">
+                <span class="bento-grid__swatch"></span>
+                <span class="bento-grid__swatch"></span>
+                <span class="bento-grid__swatch"></span>
+                <span class="bento-grid__swatch"></span>
+                <span class="bento-grid__swatch"></span>
+                <span class="bento-grid__swatch"></span>
+                <span class="bento-grid__swatch"></span>
+                <span class="bento-grid__swatch"></span>
+                <span class="bento-grid__swatch"></span>
+              </div>
+              <div class="bento-grid__foot">
+                <p class="bento-grid__meta">9 fields</p>
+                <p class="bento-grid__meta">One bath</p>
+              </div>
+            </summary>
+            <div class="bento-grid__detail">
+              Four of the nine show in a narrow slot; the rest arrive when there is
+              room to read them as colour rather than as stripes.
+              <dl>
+                <dt>Lot</dt><dd>04&ndash;B</dd>
+                <dt>Fastness</dt><dd>6 of 8</dd>
+              </dl>
+            </div>
+          </details>
+        </li>
+
+        <li class="bento-grid__tile bento-grid__tile--tall">
+          <details class="bento-grid__panel">
+            <summary class="bento-grid__face">
+              <span class="bento-grid__cue" aria-hidden="true"></span>
+              <h3 class="bento-grid__label">Weave</h3>
+              <p class="bento-grid__aside">
+                Three pitches in one field: the coarse rows carry the pattern, the
+                fine ones carry the ground.
+              </p>
+              <div class="bento-grid__weave">
+                <div class="bento-grid__weave-row">
+                  <p class="bento-grid__meta">Coarse</p>
+                  <div class="bento-grid__band bento-grid__band--coarse"></div>
+                </div>
+                <div class="bento-grid__weave-row">
+                  <p class="bento-grid__meta">Medium</p>
+                  <div class="bento-grid__band bento-grid__band--medium"></div>
+                </div>
+                <div class="bento-grid__weave-row">
+                  <p class="bento-grid__meta">Fine</p>
+                  <div class="bento-grid__band bento-grid__band--fine"></div>
+                </div>
+              </div>
+            </summary>
+            <div class="bento-grid__detail">
+              Pitch is set at the loom and cannot be changed once the warp is on.
+              <dl>
+                <dt>Warp</dt><dd>Cotton, 12/6</dd>
+                <dt>Pile</dt><dd>11 mm</dd>
+              </dl>
+            </div>
+          </details>
+        </li>
+
+        <li class="bento-grid__tile">
+          <details class="bento-grid__panel">
+            <summary class="bento-grid__face">
+              <span class="bento-grid__cue" aria-hidden="true"></span>
+              <h3 class="bento-grid__label">Knots</h3>
+              <p class="bento-grid__aside">
+                Counted across the ground, not the border, which runs denser.
+              </p>
+              <div class="bento-grid__foot">
+                <p class="bento-grid__figure">160</p>
+                <p class="bento-grid__meta">per dm&sup2;</p>
+              </div>
+            </summary>
+            <div class="bento-grid__detail">
+              <dl>
+                <dt>Ground</dt><dd>160 / dm&sup2;</dd>
+                <dt>Border</dt><dd>190 / dm&sup2;</dd>
+              </dl>
+            </div>
+          </details>
+        </li>
+
+        <li class="bento-grid__tile">
+          <details class="bento-grid__panel">
+            <summary class="bento-grid__face">
+              <span class="bento-grid__cue" aria-hidden="true"></span>
+              <h3 class="bento-grid__label">Motif</h3>
+              <p class="bento-grid__aside">
+                The stepped diamond, repeated four times along the long edge.
+              </p>
+              <svg
+                class="bento-grid__motif"
+                viewBox="0 0 48 48"
+                role="img"
+                aria-label="A stepped diamond with a disc at its centre">
+                <path d="M24 2 L46 24 L24 46 L2 24 Z" fill="var(--bento-grid-c5)" />
+                <path d="M24 12 L36 24 L24 36 L12 24 Z" fill="var(--bento-grid-c2)" />
+                <circle cx="24" cy="24" r="6" fill="var(--bento-grid-c1)" />
+              </svg>
+            </summary>
+            <div class="bento-grid__detail">
+              <dl>
+                <dt>Repeat</dt><dd>4 &times;</dd>
+                <dt>Origin</dt><dd>Drawn, not traced</dd>
+              </dl>
+            </div>
+          </details>
+        </li>
+
+        <li class="bento-grid__tile">
+          <details class="bento-grid__panel">
+            <summary class="bento-grid__face">
+              <span class="bento-grid__cue" aria-hidden="true"></span>
+              <h3 class="bento-grid__label">Size</h3>
+              <p class="bento-grid__aside">
+                Cut to the loom width; the length is where the edition varies.
+              </p>
+              <div class="bento-grid__foot">
+                <p class="bento-grid__figure">200</p>
+                <p class="bento-grid__meta">&times; 300 cm</p>
+              </div>
+            </summary>
+            <div class="bento-grid__detail">
+              <dl>
+                <dt>Width</dt><dd>200 cm</dd>
+                <dt>Length</dt><dd>280&ndash;310 cm</dd>
+              </dl>
+            </div>
+          </details>
+        </li>
+
+        <li class="bento-grid__tile">
+          <details class="bento-grid__panel">
+            <summary class="bento-grid__face">
+              <span class="bento-grid__cue" aria-hidden="true"></span>
+              <h3 class="bento-grid__label">Wool</h3>
+              <p class="bento-grid__aside">
+                Undyed in the ground, so the colour sits on a grey rather than a
+                white.
+              </p>
+              <div class="bento-grid__foot">
+                <p class="bento-grid__figure">100</p>
+                <p class="bento-grid__meta">% Gotland</p>
+              </div>
+            </summary>
+            <div class="bento-grid__detail">
+              <dl>
+                <dt>Staple</dt><dd>90 mm</dd>
+                <dt>Spun</dt><dd>2-ply, worsted</dd>
+              </dl>
+            </div>
+          </details>
+        </li>
+
+      </ul>
+    </div>
+  </div>
+
+  <!--
+    Thumbnail scaffolding, driven by the index and inert when this file is
+    opened on its own.
+
+    What `active` means here is a tile opening: it promotes to the lead size,
+    the board re-packs around it, and the tile re-composes itself because it has
+    just become large enough to answer the slot queries. One gesture, both of
+    the study's mechanisms, and the thing a still card cannot show.
+
+    The column ladder is deliberately NOT what runs here, though it is what
+    `--cycling` exists for and what demo.html shows. Measured on the 880px
+    stage, halved into this frame's 560px of usable height: four columns is
+    240px, three is 316px and two is 468px, but one column is 696px and still
+    does not fit. A ladder that clips for a quarter of every cycle is not a
+    demonstration of anything. The card shows the three rungs that fit and the
+    interaction; the page with room shows the whole ladder.
+
+    The tiles' own open/close needs nothing from this file — it is a <details>,
+    so quick look, which runs this frame with pointer events live, gets it for
+    free. This only drives it for the card, where pointer events are off.
+  -->
+  <script>
+    (function () {
+      var CHANNEL = 'interface-studies';
+      var root = document.querySelector('.bento-grid');
+      var board = document.querySelector('.bento-grid__board');
+      var panels = document.querySelectorAll('.bento-grid__panel');
+      if (!root || !board || !panels.length) return;
+
+      // The unit tile the card opens: a 1x1 going to 2x2 is the largest move
+      // the board has, so it is the one worth watching at thumbnail size.
+      var SHOWN = 3;
+
+      // The stage's own reduction, which compounds with the index's. See the
+      // scale handler below.
+      var STAGE = 0.5;
+
+      // First entry is the resting state, and it is what the card shows.
+      // Three columns rests rather than four, which is a decision about this
+      // card's shape and not about the component. A four-column board is
+      // 1.83:1 and the card frame is 0.79:1, so four columns is width-limited
+      // and fills 42% of the frame's height; three columns is 4x3 rows, fills
+      // 56%, and is still unmistakably a bento. Measured on the 880px stage,
+      // halved: four columns 240px, three 316px, two 468px, one 696px, against
+      // 560px of usable height.
+      var VARIANTS = [
+        { id: 'three',  label: 'Three columns', cols: 3, open: -1 },
+        { id: 'opened', label: 'A tile opened', cols: 3, open: SHOWN },
+        { id: 'four',   label: 'Four columns',  cols: 4, open: -1 },
+        { id: 'two',    label: 'Two columns',   cols: 2, open: -1 }
+      ];
+
+      function openOnly(index) {
+        Array.prototype.forEach.call(panels, function (panel, i) {
+          panel.open = (i === index);
+        });
+      }
+
+      function apply(variant) {
+        board.style.setProperty('--bento-grid-cols', variant.cols);
+        openOnly(variant.open);
+      }
+
+      apply(VARIANTS[0]);
+
+      // How much this document's pixels are being shrunk on screen. The board
+      // draws two things in device pixels — the tile hairline and the weave
+      // bands — and below one device pixel they stop being antialiased and
+      // start being a smear. Restated inline against the factor, which is what
+      // beats the stylesheet without writing a rule against a component class.
+      // The index reports how much this document is being rasterised down by;
+      // the stage above shrinks it again on top of that, and the hairlines have
+      // to answer BOTH. A card at the index's 0.7 with this stage's 0.5 draws a
+      // 1px border at 0.35 of a device pixel, which is not a hairline, it is a
+      // grey suggestion. The two multiply; so does the correction.
+      function scale(n) {
+        var total = (n && n > 0 ? n : 1) * STAGE;
+        if (total >= 1) {
+          root.style.removeProperty('--bento-grid-line-weight');
+          root.style.removeProperty('--bento-grid-band-weight');
+          return;
+        }
+        var px = (1 / total).toFixed(2) + 'px';
+        root.style.setProperty('--bento-grid-line-weight', px);
+        root.style.setProperty('--bento-grid-band-weight', px);
+      }
+
+      // The stage reduction applies whether or not the index ever reports its
+      // own, so the correction is set once at load rather than only on message.
+      scale(1);
+
+      window.addEventListener('message', function (event) {
+        var data = event.data;
+        if (!data || data.source !== CHANNEL) return;
+
+        // Opens the tile without touching the rung, so whatever column count
+        // is showing is the one the promotion happens in.
+        if (data.type === 'preview') {
+          openOnly(data.active === true ? SHOWN : -1);
+        }
+
+        if (data.type === 'preview:variant') {
+          var variant = VARIANTS[data.index];
+          if (variant) apply(variant);
+        }
+
+        if (data.type === 'preview:scale') {
+          scale(data.scale);
+        }
+
+        // The rail is moving, or this card has left the scrollport.
+        if (data.type === 'preview:pause') {
+          if (data.paused === true) {
+            document.documentElement.setAttribute('data-preview-paused', '');
+          } else {
+            document.documentElement.removeAttribute('data-preview-paused');
+          }
+        }
+
+        // Which theme the index is in. The ground above is the rail's rather
+        // than this study's, and every thumbnail moves with the page together
+        // or the rail stops reading as one set of cards.
+        if (data.type === 'preview:theme') {
+          if (data.theme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+          } else {
+            document.documentElement.removeAttribute('data-theme');
+          }
+        }
+      });
+
+      // Quick look runs this file with pointer events live, so focus can end
+      // up inside this document and the overlay's Escape handler never hears
+      // the key. Hand back that one key and nothing else — every tile here is a
+      // disclosure, and Space and Enter are theirs to interpret.
+      if (window.parent !== window) {
+        document.addEventListener('keydown', function (event) {
+          if (event.key !== 'Escape') return;
+          window.parent.postMessage({ source: CHANNEL, type: 'preview:key', key: 'Escape' }, '*');
+        });
+
+        window.parent.postMessage({
+          source: CHANNEL,
+          type: 'preview:ready',
+          variants: VARIANTS.map(function (v) { return { id: v.id, label: v.label }; })
+        }, '*');
+      }
+    })();
+  </script>
+
+</body>
+</html>

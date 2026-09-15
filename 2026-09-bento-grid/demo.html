@@ -1,0 +1,1660 @@
+<!doctype html>
+<!--
+  The demo page. Everything page-level lives here and only here: background,
+  centering, font loading, and 2-3 states of the component.
+
+  This page links component.css. It never redefines it — no rule below may
+  target a component class. Demo styles are scoped to .demo* only.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bento grid &mdash; Interface Studies</title>
+
+  <!-- Font loading is the demo's job, never the component's. -->
+  <!-- <link rel="preconnect" href="https://fonts.googleapis.com"> -->
+  <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=..."> -->
+
+  <!-- Page chrome, like the back link: goes stale if this folder is copied
+       out on its own, and nothing else breaks when it does. -->
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+
+  <!-- What a link to this page looks like when it is pasted somewhere. The
+     card image is the index's, one level up — the same place this page
+     already takes its favicon and its back link from, so it goes stale in
+     exactly the same way and no worse. A copied-out folder loses the
+     picture and keeps the title and the sentence. -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Interface Studies" />
+  <meta property="og:title" content="Bento grid &mdash; Interface Studies" />
+  <meta property="og:description" content="Seven tiles that declare the room they want, on a grid that clamps every span against its own column count. Each tile answers for the slot it lands in, and opening one re-packs the board around it." />
+  <meta property="og:image" content="../og.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <link rel="stylesheet" href="component.css">
+
+  <style>
+    /* Page scaffolding only. Nothing here may name a component class. */
+    /* Matches the index's --gutter exactly. The pages are separate documents
+       with no shared stylesheet, so the value is repeated rather than shared —
+       but it has to be the same number, or the language control and the
+       content edge shift on every trip between them. */
+    :root {
+      --demo-gutter: clamp(1.5rem, 6vw, 6rem);
+
+      /* The page's own palette, and the only place a colour is written. Every
+         rule below reads a token, so the dark block underneath is this same
+         list with different values — not a second set of rules. The component
+         is not in it: component.css owns its colours in both themes, and this
+         page never reaches into them.
+
+         Three text tiers, not five: the greys this page had drifted a couple of
+         percent apart for no reason anyone could name. */
+      /* The repo's default demo ground. A study may depart from it — the
+         inked plate is ink by authorship, the liquid-glass toolbar is a warm
+         stone its cross-lit stage needs — but a departure is a decision, and
+         it says so in that folder's notes.md. This pair is what you keep
+         until you have one.
+
+         It was #ddd9d0 / #161512, which was neither the default nor a
+         departure: ~7.6 ΔE off the ground three of the five studies share,
+         noticeably darker, and with nothing written down saying why. Every
+         new study was being born on a ground no study used. */
+      --demo-ground: #f3f2ef;
+      --demo-fg: #1c1812;
+      --demo-soft: #4a453d;
+      --demo-dim: #605a51;
+      --demo-accent: #ac512d;
+      --demo-chip: rgba(255, 255, 255, 0.72);
+      --demo-chip-soft: rgba(255, 255, 255, 0.6);
+      --demo-chip-hover: #fff;
+      --demo-line: rgba(28, 24, 18, 0.14);
+      --demo-fill: rgba(28, 24, 18, 0.07);
+    }
+
+    :root[data-theme="dark"] {
+      /* Matte: a warm graphite with no pure black under it and off-white ink on
+         top, the same construction the index uses. The component keeps its own
+         ground and sits on this as a lit plate, which is what it does on the
+         index cards too. */
+      --demo-ground: #121316;
+      --demo-fg: #eae8e3;
+      --demo-soft: #a8a49c;
+      --demo-dim: #86827a;
+      --demo-accent: #e08453;
+      --demo-chip: rgba(36, 34, 30, 0.72);
+      --demo-chip-soft: rgba(36, 34, 30, 0.6);
+      --demo-chip-hover: #2a2823;
+      --demo-line: rgba(234, 232, 227, 0.14);
+      --demo-fill: rgba(234, 232, 227, 0.07);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 4rem var(--demo-gutter);
+      box-sizing: border-box;
+      background: var(--demo-ground);
+      color: var(--demo-fg);
+      font-family: system-ui, sans-serif;
+    }
+
+    .demo {
+      display: grid;
+      gap: 3rem;
+      /* Wider than the template's 30rem: this study's subject is what happens
+         between four columns and one, so the page has to be able to show the
+         top of that range. */
+      width: min(100%, 64rem);
+    }
+
+    /* The narrow-container state. The point of it is that the component
+       reflows against the column it is GIVEN rather than against the viewport,
+       so this is a plain width on the demo's own wrapper and no rule of it
+       reaches into a component class. */
+    .demo__column {
+      width: min(26rem, 100%);
+      max-width: 100%;
+    }
+
+    /* Back to the index. Page chrome — the component never depends on it. */
+    /* Aligned to the page's own padding, so it sits on the same edge as the
+       content rather than floating inside the margin. */
+    /* Language and theme, in one cluster on the page's own edge. Absolute,
+       not fixed: both are picked once and neither has any reason to ride
+       the viewport down the page. */
+    .demo__controls {
+      position: absolute;
+      top: clamp(1.25rem, 3vw, 2.25rem);
+      right: var(--demo-gutter);
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .demo__lang {
+      display: flex;
+      align-items: center;
+      gap: 0.1rem;
+      padding: 0.2rem 0.35rem;
+      border-radius: 999px;
+      background: var(--demo-chip);
+    }
+
+    .demo__lang-btn {
+      padding: 0.35em 0.5em;
+      border: 0;
+      background: transparent;
+      color: var(--demo-dim);
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.625rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: color 240ms ease;
+    }
+
+    .demo__lang-btn:hover { color: var(--demo-fg); }
+
+    .demo__lang-btn[aria-pressed="true"] {
+      color: var(--demo-fg);
+      text-decoration: underline;
+      text-decoration-color: var(--demo-accent);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 0.4em;
+    }
+
+    .demo__lang-btn:focus-visible {
+      outline: 2px solid var(--demo-fg);
+      outline-offset: 2px;
+      border-radius: 0.25rem;
+    }
+
+    .demo__lang-sep {
+      width: 1px;
+      height: 0.7rem;
+      background: var(--demo-line);
+    }
+
+    /* --- theme toggle ---------------------------------------------------
+       The index's control, carried here rather than shared: this folder has
+       to survive being copied out, so the page owns its own copy the way it
+       owns its own language table. It offers the state it would move to. */
+    .demo__theme {
+      flex: none;
+      width: 1.85rem;
+      height: 1.85rem;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      background: var(--demo-chip);
+      color: var(--demo-dim);
+      cursor: pointer;
+      transition: color 240ms ease, background 240ms ease;
+    }
+
+    .demo__theme:hover { color: var(--demo-fg); }
+
+    .demo__theme:focus-visible {
+      outline: 2px solid var(--demo-fg);
+      outline-offset: 2px;
+    }
+
+    .demo__theme-icon {
+      width: 0.95rem;
+      height: 0.95rem;
+      overflow: visible;
+    }
+
+    /* One shape for both states: a disc with a bite out of it and a ring of
+       rays. Dark slides the bite off the disc and turns the rays in, so the
+       moon becomes the sun rather than being swapped for it. */
+    .demo__theme-cut {
+      fill: #000;
+      transform-box: fill-box;
+      transform-origin: center;
+      transform: translate(30%, -30%);
+      transition: transform 520ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .demo__theme-disc {
+      fill: currentColor;
+      transform-box: fill-box;
+      transform-origin: center;
+      transition: transform 520ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .demo__theme-rays {
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      transform-box: fill-box;
+      transform-origin: center;
+      opacity: 0;
+      transform: scale(0.55) rotate(-45deg);
+      transition:
+        opacity 320ms cubic-bezier(0.16, 1, 0.3, 1),
+        transform 520ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    :root[data-theme="dark"] .demo__theme-cut { transform: translate(125%, -125%); }
+    :root[data-theme="dark"] .demo__theme-disc { transform: scale(0.74); }
+    :root[data-theme="dark"] .demo__theme-rays { opacity: 1; transform: scale(1) rotate(0deg); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .demo__theme-cut,
+      .demo__theme-disc,
+      .demo__theme-rays { transition: none; }
+    }
+
+
+    .demo__back {
+      justify-self: start;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.9rem 0.5rem 0.75rem;
+      border: 1px solid var(--demo-line);
+      border-radius: 999px;
+      background: var(--demo-chip-soft);
+      font-size: 0.6875rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--demo-soft);
+      text-decoration: none;
+    }
+
+    .demo__back:hover { background: var(--demo-chip-hover); }
+
+    .demo__back svg { width: 0.85rem; height: 0.85rem; }
+
+    /* Capped at whatever column it lands in, so a component sized in rem
+       shrinks with the page instead of pushing a scrollbar across it. Worth
+       keeping when you copy this: it is the one line that decides whether the
+       demo survives a phone. */
+    .demo__state {
+      display: grid;
+      /* The pair that keeps a demo off a phone's horizontal scrollbar: the
+         cell is capped at its column, and the column is told it may shrink
+         below its content. Without the second line an implicit `auto` track
+         takes its max-content width and overflows anyway. */
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.75rem;
+      max-width: 100%;
+    }
+
+    .demo__caption {
+      margin: 0;
+      font-size: 0.6875rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--demo-dim);
+    }
+
+    /* --- touch targets --- */
+
+    /* No hover means a finger, and a finger cannot aim at a 10px label. The
+       page's own controls grow; the component is not touched. Duplicated in
+       every demo page on purpose — no shared stylesheet, so a folder copied
+       out on its own takes this with it. */
+    @media (hover: none) {
+      .demo__lang-btn {
+        display: grid;
+        place-items: center;
+        min-width: 2.25rem;
+        min-height: 2.25rem;
+      }
+
+      .demo__theme {
+        width: 2.25rem;
+        height: 2.25rem;
+      }
+
+      .demo__back { min-height: 2.75rem; }
+    }
+
+    /* --- intro and decisions --------------------------------------------
+       Both are required on every demo page. The heading is what a reader
+       arriving from the index lands on; the decisions block is notes.md
+       rendered — the type, the origin, and the decisions the build captures,
+       which is the part of the folder actually worth lifting and the one thing
+       the site used to keep to itself.
+
+       Kept in step with notes.md by hand, like the language table below it:
+       there is no build step to read the file, and fetching it fails over
+       file://, where each document gets an opaque origin. Leave the decision
+       prose in the language notes.md was written in — it is a record, not page
+       copy, the same reason component sample copy is left alone. Only the
+       labels around it carry data-i18n. */
+    .demo__intro {
+      max-width: 46rem;
+      margin-bottom: clamp(2.5rem, 6vw, 4rem);
+    }
+
+    .demo__kicker {
+      margin: 0 0 0.75rem;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.6875rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--demo-dim);
+    }
+
+    .demo__heading {
+      margin: 0;
+      font-size: clamp(1.75rem, 4vw, 2.75rem);
+      font-weight: 600;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+    }
+
+    .demo__lede {
+      margin: 1.25rem 0 0;
+      max-width: 52ch;
+      font-size: 1.0625rem;
+      line-height: 1.6;
+      color: var(--demo-soft);
+    }
+
+    .demo__notes {
+      margin-top: clamp(3.5rem, 8vw, 6rem);
+      padding-top: clamp(2rem, 4vw, 3rem);
+      border-top: 1px solid var(--demo-line);
+      /* Prose measure, not the page's. */
+      max-width: 42rem;
+    }
+
+    .demo__notes-title {
+      margin: 0;
+      font-size: 1.125rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    /* The disclosure row. `list-style: none` kills the marker in Firefox and
+       Chrome; the ::-webkit- rule is still needed for Safari. */
+    .demo__notes-summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.25rem 0 0.75rem;
+      cursor: pointer;
+      list-style: none;
+    }
+
+    .demo__notes-summary::-webkit-details-marker { display: none; }
+
+    .demo__notes-summary:focus-visible {
+      outline: 2px solid var(--demo-fg);
+      outline-offset: 4px;
+      border-radius: 0.25rem;
+    }
+
+    .demo__notes-chevron {
+      flex: none;
+      width: 1rem;
+      height: 1rem;
+      color: var(--demo-dim);
+      transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .demo__notes-summary:hover .demo__notes-chevron { color: var(--demo-fg); }
+
+    .demo__notes[open] .demo__notes-chevron { transform: rotate(180deg); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .demo__notes-chevron { transition: none; }
+    }
+
+    /* Touch: the row is the target, and it has to be one you can hit. */
+    @media (hover: none) {
+      .demo__notes-summary { min-height: 2.75rem; }
+    }
+
+    .demo__notes-body { padding-bottom: 0.5rem; }
+
+    .demo__notes-meta {
+      margin: 0.75rem 0 0;
+      display: grid;
+      gap: 0.6rem;
+    }
+
+    .demo__notes-row {
+      display: grid;
+      grid-template-columns: 4.5rem minmax(0, 1fr);
+      gap: 0.9rem;
+      align-items: baseline;
+    }
+
+    .demo__notes-row dt {
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.625rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--demo-dim);
+    }
+
+    .demo__notes-row dd {
+      margin: 0;
+      font-size: 0.875rem;
+      line-height: 1.5;
+      color: var(--demo-soft);
+      /* A source URL is one unbroken word and the page is 320px wide on a
+         phone: without this it sets the whole column's minimum. */
+      overflow-wrap: anywhere;
+    }
+
+    .demo__notes-lede {
+      margin: 1.75rem 0 0;
+      font-size: 0.9375rem;
+      line-height: 1.7;
+      color: var(--demo-soft);
+    }
+
+    .demo__notes-list {
+      margin: 2.25rem 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 1.75rem;
+    }
+
+    .demo__notes-list > li { display: grid; gap: 0.45rem; }
+
+    .demo__notes-head {
+      margin: 0;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      line-height: 1.45;
+    }
+
+    .demo__notes-list p {
+      margin: 0;
+      font-size: 0.9375rem;
+      line-height: 1.7;
+      color: var(--demo-soft);
+    }
+
+    .demo__notes code {
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.85em;
+      padding: 0.12em 0.32em;
+      border-radius: 0.25rem;
+      background: var(--demo-fill);
+      overflow-wrap: anywhere;
+    }
+
+    .demo__notes a {
+      color: inherit;
+      text-decoration-color: var(--demo-accent);
+      text-underline-offset: 0.2em;
+    }
+
+    /* The inspiration row, below the decisions rather than above them. */
+    .demo__notes-meta--foot { margin-top: 2.5rem; }
+    .demo__notes-meta--foot + .demo__notes-foot { margin-top: 1.1rem; }
+    /* 'Inspiration' is longer than 'Type' and sets its own column. */
+    .demo__notes-meta--foot .demo__notes-row {
+      grid-template-columns: 6.25rem minmax(0, 1fr);
+    }
+
+    .demo__notes-foot {
+      margin: 2.5rem 0 0;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.6875rem;
+      line-height: 1.7;
+      letter-spacing: 0.08em;
+      color: var(--demo-dim);
+    }
+
+    /* --- the switch itself ------------------------------------------------
+       Flipping the token block repaints the page in one frame, which reads as
+       a cut rather than as a change of light. The script hangs .is-theming on
+       <html> for the length of the crossfade and takes it off again, so the
+       rule is not on every element for the rest of the session. One class plus
+       a type, so it outranks the page rules it stands in for without
+       !important. */
+    html.is-theming,
+    html.is-theming *,
+    html.is-theming *::before,
+    html.is-theming *::after {
+      transition:
+        background-color 420ms cubic-bezier(0.16, 1, 0.3, 1),
+        background-image 420ms cubic-bezier(0.16, 1, 0.3, 1),
+        border-color 420ms cubic-bezier(0.16, 1, 0.3, 1),
+        box-shadow 420ms cubic-bezier(0.16, 1, 0.3, 1),
+        color 420ms cubic-bezier(0.16, 1, 0.3, 1),
+        fill 420ms cubic-bezier(0.16, 1, 0.3, 1),
+        stroke 420ms cubic-bezier(0.16, 1, 0.3, 1),
+        transform 420ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html.is-theming,
+      html.is-theming *,
+      html.is-theming *::before,
+      html.is-theming *::after { transition-duration: 1ms; }
+    }
+</style>
+
+  <!-- The theme, before the first paint. The toggle and the rest of it are in
+     the script at the foot of the page, but the answer has to be on <html> by
+     the time the stylesheet draws, or a page opened in dark flashes a frame of
+     the other one.
+
+     The query string first, because that is how the index hands the choice
+     over — over file:// each document gets an opaque origin and localStorage
+     does not carry across. Then the stored choice, then the system's. -->
+  <script>
+    try {
+      var q = new URLSearchParams(location.search).get('theme');
+      var t = (q === 'dark' || q === 'light') ? q
+            : localStorage.getItem('interface-studies:theme');
+      if (t !== 'dark' && t !== 'light') {
+        t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      document.documentElement.setAttribute('data-theme', t);
+    } catch (err) { /* private mode: the page keeps the theme in its markup */ }
+  </script>
+</head>
+<body>
+  <div class="demo">
+
+    <!-- Delete alongside the language script below if this study is
+         single-language. -->
+    <div class="demo__controls">
+      <div class="demo__lang" role="group" aria-label="Language">
+        <button class="demo__lang-btn" type="button" data-lang="en" aria-pressed="true">EN</button>
+        <span class="demo__lang-sep" aria-hidden="true"></span>
+        <button class="demo__lang-btn" type="button" data-lang="da" aria-pressed="false">DA</button>
+      </div>
+
+      <button
+        class="demo__theme"
+        type="button"
+        data-theme-toggle
+        aria-pressed="false"
+        data-i18n-aria="a11y.theme"
+        aria-label="Dark mode">
+        <svg class="demo__theme-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <mask id="demo-theme-bite">
+            <rect width="24" height="24" fill="#fff" />
+            <circle class="demo__theme-cut" cx="12" cy="12" r="9" />
+          </mask>
+          <circle class="demo__theme-disc" cx="12" cy="12" r="9" mask="url(#demo-theme-bite)" />
+          <g class="demo__theme-rays">
+            <path d="M12 1v2M12 21v2M3.9 3.9l1.4 1.4M18.7 18.7l1.4 1.4M1 12h2M21 12h2M3.9 20.1l1.4-1.4M18.7 5.3l1.4-1.4" />
+          </g>
+        </svg>
+      </button>
+    </div>
+
+    <a class="demo__back" href="../index.html">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <path d="M10 2 4 8l6 6" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+      <span data-i18n="back">All studies</span>
+    </a>
+
+    <header class="demo__intro">
+      <p class="demo__kicker">2026-09 &middot; <span data-i18n="type">Layout</span></p>
+      <h1 class="demo__heading" data-i18n="heading">Bento grid</h1>
+      <p class="demo__lede" data-i18n="lede">
+        Seven tiles that declare the room they want, on a grid that clamps every
+        span against its own column count. Each tile answers for the slot it
+        lands in rather than for the modifier it was given &mdash; and opening
+        one re-packs the board around it.
+      </p>
+    </header>
+
+      <section class="demo__state">
+        <p class="demo__caption" data-i18n="state.default">Default &mdash; four columns. Open a tile: it takes the lead size, the board re-packs around it, and the tile re-composes itself</p>
+        <div class="bento-grid">
+          <ul class="bento-grid__board">
+
+            <!-- The lead. The only tile with a fill rather than a surface, which is
+                 what makes it read as the lead at any column count. It opens by
+                 default; closing it drops it to a unit tile and the board re-packs. -->
+            <li class="bento-grid__tile bento-grid__tile--feature bento-grid__plate">
+              <details class="bento-grid__panel">
+                <summary class="bento-grid__face">
+                  <span class="bento-grid__cue" aria-hidden="true"></span>
+                  <p class="bento-grid__label">Edition 04 &middot; hand-knotted</p>
+                  <h3 class="bento-grid__title">Nine colours that argue</h3>
+                  <svg
+                    class="bento-grid__field"
+                    viewBox="0 0 220 120"
+                    preserveAspectRatio="xMidYMid meet"
+                    role="img"
+                    aria-label="The woven field: a cream ground inside a striped border, carrying a brick disc, an ochre stepped diamond and two olive bars.">
+                    <rect x="0" y="0" width="220" height="120" fill="var(--bento-grid-c9)" />
+                    <g fill="var(--bento-grid-c8)">
+                      <rect x="0" y="0" width="220" height="7" />
+                      <rect x="0" y="113" width="220" height="7" />
+                    </g>
+                    <g fill="var(--bento-grid-c2)">
+                      <rect x="10" y="14" width="8" height="92" />
+                      <rect x="26" y="14" width="8" height="92" />
+                      <rect x="186" y="14" width="8" height="92" />
+                      <rect x="202" y="14" width="8" height="92" />
+                    </g>
+                    <circle cx="78" cy="60" r="30" fill="var(--bento-grid-c1)" />
+                    <path d="M148 30 L172 60 L148 90 L124 60 Z" fill="var(--bento-grid-c5)" />
+                    <path d="M148 44 L160 60 L148 76 L136 60 Z" fill="var(--bento-grid-c2)" />
+                    <g fill="var(--bento-grid-c3)">
+                      <rect x="48" y="16" width="60" height="9" />
+                      <rect x="48" y="95" width="60" height="9" />
+                    </g>
+                    <circle cx="78" cy="60" r="11" fill="var(--bento-grid-c6)" />
+                  </svg>
+                  <div class="bento-grid__foot">
+                    <p class="bento-grid__meta">200 &times; 300 cm</p>
+                    <p class="bento-grid__meta">Gotland wool</p>
+                  </div>
+                </summary>
+                <p class="bento-grid__detail">
+                  Knotted on a cotton warp over eleven weeks. The border is carried in
+                  two pitches so it reads as one band at a distance and as two up close.
+                </p>
+              </details>
+            </li>
+
+            <li class="bento-grid__tile bento-grid__tile--wide">
+              <details class="bento-grid__panel">
+                <summary class="bento-grid__face">
+                  <span class="bento-grid__cue" aria-hidden="true"></span>
+                  <h3 class="bento-grid__label">Colourway</h3>
+                  <p class="bento-grid__aside">
+                    Dyed in one bath, so nothing quite matches and nothing quite
+                    clashes.
+                  </p>
+                  <div class="bento-grid__way" role="img" aria-label="The nine colours of the edition, flush, brick through cream">
+                    <span class="bento-grid__swatch"></span>
+                    <span class="bento-grid__swatch"></span>
+                    <span class="bento-grid__swatch"></span>
+                    <span class="bento-grid__swatch"></span>
+                    <span class="bento-grid__swatch"></span>
+                    <span class="bento-grid__swatch"></span>
+                    <span class="bento-grid__swatch"></span>
+                    <span class="bento-grid__swatch"></span>
+                    <span class="bento-grid__swatch"></span>
+                  </div>
+                  <div class="bento-grid__foot">
+                    <p class="bento-grid__meta">9 fields</p>
+                    <p class="bento-grid__meta">One bath</p>
+                  </div>
+                </summary>
+                <div class="bento-grid__detail">
+                  Four of the nine show in a narrow slot; the rest arrive when there is
+                  room to read them as colour rather than as stripes.
+                  <dl>
+                    <dt>Lot</dt><dd>04&ndash;B</dd>
+                    <dt>Fastness</dt><dd>6 of 8</dd>
+                  </dl>
+                </div>
+              </details>
+            </li>
+
+            <li class="bento-grid__tile bento-grid__tile--tall">
+              <details class="bento-grid__panel">
+                <summary class="bento-grid__face">
+                  <span class="bento-grid__cue" aria-hidden="true"></span>
+                  <h3 class="bento-grid__label">Weave</h3>
+                  <p class="bento-grid__aside">
+                    Three pitches in one field: the coarse rows carry the pattern, the
+                    fine ones carry the ground.
+                  </p>
+                  <div class="bento-grid__weave">
+                    <div class="bento-grid__weave-row">
+                      <p class="bento-grid__meta">Coarse</p>
+                      <div class="bento-grid__band bento-grid__band--coarse"></div>
+                    </div>
+                    <div class="bento-grid__weave-row">
+                      <p class="bento-grid__meta">Medium</p>
+                      <div class="bento-grid__band bento-grid__band--medium"></div>
+                    </div>
+                    <div class="bento-grid__weave-row">
+                      <p class="bento-grid__meta">Fine</p>
+                      <div class="bento-grid__band bento-grid__band--fine"></div>
+                    </div>
+                  </div>
+                </summary>
+                <div class="bento-grid__detail">
+                  Pitch is set at the loom and cannot be changed once the warp is on.
+                  <dl>
+                    <dt>Warp</dt><dd>Cotton, 12/6</dd>
+                    <dt>Pile</dt><dd>11 mm</dd>
+                  </dl>
+                </div>
+              </details>
+            </li>
+
+            <li class="bento-grid__tile">
+              <details class="bento-grid__panel">
+                <summary class="bento-grid__face">
+                  <span class="bento-grid__cue" aria-hidden="true"></span>
+                  <h3 class="bento-grid__label">Knots</h3>
+                  <p class="bento-grid__aside">
+                    Counted across the ground, not the border, which runs denser.
+                  </p>
+                  <div class="bento-grid__foot">
+                    <p class="bento-grid__figure">160</p>
+                    <p class="bento-grid__meta">per dm&sup2;</p>
+                  </div>
+                </summary>
+                <div class="bento-grid__detail">
+                  <dl>
+                    <dt>Ground</dt><dd>160 / dm&sup2;</dd>
+                    <dt>Border</dt><dd>190 / dm&sup2;</dd>
+                  </dl>
+                </div>
+              </details>
+            </li>
+
+            <li class="bento-grid__tile">
+              <details class="bento-grid__panel">
+                <summary class="bento-grid__face">
+                  <span class="bento-grid__cue" aria-hidden="true"></span>
+                  <h3 class="bento-grid__label">Motif</h3>
+                  <p class="bento-grid__aside">
+                    The stepped diamond, repeated four times along the long edge.
+                  </p>
+                  <svg
+                    class="bento-grid__motif"
+                    viewBox="0 0 48 48"
+                    role="img"
+                    aria-label="A stepped diamond with a disc at its centre">
+                    <path d="M24 2 L46 24 L24 46 L2 24 Z" fill="var(--bento-grid-c5)" />
+                    <path d="M24 12 L36 24 L24 36 L12 24 Z" fill="var(--bento-grid-c2)" />
+                    <circle cx="24" cy="24" r="6" fill="var(--bento-grid-c1)" />
+                  </svg>
+                </summary>
+                <div class="bento-grid__detail">
+                  <dl>
+                    <dt>Repeat</dt><dd>4 &times;</dd>
+                    <dt>Origin</dt><dd>Drawn, not traced</dd>
+                  </dl>
+                </div>
+              </details>
+            </li>
+
+            <li class="bento-grid__tile">
+              <details class="bento-grid__panel">
+                <summary class="bento-grid__face">
+                  <span class="bento-grid__cue" aria-hidden="true"></span>
+                  <h3 class="bento-grid__label">Size</h3>
+                  <p class="bento-grid__aside">
+                    Cut to the loom width; the length is where the edition varies.
+                  </p>
+                  <div class="bento-grid__foot">
+                    <p class="bento-grid__figure">200</p>
+                    <p class="bento-grid__meta">&times; 300 cm</p>
+                  </div>
+                </summary>
+                <div class="bento-grid__detail">
+                  <dl>
+                    <dt>Width</dt><dd>200 cm</dd>
+                    <dt>Length</dt><dd>280&ndash;310 cm</dd>
+                  </dl>
+                </div>
+              </details>
+            </li>
+
+            <li class="bento-grid__tile">
+              <details class="bento-grid__panel">
+                <summary class="bento-grid__face">
+                  <span class="bento-grid__cue" aria-hidden="true"></span>
+                  <h3 class="bento-grid__label">Wool</h3>
+                  <p class="bento-grid__aside">
+                    Undyed in the ground, so the colour sits on a grey rather than a
+                    white.
+                  </p>
+                  <div class="bento-grid__foot">
+                    <p class="bento-grid__figure">100</p>
+                    <p class="bento-grid__meta">% Gotland</p>
+                  </div>
+                </summary>
+                <div class="bento-grid__detail">
+                  <dl>
+                    <dt>Staple</dt><dd>90 mm</dd>
+                    <dt>Spun</dt><dd>2-ply, worsted</dd>
+                  </dl>
+                </div>
+              </details>
+            </li>
+
+          </ul>
+        </div>
+      </section>
+
+      <section class="demo__state">
+        <p class="demo__caption" data-i18n="state.slots">One tile's markup, three slots &mdash; identical HTML in a 1&times;1, a 2&times;1 and a 2&times;2. Nothing was added to it; the slot decided</p>
+        <div class="bento-grid">
+          <ul class="bento-grid__board" style="--bento-grid-cols: 4;">
+            <li class="bento-grid__tile">
+              <details class="bento-grid__panel">
+                <summary class="bento-grid__face">
+                  <span class="bento-grid__cue" aria-hidden="true"></span>
+                  <h3 class="bento-grid__label">Knots</h3>
+                  <p class="bento-grid__aside">
+                    Counted across the ground, not the border, which runs denser.
+                  </p>
+                  <div class="bento-grid__foot">
+                    <p class="bento-grid__figure">160</p>
+                    <p class="bento-grid__meta">per dm&sup2;</p>
+                  </div>
+                </summary>
+                <div class="bento-grid__detail">
+                  <dl>
+                    <dt>Ground</dt><dd>160 / dm&sup2;</dd>
+                    <dt>Border</dt><dd>190 / dm&sup2;</dd>
+                  </dl>
+                </div>
+              </details>
+            </li>
+            <li class="bento-grid__tile bento-grid__tile--wide">
+              <details class="bento-grid__panel">
+                <summary class="bento-grid__face">
+                  <span class="bento-grid__cue" aria-hidden="true"></span>
+                  <h3 class="bento-grid__label">Knots</h3>
+                  <p class="bento-grid__aside">
+                    Counted across the ground, not the border, which runs denser.
+                  </p>
+                  <div class="bento-grid__foot">
+                    <p class="bento-grid__figure">160</p>
+                    <p class="bento-grid__meta">per dm&sup2;</p>
+                  </div>
+                </summary>
+                <div class="bento-grid__detail">
+                  <dl>
+                    <dt>Ground</dt><dd>160 / dm&sup2;</dd>
+                    <dt>Border</dt><dd>190 / dm&sup2;</dd>
+                  </dl>
+                </div>
+              </details>
+            </li>
+            <li class="bento-grid__tile bento-grid__tile--feature">
+              <details class="bento-grid__panel">
+                <summary class="bento-grid__face">
+                  <span class="bento-grid__cue" aria-hidden="true"></span>
+                  <h3 class="bento-grid__label">Knots</h3>
+                  <p class="bento-grid__aside">
+                    Counted across the ground, not the border, which runs denser.
+                  </p>
+                  <div class="bento-grid__foot">
+                    <p class="bento-grid__figure">160</p>
+                    <p class="bento-grid__meta">per dm&sup2;</p>
+                  </div>
+                </summary>
+                <div class="bento-grid__detail">
+                  <dl>
+                    <dt>Ground</dt><dd>160 / dm&sup2;</dd>
+                    <dt>Border</dt><dd>190 / dm&sup2;</dd>
+                  </dl>
+                </div>
+              </details>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="demo__state">
+        <p class="demo__caption" data-i18n="state.narrow">The same board in a 26rem column &mdash; it reflows against its own width, not the window's, and each tile answers for the slot it now has</p>
+        <div class="demo__column">
+          <div class="bento-grid">
+            <ul class="bento-grid__board">
+
+              <!-- The lead. The only tile with a fill rather than a surface, which is
+                   what makes it read as the lead at any column count. It opens by
+                   default; closing it drops it to a unit tile and the board re-packs. -->
+              <li class="bento-grid__tile bento-grid__tile--feature bento-grid__plate">
+                <details class="bento-grid__panel">
+                  <summary class="bento-grid__face">
+                    <span class="bento-grid__cue" aria-hidden="true"></span>
+                    <p class="bento-grid__label">Edition 04 &middot; hand-knotted</p>
+                    <h3 class="bento-grid__title">Nine colours that argue</h3>
+                    <svg
+                      class="bento-grid__field"
+                      viewBox="0 0 220 120"
+                      preserveAspectRatio="xMidYMid meet"
+                      role="img"
+                      aria-label="The woven field: a cream ground inside a striped border, carrying a brick disc, an ochre stepped diamond and two olive bars.">
+                      <rect x="0" y="0" width="220" height="120" fill="var(--bento-grid-c9)" />
+                      <g fill="var(--bento-grid-c8)">
+                        <rect x="0" y="0" width="220" height="7" />
+                        <rect x="0" y="113" width="220" height="7" />
+                      </g>
+                      <g fill="var(--bento-grid-c2)">
+                        <rect x="10" y="14" width="8" height="92" />
+                        <rect x="26" y="14" width="8" height="92" />
+                        <rect x="186" y="14" width="8" height="92" />
+                        <rect x="202" y="14" width="8" height="92" />
+                      </g>
+                      <circle cx="78" cy="60" r="30" fill="var(--bento-grid-c1)" />
+                      <path d="M148 30 L172 60 L148 90 L124 60 Z" fill="var(--bento-grid-c5)" />
+                      <path d="M148 44 L160 60 L148 76 L136 60 Z" fill="var(--bento-grid-c2)" />
+                      <g fill="var(--bento-grid-c3)">
+                        <rect x="48" y="16" width="60" height="9" />
+                        <rect x="48" y="95" width="60" height="9" />
+                      </g>
+                      <circle cx="78" cy="60" r="11" fill="var(--bento-grid-c6)" />
+                    </svg>
+                    <div class="bento-grid__foot">
+                      <p class="bento-grid__meta">200 &times; 300 cm</p>
+                      <p class="bento-grid__meta">Gotland wool</p>
+                    </div>
+                  </summary>
+                  <p class="bento-grid__detail">
+                    Knotted on a cotton warp over eleven weeks. The border is carried in
+                    two pitches so it reads as one band at a distance and as two up close.
+                  </p>
+                </details>
+              </li>
+
+              <li class="bento-grid__tile bento-grid__tile--wide">
+                <details class="bento-grid__panel">
+                  <summary class="bento-grid__face">
+                    <span class="bento-grid__cue" aria-hidden="true"></span>
+                    <h3 class="bento-grid__label">Colourway</h3>
+                    <p class="bento-grid__aside">
+                      Dyed in one bath, so nothing quite matches and nothing quite
+                      clashes.
+                    </p>
+                    <div class="bento-grid__way" role="img" aria-label="The nine colours of the edition, flush, brick through cream">
+                      <span class="bento-grid__swatch"></span>
+                      <span class="bento-grid__swatch"></span>
+                      <span class="bento-grid__swatch"></span>
+                      <span class="bento-grid__swatch"></span>
+                      <span class="bento-grid__swatch"></span>
+                      <span class="bento-grid__swatch"></span>
+                      <span class="bento-grid__swatch"></span>
+                      <span class="bento-grid__swatch"></span>
+                      <span class="bento-grid__swatch"></span>
+                    </div>
+                    <div class="bento-grid__foot">
+                      <p class="bento-grid__meta">9 fields</p>
+                      <p class="bento-grid__meta">One bath</p>
+                    </div>
+                  </summary>
+                  <div class="bento-grid__detail">
+                    Four of the nine show in a narrow slot; the rest arrive when there is
+                    room to read them as colour rather than as stripes.
+                    <dl>
+                      <dt>Lot</dt><dd>04&ndash;B</dd>
+                      <dt>Fastness</dt><dd>6 of 8</dd>
+                    </dl>
+                  </div>
+                </details>
+              </li>
+
+              <li class="bento-grid__tile bento-grid__tile--tall">
+                <details class="bento-grid__panel">
+                  <summary class="bento-grid__face">
+                    <span class="bento-grid__cue" aria-hidden="true"></span>
+                    <h3 class="bento-grid__label">Weave</h3>
+                    <p class="bento-grid__aside">
+                      Three pitches in one field: the coarse rows carry the pattern, the
+                      fine ones carry the ground.
+                    </p>
+                    <div class="bento-grid__weave">
+                      <div class="bento-grid__weave-row">
+                        <p class="bento-grid__meta">Coarse</p>
+                        <div class="bento-grid__band bento-grid__band--coarse"></div>
+                      </div>
+                      <div class="bento-grid__weave-row">
+                        <p class="bento-grid__meta">Medium</p>
+                        <div class="bento-grid__band bento-grid__band--medium"></div>
+                      </div>
+                      <div class="bento-grid__weave-row">
+                        <p class="bento-grid__meta">Fine</p>
+                        <div class="bento-grid__band bento-grid__band--fine"></div>
+                      </div>
+                    </div>
+                  </summary>
+                  <div class="bento-grid__detail">
+                    Pitch is set at the loom and cannot be changed once the warp is on.
+                    <dl>
+                      <dt>Warp</dt><dd>Cotton, 12/6</dd>
+                      <dt>Pile</dt><dd>11 mm</dd>
+                    </dl>
+                  </div>
+                </details>
+              </li>
+
+              <li class="bento-grid__tile">
+                <details class="bento-grid__panel">
+                  <summary class="bento-grid__face">
+                    <span class="bento-grid__cue" aria-hidden="true"></span>
+                    <h3 class="bento-grid__label">Knots</h3>
+                    <p class="bento-grid__aside">
+                      Counted across the ground, not the border, which runs denser.
+                    </p>
+                    <div class="bento-grid__foot">
+                      <p class="bento-grid__figure">160</p>
+                      <p class="bento-grid__meta">per dm&sup2;</p>
+                    </div>
+                  </summary>
+                  <div class="bento-grid__detail">
+                    <dl>
+                      <dt>Ground</dt><dd>160 / dm&sup2;</dd>
+                      <dt>Border</dt><dd>190 / dm&sup2;</dd>
+                    </dl>
+                  </div>
+                </details>
+              </li>
+
+              <li class="bento-grid__tile">
+                <details class="bento-grid__panel">
+                  <summary class="bento-grid__face">
+                    <span class="bento-grid__cue" aria-hidden="true"></span>
+                    <h3 class="bento-grid__label">Motif</h3>
+                    <p class="bento-grid__aside">
+                      The stepped diamond, repeated four times along the long edge.
+                    </p>
+                    <svg
+                      class="bento-grid__motif"
+                      viewBox="0 0 48 48"
+                      role="img"
+                      aria-label="A stepped diamond with a disc at its centre">
+                      <path d="M24 2 L46 24 L24 46 L2 24 Z" fill="var(--bento-grid-c5)" />
+                      <path d="M24 12 L36 24 L24 36 L12 24 Z" fill="var(--bento-grid-c2)" />
+                      <circle cx="24" cy="24" r="6" fill="var(--bento-grid-c1)" />
+                    </svg>
+                  </summary>
+                  <div class="bento-grid__detail">
+                    <dl>
+                      <dt>Repeat</dt><dd>4 &times;</dd>
+                      <dt>Origin</dt><dd>Drawn, not traced</dd>
+                    </dl>
+                  </div>
+                </details>
+              </li>
+
+              <li class="bento-grid__tile">
+                <details class="bento-grid__panel">
+                  <summary class="bento-grid__face">
+                    <span class="bento-grid__cue" aria-hidden="true"></span>
+                    <h3 class="bento-grid__label">Size</h3>
+                    <p class="bento-grid__aside">
+                      Cut to the loom width; the length is where the edition varies.
+                    </p>
+                    <div class="bento-grid__foot">
+                      <p class="bento-grid__figure">200</p>
+                      <p class="bento-grid__meta">&times; 300 cm</p>
+                    </div>
+                  </summary>
+                  <div class="bento-grid__detail">
+                    <dl>
+                      <dt>Width</dt><dd>200 cm</dd>
+                      <dt>Length</dt><dd>280&ndash;310 cm</dd>
+                    </dl>
+                  </div>
+                </details>
+              </li>
+
+              <li class="bento-grid__tile">
+                <details class="bento-grid__panel">
+                  <summary class="bento-grid__face">
+                    <span class="bento-grid__cue" aria-hidden="true"></span>
+                    <h3 class="bento-grid__label">Wool</h3>
+                    <p class="bento-grid__aside">
+                      Undyed in the ground, so the colour sits on a grey rather than a
+                      white.
+                    </p>
+                    <div class="bento-grid__foot">
+                      <p class="bento-grid__figure">100</p>
+                      <p class="bento-grid__meta">% Gotland</p>
+                    </div>
+                  </summary>
+                  <div class="bento-grid__detail">
+                    <dl>
+                      <dt>Staple</dt><dd>90 mm</dd>
+                      <dt>Spun</dt><dd>2-ply, worsted</dd>
+                    </dl>
+                  </div>
+                </details>
+              </li>
+
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="demo__state">
+        <p class="demo__caption" data-i18n="state.ladder">The ladder, stepped &mdash; four columns to one, a rung every 600ms</p>
+        <div class="bento-grid bento-grid--cycling">
+          <ul class="bento-grid__board">
+
+            <!-- The lead. The only tile with a fill rather than a surface, which is
+                 what makes it read as the lead at any column count. It opens by
+                 default; closing it drops it to a unit tile and the board re-packs. -->
+            <li class="bento-grid__tile bento-grid__tile--feature bento-grid__plate">
+              <details class="bento-grid__panel">
+                <summary class="bento-grid__face">
+                  <span class="bento-grid__cue" aria-hidden="true"></span>
+                  <p class="bento-grid__label">Edition 04 &middot; hand-knotted</p>
+                  <h3 class="bento-grid__title">Nine colours that argue</h3>
+                  <svg
+                    class="bento-grid__field"
+                    viewBox="0 0 220 120"
+                    preserveAspectRatio="xMidYMid meet"
+                    role="img"
+                    aria-label="The woven field: a cream ground inside a striped border, carrying a brick disc, an ochre stepped diamond and two olive bars.">
+                    <rect x="0" y="0" width="220" height="120" fill="var(--bento-grid-c9)" />
+                    <g fill="var(--bento-grid-c8)">
+                      <rect x="0" y="0" width="220" height="7" />
+                      <rect x="0" y="113" width="220" height="7" />
+                    </g>
+                    <g fill="var(--bento-grid-c2)">
+                      <rect x="10" y="14" width="8" height="92" />
+                      <rect x="26" y="14" width="8" height="92" />
+                      <rect x="186" y="14" width="8" height="92" />
+                      <rect x="202" y="14" width="8" height="92" />
+                    </g>
+                    <circle cx="78" cy="60" r="30" fill="var(--bento-grid-c1)" />
+                    <path d="M148 30 L172 60 L148 90 L124 60 Z" fill="var(--bento-grid-c5)" />
+                    <path d="M148 44 L160 60 L148 76 L136 60 Z" fill="var(--bento-grid-c2)" />
+                    <g fill="var(--bento-grid-c3)">
+                      <rect x="48" y="16" width="60" height="9" />
+                      <rect x="48" y="95" width="60" height="9" />
+                    </g>
+                    <circle cx="78" cy="60" r="11" fill="var(--bento-grid-c6)" />
+                  </svg>
+                  <div class="bento-grid__foot">
+                    <p class="bento-grid__meta">200 &times; 300 cm</p>
+                    <p class="bento-grid__meta">Gotland wool</p>
+                  </div>
+                </summary>
+                <p class="bento-grid__detail">
+                  Knotted on a cotton warp over eleven weeks. The border is carried in
+                  two pitches so it reads as one band at a distance and as two up close.
+                </p>
+              </details>
+            </li>
+
+            <li class="bento-grid__tile bento-grid__tile--wide">
+              <details class="bento-grid__panel">
+                <summary class="bento-grid__face">
+                  <span class="bento-grid__cue" aria-hidden="true"></span>
+                  <h3 class="bento-grid__label">Colourway</h3>
+                  <p class="bento-grid__aside">
+                    Dyed in one bath, so nothing quite matches and nothing quite
+                    clashes.
+                  </p>
+                  <div class="bento-grid__way" role="img" aria-label="The nine colours of the edition, flush, brick through cream">
+                    <span class="bento-grid__swatch"></span>
+                    <span class="bento-grid__swatch"></span>
+                    <span class="bento-grid__swatch"></span>
+                    <span class="bento-grid__swatch"></span>
+                    <span class="bento-grid__swatch"></span>
+                    <span class="bento-grid__swatch"></span>
+                    <span class="bento-grid__swatch"></span>
+                    <span class="bento-grid__swatch"></span>
+                    <span class="bento-grid__swatch"></span>
+                  </div>
+                  <div class="bento-grid__foot">
+                    <p class="bento-grid__meta">9 fields</p>
+                    <p class="bento-grid__meta">One bath</p>
+                  </div>
+                </summary>
+                <div class="bento-grid__detail">
+                  Four of the nine show in a narrow slot; the rest arrive when there is
+                  room to read them as colour rather than as stripes.
+                  <dl>
+                    <dt>Lot</dt><dd>04&ndash;B</dd>
+                    <dt>Fastness</dt><dd>6 of 8</dd>
+                  </dl>
+                </div>
+              </details>
+            </li>
+
+            <li class="bento-grid__tile bento-grid__tile--tall">
+              <details class="bento-grid__panel">
+                <summary class="bento-grid__face">
+                  <span class="bento-grid__cue" aria-hidden="true"></span>
+                  <h3 class="bento-grid__label">Weave</h3>
+                  <p class="bento-grid__aside">
+                    Three pitches in one field: the coarse rows carry the pattern, the
+                    fine ones carry the ground.
+                  </p>
+                  <div class="bento-grid__weave">
+                    <div class="bento-grid__weave-row">
+                      <p class="bento-grid__meta">Coarse</p>
+                      <div class="bento-grid__band bento-grid__band--coarse"></div>
+                    </div>
+                    <div class="bento-grid__weave-row">
+                      <p class="bento-grid__meta">Medium</p>
+                      <div class="bento-grid__band bento-grid__band--medium"></div>
+                    </div>
+                    <div class="bento-grid__weave-row">
+                      <p class="bento-grid__meta">Fine</p>
+                      <div class="bento-grid__band bento-grid__band--fine"></div>
+                    </div>
+                  </div>
+                </summary>
+                <div class="bento-grid__detail">
+                  Pitch is set at the loom and cannot be changed once the warp is on.
+                  <dl>
+                    <dt>Warp</dt><dd>Cotton, 12/6</dd>
+                    <dt>Pile</dt><dd>11 mm</dd>
+                  </dl>
+                </div>
+              </details>
+            </li>
+
+            <li class="bento-grid__tile">
+              <details class="bento-grid__panel">
+                <summary class="bento-grid__face">
+                  <span class="bento-grid__cue" aria-hidden="true"></span>
+                  <h3 class="bento-grid__label">Knots</h3>
+                  <p class="bento-grid__aside">
+                    Counted across the ground, not the border, which runs denser.
+                  </p>
+                  <div class="bento-grid__foot">
+                    <p class="bento-grid__figure">160</p>
+                    <p class="bento-grid__meta">per dm&sup2;</p>
+                  </div>
+                </summary>
+                <div class="bento-grid__detail">
+                  <dl>
+                    <dt>Ground</dt><dd>160 / dm&sup2;</dd>
+                    <dt>Border</dt><dd>190 / dm&sup2;</dd>
+                  </dl>
+                </div>
+              </details>
+            </li>
+
+            <li class="bento-grid__tile">
+              <details class="bento-grid__panel">
+                <summary class="bento-grid__face">
+                  <span class="bento-grid__cue" aria-hidden="true"></span>
+                  <h3 class="bento-grid__label">Motif</h3>
+                  <p class="bento-grid__aside">
+                    The stepped diamond, repeated four times along the long edge.
+                  </p>
+                  <svg
+                    class="bento-grid__motif"
+                    viewBox="0 0 48 48"
+                    role="img"
+                    aria-label="A stepped diamond with a disc at its centre">
+                    <path d="M24 2 L46 24 L24 46 L2 24 Z" fill="var(--bento-grid-c5)" />
+                    <path d="M24 12 L36 24 L24 36 L12 24 Z" fill="var(--bento-grid-c2)" />
+                    <circle cx="24" cy="24" r="6" fill="var(--bento-grid-c1)" />
+                  </svg>
+                </summary>
+                <div class="bento-grid__detail">
+                  <dl>
+                    <dt>Repeat</dt><dd>4 &times;</dd>
+                    <dt>Origin</dt><dd>Drawn, not traced</dd>
+                  </dl>
+                </div>
+              </details>
+            </li>
+
+            <li class="bento-grid__tile">
+              <details class="bento-grid__panel">
+                <summary class="bento-grid__face">
+                  <span class="bento-grid__cue" aria-hidden="true"></span>
+                  <h3 class="bento-grid__label">Size</h3>
+                  <p class="bento-grid__aside">
+                    Cut to the loom width; the length is where the edition varies.
+                  </p>
+                  <div class="bento-grid__foot">
+                    <p class="bento-grid__figure">200</p>
+                    <p class="bento-grid__meta">&times; 300 cm</p>
+                  </div>
+                </summary>
+                <div class="bento-grid__detail">
+                  <dl>
+                    <dt>Width</dt><dd>200 cm</dd>
+                    <dt>Length</dt><dd>280&ndash;310 cm</dd>
+                  </dl>
+                </div>
+              </details>
+            </li>
+
+            <li class="bento-grid__tile">
+              <details class="bento-grid__panel">
+                <summary class="bento-grid__face">
+                  <span class="bento-grid__cue" aria-hidden="true"></span>
+                  <h3 class="bento-grid__label">Wool</h3>
+                  <p class="bento-grid__aside">
+                    Undyed in the ground, so the colour sits on a grey rather than a
+                    white.
+                  </p>
+                  <div class="bento-grid__foot">
+                    <p class="bento-grid__figure">100</p>
+                    <p class="bento-grid__meta">% Gotland</p>
+                  </div>
+                </summary>
+                <div class="bento-grid__detail">
+                  <dl>
+                    <dt>Staple</dt><dd>90 mm</dd>
+                    <dt>Spun</dt><dd>2-ply, worsted</dd>
+                  </dl>
+                </div>
+              </details>
+            </li>
+
+          </ul>
+        </div>
+      </section>
+
+
+    <!-- notes.md, rendered. Type, source, the origin paragraphs and one <li>
+         per decision bullet — the same shape the file has, so the two can be
+         read side by side. Update both together. -->
+    <!-- notes.md, rendered. Closed by default: the states are what the page is
+       for, and the decisions are what you open when you want to know why. A
+       <details> rather than a scripted panel — disclosure is the one thing the
+       element already is, keyboard and screen reader included, and this page
+       has no other reason to carry script. -->
+  <details class="demo__notes">
+    <summary class="demo__notes-summary">
+      <h2 class="demo__notes-title" data-i18n="notes.title">Decisions</h2>
+      <svg class="demo__notes-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+        <path d="M4 6l4 4 4-4" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </summary>
+
+    <div class="demo__notes-body">
+
+        <dl class="demo__notes-meta">
+          <div class="demo__notes-row">
+            <dt data-i18n="notes.type">Type</dt>
+            <dd data-i18n="type">Layout</dd>
+          </div>
+        </dl>
+
+        <p class="demo__notes-lede">
+          A board of seven tiles on a grid that is told how many columns it has
+          and nothing else. Each tile declares the room it wants &mdash; two
+          columns, two rows, both, neither &mdash; and every span clamps itself
+          against whatever the board currently is, so the arrangement is a rule
+          rather than a map of where things go. Each tile is also its own
+          container, so what it shows is decided by the slot it landed in rather
+          than by the modifier it was given; and opening one promotes it to the
+          lead size, which re-packs the board and re-composes the tile in the
+          same gesture.
+        </p>
+
+        <ol class="demo__notes-list">
+          <li>
+            <h3 class="demo__notes-head">One number per breakpoint, and the spans clamp themselves.</h3>
+            <p>A tile carries <code>--bento-grid-tile-cols</code> and
+              <code>-rows</code>; the board resolves
+              <code>grid-column: span min(var(--tile-cols), var(--cols))</code>.
+              The three container queries set <code>--bento-grid-cols</code> to
+              2, 3 and 4 and touch nothing else &mdash; no per-breakpoint span
+              table, no <code>grid-template-areas</code> map to keep in step.
+              Without the <code>min()</code> a one-column board grows a phantom
+              track to fit a two-column tile: measured,
+              <code>grid-template-columns</code> resolves to
+              <code>134px 8px</code> and the wide tiles sit 16px proud of the
+              narrow ones. Rows are deliberately not clamped, so the tile that
+              led at four columns still leads at 320px.</p>
+          </li>
+          <li>
+            <h3 class="demo__notes-head">Twelve cells, because twelve divides by four, three, two and one.</h3>
+            <p>One 2&times;2, one 2&times;1, one 1&times;2 and four 1&times;1.
+              Measured at every rung: the board resolves to 4&times;3,
+              3&times;4, 2&times;6 and 1&times;9 and fills its rectangle
+              exactly, with no ragged bottom row and no sideways scroll at
+              320px. Opening a tile breaks that on purpose &mdash; it is the
+              reader asking for room, not the layout going wrong.</p>
+          </li>
+          <li>
+            <h3 class="demo__notes-head">A tile answers for its slot, not for its span.</h3>
+            <p><code>container: bento-grid-tile / size</code> on every tile, and
+              two queries decide the composition. Measured as tile content
+              width: 15.31rem at four columns, 13.29 at three, 13.50 at two
+              &mdash; and 20.38rem at one, because there is only one of it. So a
+              unit tile is <em>wider</em> at one column than at four and takes
+              the fuller composition there, which is the answer a span-based
+              modifier cannot give: 1&times;1 is a share of a board, not a size.
+              The threshold is 16rem, between the widest compact case and the
+              narrowest wide one. Padding lives on the panel inside the tile
+              rather than on the tile, so the box a container query measures
+              stays equal to the slot the grid handed over.</p>
+          </li>
+          <li>
+            <h3 class="demo__notes-head">Opening a tile is the whole interaction, and it is a <code>&lt;details&gt;</code>.</h3>
+            <p>The tile is an <code>&lt;li&gt;</code>; the
+              <code>&lt;details&gt;</code> inside owns the open state and the
+              <code>&lt;li&gt;</code> reads it back with <code>:has()</code>,
+              promoting the tile to 2&times;2. The board re-packs because the
+              flow is dense, and the tile re-composes because it has just become
+              large enough to answer both slot queries. One gesture, both
+              mechanisms, and no script: disclosure is what that element already
+              is, keyboard, screen reader and find-in-page included.</p>
+          </li>
+          <li>
+            <h3 class="demo__notes-head">Flat, unlit colour, and the adjacencies are meant to disagree.</h3>
+            <p>Nine fields, no gradient and no tint on any of them; the lift is a
+              5px offset block of the same ink rather than a blur, because a
+              soft shadow would put light into a register that has none. The
+              cream sits fifth in the colourway rather than ninth &mdash; last,
+              it was too close to the chalk the tile is made of and the strip
+              read as though it had been cut short.</p>
+          </li>
+        </ol>
+
+        <p class="demo__notes-lede">
+          Two things cost a measurement each. An unnamed <code>@container</code>
+          asks the <em>nearest</em> ancestor container, so once the tiles became
+          containers a board-level rule was silently being answered by a 201px
+          tile and every tile in a four-column board took the wide composition;
+          two containers in one component is two names. And
+          <code>--bento-grid-cols</code> is registered with
+          <code>@property</code> as an <code>&lt;integer&gt;</code> &mdash;
+          without that it cannot be animated at all, and the ladder above jumps
+          straight to its last rung.
+        </p>
+
+        <!-- Where it started, last: the block opens on the component, and the
+             lineage is a footnote to it. Same order notes.md has. -->
+        <dl class="demo__notes-meta demo__notes-meta--foot">
+          <div class="demo__notes-row">
+            <dt data-i18n="notes.inspiration">Inspiration</dt>
+            <dd>Tal R &mdash; the colour register only. Flat unlit fields, forms
+              drawn rather than traced, and colours set next to each other that
+              are not trying to get along. None of his compositions are here and
+              the arrangement is this study's own; what was taken is the refusal
+              to shade anything.</dd>
+          </div>
+        </dl>
+
+        <p class="demo__notes-foot">
+          <a href="notes.md">notes.md</a>
+          <span data-i18n="notes.full">&mdash; the full record, including what was tried and dropped</span>
+        </p>
+    </div>
+  </details>
+
+  </div>
+  <!--
+    Language, if this study needs it. Self-contained on purpose: the folder
+    has to survive being copied out, so it carries its own strings rather than
+    sharing a table with the index. The index appends ?lang= to the link that
+    opens this page, and the back link hands the choice back — over file:// each
+    document gets its own opaque origin, so localStorage alone will not carry it.
+
+    Give every translatable node a data-i18n key. Leave component sample copy
+    and class-name hints alone: those are content and code, not page language.
+    Delete the whole block for a single-language study.
+  -->
+  <script>
+  (function () {
+    // Page chrome: the language switch, the theme switch, and the one back
+    // link that hands both of them to the index. Only an explicit choice
+    // travels — a theme resolved from the system is not a choice, and the
+    // index would only resolve it the same way.
+    var back = document.querySelector('.demo__back');
+    var chosenLang = 'en';
+    var chosenTheme = null;
+
+    function syncBack() {
+      if (!back) return;
+      var q = [];
+      if (chosenLang !== 'en') q.push('lang=' + chosenLang);
+      if (chosenTheme) q.push('theme=' + chosenTheme);
+      back.setAttribute('href', '../index.html' + (q.length ? '?' + q.join('&') : ''));
+    }
+
+    (function () {
+      var STORE_KEY = 'interface-studies:lang';
+
+      // One entry per data-i18n key on this page. The page's own prose only:
+      // the decision text below the fold stays in the language notes.md was
+      // written in, because it is a record rather than page copy.
+      var DA = {
+        'a11y.theme': 'M\u00f8rk tilstand',
+        'back': 'Alle studier',
+        'notes.title': 'Beslutninger',
+        'notes.type': 'Type',
+        'notes.inspiration': 'Inspiration',
+        'notes.full': '\u2014 hele optegnelsen, ogs\u00e5 det der blev pr\u00f8vet og forkastet',
+        'type': 'Layout',
+        'heading': 'Bento-gitter',
+        'lede': 'Syv fliser, der angiver den plads, de \u00f8nsker, p\u00e5 et gitter, '
+          + 'der afkorter hvert sp\u00e6nd efter sit eget antal kolonner. Hver flise '
+          + 'svarer p\u00e5 den plads, den lander i, frem for p\u00e5 den modifikator, '
+          + 'den fik \u2014 og \u00e5bner man \u00e9n, pakkes tavlen om omkring den.',
+        'state.default': 'Standard \u2014 fire kolonner. \u00c5bn en flise: den tager '
+          + 'f\u00f8rstepladsens st\u00f8rrelse, tavlen pakkes om omkring den, og flisen '
+          + 'sammens\u00e6tter sig selv p\u00e5 ny',
+        'state.slots': '\u00c9n flises markup, tre pladser \u2014 identisk HTML i en 1\u00d71, '
+          + 'en 2\u00d71 og en 2\u00d72. Intet blev tilf\u00f8jet; pladsen afgjorde det',
+        'state.narrow': 'Den samme tavle i en kolonne p\u00e5 26rem \u2014 den ombryder '
+          + 'efter sin egen bredde, ikke vinduets, og hver flise svarer p\u00e5 sin nye plads',
+        'state.ladder': 'Stigen, trin for trin \u2014 fire kolonner ned til \u00e9n, '
+          + 'et trin hver 600. ms'
+      };
+
+      var nodes = Array.prototype.slice.call(document.querySelectorAll('[data-i18n]'));
+      var buttons = Array.prototype.slice.call(document.querySelectorAll('[data-lang]'));
+      // Labels that live in an attribute rather than in text — the theme
+      // toggle's is the only one so far. Same table, different setter.
+      var labelled = Array.prototype.slice.call(document.querySelectorAll('[data-i18n-aria]'));
+      var englishLabels = labelled.map(function (el) { return el.getAttribute('aria-label'); });
+      var english = nodes.map(function (el) { return el.textContent; });
+
+      function apply(lang) {
+        var table = lang === 'da' ? DA : null;
+
+        nodes.forEach(function (el, i) {
+          var key = el.getAttribute('data-i18n');
+          el.textContent = table && table[key] ? table[key] : english[i];
+        });
+
+        labelled.forEach(function (el, i) {
+          var key = el.getAttribute('data-i18n-aria');
+          el.setAttribute('aria-label', table && table[key] ? table[key] : englishLabels[i]);
+        });
+
+        // The tab follows the heading rather than keeping its own copy of it,
+        // so the study's name is the same string in both places and in both
+        // languages. The <title> in the markup is the no-script fallback.
+        var head = document.querySelector('.demo__heading');
+        if (head) document.title = head.textContent.trim() + ' \u2014 Interface Studies';
+
+        document.documentElement.lang = lang;
+        buttons.forEach(function (b) {
+          b.setAttribute('aria-pressed', b.dataset.lang === lang ? 'true' : 'false');
+        });
+        chosenLang = lang;
+        syncBack();
+
+        try { localStorage.setItem(STORE_KEY, lang); } catch (err) { /* private mode */ }
+      }
+
+      buttons.forEach(function (b) {
+        b.addEventListener('click', function () { apply(b.dataset.lang); });
+      });
+
+      var fromQuery = new URLSearchParams(location.search).get('lang');
+      var stored = null;
+      try { stored = localStorage.getItem(STORE_KEY); } catch (err) { /* private mode */ }
+
+      apply(fromQuery || stored || 'en');
+    })();
+
+    // --- theme -----------------------------------------------------------
+    //
+    // The answer is already on <html> — the head carries the same resolution
+    // so the first paint is not a frame of the wrong theme. This is the
+    // toggle, the state it reports, and the crossfade.
+    //
+    // The stylesheet reads the attribute and nothing else, which is what
+    // keeps the dark palette to one block. The system preference is resolved
+    // here rather than in a media query, so it stays live: until someone
+    // picks a theme, an OS switch with the page open still moves it.
+    (function () {
+      var STORE_KEY = 'interface-studies:theme';
+      var root = document.documentElement;
+      var toggle = document.querySelector('[data-theme-toggle]');
+      if (!toggle) return;
+
+      var media = window.matchMedia
+        ? window.matchMedia('(prefers-color-scheme: dark)')
+        : null;
+
+      var fromQuery = new URLSearchParams(location.search).get('theme');
+      if (fromQuery === 'dark' || fromQuery === 'light') {
+        chosenTheme = fromQuery;
+      } else {
+        try {
+          var stored = localStorage.getItem(STORE_KEY);
+          if (stored === 'dark' || stored === 'light') chosenTheme = stored;
+        } catch (err) { /* private mode */ }
+      }
+
+      function shown() {
+        return chosenTheme || (media && media.matches ? 'dark' : 'light');
+      }
+
+      function paint() {
+        var theme = shown();
+        root.setAttribute('data-theme', theme);
+        toggle.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
+        syncBack();
+      }
+
+      var settle = 0;
+      toggle.addEventListener('click', function () {
+        chosenTheme = shown() === 'dark' ? 'light' : 'dark';
+        try { localStorage.setItem(STORE_KEY, chosenTheme); } catch (err) { /* private mode */ }
+
+        // The crossfade is hung on <html> for its own length and taken off
+        // again, so the rule is not sitting on every element for the rest of
+        // the session.
+        root.classList.add('is-theming');
+        clearTimeout(settle);
+        settle = setTimeout(function () { root.classList.remove('is-theming'); }, 420);
+
+        paint();
+      });
+
+      if (media) {
+        var follow = function () { if (!chosenTheme) paint(); };
+        if (media.addEventListener) media.addEventListener('change', follow);
+        else if (media.addListener) media.addListener(follow);
+      }
+
+      paint();
+    })();
+
+  })();
+  </script>
+
+</body>
+</html>
