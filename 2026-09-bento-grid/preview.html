@@ -10,7 +10,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Bento grid &mdash; preview</title>
+  <title>Interactive bento grid &mdash; preview</title>
 
   <link rel="stylesheet" href="component.css">
 
@@ -293,8 +293,7 @@
               <span class="bento-grid__cue" aria-hidden="true"></span>
               <h3 class="bento-grid__label">Wool</h3>
               <p class="bento-grid__aside">
-                Undyed in the ground, so the colour sits on a grey rather than a
-                white.
+                Undyed in the ground, so colour sits on grey, not white.
               </p>
               <div class="bento-grid__foot">
                 <p class="bento-grid__figure">100</p>
@@ -318,22 +317,30 @@
     Thumbnail scaffolding, driven by the index and inert when this file is
     opened on its own.
 
-    What `active` means here is a tile opening: it promotes to the lead size,
-    the board re-packs around it, and the tile re-composes itself because it has
-    just become large enough to answer the slot queries. One gesture, both of
-    the study's mechanisms, and the thing a still card cannot show.
+    The card does not hold still. Every DWELL the board moves to the next
+    arrangement in the list below — a different column count, or a tile opened
+    — so a reader going along the rail sees the thing this study is about
+    happening rather than a still picture of a grid. `active` advances it at
+    once, which is what a pointer landing on the card does.
 
-    The column ladder is deliberately NOT what runs here, though it is what
-    `--cycling` exists for and what demo.html shows. Measured on the 880px
-    stage, halved into this frame's 560px of usable height: four columns is
-    240px, three is 316px and two is 468px, but one column is 696px and still
-    does not fit. A ladder that clips for a quarter of every cycle is not a
-    demonstration of anything. The card shows the three rungs that fit and the
-    interaction; the page with room shows the whole ladder.
+    That is a departure from "the first entry is the resting state and it is
+    what the card shows", and a deliberate one: for this study the resting
+    state IS the board changing. It still starts on entry 0 and holds there for
+    the first dwell, so a quick look opened and left alone shows what its first
+    dot says.
 
-    The tiles' own open/close needs nothing from this file — it is a <details>,
-    so quick look, which runs this frame with pointer events live, gets it for
-    free. This only drives it for the card, where pointer events are off.
+    Every arrangement here fits the frame. Measured on the 880px stage, halved
+    into the frame's 560px of usable height: four columns is 276px, three is
+    370px, three with a tile opened is 464px, two is 558px. One column is 696px
+    and is not in the list. The column ladder in component.css is not what runs
+    here either, for the same reason — it would clip for a quarter of every
+    cycle. demo.html has the room and shows it there.
+
+    The rotation stops for good the moment anyone interacts, because quick look
+    runs this frame with pointer events live and draws a dot per entry: a board
+    still rotating under those dots would be labelled wrong. It also stops on
+    an explicit variant, suspends while the rail is moving, and never starts at
+    all under reduced motion.
   -->
   <script>
     (function () {
@@ -347,24 +354,26 @@
       // the board has, so it is the one worth watching at thumbnail size.
       var SHOWN = 3;
 
-      // The stage's own reduction, which compounds with the index's. See the
-      // scale handler below.
+      // The stage's own reduction, which compounds with the index's.
       var STAGE = 0.5;
 
-      // First entry is the resting state, and it is what the card shows.
-      // Three columns rests rather than four, which is a decision about this
-      // card's shape and not about the component. A four-column board is
-      // 1.83:1 and the card frame is 0.79:1, so four columns is width-limited
-      // and fills 42% of the frame's height; three columns is 4x3 rows, fills
-      // 56%, and is still unmistakably a bento. Measured on the 880px stage,
-      // halved: four columns 240px, three 316px, two 468px, one 696px, against
-      // 560px of usable height.
+      // How long an arrangement holds. The first one holds for REST before
+      // anything moves, which is the window a quick look gets to be correct.
+      var DWELL = 5600;
+
+      // First entry is where it starts, and what quick look opens on.
       var VARIANTS = [
         { id: 'three',  label: 'Three columns', cols: 3, open: -1 },
         { id: 'opened', label: 'A tile opened', cols: 3, open: SHOWN },
         { id: 'four',   label: 'Four columns',  cols: 4, open: -1 },
         { id: 'two',    label: 'Two columns',   cols: 2, open: -1 }
       ];
+
+      var at = 0;
+      var timer = 0;
+      var paused = false;
+      var rotating = !(window.matchMedia
+        && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 
       function openOnly(index) {
         Array.prototype.forEach.call(panels, function (panel, i) {
@@ -377,16 +386,37 @@
         openOnly(variant.open);
       }
 
-      apply(VARIANTS[0]);
+      function show(index) {
+        at = (index + VARIANTS.length) % VARIANTS.length;
+        apply(VARIANTS[at]);
+      }
 
-      // How much this document's pixels are being shrunk on screen. The board
-      // draws two things in device pixels — the tile hairline and the weave
-      // bands — and below one device pixel they stop being antialiased and
-      // start being a smear. Restated inline against the factor, which is what
-      // beats the stylesheet without writing a rule against a component class.
+      function queue() {
+        clearTimeout(timer);
+        if (!rotating || paused) return;
+        timer = setTimeout(function () {
+          show(at + 1);
+          queue();
+        }, DWELL);
+      }
+
+      // Anyone touching this document owns it from then on. Quick look is the
+      // only place these can fire — a card's frame has pointer events off.
+      function surrender() {
+        rotating = false;
+        clearTimeout(timer);
+      }
+
+      ['pointerdown', 'pointermove', 'keydown', 'focusin'].forEach(function (type) {
+        window.addEventListener(type, surrender, { once: true, passive: true });
+      });
+
+      show(0);
+      queue();
+
       // The index reports how much this document is being rasterised down by;
-      // the stage above shrinks it again on top of that, and the hairlines have
-      // to answer BOTH. A card at the index's 0.7 with this stage's 0.5 draws a
+      // the stage shrinks it again on top of that, and the hairlines have to
+      // answer BOTH. A card at the index's 0.7 with this stage's 0.5 draws a
       // 1px border at 0.35 of a device pixel, which is not a hairline, it is a
       // grey suggestion. The two multiply; so does the correction.
       function scale(n) {
@@ -401,41 +431,50 @@
         root.style.setProperty('--bento-grid-band-weight', px);
       }
 
-      // The stage reduction applies whether or not the index ever reports its
-      // own, so the correction is set once at load rather than only on message.
       scale(1);
 
       window.addEventListener('message', function (event) {
         var data = event.data;
         if (!data || data.source !== CHANNEL) return;
 
-        // Opens the tile without touching the rung, so whatever column count
-        // is showing is the one the promotion happens in.
+        // A pointer on the card, or the rail's read mark arriving. Move the
+        // board on now rather than waiting out the dwell, and restart the
+        // clock from here so it does not change again a moment later.
         if (data.type === 'preview') {
-          openOnly(data.active === true ? SHOWN : -1);
+          if (data.active === true) {
+            show(at + 1);
+            queue();
+          }
         }
 
         if (data.type === 'preview:variant') {
           var variant = VARIANTS[data.index];
-          if (variant) apply(variant);
+          if (!variant) return;
+          surrender();
+          show(data.index);
         }
 
         if (data.type === 'preview:scale') {
           scale(data.scale);
         }
 
-        // The rail is moving, or this card has left the scrollport.
+        // The rail is moving, or this card has left the scrollport. The CSS
+        // animations stop themselves through the rule in the style block; this
+        // is the half of it that is a timer and would otherwise keep running.
         if (data.type === 'preview:pause') {
-          if (data.paused === true) {
+          paused = data.paused === true;
+          if (paused) {
+            clearTimeout(timer);
             document.documentElement.setAttribute('data-preview-paused', '');
           } else {
             document.documentElement.removeAttribute('data-preview-paused');
+            queue();
           }
         }
 
-        // Which theme the index is in. The ground above is the rail's rather
-        // than this study's, and every thumbnail moves with the page together
-        // or the rail stops reading as one set of cards.
+        // Which theme the index is in. The ground is the rail's rather than
+        // this study's, and every thumbnail moves with the page together or
+        // the rail stops reading as one set of cards.
         if (data.type === 'preview:theme') {
           if (data.theme === 'dark') {
             document.documentElement.setAttribute('data-theme', 'dark');

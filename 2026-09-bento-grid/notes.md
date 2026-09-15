@@ -43,7 +43,13 @@ in the same gesture.
   the flow is dense, and the tile re-composes because it has just become large
   enough to answer both slot queries. One gesture, both mechanisms, and no
   script: disclosure is what that element already is, keyboard, screen reader
-  and find-in-page included.
+  and find-in-page included. A grid cannot tween a re-pack — track counts are
+  not interpolable and neither is a tile's placement — so what softens it is a
+  dip: the promoted tile settles in over 300ms, the revealed detail arrives
+  rather than appears, and under `--cycling` every tile dips and returns on the
+  ladder's own clock, which turns a jump cut into a settle. Genuinely tweening
+  the re-pack needs the View Transitions API and therefore script, which this
+  study does not carry.
 
 - **Flat, unlit colour, and the adjacencies are meant to disagree.** Nine
   fields, no gradient and no tint on any of them; the lift is a 5px offset
@@ -58,13 +64,30 @@ cost is that visual order stops matching DOM order, so the DOM order is the one
 that had to be right — it is what a screen reader announces and what Tab
 follows, and the tiles are written in the order they should be read.
 
-Two things cost a measurement each and are worth writing down. An unnamed
+The row height is measured rather than chosen. A tile's face gets the row less
+48px — two for the border, 36 for the panel's padding, ten for the panel's gap
+to its own closed details — and the tallest thing any face has to hold is the
+motif tile's 117px. 11rem is the first round figure that clears it. Every
+earlier value clipped something, and quietly: at 7rem six tiles, at 9rem four,
+by 2 to 37 pixels each. Two smaller findings came out of the same sweep. A
+figure set at `line-height: 1` overflows its own line box by about 0.15em,
+which with an auto margin pinning it to the bottom of the face lands exactly on
+the clip. And an aside gets two lines — at the narrowest width one appears at,
+that is about sixty characters; one ran to seventy, took a third line and
+clipped by 6px at exactly one board width.
+
+Three things cost a measurement each and are worth writing down. An unnamed
 `@container` asks the *nearest* ancestor container, so once the tiles became
 containers a board-level rule was silently being answered by a 201px tile and
 every tile in a four-column board took the wide composition; two containers in
 one component is two names. And `--bento-grid-cols` is registered with
 `@property` as an `<integer>` — without that it cannot be animated at all, and
-the `--cycling` ladder jumps straight to its last rung.
+the `--cycling` ladder jumps straight to its last rung. And `container-type:
+size` applies size containment, so a tile is laid out as though it had no
+contents: `grid-auto-rows: minmax(var(--row), auto)` can never grow a row to
+fit an opened tile. Height-based slot queries and rows that grow to their
+content are mutually exclusive, and the height half of the queries is what that
+buys.
 
 Inspiration: Tal R — the colour register only. Flat unlit fields, forms drawn
 rather than traced, and colours set next to each other that are not trying to

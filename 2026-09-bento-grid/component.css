@@ -28,7 +28,26 @@
      tiles keep their proportion as the board narrows. The unit resolves
      against the nearest ancestor container, which is this element, so the
      value is declared here and used on the descendants below. */
-  --bento-grid-row: clamp(7rem, 17cqi, 9.5rem);
+  /* The row has to clear the tallest stack of things in a tile that CANNOT
+     shrink. At one column every tile is full width and so takes the wide
+     composition: label, a two-line aside and a figure is about 99px of content
+     in a tile that used to offer 76, and the weave's three bands will not go
+     below 130px however little room they are given. The floor was 7rem and
+     that is where all of it came from.
+
+     Set from the measurement rather than by eye. A tile's face gets the row
+     less 48px — two for the border, 36 for the panel's padding, ten for the
+     panel's gap to its own closed details — and the tallest thing any face has
+     to hold is the motif tile at 117px: an 11px label, a two-line 38px aside,
+     a 48px mark and two 10px gaps. 176px is the first round figure that clears
+     it. Every earlier value clipped something: at 7rem, six tiles; at 9rem,
+     four; and the failures were small and quiet, 2 to 37 pixels, which is the
+     kind that survives a look and turns up in a screenshot later.
+
+     It varies far less than it looks — 176px at a 320px board against 192px at
+     a 1400px one. A bento carrying type does not want a track that scales with
+     the page; it wants one that clears its own content and then holds still. */
+  --bento-grid-row: clamp(11rem, 17cqi, 12rem);
   --bento-grid-gap: 0.75rem;
   --bento-grid-pad: 1.125rem;
   --bento-grid-radius: 0.875rem;
@@ -91,7 +110,7 @@
   /* The specimens inside a tile. Small, but a size is a size. */
   --bento-grid-field-min: 4rem;
   --bento-grid-strip-h: 1.75rem;
-  --bento-grid-motif-size: 4rem;
+  --bento-grid-motif-size: 3rem;
   --bento-grid-specimen-gap: 0.5rem;
   --bento-grid-specimen-label-gap: 0.3rem;
   --bento-grid-specimen-min: 1.25rem;
@@ -106,6 +125,11 @@
   --bento-grid-lift: -2px;
   --bento-grid-ease: 200ms cubic-bezier(0.16, 1, 0.3, 1);
   --bento-grid-cycle: 2.4s;
+  --bento-grid-reveal: 300ms;
+  /* How far a tile drops back while the layout underneath it changes. It is
+     small on purpose: the point is to take the hard edge off a cut, not to
+     announce one. */
+  --bento-grid-settle: 0.986;
   /* -------------------------------------------------------------------- */
 
   /* The board reflows on its OWN width, not the viewport's. This is the line
@@ -131,6 +155,15 @@
 
   display: grid;
   grid-template-columns: repeat(var(--bento-grid-cols), minmax(0, 1fr));
+
+  /* Fixed, and it has to be. `minmax(var(--bento-grid-row), auto)` was the
+     obvious answer to an opened tile wanting more height — and it is a no-op
+     here, because the tiles carry `container-type: size`, which applies size
+     containment: a tile is laid out as though it had no contents at all, so it
+     can never ask its row for anything. That is the trade the height half of
+     the slot queries is bought with, and it is worth knowing before trying:
+     height-based container queries on a tile and rows that grow to fit that
+     tile's content are mutually exclusive. The panel scrolls instead. */
   grid-auto-rows: var(--bento-grid-row);
 
   /* `dense` is what makes it a bento rather than a stack: a tile too big for
@@ -291,8 +324,20 @@
   display: flex;
   flex-direction: column;
   gap: var(--bento-grid-tile-gap);
+
+  /* It has to be able to shrink — the drawn field is a replaced box whose
+     natural height is its width over its aspect ratio, 237px in a tile with
+     152px to give, and only a shrinking face lets it come down to fit.
+     Refusing to shrink instead put half the tiles into a scroll bar.
+
+     But a <summary> does not clip, so a box shrunk under its content spills
+     it rather than hiding it — which is what drew the weave's bands straight
+     through the paragraph below them. So: shrink, and clip. The clip is a
+     guarantee that a tile can never draw outside itself, not a licence to
+     overfill one; the row height below is sized so nothing reaches it. */
   flex: 1;
   min-height: 0;
+  overflow: hidden;
   cursor: pointer;
   list-style: none;
 }
@@ -360,7 +405,14 @@
   margin: 0;
   font-size: var(--bento-grid-figure-size);
   font-weight: 600;
-  line-height: 1;
+  /* Not 1. A line box of exactly the font size is shorter than the glyphs it
+     holds — ascent plus descent runs about 1.15em — so the ink overflowed the
+     box by a constant 2 to 5px, scaling with the font and not with the tile.
+     With the figure pinned to the bottom of the face by an auto margin, that
+     overflow lands exactly on the clip, which is how it stayed invisible in a
+     tile whose figure happens to be `160` and would not have in one with a
+     descender. */
+  line-height: 1.15;
   letter-spacing: -0.03em;
   font-variant-numeric: tabular-nums;
 }
@@ -470,16 +522,30 @@
 .bento-grid__weave {
   display: grid;
   gap: var(--bento-grid-specimen-gap);
-  grid-auto-rows: minmax(0, 1fr);
   flex: 1;
-  min-height: 0;
+
+  /* `minmax(min-content, 1fr)`, not `minmax(0, 1fr)`, and no `min-height: 0`
+     on the block. Three equal shares of whatever the tile has left is right
+     while there IS anything left — but opened, this tile's panel also carries
+     an aside and a detail, and the weave was what paid for them: measured with
+     every tile open, all three rows resolved to a height of exactly 0 while
+     their bands stayed 20px, so the labels and the bands drew on top of each
+     other and straight through the paragraph below.
+
+     A 1fr row that is allowed to reach zero will, the moment anything else in
+     the tile wants the room. The floor is what stops it; the panel scrolls
+     instead, which is what its overflow is for. Third time this shape of bug
+     has turned up in this file — the drawn field, the motif, and now these —
+     and it is always the same one: a flex or grid child with no floor is the
+     thing that pays for the type. */
+  grid-auto-rows: minmax(min-content, 1fr);
 }
 
 .bento-grid__weave-row {
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
+  /* Same floor, for the same reason: the band is the specimen. */
+  grid-template-rows: auto minmax(min-content, 1fr);
   gap: var(--bento-grid-specimen-label-gap);
-  min-height: 0;
 }
 
 .bento-grid__band {
@@ -544,6 +610,14 @@
   the wide composition too. That is the rule working rather than failing: a
   270px tile has room for the sentence. demo.html caps its board at 64rem so
   the compact case is what that page shows.
+*/
+/*
+  The supporting line. Two lines is its budget, and that is a constraint on the
+  copy rather than on the CSS: a 1x1 tile's face is 128px, which holds a label,
+  two 19px lines and a figure and nothing more. At the narrowest width an aside
+  appears at — a 256px tile — two lines is about sixty characters. One of these
+  ran to seventy, took a third line, and clipped by 6px at exactly one board
+  width. Keep them to a breath.
 */
 .bento-grid__aside {
   display: none;
@@ -612,7 +686,54 @@
   animation: bento-grid-ladder var(--bento-grid-cycle) steps(1, end) infinite;
 }
 
+/*
+  Softening the cut. A grid cannot tween a re-pack — track counts are not
+  interpolable and neither is a tile's placement — so nothing here moves a tile
+  from where it was to where it is going. What it does is take the hard edge
+  off the frame where the change happens: every tile dips a little and comes
+  back, on the same clock as the ladder, so a rung reads as a settle rather
+  than as a jump cut. It is the cheapest honest thing available in CSS; the
+  only way to genuinely tween the re-pack is the View Transitions API, which
+  needs script, and this study does not carry any.
+
+  `scale` rather than `transform: scale` so it does not fight the hover lift,
+  which is a `transform: translateY` on the same element.
+*/
+@keyframes bento-grid-settle {
+  0%,  25%, 50%, 75% { opacity: 0.55; scale: var(--bento-grid-settle); }
+  10%, 35%, 60%, 85% { opacity: 1;    scale: 1; }
+}
+
+.bento-grid--cycling .bento-grid__tile {
+  animation: bento-grid-settle var(--bento-grid-cycle) ease-out infinite;
+}
+
+/* The promoted tile settles in as well. A selector starting to match is enough
+   to run an animation, so `:has()` going true on open is what fires this — and
+   it is the tile that was clicked, which is where the eye already is. The
+   tiles that merely got shoved along by the re-pack are not covered and cannot
+   be: CSS has no way to notice that an element's placement changed. */
+@keyframes bento-grid-promote {
+  from { opacity: 0.6; scale: 0.975; }
+}
+
+.bento-grid__tile:has(> .bento-grid__panel[open]) {
+  animation: bento-grid-promote var(--bento-grid-reveal) cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* What opening reveals arrives rather than appearing. */
+@keyframes bento-grid-reveal {
+  from { opacity: 0; translate: 0 -0.4rem; }
+}
+
+.bento-grid__panel[open] .bento-grid__detail {
+  animation: bento-grid-reveal var(--bento-grid-reveal) cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 /* Content that moves without being asked is the whole of the preference. */
 @media (prefers-reduced-motion: reduce) {
-  .bento-grid--cycling .bento-grid__board { animation: none; }
+  .bento-grid--cycling .bento-grid__board,
+  .bento-grid--cycling .bento-grid__tile,
+  .bento-grid__tile:has(> .bento-grid__panel[open]),
+  .bento-grid__panel[open] .bento-grid__detail { animation: none; }
 }
