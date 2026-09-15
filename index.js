@@ -77,10 +77,10 @@
       'cta.quickLookToolbar': 'Hurtigt kig: Værktøjslinje i flydende glas',
       'piece.bentoGrid.title': 'Bento-gitter',
       'piece.bentoGrid.note': 'Syv fliser, der hver angiver den plads, de '
-        + 'ønsker. Hvert spænd afkortes efter tavlens aktuelle antal '
-        + 'kolonner, så ét tal ændrer sig per brækpunkt, og alle syv finder '
-        + 'selv deres plads igen — og fylder rektanglet ud på hvert trin fra '
-        + 'fire kolonner ned til én.',
+        + 'ønsker, på et gitter der afkorter hvert spænd efter sit eget '
+        + 'antal kolonner. Hver flise svarer på den plads, den lander i, '
+        + 'frem for på den modifikator, den fik — og åbner man én, pakkes '
+        + 'tavlen om omkring den.',
       'cta.quickLookBento': 'Hurtigt kig: Bento-gitter',
       'piece.inkedPlate.title': 'Kort med tegnede plader',
       'piece.inkedPlate.note': 'En billedplade og en tekstplade med afskårne '

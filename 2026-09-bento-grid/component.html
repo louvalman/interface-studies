@@ -7,94 +7,230 @@
   order they are WRITTEN in is the one that has to be right: it is what a
   screen reader announces and what Tab follows.
 
-  Seven tiles, twelve cells: one 2x2, one 2x1, one 1x2 and four 1x1. Twelve
-  divides by four, three, two and one, so the board fills its rectangle
-  exactly at every rung of the ladder instead of going ragged along the
-  bottom. Changing the mix means re-checking that.
+  Each tile is an <li> holding a <details>. The <li> is the grid item and the
+  container; the <details> owns the open state, and the <li> reads it back with
+  :has(). Opening a tile promotes it to the lead size, the board re-packs
+  around it, and the tile re-composes itself because it is now large enough to
+  answer the slot queries. No script is involved in any of that.
+
+  Seven tiles, twelve cells at rest: one 2x2, one 2x1, one 1x2 and four 1x1.
+  Twelve divides by four, three, two and one, so the board fills its rectangle
+  exactly at every rung of the ladder. Opening a tile deliberately breaks that
+  — it is the reader asking for more room, not the layout going wrong.
 -->
 
 <div class="bento-grid">
   <ul class="bento-grid__board">
 
     <!-- The lead. The only tile with a fill rather than a surface, which is
-         what makes it read as the lead at any column count. -->
-    <li class="bento-grid__tile bento-grid__tile--feature">
-      <p class="bento-grid__label">Plate 01</p>
-      <h3 class="bento-grid__title">Burnt Umber</h3>
-      <div class="bento-grid__foot">
-        <p class="bento-grid__meta">#6B5844</p>
-        <p class="bento-grid__meta">Matte &middot; opaque</p>
-      </div>
+         what makes it read as the lead at any column count. It opens by
+         default; closing it drops it to a unit tile and the board re-packs. -->
+    <li class="bento-grid__tile bento-grid__tile--feature bento-grid__plate">
+      <details class="bento-grid__panel">
+        <summary class="bento-grid__face">
+          <span class="bento-grid__cue" aria-hidden="true"></span>
+          <p class="bento-grid__label">Edition 04 &middot; hand-knotted</p>
+          <h3 class="bento-grid__title">Nine colours that argue</h3>
+          <svg
+            class="bento-grid__field"
+            viewBox="0 0 220 120"
+            preserveAspectRatio="xMidYMid meet"
+            role="img"
+            aria-label="The woven field: a cream ground inside a striped border, carrying a brick disc, an ochre stepped diamond and two olive bars.">
+            <rect x="0" y="0" width="220" height="120" fill="var(--bento-grid-c9)" />
+            <g fill="var(--bento-grid-c8)">
+              <rect x="0" y="0" width="220" height="7" />
+              <rect x="0" y="113" width="220" height="7" />
+            </g>
+            <g fill="var(--bento-grid-c2)">
+              <rect x="10" y="14" width="8" height="92" />
+              <rect x="26" y="14" width="8" height="92" />
+              <rect x="186" y="14" width="8" height="92" />
+              <rect x="202" y="14" width="8" height="92" />
+            </g>
+            <circle cx="78" cy="60" r="30" fill="var(--bento-grid-c1)" />
+            <path d="M148 30 L172 60 L148 90 L124 60 Z" fill="var(--bento-grid-c5)" />
+            <path d="M148 44 L160 60 L148 76 L136 60 Z" fill="var(--bento-grid-c2)" />
+            <g fill="var(--bento-grid-c3)">
+              <rect x="48" y="16" width="60" height="9" />
+              <rect x="48" y="95" width="60" height="9" />
+            </g>
+            <circle cx="78" cy="60" r="11" fill="var(--bento-grid-c6)" />
+          </svg>
+          <div class="bento-grid__foot">
+            <p class="bento-grid__meta">200 &times; 300 cm</p>
+            <p class="bento-grid__meta">Gotland wool</p>
+          </div>
+        </summary>
+        <p class="bento-grid__detail">
+          Knotted on a cotton warp over eleven weeks. The border is carried in
+          two pitches so it reads as one band at a distance and as two up close.
+        </p>
+      </details>
     </li>
 
     <li class="bento-grid__tile bento-grid__tile--wide">
-      <h3 class="bento-grid__label">Tone ladder</h3>
-      <div class="bento-grid__ramp" role="img" aria-label="Seven tones mixed from the plate pigment, lightest to full strength">
-        <span class="bento-grid__step"></span>
-        <span class="bento-grid__step"></span>
-        <span class="bento-grid__step"></span>
-        <span class="bento-grid__step"></span>
-        <span class="bento-grid__step"></span>
-        <span class="bento-grid__step"></span>
-        <span class="bento-grid__step"></span>
-      </div>
-      <div class="bento-grid__foot">
-        <p class="bento-grid__meta">7 steps</p>
-        <p class="bento-grid__meta">Oklab</p>
-      </div>
+      <details class="bento-grid__panel">
+        <summary class="bento-grid__face">
+          <span class="bento-grid__cue" aria-hidden="true"></span>
+          <h3 class="bento-grid__label">Colourway</h3>
+          <p class="bento-grid__aside">
+            Dyed in one bath, so nothing quite matches and nothing quite
+            clashes.
+          </p>
+          <div class="bento-grid__way" role="img" aria-label="The nine colours of the edition, flush, brick through cream">
+            <span class="bento-grid__swatch"></span>
+            <span class="bento-grid__swatch"></span>
+            <span class="bento-grid__swatch"></span>
+            <span class="bento-grid__swatch"></span>
+            <span class="bento-grid__swatch"></span>
+            <span class="bento-grid__swatch"></span>
+            <span class="bento-grid__swatch"></span>
+            <span class="bento-grid__swatch"></span>
+            <span class="bento-grid__swatch"></span>
+          </div>
+          <div class="bento-grid__foot">
+            <p class="bento-grid__meta">9 fields</p>
+            <p class="bento-grid__meta">One bath</p>
+          </div>
+        </summary>
+        <div class="bento-grid__detail">
+          Four of the nine show in a narrow slot; the rest arrive when there is
+          room to read them as colour rather than as stripes.
+          <dl>
+            <dt>Lot</dt><dd>04&ndash;B</dd>
+            <dt>Fastness</dt><dd>6 of 8</dd>
+          </dl>
+        </div>
+      </details>
     </li>
 
     <li class="bento-grid__tile bento-grid__tile--tall">
-      <h3 class="bento-grid__label">Grain</h3>
-      <div class="bento-grid__grain">
-        <div class="bento-grid__grain-row">
-          <p class="bento-grid__meta">Coarse</p>
-          <div class="bento-grid__hatch bento-grid__hatch--coarse"></div>
+      <details class="bento-grid__panel">
+        <summary class="bento-grid__face">
+          <span class="bento-grid__cue" aria-hidden="true"></span>
+          <h3 class="bento-grid__label">Weave</h3>
+          <p class="bento-grid__aside">
+            Three pitches in one field: the coarse rows carry the pattern, the
+            fine ones carry the ground.
+          </p>
+          <div class="bento-grid__weave">
+            <div class="bento-grid__weave-row">
+              <p class="bento-grid__meta">Coarse</p>
+              <div class="bento-grid__band bento-grid__band--coarse"></div>
+            </div>
+            <div class="bento-grid__weave-row">
+              <p class="bento-grid__meta">Medium</p>
+              <div class="bento-grid__band bento-grid__band--medium"></div>
+            </div>
+            <div class="bento-grid__weave-row">
+              <p class="bento-grid__meta">Fine</p>
+              <div class="bento-grid__band bento-grid__band--fine"></div>
+            </div>
+          </div>
+        </summary>
+        <div class="bento-grid__detail">
+          Pitch is set at the loom and cannot be changed once the warp is on.
+          <dl>
+            <dt>Warp</dt><dd>Cotton, 12/6</dd>
+            <dt>Pile</dt><dd>11 mm</dd>
+          </dl>
         </div>
-        <div class="bento-grid__grain-row">
-          <p class="bento-grid__meta">Medium</p>
-          <div class="bento-grid__hatch bento-grid__hatch--medium"></div>
+      </details>
+    </li>
+
+    <li class="bento-grid__tile">
+      <details class="bento-grid__panel">
+        <summary class="bento-grid__face">
+          <span class="bento-grid__cue" aria-hidden="true"></span>
+          <h3 class="bento-grid__label">Knots</h3>
+          <p class="bento-grid__aside">
+            Counted across the ground, not the border, which runs denser.
+          </p>
+          <div class="bento-grid__foot">
+            <p class="bento-grid__figure">160</p>
+            <p class="bento-grid__meta">per dm&sup2;</p>
+          </div>
+        </summary>
+        <div class="bento-grid__detail">
+          <dl>
+            <dt>Ground</dt><dd>160 / dm&sup2;</dd>
+            <dt>Border</dt><dd>190 / dm&sup2;</dd>
+          </dl>
         </div>
-        <div class="bento-grid__grain-row">
-          <p class="bento-grid__meta">Fine</p>
-          <div class="bento-grid__hatch bento-grid__hatch--fine"></div>
+      </details>
+    </li>
+
+    <li class="bento-grid__tile">
+      <details class="bento-grid__panel">
+        <summary class="bento-grid__face">
+          <span class="bento-grid__cue" aria-hidden="true"></span>
+          <h3 class="bento-grid__label">Motif</h3>
+          <p class="bento-grid__aside">
+            The stepped diamond, repeated four times along the long edge.
+          </p>
+          <svg
+            class="bento-grid__motif"
+            viewBox="0 0 48 48"
+            role="img"
+            aria-label="A stepped diamond with a disc at its centre">
+            <path d="M24 2 L46 24 L24 46 L2 24 Z" fill="var(--bento-grid-c5)" />
+            <path d="M24 12 L36 24 L24 36 L12 24 Z" fill="var(--bento-grid-c2)" />
+            <circle cx="24" cy="24" r="6" fill="var(--bento-grid-c1)" />
+          </svg>
+        </summary>
+        <div class="bento-grid__detail">
+          <dl>
+            <dt>Repeat</dt><dd>4 &times;</dd>
+            <dt>Origin</dt><dd>Drawn, not traced</dd>
+          </dl>
         </div>
-      </div>
+      </details>
     </li>
 
     <li class="bento-grid__tile">
-      <h3 class="bento-grid__label">Weight</h3>
-      <div class="bento-grid__foot">
-        <p class="bento-grid__figure">180</p>
-        <p class="bento-grid__meta">gsm</p>
-      </div>
+      <details class="bento-grid__panel">
+        <summary class="bento-grid__face">
+          <span class="bento-grid__cue" aria-hidden="true"></span>
+          <h3 class="bento-grid__label">Size</h3>
+          <p class="bento-grid__aside">
+            Cut to the loom width; the length is where the edition varies.
+          </p>
+          <div class="bento-grid__foot">
+            <p class="bento-grid__figure">200</p>
+            <p class="bento-grid__meta">&times; 300 cm</p>
+          </div>
+        </summary>
+        <div class="bento-grid__detail">
+          <dl>
+            <dt>Width</dt><dd>200 cm</dd>
+            <dt>Length</dt><dd>280&ndash;310 cm</dd>
+          </dl>
+        </div>
+      </details>
     </li>
 
     <li class="bento-grid__tile">
-      <h3 class="bento-grid__label">Mark</h3>
-      <svg class="bento-grid__mark" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true" focusable="false">
-        <circle cx="24" cy="24" r="21" stroke-dasharray="99 33" stroke-linecap="round" />
-        <circle cx="24" cy="24" r="14" stroke-dasharray="66 22" stroke-linecap="round" transform="rotate(120 24 24)" />
-        <circle cx="24" cy="24" r="7" stroke-dasharray="33 11" stroke-linecap="round" transform="rotate(240 24 24)" />
-      </svg>
-    </li>
-
-    <li class="bento-grid__tile">
-      <h3 class="bento-grid__label">Sheets</h3>
-      <div class="bento-grid__foot">
-        <p class="bento-grid__figure">24</p>
-        <p class="bento-grid__meta">in stock</p>
-      </div>
-    </li>
-
-    <li class="bento-grid__tile">
-      <h3 class="bento-grid__label">Mix</h3>
-      <div class="bento-grid__mix" role="img" aria-label="Four chips crossing the plate pigment with the accent">
-        <span class="bento-grid__chip"></span>
-        <span class="bento-grid__chip"></span>
-        <span class="bento-grid__chip"></span>
-        <span class="bento-grid__chip"></span>
-      </div>
+      <details class="bento-grid__panel">
+        <summary class="bento-grid__face">
+          <span class="bento-grid__cue" aria-hidden="true"></span>
+          <h3 class="bento-grid__label">Wool</h3>
+          <p class="bento-grid__aside">
+            Undyed in the ground, so the colour sits on a grey rather than a
+            white.
+          </p>
+          <div class="bento-grid__foot">
+            <p class="bento-grid__figure">100</p>
+            <p class="bento-grid__meta">% Gotland</p>
+          </div>
+        </summary>
+        <div class="bento-grid__detail">
+          <dl>
+            <dt>Staple</dt><dd>90 mm</dd>
+            <dt>Spun</dt><dd>2-ply, worsted</dd>
+          </dl>
+        </div>
+      </details>
     </li>
 
   </ul>
