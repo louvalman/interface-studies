@@ -7,11 +7,12 @@
   described as four numbers is re-themeable from outside in exactly the way a
   type scale is; described as four .wav files it is not.
 
-  So the block reads as one thing: a tuning, an envelope, a timbre, and the
-  intervals each sound is pitched at. Override `--struck-tones-root` from a
-  parent and every sound in the set moves together. Override
-  `--struck-tones-attack` and the whole set changes character without a single
-  pitch changing.
+  The block reads in four groups, and they are the four questions a sound set
+  has to answer: what it is tuned to, what one note is made of, how a note
+  arrives and leaves, and what room it is heard in. Override
+  `--struck-tones-root` from a parent and every sound transposes together.
+  Override `--struck-tones-attack` and the whole set changes character without
+  a single pitch changing.
 
   Nothing here plays anything. The visual half of the component — the envelope
   drawing, the pitch bars, the struck flash — is CSS reading the same tokens
@@ -22,28 +23,76 @@
 
 .struck-tones {
   /* --- the tuning ------------------------------------------------------
-     What every sound in the set is made from. These six are read by
-     component.js with getComputedStyle and handed to the oscillators, and
-     three of them are read by the rules further down as well. Unitless on
-     purpose: Web Audio wants numbers, and `calc()` multiplies them happily.
-     Move --root and the whole set transposes. */
+     What the set is pitched at. Read by component.js with getComputedStyle
+     and handed to the oscillators; --root and the intervals are read by the
+     rules further down as well. Unitless on purpose: Web Audio wants numbers,
+     and `calc()` multiplies them happily. Move --root and everything
+     transposes together. */
   --struck-tones-root: 528;             /* Hz — the tonic the set is tuned from */
-  --struck-tones-timbre: triangle;      /* sine | triangle | square | sawtooth */
-  --struck-tones-attack: 4;             /* ms to peak */
-  --struck-tones-decay: 260;            /* ms to silence */
-  --struck-tones-level: 0.16;           /* peak gain, 0–1 */
-  --struck-tones-partial: 2.76;         /* the inharmonic ring above the fundamental */
-  --struck-tones-partial-level: 0.28;   /* how much of it, relative to the fundamental */
-  --struck-tones-spread: 96;            /* ms between the two notes of a two-note sound */
+  --struck-tones-spread: 104;           /* ms between the two notes of a two-note sound */
 
-  /* The intervals, in semitones from the root. Direction is the message:
-     up is something now exists, down is something was undone, flat is a
-     plain acknowledgement, and a minor second against the root is the only
-     sound in the set that is meant to be unpleasant. */
+  /* The intervals, in semitones from the root. Direction is the message: up
+     is something now exists, down is something was undone, flat is a plain
+     acknowledgement, and the alert falls a semitone — near enough to the
+     tonic to be unsettling, far enough from it to stay musical. */
   --struck-tones-i-tap: 0;
   --struck-tones-i-commit: 7;
   --struck-tones-i-revert: -5;
-  --struck-tones-i-alert: 1;
+  --struck-tones-i-alert: -1;
+
+  /* --- the voice -------------------------------------------------------
+     What one note is made of. A sine carries the fundamental and two
+     HARMONIC partials sit above it — an octave for body and a twelfth for
+     shimmer — rather than the inharmonic ratio a struck metal bar has. That
+     ratio is what a bell is, and it is also what a 1980s sound chip is: an
+     overtone that belongs to no key reads as a bleep however well it is
+     enveloped. Whole-number ratios read as one warm tone instead.
+
+     --chorus is the other half of the width. The fundamental is sounded
+     twice, detuned this many cents apart and panned against each other, so
+     the two drift in and out of phase and the note breathes instead of
+     sitting still. Nothing else in the set moves this slowly. */
+  --struck-tones-timbre: sine;          /* sine | triangle | square | sawtooth */
+  --struck-tones-partial: 2;            /* the octave — body */
+  --struck-tones-partial-level: 0.22;
+  --struck-tones-shimmer: 3;            /* the twelfth — air, and it dies first */
+  --struck-tones-shimmer-level: 0.06;
+  --struck-tones-chorus: 7;             /* cents of detune, spread left and right */
+
+  /* --- the strike ------------------------------------------------------
+     How a note arrives and how it leaves. The attack is the single number
+     that decides whether this is an instrument or a beep: at 4ms the ramp is
+     a discontinuity and you hear the edge rather than the note. 16ms is still
+     immediate to a reader and has no corner in it.
+
+     --click is the tactile half, and it is a layer rather than a shape — a
+     short burst of band-passed noise under the attack, which is what a mallet
+     on wood actually is. Sharpening the oscillator's own attack to get the
+     same feel is what made the old set brittle: that is not a click, it is
+     the envelope failing.
+
+     --bounce drops the pitch a fraction of a semitone across the first few
+     milliseconds, the way a soft tine gives under the strike and settles. It
+     is far too small to read as a pitch change and it is most of why the set
+     sounds sprung rather than typed. */
+  --struck-tones-attack: 16;            /* ms to peak */
+  --struck-tones-decay: 820;            /* ms to silence */
+  --struck-tones-level: 0.15;           /* peak gain, 0–1 */
+  --struck-tones-bounce: 0.55;          /* semitones the pitch falls into place */
+  --struck-tones-click: 0.11;           /* the transient under the attack, 0–1 */
+  --struck-tones-click-tone: 2100;      /* Hz — where that burst sits */
+  --struck-tones-click-fall: 26;        /* ms — a transient, not a note */
+
+  /* --- the space -------------------------------------------------------
+     A dry sound in a silent room is the other half of what reads as cheap.
+     --tone is a gentle lowpass over everything, so nothing in the set has
+     content up where a interface has no business being; --air is how much of
+     it is heard through a small room, whose impulse response is generated
+     from these two numbers at run time rather than loaded from a file — the
+     same argument the rest of the block makes, applied to a room. */
+  --struck-tones-tone: 3400;            /* Hz — the lowpass over the whole voice */
+  --struck-tones-air: 0.26;             /* how much room, 0–1 */
+  --struck-tones-air-size: 1.7;         /* seconds of tail */
 
   /* --- the surface the tuning is demonstrated on ----------------------- */
   --struck-tones-bg: #f2efe9;
@@ -600,12 +649,18 @@
    touches a property the block at the top does not already declare. */
 
 .struck-tones--hushed {
-  --struck-tones-timbre: sine;
-  --struck-tones-attack: 190;
-  --struck-tones-decay: 620;
+  --struck-tones-attack: 210;
+  --struck-tones-decay: 1500;
   --struck-tones-level: 0.1;
-  --struck-tones-partial-level: 0.08;
-  --struck-tones-spread: 150;
+  --struck-tones-spread: 190;
+  /* No transient at all: a swell has nothing to strike it, and leaving a click
+     on the front of one is the single thing that would give it away. */
+  --struck-tones-click: 0;
+  --struck-tones-bounce: 0;
+  --struck-tones-shimmer-level: 0.02;
+  --struck-tones-tone: 2100;
+  --struck-tones-air: 0.38;
+  --struck-tones-air-size: 2.8;
   --struck-tones-accent: #5d7a6a;
 }
 
@@ -613,7 +668,6 @@
   --struck-tones-root: 396;
   --struck-tones-i-commit: 3;
   --struck-tones-i-revert: -2;
-  --struck-tones-i-alert: 1;
-  --struck-tones-partial: 1.83;
+  --struck-tones-i-alert: -1;
   --struck-tones-accent: #7a5c8f;
 }

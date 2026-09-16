@@ -17,32 +17,36 @@ decision bullets are the actual argument.
 
 ## The one big caveat
 
-**Nobody has heard it.** Every claim in `notes.md` about the sound is a
-*measurement*, not an audition — the oscillator graph was verified, the audible
-result never was. Do this first, before touching anything else: open
-`demo.html`, press the arm switch, strike all four pads in all three racks.
+**Nobody has heard it.** Every claim about the sound is a *measurement* — the
+node graph was verified, the audible result never was. Do this first, before
+touching anything else: open `demo.html`, press the arm switch, strike all four
+pads in all three racks.
 
-Specific things I suspect, in the order I'd check them:
+The voice was rebuilt once already on the owner's judgement that the first one
+sounded 8-bit, and the rebuild has the same status: reasoned, measured, unheard.
+What changed and why is in `notes.md` bullet two. In short, the old set was one
+oscillator with a sharp envelope, and three separable things were wrong with it
+— a raw geometric wave with nothing rolled off, an *inharmonic* partial at
+2.76x (the ratio a struck metal bar has, an overtone belonging to no key), and a
+4ms attack that is a discontinuity rather than a click. It is now four layers: a
+detuned sine pair, a harmonic octave and twelfth that die before the
+fundamental, and band-passed noise under the attack, all through a lowpass into
+a generated room.
 
-1. **`triangle` at 528 Hz may be thin or plasticky.** A triangle plus one
-   partial is a reasonable guess at a struck bar; it is still a guess. `sine`
-   with a stronger `--partial-level` may read warmer. This is a one-token edit.
-2. **The alert may be genuinely nasty rather than usefully unpleasant.** It is
-   528 Hz against 559 Hz — a 31 Hz difference, which lands in the *roughness*
-   band rather than slow audible beating. It is supposed to be unpleasant, but
-   there is a line between "don't ignore me" and "make it stop," and I cannot
-   tell you which side of it this is on. If it is too much, widen the interval
-   (`--i-alert: 2`) before reducing the level; the dissonance is the message.
-3. **There is no filter anywhere.** Real UI sounds usually get a gentle lowpass
-   to take the edge off. `square` and `sawtooth` are valid `--timbre` values and
-   will be harsh without one. Adding a `BiquadFilterNode` means adding a token
-   (`--struck-tones-tone` or similar) so it stays describable in the block —
-   don't add a node the token block cannot see.
-4. **96 ms of latency on every two-note sound.** `commit` and `revert` both
-   start at the root and only *then* move, so the meaningful note arrives a
-   `--spread` late. It is what makes the four sounds read as one family; it is
-   also latency, and UI sound lives or dies on latency. I raised this with the
-   repo owner and it is **unresolved** — their call, not yours.
+Where I would look first if it is still not right:
+
+1. **`--click` at 0.11 and `--click-tone` at 2100 Hz.** The click is the part
+   most likely to be wrong by ear, because the right level for it is very low
+   and the band it sits in is a matter of taste — too high reads as a tick, too
+   low as a thud. Both are one-token edits.
+2. **`--air` at 0.26 with a 1.7s tail.** Reverb is the fastest way to make a UI
+   sound feel expensive and the fastest way to make it feel far away. If the set
+   sounds distant, this is why before anything else is.
+3. **`--bounce` at 0.55 semitones.** Meant to be felt and not heard. If any note
+   reads as out of tune on its attack, it is too big.
+4. **`--decay` at 820ms.** Long for a UI sound, chosen for the calm brief. If
+   the set feels sluggish in use rather than in demo, shorten this before
+   touching anything else — the demo rewards a long tail and real use does not.
 
 ---
 
@@ -50,28 +54,27 @@ Specific things I suspect, in the order I'd check them:
 
 | thing | result |
 |---|---|
-| Oscillators | tap 528+1457 · commit 528→791 @96ms · revert 528→396 @96ms · alert 528+559 together |
-| Token overrides reach the audio | `--close` → 396/471 Hz, `--hushed` → `sine`. Confirmed. |
+| Pitches (after the bounce settles) | tap 528 · commit 528→791 · revert 528→396 · alert 528→498, all with 2× and 3× above them |
+| Token overrides reach the audio | `--close` → 396 Hz root; `--hushed` → no click, no bounce, 2.8s room. Confirmed. |
 | Disarmed | 0 oscillators created, read-out still updates |
 | No-JS path | tuning list, pad steps, envelope and pitch bars all render correctly from CSS alone |
 | Contrast, both themes | everything clears WCAG AA with headroom; lowest is the pitch bar at 3.79:1 (needs 3:1) |
 | 320 px + a 290 px sidebar at 1440 px | no horizontal scroll; rack folds 2×2 via container query |
 | `preview:pause` | reaches the pads *and* the envelope pseudo-element; the read-out label stops advancing too |
 | Reduced motion | `--live` applies but no animation runs |
+| Generated reverb | stereo IR, decays to ~1e-6, cached per `--air-size`, reassigned only when the room changes |
+| Every token the JS reads | all 22 exist in the CSS block; nothing is read that is not declared |
 
 **Peak amplitude** (computed from the exact envelope `component.js` schedules):
 
 ```
-tap 0.21   commit/revert 0.22   alert 0.41   alert+commit together 0.61
+tap 0.25   commit/revert 0.34   alert 0.39   alert+commit together 0.58
 ```
 
-No clipping at the shipped `--level: 0.16`. But it scales linearly, so **a
-re-themer who pushes `--level` above ~0.26 can clip** when two pads overlap
-(overlap between *different* sounds is allowed by design — only a sound
-retriggering itself is cancelled). There is no master gain and no limiter;
-every voice connects straight to `ctx.destination`. If you want a safety net,
-one shared `GainNode` is the cheap fix — but see the note above about not
-adding nodes the token block cannot describe.
+No clipping at the shipped `--level: 0.15`, and a `DynamicsCompressor` now sits
+across the master bus as a limiter — threshold -3dB, soft knee — so it does
+nothing at all until something would otherwise clip. That is a safety net
+rather than a design value, which is why it is not a token.
 
 **Performance is a non-issue and I checked so you don't have to.** One full
 token read is 0.01 ms. `--live` runs 9 animations per card (4 pads, 4 pitch

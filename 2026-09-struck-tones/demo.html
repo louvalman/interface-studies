@@ -600,10 +600,10 @@
       <h1 class="demo__heading" data-i18n="heading">Struck tones</h1>
       <p class="demo__lede" data-i18n="lede">
         A UI sound palette written as a token block. Four sounds declared as a
-        tonic, an envelope and four intervals in semitones, synthesised from
-        those numbers rather than played from files &mdash; so the set retunes
-        from outside the way a type scale does. Each rack below is silent until
-        you arm it.
+        tuning, a voice, a strike and a room, synthesised from those numbers
+        rather than played from files &mdash; the reverb included, whose impulse
+        response is generated when you arm it. Each rack below is silent until
+        you do.
       </p>
     </header>
 
@@ -629,8 +629,8 @@
             <span class="struck-tones__env-fall"></span>
           </div>
           <p class="struck-tones__trace-shape">
-            <span data-trace-attack>4</span> ms rise &middot;
-            <span data-trace-decay>260</span> ms fall
+            <span data-trace-attack>16</span> ms rise &middot;
+            <span data-trace-decay>820</span> ms fall
           </p>
           <p class="struck-tones__sr" data-trace-live role="status" aria-live="polite"></p>
         </div>
@@ -654,7 +654,7 @@
           <button class="struck-tones__pad" type="button" data-tone="alert">
             <span class="struck-tones__pitch" aria-hidden="true"></span>
             <span class="struck-tones__pad-name">Alert</span>
-            <span class="struck-tones__pad-step" data-step aria-hidden="true">+1</span>
+            <span class="struck-tones__pad-step" data-step aria-hidden="true">&minus;1</span>
           </button>
         </div>
 
@@ -664,23 +664,23 @@
             <dd data-token="root">528 Hz</dd>
           </div>
           <div class="struck-tones__row">
-            <dt>Timbre</dt>
-            <dd data-token="timbre">triangle</dd>
-          </div>
-          <div class="struck-tones__row">
-            <dt>Partial</dt>
-            <dd data-token="partial">2.76&times;</dd>
+            <dt>Voice</dt>
+            <dd data-token="voice">sine + 2&times; + 3&times;</dd>
           </div>
           <div class="struck-tones__row">
             <dt>Envelope</dt>
-            <dd data-token="envelope">4 / 260 ms</dd>
+            <dd data-token="envelope">16 / 820 ms</dd>
+          </div>
+          <div class="struck-tones__row">
+            <dt>Air</dt>
+            <dd data-token="air">1.7 s &middot; 26%</dd>
           </div>
         </dl>
       </section>
     </section>
 
     <section class="demo__state">
-      <p class="demo__caption" data-i18n="state.hushed">Hushed &mdash; only the envelope moved: 190&thinsp;ms rise, sine, every interval unchanged</p>
+      <p class="demo__caption" data-i18n="state.hushed">Hushed &mdash; only the strike and the room moved: 210&thinsp;ms rise, no click, a longer tail</p>
       <section class="struck-tones struck-tones--hushed" aria-label="Sound palette, hushed envelope">
         <header class="struck-tones__head">
           <p class="struck-tones__label">Struck tones</p>
@@ -701,8 +701,8 @@
             <span class="struck-tones__env-fall"></span>
           </div>
           <p class="struck-tones__trace-shape">
-            <span data-trace-attack>4</span> ms rise &middot;
-            <span data-trace-decay>260</span> ms fall
+            <span data-trace-attack>16</span> ms rise &middot;
+            <span data-trace-decay>820</span> ms fall
           </p>
           <p class="struck-tones__sr" data-trace-live role="status" aria-live="polite"></p>
         </div>
@@ -726,7 +726,7 @@
           <button class="struck-tones__pad" type="button" data-tone="alert">
             <span class="struck-tones__pitch" aria-hidden="true"></span>
             <span class="struck-tones__pad-name">Alert</span>
-            <span class="struck-tones__pad-step" data-step aria-hidden="true">+1</span>
+            <span class="struck-tones__pad-step" data-step aria-hidden="true">&minus;1</span>
           </button>
         </div>
 
@@ -736,23 +736,23 @@
             <dd data-token="root">528 Hz</dd>
           </div>
           <div class="struck-tones__row">
-            <dt>Timbre</dt>
-            <dd data-token="timbre">triangle</dd>
-          </div>
-          <div class="struck-tones__row">
-            <dt>Partial</dt>
-            <dd data-token="partial">2.76&times;</dd>
+            <dt>Voice</dt>
+            <dd data-token="voice">sine + 2&times; + 3&times;</dd>
           </div>
           <div class="struck-tones__row">
             <dt>Envelope</dt>
-            <dd data-token="envelope">4 / 260 ms</dd>
+            <dd data-token="envelope">16 / 820 ms</dd>
+          </div>
+          <div class="struck-tones__row">
+            <dt>Air</dt>
+            <dd data-token="air">1.7 s &middot; 26%</dd>
           </div>
         </dl>
       </section>
     </section>
 
     <section class="demo__state">
-      <p class="demo__caption" data-i18n="state.close">Close &mdash; only the tuning moved: a 396&thinsp;Hz root and narrower steps, the same envelope</p>
+      <p class="demo__caption" data-i18n="state.close">Close &mdash; only the tuning moved: a 396&thinsp;Hz root and narrower steps, the same voice</p>
       <section class="struck-tones struck-tones--close" aria-label="Sound palette, close tuning">
         <header class="struck-tones__head">
           <p class="struck-tones__label">Struck tones</p>
@@ -773,8 +773,8 @@
             <span class="struck-tones__env-fall"></span>
           </div>
           <p class="struck-tones__trace-shape">
-            <span data-trace-attack>4</span> ms rise &middot;
-            <span data-trace-decay>260</span> ms fall
+            <span data-trace-attack>16</span> ms rise &middot;
+            <span data-trace-decay>820</span> ms fall
           </p>
           <p class="struck-tones__sr" data-trace-live role="status" aria-live="polite"></p>
         </div>
@@ -798,7 +798,7 @@
           <button class="struck-tones__pad" type="button" data-tone="alert">
             <span class="struck-tones__pitch" aria-hidden="true"></span>
             <span class="struck-tones__pad-name">Alert</span>
-            <span class="struck-tones__pad-step" data-step aria-hidden="true">+1</span>
+            <span class="struck-tones__pad-step" data-step aria-hidden="true">&minus;1</span>
           </button>
         </div>
 
@@ -808,16 +808,16 @@
             <dd data-token="root">528 Hz</dd>
           </div>
           <div class="struck-tones__row">
-            <dt>Timbre</dt>
-            <dd data-token="timbre">triangle</dd>
-          </div>
-          <div class="struck-tones__row">
-            <dt>Partial</dt>
-            <dd data-token="partial">2.76&times;</dd>
+            <dt>Voice</dt>
+            <dd data-token="voice">sine + 2&times; + 3&times;</dd>
           </div>
           <div class="struck-tones__row">
             <dt>Envelope</dt>
-            <dd data-token="envelope">4 / 260 ms</dd>
+            <dd data-token="envelope">16 / 820 ms</dd>
+          </div>
+          <div class="struck-tones__row">
+            <dt>Air</dt>
+            <dd data-token="air">1.7 s &middot; 26%</dd>
           </div>
         </dl>
       </section>
@@ -851,13 +851,14 @@
         <p class="demo__notes-lede">
           A sound palette for an interface, written as a token block. Four
           sounds &mdash; a tap, a commit, a revert and an alert &mdash; are
-          declared as a tonic, an envelope, a timbre and four intervals in
-          semitones, and <code>component.js</code> reads those custom properties
-          and builds the sounds out of oscillators at the moment a pad is
-          struck. There are no audio files in the folder and no request to make.
-          Beside the pads is a read-out of the last strike: its name, its pitch,
-          and its envelope drawn from the same two numbers the gain node is
-          using.
+          declared as a tuning, a voice, a strike and a room, and
+          <code>component.js</code> reads those custom properties and builds the
+          sounds out of oscillators at the moment a pad is struck. There are no
+          audio files in the folder and no request to make, the reverb included:
+          its impulse response is generated from two numbers when the set is
+          armed. Beside the pads is a read-out of the last strike: its name, its
+          pitch, and its envelope drawn from the same two numbers the gain node
+          is using.
         </p>
 
         <p class="demo__notes-lede">
@@ -870,41 +871,49 @@
 
         <ol class="demo__notes-list">
           <li>
-            <h3 class="demo__notes-head">A sound set is a tuning, not a library.</h3>
-            <p>Seven numbers and four intervals: <code>--root: 528</code>,
-              <code>--timbre: triangle</code>, <code>--attack: 4</code>,
-              <code>--decay: 260</code>, <code>--level: 0.16</code>,
-              <code>--partial: 2.76</code>, <code>--spread: 96</code>, and
-              <code>0 / +7 / &minus;5 / +1</code> semitones for the four sounds.
-              <code>component.js</code> reads every one of them with
-              <code>getComputedStyle</code> and hands them to the oscillators, so
-              nothing is written twice and the whole set transposes when one
-              value is overridden from outside. That is the test this repo sets
-              for a property block &mdash; re-theme it without opening the file
-              &mdash; applied to something that is not a colour, and a
-              <code>.wav</code> would fail it: a recorded sound is a decision you
-              can replace but not edit.</p>
+            <h3 class="demo__notes-head">A sound set is a palette, not a library.</h3>
+            <p>Twenty-odd numbers in four groups &mdash; what it is tuned to, what
+              one note is made of, how a note arrives and leaves, and what room it
+              is heard in. <code>component.js</code> reads every one of them with
+              <code>getComputedStyle</code> and hands them to the nodes, so nothing
+              is written twice and the whole set moves when one value is overridden
+              from outside. That is the test this repo sets for a property block
+              &mdash; re-theme it without opening the file &mdash; applied to
+              something that is not a colour, and a <code>.wav</code> would fail it:
+              a recorded sound is a decision you can replace but not edit.</p>
           </li>
           <li>
-            <h3 class="demo__notes-head">The envelope is the character, not the pitch.</h3>
-            <p>4&thinsp;ms to peak and a 260&thinsp;ms <em>exponential</em> fall,
-              plus one inharmonic partial at 2.76&times; the fundamental decaying
-              at 0.6 of its rate &mdash; bright at the hit and gone well before
-              the note is, which is what &ldquo;struck&rdquo; is. A linear fall
-              reads as a tone being switched off. The second rack above proves
-              the split by moving only these: attack to 190&thinsp;ms, timbre to
-              sine, and the same four intervals stop being percussive and become
-              a swell, with no note changing pitch.</p>
+            <h3 class="demo__notes-head">A note is four layers, not a waveform.</h3>
+            <p>A sine fundamental sounded twice seven cents apart and panned against
+              itself, so it drifts instead of sitting still; an octave above it at
+              0.22 for body; a twelfth above that at 0.06 for shimmer, decaying at
+              0.3 of the fundamental&rsquo;s rate because every acoustic overtone
+              dies before its note does; and 26&thinsp;ms of band-passed noise at
+              2.1&thinsp;kHz under the attack, which is the click. All of it through
+              one 3.4&thinsp;kHz lowpass and then split between the dry signal and a
+              small generated room.</p>
+            <p>The first version was one oscillator with a sharp envelope and it
+              sounded like a 1980s sound chip, for three separable reasons each
+              worth knowing on its own: a raw geometric wave with nothing rolled
+              off; an <em>inharmonic</em> partial at 2.76&times; the fundamental,
+              which is the ratio a struck metal bar has and an overtone belonging to
+              no key, so it reads as a bleep however carefully it is enveloped; and
+              a 4&thinsp;ms attack, which is not a click but a discontinuity. A
+              click is a layer. An attack is a shape. Sharpening the second to get
+              the first is what makes a set brittle.</p>
           </li>
           <li>
-            <h3 class="demo__notes-head">Direction carries the message.</h3>
-            <p>Up a fifth for a commit, down a fourth for a revert, a single note
-              at the root for a plain acknowledgement, and a semitone sounded
-              <em>against</em> the root for the alert &mdash; the one sound in the
-              set meant to be unpleasant, and it is unpleasant because two close
-              pitches beat against each other rather than because it is loud.
-              Every sound starts at the tonic, which is what makes four of them
-              read as one family.</p>
+            <h3 class="demo__notes-head">Direction carries the message, and nothing in the set beats.</h3>
+            <p>Up a fifth for a commit, down a fourth for a revert, a single note at
+              the root for a plain acknowledgement, and a semitone <em>down</em> for
+              the alert, played quickly. That last one used to sound its semitone
+              against the root &mdash; two pitches 31&thinsp;Hz apart, which is not
+              slow beating but roughness, and genuinely unpleasant rather than merely
+              urgent. Same interval, sounded after rather than with: nothing overlaps,
+              so nothing beats, and what is left is the unease of stepping down onto a
+              note that is nearly the tonic and is not. The urgency moved into the
+              timing instead &mdash; it is the quickest gesture in the set, at 0.55 of
+              a <code>--spread</code> where the others take a full one.</p>
           </li>
           <li>
             <h3 class="demo__notes-head">The picture is drawn from the audio&rsquo;s own numbers.</h3>
@@ -928,7 +937,7 @@
               <code>animation-play-state</code> rule stops all of it while the
               rail is being dragged.</p>
             <p>Without <code>component.js</code> the component is still the
-              component: the tuning list, the pad steps and the envelope are all
+              component: the palette list, the pad steps and the envelope are all
               CSS reading the same tokens, so the card states its set correctly
               with no script at all. What the script adds is the sound, which CSS
               cannot reach &mdash; so the arm switch ships <code>disabled</code>
@@ -942,9 +951,8 @@
             <dt data-i18n="notes.inspiration">Inspiration</dt>
             <dd>none &mdash; original design. The tuning is the one borrowed
               thing and it is borrowed from music rather than from an interface:
-              the intervals are a just-ish fifth and fourth against a
-              528&thinsp;Hz tonic, and 2.76 is roughly where the first partial of
-              a struck bar sits above its fundamental.</dd>
+              a fifth and a fourth against a 528&thinsp;Hz tonic, with the
+              overtones at whole-number ratios above it.</dd>
           </div>
         </dl>
 
@@ -1001,16 +1009,16 @@
         'type': '\u00c6stetik',
         'heading': 'Anslagstoner',
         'lede': 'En lydpalet til en gr\u00e6nseflade, skrevet som en '
-          + 'token-blok. Fire lyde angivet som en grundtone, en indhylning '
-          + 'og fire intervaller i halvtoner, syntetiseret ud fra de tal frem '
-          + 'for afspillet fra filer \u2014 s\u00e5 s\u00e6ttet stemmes om '
-          + 'udefra, som en typeskala g\u00f8r. Hvert stativ herunder er '
-          + 'tavst, indtil du sl\u00e5r lyden til.',
+          + 'token-blok. Fire lyde angivet som en stemning, en klang, et '
+          + 'anslag og et rum, syntetiseret ud fra de tal frem for afspillet '
+          + 'fra filer \u2014 ogs\u00e5 rumklangen, hvis impulsrespons '
+          + 'genereres, n\u00e5r du sl\u00e5r lyden til. Hvert stativ '
+          + 'herunder er tavst, indtil du g\u00f8r det.',
         'state.struck': 'Anslag \u2014 s\u00e6ttet som angivet',
-        'state.hushed': 'D\u00e6mpet \u2014 kun indhylningen er '
-          + '\u00e6ndret: 190\u2009ms anslag, sinus, alle intervaller ur\u00f8rte',
+        'state.hushed': 'D\u00e6mpet \u2014 kun anslaget og rummet er '
+          + '\u00e6ndret: 210\u2009ms opbygning, intet klik, l\u00e6ngere udklang',
         'state.close': 'T\u00e6t \u2014 kun stemningen er \u00e6ndret: en '
-          + 'grundtone p\u00e5 396\u2009Hz og smallere trin, samme indhylning'
+          + 'grundtone p\u00e5 396\u2009Hz og smallere trin, samme klang'
         // one entry per data-i18n key on this page
       };
 
