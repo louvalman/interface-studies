@@ -78,7 +78,7 @@
       'piece.struckTones.title': 'Anslagstoner',
       'piece.struckTones.note': 'En lydpalet til en gr\u00e6nseflade, skrevet '
         + 'som en token-blok: fire lyde angivet som en grundtone, en '
-        + 'indh\u00fdlning og fire intervaller i halvtoner, og derefter '
+        + 'indhylning og fire intervaller i halvtoner, og derefter '
         + 'syntetiseret ud fra de tal frem for afspillet fra filer. Den er '
         + 'tavs som udgangspunkt og tegner alt, hvad den siger.',
       'cta.quickLookStruck': 'Hurtigt kig: Anslagstoner',
