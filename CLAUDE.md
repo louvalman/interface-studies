@@ -183,6 +183,76 @@ does with `active` is what quick look gets.
 The check: narrow the window to 320px. Nothing scrolls sideways, and everything
 the component does is still reachable without a pointer.
 
+## Contrast has a floor, and a way to spend it
+
+The floor is WCAG 2.2 AA, in both themes: **4.5:1** for text, **3:1** for large
+text — 24px, or 18.66px at 700 — and for the parts of a control or a graphic
+that carry its meaning. Both themes, because a token set that clears one can
+fail the other, and the check is cheap either way.
+
+Decoration carrying no text needs no ratio at all, and a logotype or a disabled
+control is exempt in WCAG's own terms. Those are not departures; they are
+outside the rule.
+
+### Where it may be spent
+
+Aesthetics sometimes wants a tone the ratio will not allow, and the honest
+answer is not to pretend otherwise. Muted text below 4.5:1 is allowed, under
+three conditions, all of them:
+
+1. **It is not the only place the thing is said, or it says nothing a reader
+   has to act on.** A kicker, an ornamental repeat, a caption whose content is
+   carried at full contrast a line above. Never a control, never a state, never
+   a value that is the point of the tile, never the sole statement of anything.
+2. **Never below 3:1.** Below that it is not muted, it is gone. It is the same
+   number the standard already uses for large text and for controls, which
+   makes it a line with a reason behind it rather than one picked to fit.
+3. **It is written down.** A departure is a decision, so it goes in that
+   folder's `notes.md` naming the element, its measured ratio, and what the
+   design wanted — the same rule a ground departure follows. A departure nobody
+   recorded is indistinguishable from an oversight, and next year so is its
+   author's memory of it.
+
+### The measurement, because the method changes the answer
+
+Compare the computed colour against the computed background. That is the pair
+an author actually controls, and it is the number to quote.
+
+It has a blind spot: it cannot see through `backdrop-filter` or a background
+image, and where those are in play the figure has to be judged rather than
+computed. Sampling rendered pixels sounds like the fix and is not — a tight box
+around two characters is mostly glyph, and the sampler decides the antialiasing
+is the background. Measured both ways, the bento plate's 10px label reads
+3.48:1 by computed colour and 2.9:1 by pixels: the same verdict, a different
+number, and only the first tells you which token to move.
+
+Know also what the ratio does not model. It ignores weight, and it ignores size
+below the large-text cut, so a 10px mono label at 4.74:1 passes while being
+harder to read than a 36px title at 5.30:1 that also passes. APCA, drafted for
+WCAG 3, models both and is not a standard yet — so it is not what this repo
+checks against, and the gap between the two is a reason to leave headroom
+rather than to sit on the line.
+
+### The trap worth knowing before choosing a palette
+
+A mid-tone coloured plate with light text has a *ceiling*, and it is lower than
+it looks. Cream `#f3ecda` on the bento's petrol `#2f6a63` measures 5.30:1 at
+full opacity — 0.8 above the floor. Every muted tone on that plate therefore
+fails by construction, and no amount of tuning the alpha recovers it: clearing
+4.5:1 needs 0.89 opacity, which is not muting. The decision that foreclosed it
+was choosing the plate, several steps earlier.
+
+So check the ceiling when the palette is chosen, not when the type goes on. A
+surface that needs muted text on it needs to be dark enough, or light enough,
+to have somewhere to mute into.
+
+### One last thing, since these studies get copied
+
+This headroom is a study repo's licence. A public service does not have it: in
+the EU the Web Accessibility Directive makes EN 301 549 — and through it WCAG
+AA — a legal floor with no aesthetic exception. Take the technique from these
+folders; do not take the exception with it.
+
 ## component.html
 
 Only the markup for the component. No `<html>`, no `<head>`, no wrapper divs

@@ -105,6 +105,21 @@ fit an opened tile. Height-based slot queries and rows that grow to their
 content are mutually exclusive, and the height half of the queries is what that
 buys.
 
+Contrast departure, recorded under the rule in CLAUDE.md. The lead plate's
+muted tone — its kicker, and the two facts in its foot — measures **3.48:1**
+against the petrol, under the 4.5:1 floor and above the 3:1 hard floor. It is
+deliberate and it is structural rather than careless: the plate is one of the
+nine, and cream `#f3ecda` on `#2f6a63` tops out at 5.30:1 at full opacity, so
+there is 0.8 of room above the floor and nothing to mute into. Clearing 4.5:1
+needs 0.89 alpha, which is not a muted tone, it is the ink.
+
+The honest cost: "200 × 300 cm" and "Gotland wool" are said nowhere else, so
+this is a real departure rather than an ornamental repeat, and a darker plate
+would remove it — `#1f4a47` carries the same muting at 5.00:1. It was kept
+because the plate being one of the nine is the decision the whole colourway
+rests on. Everything else in the component clears AA in both themes; the
+figures reach 14.11:1.
+
 Inspiration: Tal R — the colour register only. Flat unlit fields, forms drawn
 rather than traced, and colours set next to each other that are not trying to
 get along. None of his compositions are here and the arrangement is this
