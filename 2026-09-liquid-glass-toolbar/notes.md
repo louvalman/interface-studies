@@ -325,16 +325,24 @@ side, which is what the eye reads and what `getBBox()` leaves out.
   the strong text spends contrast the strong text had going spare — 12.5:1 down
   to 7.0:1 against this surface — but the muted line is derived from the same
   colour and had none to spare at 4.1:1, so dropping the ink without taking its
-  alpha *up* quietly takes the quiet text below where it started. It ends at
-  4.5:1, better than it was.
+  alpha *up* quietly takes the quiet text below where it started.
+
+  4.5:1 was that correction computed against the sheet's own colour, and the
+  sheet is not a colour — it is whatever the ground behind it became.
+  Measured through the glass, on the light plate this material is for, 0.82
+  read 4.43:1. It is 0.88 and 5.10:1 now, deliberately off the line: the ratio
+  models neither weight nor size below the large-text cut, and a 15px line is
+  not where to spend the last tenth.
 
   The other two are each a whole palette for the same reason, not a hue
   rotation. Slate wants its saturation kept *down*, because a blue glass with
   the saturate pushed up starts tinting what is behind it and reads as a filter
-  rather than a surface. Basalt leans on its rim more than any of them: against
-  a light ground a near-black sheet has plenty of contrast at its face and none
-  at all at its edge, so without the hairline it stops reading as glass and
-  starts reading as a hole. And the accent moves with each — the warm mark that
+  rather than a surface. Basalt leans on its rim more than any of them: a
+  near-black sheet has plenty of contrast at its face and almost none at its
+  edge, so without the hairline it stops reading as glass and starts reading as
+  a hole. That was noticed against a light ground and it is the dark one that
+  charges for it, which is where the demo page now stands it — the rim is
+  the whole of the separation there. And the accent moves with each — the warm mark that
   reads on moss is not the warm that reads on a near-black, and carnelian is the
   one that cannot move by hue at all: its ground *is* that hue, so the set's
   amber measured to within 0.004 of the sheet's own luminance and disappeared
@@ -411,11 +419,23 @@ side, which is what the eye reads and what `getBBox()` leaves out.
   cannot see through, and crystal is a pane you can. What separates them is not
   how light they are.
 
-  That is also why crystal is the only one whose ink follows the page rather
-  than the sheet. The other five carry enough tint to stay themselves over
-  anything — alabaster is a light plate on a dark page, basalt a dark one on
-  light paper — so each one's ink is settled once, against its own body. A pane
-  has no body to settle against: it becomes whatever is behind it. On light
+  That is also why crystal is the only one whose ink *follows* the page rather
+  than the sheet. The other five have a body to settle their ink against, so
+  each one is settled once and stays itself. A pane has no body to settle
+  against: it becomes whatever is behind it.
+
+  Settled once is not the same as right anywhere, and that distinction went
+  missing for a while. This paragraph used to say the other five carry enough
+  tint to stay themselves over anything, with alabaster as a light plate on a
+  dark page and basalt as a dark one on light paper, and the measurement says
+  otherwise: at 28–44% a sheet is mostly the ground, so a light-ink material
+  loses most of its contrast over light paper and alabaster loses all of its
+  over a dark page. On this page's light stage moss reads 2.08:1, slate 2.05,
+  carnelian 2.03 and basalt 3.59; on its dark one those four clear AA and
+  alabaster falls to 1.73. What is true is narrower: an ink settled against a
+  body does not need to move with the page — but the sheet still has to be
+  put on the ground it was drawn for. Crystal is the one that cannot be, which
+  is why it is the one with a `light-dark()`. On light
   paper that is a pale sheet wearing dark ink, which is the whole idea; on the
   dark theme the index grew it is a dark sheet wearing dark ink, measured at
   1.3:1, which is no idea at all. `light-dark()` reads the page's own
@@ -595,6 +615,39 @@ scaffolding like the background is — it says what the thing in front of it is
 doing, so the page can be read as well as poked at, and it is where the numbers
 that are not visible in a screenshot live: 220 against 300, 25rem against 264px,
 4:1.
+
+The materials section is six grounds rather than one stage, and that is the
+section's argument rather than a way of spacing it out. Five of the five stages
+on this page are the page's own; this one is not, because glass has no colour of
+its own and what it contrasts against is behind it. Six materials on one stage
+is four of them standing on the wrong one — on the light stage moss read
+2.08:1, slate 2.05, carnelian 2.03 and basalt 3.59, and moving the whole section
+to the dark one only swaps which material is illegible, since alabaster falls to
+1.73 there. The brightness scalar does not rescue it either: moss needs 0.56
+→ 0.22 to clear 4.5:1 on light paper, which is not a material any more, and
+carnelian cannot get there at any value. So each plate carries the ground its
+material was drawn for, and every sheet in the set clears AA — moss 6.48,
+slate 6.41, basalt 6.68, carnelian 4.91, alabaster 5.04, crystal 5.92.
+
+Neither plate follows the page theme, which is the part worth stating rather
+than assuming. Which ground a material wants is a fact about the material; the
+reader's theme does not get a vote in it, and a set that re-sorted itself under
+the toggle would be saying the opposite of what the section is for. The plates
+are the same two stages the page declares elsewhere, restated as literals
+because a plate cannot read the theme block it is not in — and each declares
+its own `color-scheme`, which is not tidiness: crystal's ink is a `light-dark()`
+and a pane has no body to settle it against, so on a lit plate under a dark page
+it would wear the dark theme's near-white over near-white paper. It is the one
+material for which a plate has to *say* which ground it is rather than merely
+look like one.
+
+The ground is named on each plate, beside the class that selects it. That label
+is the one piece of page prose in a row otherwise made of class-name hints, so
+it is the only thing there carrying a `data-i18n` key and it is set in the
+page's own face rather than the mono the class names use. It is not a chip: a
+bordered stadium at label size, an inch from a bar built entirely of stadiums,
+is counted as part of the component before it is read as a caption. A middot
+does the same work and owns nothing.
 
 Two things came out of writing it down. The motion section needed the two clocks
 drawn rather than described — three bars on a 400ms track, because "220 and 300"

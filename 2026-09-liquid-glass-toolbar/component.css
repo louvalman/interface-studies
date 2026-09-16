@@ -888,9 +888,16 @@
      without that correction takes the muted line down with it, and the muted
      line was the one with no contrast to spare. Against this surface the strong
      text goes 12.5:1 -> 7.0:1, which is all headroom it did not need, while the
-     muted line comes up 4.1:1 -> 4.5:1. */
+     muted line comes up.
+
+     0.82 was that correction measured against the sheet's own colour, and
+     through the glass it is 4.43:1 — the sheet is not a colour, it is whatever
+     the ground behind it became. Measured the honest way, on the light plate
+     this material is for, 0.88 reads 5.1:1. The ratio ignores weight and it
+     ignores size below the large-text cut, so this is deliberately not sat on
+     the line. */
   --liquid-glass-toolbar-fg: #554d45;
-  --liquid-glass-toolbar-muted: rgba(85, 77, 69, 0.82);
+  --liquid-glass-toolbar-muted: rgba(85, 77, 69, 0.88);
   --liquid-glass-toolbar-dim: rgba(85, 77, 69, 0.86);
   --liquid-glass-toolbar-accent: #b4552f;
 }
