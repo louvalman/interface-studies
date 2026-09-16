@@ -14,6 +14,10 @@
 
   <link rel="stylesheet" href="component.css">
 
+  <!-- Enhancement only: the component works with this deleted. See
+       component.js and the JavaScript section of CLAUDE.md. -->
+  <script src="component.js" defer></script>
+
   <!-- The ground, before the first paint. The index loads this frame with
        ?theme= on the src, so a thumbnail is never drawn on the wrong one and
        then corrected. -->
@@ -382,8 +386,23 @@
       }
 
       function apply(variant) {
-        board.style.setProperty('--bento-grid-cols', variant.cols);
-        openOnly(variant.open);
+        set(function () {
+          board.style.setProperty('--bento-grid-cols', variant.cols);
+          openOnly(variant.open);
+        });
+      }
+
+      // component.js publishes this on the board when the browser can morph a
+      // re-pack, and the rotation goes through it so the card's arrangement
+      // changes are moved rather than cut. Looked up at call time rather than
+      // captured: this script is inline and runs while the document is still
+      // parsing, and component.js is deferred, so it does not exist yet when
+      // the first arrangement is applied — which wants no transition anyway.
+      // Without it, or without the API, the change still happens; it just
+      // happens on one frame, which is what this card did before.
+      function set(mutate) {
+        if (board.bentoGridChange) board.bentoGridChange(mutate);
+        else mutate();
       }
 
       function show(index) {

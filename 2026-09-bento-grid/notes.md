@@ -43,13 +43,29 @@ in the same gesture.
   the flow is dense, and the tile re-composes because it has just become large
   enough to answer both slot queries. One gesture, both mechanisms, and no
   script: disclosure is what that element already is, keyboard, screen reader
-  and find-in-page included. A grid cannot tween a re-pack — track counts are
-  not interpolable and neither is a tile's placement — so what softens it is a
-  dip: the promoted tile settles in over 300ms, the revealed detail arrives
-  rather than appears, and under `--cycling` every tile dips and returns on the
-  ladder's own clock, which turns a jump cut into a settle. Genuinely tweening
-  the re-pack needs the View Transitions API and therefore script, which this
-  study does not carry.
+  and find-in-page included.
+
+- **The re-pack is moved, not disguised, and that is what `component.js` is
+  for.** A grid cannot tween one: track counts are not interpolable and neither
+  is a tile's placement, so every tile is simply somewhere else on the next
+  frame. The View Transitions API is the only thing that moves them — it
+  snapshots the old layout, lets the change happen, snapshots the new one and
+  animates each named element between the two, 460ms on a decelerating curve.
+  A name has to be unique per document and `demo.html` carries four boards, so
+  the name is the board's index and the tile's, set for the length of a
+  transition and taken off after: left on, opening one tile would animate all
+  twenty-eight elements on that page to say something about seven. The
+  stylesheet reaches the transition through `view-transition-class` rather than
+  `::view-transition-group(*)` — the universal form would take every transition
+  on the page, including ones this component has never heard of. Snapshots are
+  held at `object-fit: none`, because the default stretches them across the
+  travelling box and `cover` magnifies the outgoing one.
+
+  Everything the script does is enhancement. Deleted, the tiles are still
+  `<details>` and still open, the ladder falls back to its keyframes, and the
+  softening it replaces — a promoted tile settling in, every tile dipping on
+  the ladder's clock — comes back with it. `--scripted` is the switch, and it
+  is only set where the browser can actually morph.
 
 - **Flat, unlit colour, and the adjacencies are meant to disagree.** Nine
   fields, no gradient and no tint on any of them; the lift is a 5px offset
@@ -88,6 +104,21 @@ contents: `grid-auto-rows: minmax(var(--row), auto)` can never grow a row to
 fit an opened tile. Height-based slot queries and rows that grow to their
 content are mutually exclusive, and the height half of the queries is what that
 buys.
+
+Contrast departure, recorded under the rule in CLAUDE.md. The lead plate's
+muted tone — its kicker, and the two facts in its foot — measures **3.48:1**
+against the petrol, under the 4.5:1 floor and above the 3:1 hard floor. It is
+deliberate and it is structural rather than careless: the plate is one of the
+nine, and cream `#f3ecda` on `#2f6a63` tops out at 5.30:1 at full opacity, so
+there is 0.8 of room above the floor and nothing to mute into. Clearing 4.5:1
+needs 0.89 alpha, which is not a muted tone, it is the ink.
+
+The honest cost: "200 × 300 cm" and "Gotland wool" are said nowhere else, so
+this is a real departure rather than an ornamental repeat, and a darker plate
+would remove it — `#1f4a47` carries the same muting at 5.00:1. It was kept
+because the plate being one of the nine is the decision the whole colourway
+rests on. Everything else in the component clears AA in both themes; the
+figures reach 14.11:1.
 
 Inspiration: Tal R — the colour register only. Flat unlit fields, forms drawn
 rather than traced, and colours set next to each other that are not trying to

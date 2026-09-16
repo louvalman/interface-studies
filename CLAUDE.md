@@ -183,6 +183,76 @@ does with `active` is what quick look gets.
 The check: narrow the window to 320px. Nothing scrolls sideways, and everything
 the component does is still reachable without a pointer.
 
+## Contrast has a floor, and a way to spend it
+
+The floor is WCAG 2.2 AA, in both themes: **4.5:1** for text, **3:1** for large
+text — 24px, or 18.66px at 700 — and for the parts of a control or a graphic
+that carry its meaning. Both themes, because a token set that clears one can
+fail the other, and the check is cheap either way.
+
+Decoration carrying no text needs no ratio at all, and a logotype or a disabled
+control is exempt in WCAG's own terms. Those are not departures; they are
+outside the rule.
+
+### Where it may be spent
+
+Aesthetics sometimes wants a tone the ratio will not allow, and the honest
+answer is not to pretend otherwise. Muted text below 4.5:1 is allowed, under
+three conditions, all of them:
+
+1. **It is not the only place the thing is said, or it says nothing a reader
+   has to act on.** A kicker, an ornamental repeat, a caption whose content is
+   carried at full contrast a line above. Never a control, never a state, never
+   a value that is the point of the tile, never the sole statement of anything.
+2. **Never below 3:1.** Below that it is not muted, it is gone. It is the same
+   number the standard already uses for large text and for controls, which
+   makes it a line with a reason behind it rather than one picked to fit.
+3. **It is written down.** A departure is a decision, so it goes in that
+   folder's `notes.md` naming the element, its measured ratio, and what the
+   design wanted — the same rule a ground departure follows. A departure nobody
+   recorded is indistinguishable from an oversight, and next year so is its
+   author's memory of it.
+
+### The measurement, because the method changes the answer
+
+Compare the computed colour against the computed background. That is the pair
+an author actually controls, and it is the number to quote.
+
+It has a blind spot: it cannot see through `backdrop-filter` or a background
+image, and where those are in play the figure has to be judged rather than
+computed. Sampling rendered pixels sounds like the fix and is not — a tight box
+around two characters is mostly glyph, and the sampler decides the antialiasing
+is the background. Measured both ways, the bento plate's 10px label reads
+3.48:1 by computed colour and 2.9:1 by pixels: the same verdict, a different
+number, and only the first tells you which token to move.
+
+Know also what the ratio does not model. It ignores weight, and it ignores size
+below the large-text cut, so a 10px mono label at 4.74:1 passes while being
+harder to read than a 36px title at 5.30:1 that also passes. APCA, drafted for
+WCAG 3, models both and is not a standard yet — so it is not what this repo
+checks against, and the gap between the two is a reason to leave headroom
+rather than to sit on the line.
+
+### The trap worth knowing before choosing a palette
+
+A mid-tone coloured plate with light text has a *ceiling*, and it is lower than
+it looks. Cream `#f3ecda` on the bento's petrol `#2f6a63` measures 5.30:1 at
+full opacity — 0.8 above the floor. Every muted tone on that plate therefore
+fails by construction, and no amount of tuning the alpha recovers it: clearing
+4.5:1 needs 0.89 opacity, which is not muting. The decision that foreclosed it
+was choosing the plate, several steps earlier.
+
+So check the ceiling when the palette is chosen, not when the type goes on. A
+surface that needs muted text on it needs to be dark enough, or light enough,
+to have somewhere to mute into.
+
+### One last thing, since these studies get copied
+
+This headroom is a study repo's licence. A public service does not have it: in
+the EU the Web Accessibility Directive makes EN 301 549 — and through it WCAG
+AA — a legal floor with no aesthetic exception. Take the technique from these
+folders; do not take the exception with it.
+
 ## component.html
 
 Only the markup for the component. No `<html>`, no `<head>`, no wrapper divs
@@ -606,10 +676,50 @@ a low alpha dithers the banding out, and reads as paper rather than as texture.
 
 ## JavaScript
 
-Vanilla HTML and CSS by default. Add JavaScript only when the study
-genuinely depends on interaction — a disclosure, a carousel, a drag. Hover,
-focus, and transitions are CSS. When JS is needed, it goes in a plain
-`component.js` with no framework and no build step.
+Vanilla HTML and CSS by default, and the default is not a formality: a
+component that needs no script cannot break in one. Hover, focus and state
+transitions are CSS and stay CSS.
+
+Add JavaScript when it carries its weight, which is either of two things. The
+study depends on the interaction — a disclosure, a carousel, a drag. Or it
+materially changes how the thing looks and feels and CSS genuinely cannot do
+it.
+
+That second half used to be missing, and it cost something real. A grid cannot
+tween a re-pack — track counts are not interpolable and neither is a tile's
+placement — so the bento study softened its own layout changes with a dip that
+moved nothing, which is a poor answer to the question that study is about. The
+View Transitions API does move them, and it needs script.
+
+The bar is *CSS cannot do this and the difference is worth a file*, not *this
+would be easier in JS*. Ease is not a reason. A thing CSS does badly is.
+
+When JS is needed it goes in a plain `component.js` — no framework, no build
+step, no dependency — and **the component still works without it**. Script
+enhances; it does not constitute. A study whose markup only makes sense once
+its script has run has put the component in the wrong file. `component.html`
+never carries a `<script>` tag either: `demo.html` and `preview.html` load
+`component.js` the same way they load `component.css`, and a folder copied out
+takes both.
+
+### View-transition pseudo-elements are the exception to "no global selectors"
+
+They attach to the document root and cannot be scoped by nesting, so the rule
+above cannot be met literally. It can be met in substance. A study that wants
+them declares `view-transition-class` on its own elements and selects
+`::view-transition-group(.slug-thing)`, which matches nothing but this
+component's own elements — which is what the no-global rule is for.
+
+Never `::view-transition-group(*)`. That is every transition on the page,
+including ones this component knows nothing about, and it is the exact failure
+the rule exists to prevent.
+
+One thing does not survive the boundary: those pseudo-elements inherit from
+`:root`, not from the component, so a `var(--slug-…)` written in one resolves
+against a root that has never heard of it. A study that wants its transition
+tunable publishes the value onto `:root` from its own script for the length of
+the transition, and the rule carries a literal fallback for when no script
+ran.
 
 ## Folders are independent
 
