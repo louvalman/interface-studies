@@ -75,6 +75,13 @@
         + 'valgte punkt folder sig ud til en pille med etiket, søgning til et '
         + 'felt, loggen til et panel — i seks materialer fra én opskrift.',
       'cta.quickLookToolbar': 'Hurtigt kig: Værktøjslinje i flydende glas',
+      'piece.struckTones.title': 'Anslagstoner',
+      'piece.struckTones.note': 'En lydpalet til en gr\u00e6nseflade, skrevet '
+        + 'som en token-blok: fire lyde angivet som en grundtone, en '
+        + 'indh\u00fdlning og fire intervaller i halvtoner, og derefter '
+        + 'syntetiseret ud fra de tal frem for afspillet fra filer. Den er '
+        + 'tavs som udgangspunkt og tegner alt, hvad den siger.',
+      'cta.quickLookStruck': 'Hurtigt kig: Anslagstoner',
       'piece.bentoGrid.title': 'Interaktivt bento-gitter',
       'piece.bentoGrid.note': 'Syv fliser, der hver angiver den plads, de '
         + 'ønsker, på et gitter der afkorter hvert spænd efter sit eget '

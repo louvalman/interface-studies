@@ -1,0 +1,211 @@
+<!doctype html>
+<!--
+  The thumbnail the landing page iframes: one instance of the component on the
+  rail's shared ground, no captions and no second copy.
+
+  A sound study is the one kind that cannot demonstrate itself here. A card's
+  iframe has pointer events off, so nothing can arm the audio — and even in
+  quick look, where the pointer is live and it genuinely can be armed, a rail
+  that made a noise on approach would be indefensible. So what a card shows is
+  the set striking its own pads in silence: `--live` is four CSS keyframes on a
+  stagger, which is also what lets the index pause the whole thing with one
+  animation-play-state rule while the rail is being dragged.
+
+  The three variants are the two axes of the token block, moved one at a time:
+  `--hushed` keeps every interval and changes only the envelope, `--close`
+  keeps the envelope and changes only the tuning. Both are token overrides, so
+  the component's own MutationObserver re-reads them and the read-out prints
+  the new values — which is the study demonstrating its own argument.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Struck tones &mdash; preview</title>
+
+  <link rel="stylesheet" href="component.css">
+
+  <!-- The ground, before the first paint. -->
+  <script>
+    var theme = new URLSearchParams(location.search).get('theme');
+    if (theme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+  </script>
+
+  <style>
+    /* Thumbnail scaffolding only. Nothing here may name a component class. */
+
+    /* The rail's ground, not this study's — two literals repeated in every
+       folder so the row reads as one set of cards. */
+    :root { --preview-ground: #f3f2ef; }
+    :root[data-theme="dark"] { --preview-ground: #191b1e; }
+
+    html { background-color: var(--preview-ground); }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background-color: var(--preview-ground);
+      font-family: system-ui, sans-serif;
+    }
+
+    /* The rail is moving. Everything in here stops until it lands, and picks
+       up where it left off rather than starting over. */
+    :root[data-preview-paused] *,
+    :root[data-preview-paused] *::before,
+    :root[data-preview-paused] *::after {
+      animation-play-state: paused !important;
+    }
+  </style>
+</head>
+<body>
+
+  <section class="struck-tones" aria-label="Sound palette">
+    <header class="struck-tones__head">
+      <p class="struck-tones__label">Struck tones</p>
+      <button class="struck-tones__arm" type="button" data-arm aria-pressed="false" disabled>
+        <span class="struck-tones__arm-dot" aria-hidden="true"></span>
+        <span class="struck-tones__arm-text" data-arm-text>Sound off</span>
+      </button>
+    </header>
+
+    <div class="struck-tones__trace">
+      <p class="struck-tones__trace-name" data-trace-name>Tap</p>
+      <p class="struck-tones__trace-freq">
+        <span data-trace-freq>528</span>
+        <span class="struck-tones__trace-unit">Hz</span>
+      </p>
+      <div class="struck-tones__envelope" aria-hidden="true">
+        <span class="struck-tones__env-rise"></span>
+        <span class="struck-tones__env-fall"></span>
+      </div>
+      <p class="struck-tones__trace-shape">
+        <span data-trace-attack>4</span> ms rise &middot;
+        <span data-trace-decay>260</span> ms fall
+      </p>
+      <p class="struck-tones__sr" data-trace-live role="status" aria-live="polite"></p>
+    </div>
+
+    <div class="struck-tones__rack">
+      <button class="struck-tones__pad" type="button" data-tone="tap">
+        <span class="struck-tones__pitch" aria-hidden="true"></span>
+        <span class="struck-tones__pad-name">Tap</span>
+        <span class="struck-tones__pad-step" data-step aria-hidden="true">0</span>
+      </button>
+      <button class="struck-tones__pad" type="button" data-tone="commit">
+        <span class="struck-tones__pitch" aria-hidden="true"></span>
+        <span class="struck-tones__pad-name">Commit</span>
+        <span class="struck-tones__pad-step" data-step aria-hidden="true">+7</span>
+      </button>
+      <button class="struck-tones__pad" type="button" data-tone="revert">
+        <span class="struck-tones__pitch" aria-hidden="true"></span>
+        <span class="struck-tones__pad-name">Revert</span>
+        <span class="struck-tones__pad-step" data-step aria-hidden="true">&minus;5</span>
+      </button>
+      <button class="struck-tones__pad" type="button" data-tone="alert">
+        <span class="struck-tones__pitch" aria-hidden="true"></span>
+        <span class="struck-tones__pad-name">Alert</span>
+        <span class="struck-tones__pad-step" data-step aria-hidden="true">+1</span>
+      </button>
+    </div>
+
+    <dl class="struck-tones__tuning">
+      <div class="struck-tones__row">
+        <dt>Root</dt>
+        <dd data-token="root">528 Hz</dd>
+      </div>
+      <div class="struck-tones__row">
+        <dt>Timbre</dt>
+        <dd data-token="timbre">triangle</dd>
+      </div>
+      <div class="struck-tones__row">
+        <dt>Partial</dt>
+        <dd data-token="partial">2.76&times;</dd>
+      </div>
+      <div class="struck-tones__row">
+        <dt>Envelope</dt>
+        <dd data-token="envelope">4 / 260 ms</dd>
+      </div>
+    </dl>
+  </section>
+
+  <script src="component.js"></script>
+
+  <script>
+    (function () {
+      var CHANNEL = 'interface-studies';
+      var root = document.querySelector('.struck-tones');
+      if (!root) return;
+
+      /* First entry is the resting state the card shows. The two after it move
+         one axis of the token block each, which is the thing worth stepping
+         through in quick look. */
+      var VARIANTS = [
+        { id: 'struck', label: 'Struck', classes: [] },
+        { id: 'hushed', label: 'Hushed envelope', classes: ['struck-tones--hushed'] },
+        { id: 'close', label: 'Close tuning', classes: ['struck-tones--close'] }
+      ];
+
+      function apply(variant) {
+        VARIANTS.forEach(function (v) {
+          v.classes.forEach(function (c) { root.classList.remove(c); });
+        });
+        variant.classes.forEach(function (c) { root.classList.add(c); });
+      }
+
+      window.addEventListener('message', function (event) {
+        var data = event.data;
+        if (!data || data.source !== CHANNEL) return;
+
+        /* What `active` means here: the set plays itself through, silently.
+           There is no audio path from this message and there deliberately
+           is not one — nothing on the rail has the gesture to arm it. */
+        if (data.type === 'preview') {
+          root.classList.toggle('struck-tones--live', data.active === true);
+        }
+
+        if (data.type === 'preview:variant') {
+          var variant = VARIANTS[data.index];
+          if (variant) apply(variant);
+        }
+
+        if (data.type === 'preview:pause') {
+          if (data.paused === true) {
+            document.documentElement.setAttribute('data-preview-paused', '');
+          } else {
+            document.documentElement.removeAttribute('data-preview-paused');
+          }
+        }
+
+        /* The ground is the rail's and follows the index into dark. The
+           component is a lit plate and is not touched by it — which is what
+           it already does on a dark demo page. */
+        if (data.type === 'preview:theme') {
+          if (data.theme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+          } else {
+            document.documentElement.removeAttribute('data-theme');
+          }
+        }
+      });
+
+      /* Quick look runs this file with the pointer live, so focus ends up in
+         here and the overlay's own Escape handler never sees the key. */
+      if (window.parent !== window) {
+        document.addEventListener('keydown', function (event) {
+          if (event.key !== 'Escape') return;
+          window.parent.postMessage({ source: CHANNEL, type: 'preview:key', key: 'Escape' }, '*');
+        });
+
+        window.parent.postMessage({
+          source: CHANNEL,
+          type: 'preview:ready',
+          variants: VARIANTS.map(function (v) { return { id: v.id, label: v.label }; })
+        }, '*');
+      }
+    })();
+  </script>
+
+</body>
+</html>
