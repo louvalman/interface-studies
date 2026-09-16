@@ -1,0 +1,100 @@
+<!--
+  The component markup, and nothing else.
+
+  Four sounds, a read-out of the last one struck, and the tuning they are all
+  made from. The numbers written into the tuning list and the pad steps below
+  are the no-script fallback: component.js replaces them with whatever the
+  custom properties actually say, so a re-themed set states its own values
+  rather than the defaults. They are the defaults, so with no script at all the
+  list is still correct.
+
+  The pads are real buttons because striking one is an action. The read-out is
+  a live region because it is the whole of the message when the sound is off,
+  which is how this ships.
+-->
+
+<section class="struck-tones" aria-label="Sound palette">
+  <header class="struck-tones__head">
+    <p class="struck-tones__label">Struck tones</p>
+
+    <!-- Off until asked. The press is also the gesture the AudioContext needs,
+         so the two are the same button rather than a mute sitting next to an
+         autoplay the browser was going to block anyway. -->
+    <button class="struck-tones__arm" type="button" data-arm aria-pressed="false">
+      <span class="struck-tones__arm-dot" aria-hidden="true"></span>
+      <span class="struck-tones__arm-text" data-arm-text>Sound off</span>
+    </button>
+  </header>
+
+  <div class="struck-tones__trace">
+    <p class="struck-tones__trace-name" data-trace-name>Tap</p>
+
+    <!-- The one thing on the card a reader can take in at a glance, and the
+         reason the study is legible in a silent thumbnail. -->
+    <p class="struck-tones__trace-freq">
+      <span data-trace-freq>528</span>
+      <span class="struck-tones__trace-unit">Hz</span>
+    </p>
+
+    <div class="struck-tones__envelope" aria-hidden="true">
+      <span class="struck-tones__env-rise"></span>
+      <span class="struck-tones__env-fall"></span>
+    </div>
+
+    <p class="struck-tones__trace-shape">
+      <span data-trace-attack>4</span> ms rise &middot;
+      <span data-trace-decay>260</span> ms fall
+    </p>
+
+    <!-- What the sound said, in words, for anyone who did not hear it: a muted
+         tab, a deaf reader, an open-plan office. Visually it is the name above;
+         this is the same message going to a screen reader when a pad is
+         struck, and it is announced whether or not the audio is armed. -->
+    <p class="struck-tones__sr" data-trace-live role="status" aria-live="polite"></p>
+  </div>
+
+  <div class="struck-tones__rack">
+    <button class="struck-tones__pad" type="button" data-tone="tap">
+      <span class="struck-tones__pitch" aria-hidden="true"></span>
+      <span class="struck-tones__pad-name">Tap</span>
+      <span class="struck-tones__pad-step" data-step aria-hidden="true">0</span>
+    </button>
+
+    <button class="struck-tones__pad" type="button" data-tone="commit">
+      <span class="struck-tones__pitch" aria-hidden="true"></span>
+      <span class="struck-tones__pad-name">Commit</span>
+      <span class="struck-tones__pad-step" data-step aria-hidden="true">+7</span>
+    </button>
+
+    <button class="struck-tones__pad" type="button" data-tone="revert">
+      <span class="struck-tones__pitch" aria-hidden="true"></span>
+      <span class="struck-tones__pad-name">Revert</span>
+      <span class="struck-tones__pad-step" data-step aria-hidden="true">&minus;5</span>
+    </button>
+
+    <button class="struck-tones__pad" type="button" data-tone="alert">
+      <span class="struck-tones__pitch" aria-hidden="true"></span>
+      <span class="struck-tones__pad-name">Alert</span>
+      <span class="struck-tones__pad-step" data-step aria-hidden="true">+1</span>
+    </button>
+  </div>
+
+  <dl class="struck-tones__tuning">
+    <div class="struck-tones__row">
+      <dt>Root</dt>
+      <dd data-token="root">528 Hz</dd>
+    </div>
+    <div class="struck-tones__row">
+      <dt>Timbre</dt>
+      <dd data-token="timbre">triangle</dd>
+    </div>
+    <div class="struck-tones__row">
+      <dt>Partial</dt>
+      <dd data-token="partial">2.76&times;</dd>
+    </div>
+    <div class="struck-tones__row">
+      <dt>Envelope</dt>
+      <dd data-token="envelope">4 / 260 ms</dd>
+    </div>
+  </dl>
+</section>

@@ -1,0 +1,598 @@
+/*
+  2026-09-struck-tones — self-contained, no globals, no imports.
+
+  An aesthetic study whose token block happens to be a set of sounds. Every
+  value below is either a colour, a size, or a number `component.js` hands to
+  a Web Audio oscillator — and the second kind is the point. A UI sound set
+  described as four numbers is re-themeable from outside in exactly the way a
+  type scale is; described as four .wav files it is not.
+
+  So the block reads as one thing: a tuning, an envelope, a timbre, and the
+  intervals each sound is pitched at. Override `--struck-tones-root` from a
+  parent and every sound in the set moves together. Override
+  `--struck-tones-attack` and the whole set changes character without a single
+  pitch changing.
+
+  Nothing here plays anything. The visual half of the component — the envelope
+  drawing, the pitch bars, the struck flash — is CSS reading the same tokens
+  the audio does, so the picture and the sound cannot drift apart, and the
+  component stays fully legible with the sound switched off (which is how it
+  ships, and how a thumbnail in an iframe will always see it).
+*/
+
+.struck-tones {
+  /* --- the tuning ------------------------------------------------------
+     What every sound in the set is made from. These six are read by
+     component.js with getComputedStyle and handed to the oscillators, and
+     three of them are read by the rules further down as well. Unitless on
+     purpose: Web Audio wants numbers, and `calc()` multiplies them happily.
+     Move --root and the whole set transposes. */
+  --struck-tones-root: 528;             /* Hz — the tonic the set is tuned from */
+  --struck-tones-timbre: triangle;      /* sine | triangle | square | sawtooth */
+  --struck-tones-attack: 4;             /* ms to peak */
+  --struck-tones-decay: 260;            /* ms to silence */
+  --struck-tones-level: 0.16;           /* peak gain, 0–1 */
+  --struck-tones-partial: 2.76;         /* the inharmonic ring above the fundamental */
+  --struck-tones-partial-level: 0.28;   /* how much of it, relative to the fundamental */
+  --struck-tones-spread: 96;            /* ms between the two notes of a two-note sound */
+
+  /* The intervals, in semitones from the root. Direction is the message:
+     up is something now exists, down is something was undone, flat is a
+     plain acknowledgement, and a minor second against the root is the only
+     sound in the set that is meant to be unpleasant. */
+  --struck-tones-i-tap: 0;
+  --struck-tones-i-commit: 7;
+  --struck-tones-i-revert: -5;
+  --struck-tones-i-alert: 1;
+
+  /* --- the surface the tuning is demonstrated on ----------------------- */
+  --struck-tones-bg: #f2efe9;
+  --struck-tones-fg: #16151a;
+  --struck-tones-muted: #6d675e;
+  --struck-tones-line: rgba(22, 21, 26, 0.14);
+  --struck-tones-fill: rgba(22, 21, 26, 0.045);
+  --struck-tones-accent: #a8702a;
+  --struck-tones-pad: #ebe7df;
+  --struck-tones-pad-lit: #ffffff;
+
+  /* Named, not loaded — loading is the demo page's job. Both fall back to
+     something reasonable, so a folder copied into a project that has never
+     heard of either still sets correctly. */
+  --struck-tones-font: "Plus Jakarta Sans", system-ui, sans-serif;
+  --struck-tones-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --struck-tones-width: 23rem;
+  --struck-tones-inset: 1.35rem;
+  --struck-tones-gap: 1.15rem;
+  --struck-tones-radius: 0.875rem;
+  --struck-tones-pad-radius: 0.5rem;
+
+  /* The pitch bar's box, and how much of it one semitone is worth. At a
+     shallow box the four bars are a picture of nothing: the widest interval in
+     the set is twelve semitones and the difference has to survive being
+     rasterised at 0.7 on the rail. */
+  --struck-tones-pitch-h: 2.5rem;
+  --struck-tones-pitch-span: 3.6%;
+
+  --struck-tones-label-size: 0.625rem;
+  --struck-tones-label-tracking: 0.16em;
+  --struck-tones-freq-size: 3.25rem;
+  --struck-tones-body-size: 0.75rem;
+
+  /* How long one pass of the self-demonstration takes, and how far apart the
+     four strikes fall inside it. See `--live` at the foot of the file. */
+  --struck-tones-sweep: 3.2s;
+  --struck-tones-transition: 180ms cubic-bezier(0.16, 1, 0.3, 1);
+  /* ---------------------------------------------------------------------- */
+
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: var(--struck-tones-gap);
+
+  width: var(--struck-tones-width);
+  /* The width above is what it wants; this is what it will accept. A 320px
+     column squeezes the rack instead of pushing a scrollbar across the page. */
+  max-width: 100%;
+
+  /* So the rack folds against the column it is actually in rather than
+     against the viewport. A component dropped into a 300px sidebar on a
+     1440px desktop is narrow, and a media query cannot see that. */
+  container-type: inline-size;
+
+  padding: var(--struck-tones-inset);
+  background: var(--struck-tones-bg);
+  color: var(--struck-tones-fg);
+  border: 1px solid var(--struck-tones-line);
+  border-radius: var(--struck-tones-radius);
+  font-family: var(--struck-tones-font);
+}
+
+/* --- the head: what this is, and the one switch that lets it make noise --- */
+
+.struck-tones__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.struck-tones__label {
+  margin: 0;
+  font-family: var(--struck-tones-mono);
+  font-size: var(--struck-tones-label-size);
+  letter-spacing: var(--struck-tones-label-tracking);
+  text-transform: uppercase;
+  color: var(--struck-tones-muted);
+}
+
+/* Silence is the default state, and the switch out of it is part of the
+   palette rather than a browser-shaped afterthought bolted to the corner. It
+   is also the gesture Web Audio needs: component.js does not construct an
+   AudioContext until this is pressed, so the component cannot be the reason a
+   page makes a noise nobody asked for. */
+.struck-tones__arm {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0.4rem 0.7rem 0.4rem 0.55rem;
+  border: 1px solid var(--struck-tones-line);
+  border-radius: 999px;
+  background: var(--struck-tones-fill);
+  color: var(--struck-tones-muted);
+  font-family: var(--struck-tones-mono);
+  font-size: var(--struck-tones-label-size);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    color var(--struck-tones-transition),
+    background var(--struck-tones-transition),
+    border-color var(--struck-tones-transition);
+}
+
+.struck-tones__arm-dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.4;
+  transition: opacity var(--struck-tones-transition);
+}
+
+.struck-tones__arm:hover {
+  color: var(--struck-tones-fg);
+  border-color: var(--struck-tones-fg);
+}
+
+/* A finger cannot hover, so the press carries the same reading. */
+@media (hover: none) {
+  .struck-tones__arm:active {
+    color: var(--struck-tones-fg);
+    border-color: var(--struck-tones-fg);
+  }
+
+  .struck-tones__arm { min-height: 2.25rem; }
+}
+
+.struck-tones__arm[aria-pressed="true"] {
+  color: var(--struck-tones-accent);
+  border-color: var(--struck-tones-accent);
+  background: transparent;
+}
+
+.struck-tones__arm[aria-pressed="true"] .struck-tones__arm-dot { opacity: 1; }
+
+.struck-tones__arm:focus-visible {
+  outline: 2px solid var(--struck-tones-fg);
+  outline-offset: 2px;
+}
+
+/* --- the read-out: what the last strike was ------------------------------
+   Drawn on every strike whether or not the sound is armed. That is the
+   accessibility half of the study and it is not a concession: a sound nobody
+   can hear — muted tab, deaf user, open-plan office — still has to deliver
+   whatever it was carrying, so the channel is doubled rather than replaced. */
+
+.struck-tones__trace {
+  display: grid;
+  gap: 0.5rem;
+  padding: 0.85rem 0.95rem 0.95rem;
+  border: 1px solid var(--struck-tones-line);
+  border-radius: calc(var(--struck-tones-radius) - 0.35rem);
+  background: var(--struck-tones-fill);
+}
+
+.struck-tones__trace-name {
+  margin: 0;
+  font-family: var(--struck-tones-mono);
+  font-size: var(--struck-tones-label-size);
+  letter-spacing: var(--struck-tones-label-tracking);
+  text-transform: uppercase;
+  color: var(--struck-tones-muted);
+}
+
+.struck-tones__trace-freq {
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 0.3rem;
+  font-size: var(--struck-tones-freq-size);
+  font-weight: 500;
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.struck-tones__trace-unit {
+  font-family: var(--struck-tones-mono);
+  font-size: var(--struck-tones-label-size);
+  letter-spacing: var(--struck-tones-label-tracking);
+  text-transform: uppercase;
+  color: var(--struck-tones-muted);
+}
+
+/* The envelope, drawn from the tokens with no arithmetic anywhere.
+   `flex-grow` takes a bare number, and --attack and --decay are bare numbers,
+   so the rise and the fall divide the width in exactly the ratio the sound is
+   made at. Nothing measures anything, and a study that retunes the envelope
+   gets the right picture for free. At 4/260 the rise is a 1.5% sliver, which
+   is not a drawing error — it is what a struck bar is. */
+.struck-tones__envelope {
+  display: flex;
+  align-items: flex-end;
+  height: 2.75rem;
+  margin-top: 0.15rem;
+  overflow: hidden;
+}
+
+.struck-tones__env-rise {
+  flex: var(--struck-tones-attack) 1 0;
+  /* A sliver can still round to nothing. This keeps the ramp visible at any
+     ratio without letting it claim width it was not given. */
+  min-width: 1px;
+  height: 100%;
+  background: var(--struck-tones-accent);
+  clip-path: polygon(0 100%, 100% 0, 100% 100%);
+}
+
+/* Four points approximating an exponential fall, which is what the gain node
+   actually does — a straight line here would draw a different sound from the
+   one being played. */
+.struck-tones__env-fall {
+  flex: var(--struck-tones-decay) 1 0;
+  height: 100%;
+  background: var(--struck-tones-accent);
+  opacity: 0.55;
+  clip-path: polygon(0 0, 14% 46%, 34% 74%, 62% 91%, 100% 100%, 0 100%);
+}
+
+.struck-tones__trace-shape {
+  margin: 0;
+  font-family: var(--struck-tones-mono);
+  font-size: var(--struck-tones-body-size);
+  color: var(--struck-tones-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The same message the read-out carries, composed as one sentence for a
+   screen reader. Kept out of the visible block rather than wrapped around it,
+   so a strike announces "Commit, a fifth above the root" and not the envelope
+   figures underneath it as well. */
+.struck-tones__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+/* --- the rack: the four sounds the set is made of ------------------------ */
+
+.struck-tones__rack {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.4rem;
+}
+
+.struck-tones__pad {
+  display: grid;
+  gap: 0.4rem;
+  justify-items: start;
+  padding: 0.6rem 0.55rem 0.55rem;
+  border: 1px solid var(--struck-tones-line);
+  border-radius: var(--struck-tones-pad-radius);
+  background: var(--struck-tones-pad);
+  color: var(--struck-tones-fg);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background var(--struck-tones-transition),
+    border-color var(--struck-tones-transition),
+    transform var(--struck-tones-transition);
+}
+
+/* Each pad carries its own interval, so the bar below and the audio above
+   read the same token. */
+.struck-tones__pad[data-tone="tap"] { --struck-tones-step: var(--struck-tones-i-tap); }
+.struck-tones__pad[data-tone="commit"] { --struck-tones-step: var(--struck-tones-i-commit); }
+.struck-tones__pad[data-tone="revert"] { --struck-tones-step: var(--struck-tones-i-revert); }
+.struck-tones__pad[data-tone="alert"] { --struck-tones-step: var(--struck-tones-i-alert); }
+
+.struck-tones__pad:hover {
+  background: var(--struck-tones-pad-lit);
+  border-color: var(--struck-tones-fg);
+}
+
+.struck-tones__pad:focus-visible {
+  outline: 2px solid var(--struck-tones-fg);
+  outline-offset: 2px;
+}
+
+/* The press is the whole interaction here, so it carries on a touch device
+   unchanged — there is nothing this component does on hover alone. */
+.struck-tones__pad:active { transform: translateY(1px); }
+
+@media (hover: none) {
+  .struck-tones__pad:active {
+    background: var(--struck-tones-pad-lit);
+    border-color: var(--struck-tones-fg);
+  }
+
+  .struck-tones__pad { min-height: 3.25rem; }
+}
+
+/* The interval, drawn. Height comes off the same semitone token the
+   oscillator is tuned with, so the four bars are a picture of the tuning:
+   retune the set and they move together. */
+.struck-tones__pitch {
+  width: 100%;
+  height: var(--struck-tones-pitch-h);
+  display: flex;
+  align-items: flex-end;
+}
+
+.struck-tones__pitch::after {
+  content: "";
+  width: 100%;
+  height: calc(50% + var(--struck-tones-step, 0) * var(--struck-tones-pitch-span));
+  border-radius: 1px;
+  background: var(--struck-tones-fg);
+  opacity: 0.28;
+  transition:
+    height var(--struck-tones-transition),
+    opacity var(--struck-tones-transition),
+    background var(--struck-tones-transition);
+}
+
+.struck-tones__pad:hover .struck-tones__pitch::after { opacity: 0.45; }
+
+.struck-tones__pad-name {
+  font-size: var(--struck-tones-body-size);
+  line-height: 1.2;
+}
+
+.struck-tones__pad-step {
+  font-family: var(--struck-tones-mono);
+  font-size: 0.625rem;
+  color: var(--struck-tones-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The strike. One keyframe, run by an attribute component.js sets and clears
+   on animationend — and run again, on a stagger, by the `--live` modifier at
+   the foot of this file. Both routes draw the same flash, so the component
+   demonstrating itself and the component being used look alike. */
+@keyframes struck-tones-hit {
+  0% { background: var(--struck-tones-pad-lit); border-color: var(--struck-tones-accent); }
+  100% { background: var(--struck-tones-pad); border-color: var(--struck-tones-line); }
+}
+
+@keyframes struck-tones-hit-bar {
+  0% { opacity: 1; background: var(--struck-tones-accent); }
+  100% { opacity: 0.28; background: var(--struck-tones-fg); }
+}
+
+.struck-tones__pad[data-hit] {
+  animation: struck-tones-hit 420ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.struck-tones__pad[data-hit] .struck-tones__pitch::after {
+  animation: struck-tones-hit-bar 420ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* --- the tuning, stated ---------------------------------------------------
+   component.js writes these from the custom properties rather than from its
+   own copy of them, so the list is a read-out of the block at the top of this
+   file and cannot fall out of step with it. The values in the markup are the
+   no-script fallback, and they are the defaults declared above. */
+
+.struck-tones__tuning {
+  margin: 0;
+  display: grid;
+  gap: 0.3rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--struck-tones-line);
+}
+
+.struck-tones__row {
+  display: grid;
+  grid-template-columns: 5.25rem minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: baseline;
+}
+
+.struck-tones__row dt {
+  font-family: var(--struck-tones-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--struck-tones-muted);
+}
+
+.struck-tones__row dd {
+  margin: 0;
+  font-family: var(--struck-tones-mono);
+  font-size: var(--struck-tones-body-size);
+  color: var(--struck-tones-fg);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+/* --- narrow ---------------------------------------------------------------
+   Four pads across stop being pads somewhere under 300px. Two rows of two is
+   the same rack, only folded. */
+@container (max-width: 19rem) {
+  .struck-tones__rack { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 22rem) {
+  .struck-tones {
+    --struck-tones-inset: 1rem;
+    --struck-tones-freq-size: 2.5rem;
+  }
+
+  .struck-tones__rack { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .struck-tones__row { grid-template-columns: 4.5rem minmax(0, 1fr); }
+}
+
+/* --- --live: the set demonstrating itself ---------------------------------
+   The rail's thumbnail has pointer events off and no gesture to arm audio
+   with, so the only way a sound study can introduce itself there is by
+   striking its own pads in silence. Four strikes on a stagger, the envelope
+   wiping in time with them.
+
+   It is a modifier on the component rather than something the preview file
+   draws, because being able to play itself through is a property of a sound
+   set — the same reason a colour set has a swatch sheet. It is also entirely
+   CSS keyframes, which is what lets the index pause the whole thing with one
+   `animation-play-state` rule while the rail is being dragged. */
+
+@keyframes struck-tones-sweep {
+  0%, 18% { background: var(--struck-tones-pad); border-color: var(--struck-tones-line); }
+  2% { background: var(--struck-tones-pad-lit); border-color: var(--struck-tones-accent); }
+  100% { background: var(--struck-tones-pad); border-color: var(--struck-tones-line); }
+}
+
+@keyframes struck-tones-sweep-bar {
+  0% { opacity: 0.28; background: var(--struck-tones-fg); }
+  2% { opacity: 1; background: var(--struck-tones-accent); }
+  18%, 100% { opacity: 0.28; background: var(--struck-tones-fg); }
+}
+
+/* The playhead: a line crossing the envelope once per strike, so the drawing
+   reads as the sound being traced rather than as a static diagram. A travelling
+   line rather than a wipe — a wipe would have to erase the envelope to move,
+   and the shape is the thing worth looking at.
+
+   The line is one band in a gradient on an element twice the envelope's width,
+   so a transform can carry it the exact width of the envelope and no length
+   has to be measured: the band sits at the halfway mark of a 200% box, which
+   is the right-hand edge at translateX(0) and the left-hand edge at
+   translateX(-50%). A transform rather than an animated `left`, because this
+   runs in five framed documents on the index's own thread. */
+@keyframes struck-tones-playhead {
+  0% { transform: translateX(-50%); opacity: 0; }
+  6% { opacity: 0.8; }
+  74% { opacity: 0.8; }
+  92%, 100% { transform: translateX(0); opacity: 0; }
+}
+
+.struck-tones--live .struck-tones__pad {
+  animation: struck-tones-sweep var(--struck-tones-sweep) linear infinite;
+}
+
+.struck-tones--live .struck-tones__pitch::after {
+  animation: struck-tones-sweep-bar var(--struck-tones-sweep) linear infinite;
+}
+
+.struck-tones--live .struck-tones__pad:nth-child(1),
+.struck-tones--live .struck-tones__pad:nth-child(1) .struck-tones__pitch::after {
+  animation-delay: 0s;
+}
+
+.struck-tones--live .struck-tones__pad:nth-child(2),
+.struck-tones--live .struck-tones__pad:nth-child(2) .struck-tones__pitch::after {
+  animation-delay: calc(var(--struck-tones-sweep) * 0.25);
+}
+
+.struck-tones--live .struck-tones__pad:nth-child(3),
+.struck-tones--live .struck-tones__pad:nth-child(3) .struck-tones__pitch::after {
+  animation-delay: calc(var(--struck-tones-sweep) * 0.5);
+}
+
+.struck-tones--live .struck-tones__pad:nth-child(4),
+.struck-tones--live .struck-tones__pad:nth-child(4) .struck-tones__pitch::after {
+  animation-delay: calc(var(--struck-tones-sweep) * 0.75);
+}
+
+.struck-tones--live .struck-tones__envelope { position: relative; }
+
+.struck-tones--live .struck-tones__envelope::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  /* Twice the envelope, with the band at its midpoint — see the keyframes. */
+  width: 200%;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    transparent 0 49.7%,
+    var(--struck-tones-fg) 49.7% 50.3%,
+    transparent 50.3% 100%
+  );
+  animation: struck-tones-playhead calc(var(--struck-tones-sweep) / 4) linear infinite;
+}
+
+/* Content that moves unasked is the whole of the preference, so the set does
+   not play itself through. Striking a pad still draws — that is a response to
+   something the reader did, which is the half the preference does not forbid. */
+@media (prefers-reduced-motion: reduce) {
+  .struck-tones--live .struck-tones__pad,
+  .struck-tones--live .struck-tones__pitch::after,
+  .struck-tones--live .struck-tones__envelope::after {
+    animation: none;
+  }
+
+  .struck-tones--live .struck-tones__envelope::after { display: none; }
+
+  .struck-tones__pad[data-hit],
+  .struck-tones__pad[data-hit] .struck-tones__pitch::after {
+    animation-duration: 1ms;
+  }
+}
+
+/* --- --hushed / --close: the two axes of the block, moved one at a time ----
+   Not variants of the component so much as variants of the tuning, which is
+   what an aesthetic study is for: --hushed keeps every interval and changes
+   only the envelope; --close keeps the envelope and changes only the tuning.
+   Both are token overrides and nothing else — no rule below either of them
+   touches a property the block at the top does not already declare. */
+
+.struck-tones--hushed {
+  --struck-tones-timbre: sine;
+  --struck-tones-attack: 190;
+  --struck-tones-decay: 620;
+  --struck-tones-level: 0.1;
+  --struck-tones-partial-level: 0.08;
+  --struck-tones-spread: 150;
+  --struck-tones-accent: #5d7a6a;
+}
+
+.struck-tones--close {
+  --struck-tones-root: 396;
+  --struck-tones-i-commit: 3;
+  --struck-tones-i-revert: -2;
+  --struck-tones-i-alert: 1;
+  --struck-tones-partial: 1.83;
+  --struck-tones-accent: #7a5c8f;
+}
