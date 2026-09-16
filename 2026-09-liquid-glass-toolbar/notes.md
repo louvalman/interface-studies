@@ -325,16 +325,24 @@ side, which is what the eye reads and what `getBBox()` leaves out.
   the strong text spends contrast the strong text had going spare — 12.5:1 down
   to 7.0:1 against this surface — but the muted line is derived from the same
   colour and had none to spare at 4.1:1, so dropping the ink without taking its
-  alpha *up* quietly takes the quiet text below where it started. It ends at
-  4.5:1, better than it was.
+  alpha *up* quietly takes the quiet text below where it started.
+
+  4.5:1 was that correction computed against the sheet's own colour, and the
+  sheet is not a colour — it is whatever the ground behind it became.
+  Measured through the glass, on the light plate this material is for, 0.82
+  read 4.43:1. It is 0.88 and 5.10:1 now, deliberately off the line: the ratio
+  models neither weight nor size below the large-text cut, and a 15px line is
+  not where to spend the last tenth.
 
   The other two are each a whole palette for the same reason, not a hue
   rotation. Slate wants its saturation kept *down*, because a blue glass with
   the saturate pushed up starts tinting what is behind it and reads as a filter
-  rather than a surface. Basalt leans on its rim more than any of them: against
-  a light ground a near-black sheet has plenty of contrast at its face and none
-  at all at its edge, so without the hairline it stops reading as glass and
-  starts reading as a hole. And the accent moves with each — the warm mark that
+  rather than a surface. Basalt leans on its rim more than any of them: a
+  near-black sheet has plenty of contrast at its face and almost none at its
+  edge, so without the hairline it stops reading as glass and starts reading as
+  a hole. That was noticed against a light ground and it is the dark one that
+  charges for it, which is where the demo page now stands it — the rim is
+  the whole of the separation there. And the accent moves with each — the warm mark that
   reads on moss is not the warm that reads on a near-black, and carnelian is the
   one that cannot move by hue at all: its ground *is* that hue, so the set's
   amber measured to within 0.004 of the sheet's own luminance and disappeared
@@ -343,6 +351,25 @@ side, which is what the eye reads and what `getBBox()` leaves out.
   announcing itself as an exception — so it separates on lightness instead, the
   same amber walked up until it clears the sheet and no further. Past about
   `#ffd992` it stops being a colour and starts being a highlight.
+
+- **Ink opacity is not glass opacity, and the dim tone was paying for the
+  wrong one.** `--dim` is the quietest text in the component — the log's
+  timestamps and the closed panel's foot — and it sat at 0.46, which on a
+  surface you can see through is not a quiet tone, it is an absent one.
+  Measured through the glass rather than against it: the label is rendered
+  twice, once with `color: transparent`, so the sample is the real backdrop
+  including everything `backdrop-filter` did to it. The timestamps came out at
+  3.87:1 on the ground their material is for. It is 0.78 now — 0.86 on the two
+  that carry dark ink — and every material clears AA on its own ground: moss
+  10.65, slate 10.65, basalt 12.19, carnelian 7.58, crystal 7.57, alabaster
+  5.27.
+
+  The lever *not* pulled is the interesting half. Thickening the tint or
+  turning the backdrop's `brightness` down would raise the same numbers by
+  making the sheet less of a sheet, and backdrop `brightness` barely moves them
+  anyway — 2.89 to 2.87, measured, because what the text sits on is mostly the
+  tint by then. No tint, no opacity and no filter scalar changed here. The ink
+  got louder and the glass stayed glass.
 
 - **Thin the tint, and the filter has to take the work.** The first version of
   the set carried its colour in the tint, at 42–64% opacity. That is a coloured
@@ -392,11 +419,23 @@ side, which is what the eye reads and what `getBBox()` leaves out.
   cannot see through, and crystal is a pane you can. What separates them is not
   how light they are.
 
-  That is also why crystal is the only one whose ink follows the page rather
-  than the sheet. The other five carry enough tint to stay themselves over
-  anything — alabaster is a light plate on a dark page, basalt a dark one on
-  light paper — so each one's ink is settled once, against its own body. A pane
-  has no body to settle against: it becomes whatever is behind it. On light
+  That is also why crystal is the only one whose ink *follows* the page rather
+  than the sheet. The other five have a body to settle their ink against, so
+  each one is settled once and stays itself. A pane has no body to settle
+  against: it becomes whatever is behind it.
+
+  Settled once is not the same as right anywhere, and that distinction went
+  missing for a while. This paragraph used to say the other five carry enough
+  tint to stay themselves over anything, with alabaster as a light plate on a
+  dark page and basalt as a dark one on light paper, and the measurement says
+  otherwise: at 28–44% a sheet is mostly the ground, so a light-ink material
+  loses most of its contrast over light paper and alabaster loses all of its
+  over a dark page. On this page's light stage moss reads 2.08:1, slate 2.05,
+  carnelian 2.03 and basalt 3.59; on its dark one those four clear AA and
+  alabaster falls to 1.73. What is true is narrower: an ink settled against a
+  body does not need to move with the page — but the sheet still has to be
+  put on the ground it was drawn for. Crystal is the one that cannot be, which
+  is why it is the one with a `light-dark()`. On light
   paper that is a pale sheet wearing dark ink, which is the whole idea; on the
   dark theme the index grew it is a dark sheet wearing dark ink, measured at
   1.3:1, which is no idea at all. `light-dark()` reads the page's own
@@ -577,6 +616,39 @@ doing, so the page can be read as well as poked at, and it is where the numbers
 that are not visible in a screenshot live: 220 against 300, 25rem against 264px,
 4:1.
 
+The materials section is six grounds rather than one stage, and that is the
+section's argument rather than a way of spacing it out. Five of the five stages
+on this page are the page's own; this one is not, because glass has no colour of
+its own and what it contrasts against is behind it. Six materials on one stage
+is four of them standing on the wrong one — on the light stage moss read
+2.08:1, slate 2.05, carnelian 2.03 and basalt 3.59, and moving the whole section
+to the dark one only swaps which material is illegible, since alabaster falls to
+1.73 there. The brightness scalar does not rescue it either: moss needs 0.56
+→ 0.22 to clear 4.5:1 on light paper, which is not a material any more, and
+carnelian cannot get there at any value. So each plate carries the ground its
+material was drawn for, and every sheet in the set clears AA — moss 6.48,
+slate 6.41, basalt 6.68, carnelian 4.91, alabaster 5.04, crystal 5.92.
+
+Neither plate follows the page theme, which is the part worth stating rather
+than assuming. Which ground a material wants is a fact about the material; the
+reader's theme does not get a vote in it, and a set that re-sorted itself under
+the toggle would be saying the opposite of what the section is for. The plates
+are the same two stages the page declares elsewhere, restated as literals
+because a plate cannot read the theme block it is not in — and each declares
+its own `color-scheme`, which is not tidiness: crystal's ink is a `light-dark()`
+and a pane has no body to settle it against, so on a lit plate under a dark page
+it would wear the dark theme's near-white over near-white paper. It is the one
+material for which a plate has to *say* which ground it is rather than merely
+look like one.
+
+The ground is named on each plate, beside the class that selects it. That label
+is the one piece of page prose in a row otherwise made of class-name hints, so
+it is the only thing there carrying a `data-i18n` key and it is set in the
+page's own face rather than the mono the class names use. It is not a chip: a
+bordered stadium at label size, an inch from a bar built entirely of stadiums,
+is counted as part of the component before it is read as a caption. A middot
+does the same work and owns nothing.
+
 Two things came out of writing it down. The motion section needed the two clocks
 drawn rather than described — three bars on a 400ms track, because "220 and 300"
 is two numbers and a picture of them is a relationship. And the narrow section
@@ -616,10 +688,28 @@ question. What a rail of thumbnails is being asked is *what is this thing*, and
 six tints of one bar answer what it is made of. The states answer what it does,
 and they are the reason to open the study.
 
-So one material — moss, the one the component ships as — and the legs of its
-behaviour. The full six are still in `component.css` and still shown in
-`demo.html`, which is the page making that argument; the card is not the place
-to enumerate a palette.
+So one material and the legs of its behaviour. The full six are still in
+`component.css` and still shown in `demo.html`, which is the page making that
+argument; the card is not the place to enumerate a palette.
+
+**Which one it is follows the rail's ground, because a sheet of glass cannot
+answer that for itself.** What glass contrasts against is behind it, not in it,
+so a material is right for a ground rather than right in general — and
+`component.css` already says so, in as many words: a light theme is not the dark
+one turned up, the two are two materials of one construction, and alabaster is
+the one drawn for warm paper. The thumbnail was simply never told. It wore moss
+on both, so on a light rail it was the green-grey cast on warm paper that the
+comment set out to avoid, and its log line measured 1.42:1 there against 15.29:1
+on the ground moss is for. Same construction, wrong material, and no amount of
+tuning the ink fixes a sheet that is on the wrong side of the paper.
+
+The preview toggles `--alabaster` on a light ground and takes it off on a dark
+one, on load and again on `preview:theme`. Worst text on each after the swap:
+alabaster 5.27:1 lit, moss 10.65:1 dark. It is the same trade the rest of the
+contract asks for — the thumbnail answers the ground by re-theming from
+outside, using a modifier the study already declares, and `component.css` still
+knows nothing about `data-theme`. The demo page keeps all six on its own stage,
+where the ground is the study's to choose.
 
 Two legs rather than three, and the sheet dropped is whichever one the top sheet
 is not holding — the top one is not fixed to a state, it is a bar that opens, and

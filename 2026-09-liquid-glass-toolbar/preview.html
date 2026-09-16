@@ -5,8 +5,8 @@
   A deviation from the usual "one instance, no second copy", and a deliberate
   one: what this study offers is one surface that changes shape, and a component
   whose argument is a transition cannot make it standing still in a single frame.
-  So the card is one bar, in the material it ships in, twice: shut on Versions,
-  and with its log panel open. The variant dots step into one state at full size,
+  So the card is one bar, in the material the rail's ground asks for, twice:
+  shut on Versions, and with its log panel open. The variant dots step into one state at full size,
   where a panel has room to be read rather than recognised. No captions and no
   state labels either way: the states are the picture.
 
@@ -34,8 +34,9 @@
 
   Kept in step with component.html by hand: each sheet below is that file's
   markup, unedited apart from its aria-label. The material class is gone from
-  both — each sheet is the default, and what separates them is the state the
-  script dresses them in.
+  both — what separates the two sheets is the state the script dresses them in,
+  and the material they share is put on by the script from the rail's own
+  ground. See the note on wearGround at the foot of the file.
 -->
 <html lang="en">
 <head>
@@ -518,8 +519,8 @@
       if (!sheets.length) return;
 
       /*
-        The sheet the single-bar variants use. Every sheet in the stack is the
-        default material now, so this is simply the first — it used to have to
+        The sheet the single-bar variants use. Every sheet in the stack wears
+        the same material now, so this is simply the first — it used to have to
         be found, because the stack was ordered darkest to lightest and the
         default was not at the top.
       */
@@ -713,9 +714,10 @@
           apply(showing, data.active === true);
         }
 
-        // The index was switched while this thumbnail was on screen. Only the
-        // ground moves: the component is not touched, and it is the same
-        // component in both themes.
+        // The index was switched while this thumbnail was on screen. The
+        // ground moves and the material moves with it — see wearGround. The
+        // component is not touched: both materials are its own, declared in
+        // component.css, and nothing here reaches into one of its classes.
         // The rail is moving under a finger, or stepping to a card. Everything
         // in here stops until it lands — see the paused rule in the style
         // block above. Resuming picks the animations up where they were
@@ -735,6 +737,7 @@
           } else {
             document.documentElement.removeAttribute('data-theme');
           }
+          wearGround();
         }
 
         if (data.type === 'preview:scale') {
@@ -750,6 +753,35 @@
         }
       });
 
+      /*
+        The material follows the ground, which is the one thing a sheet of glass
+        cannot do for itself: what it contrasts against is behind it, not in it.
+
+        component.css already says this in as many words — "a light theme is not
+        the dark one turned up ... the two themes are two materials of one
+        construction" — and alabaster is the one it was written for. The bar was
+        simply never told. The ground switched under it and moss stayed on,
+        which is a green-grey glass on warm paper: the exact cast that comment
+        set out to avoid, and the reason the log read at 1.42:1 there against
+        15.29:1 on the ground moss is for.
+
+        Measured, worst text on each: moss 10.65:1 on the dark ground, alabaster
+        5.27:1 on the light one. Neither material was re-tinted to get there.
+
+        It is the thumbnail choosing the right material for the rail it is
+        sitting on, not the component learning about themes — component.css
+        carries no `data-theme` and still does not.
+      */
+      var GROUND_MATERIAL = 'liquid-glass-toolbar--alabaster';
+
+      function wearGround() {
+        var lit = document.documentElement.getAttribute('data-theme') !== 'dark';
+        sheets.forEach(function (sheet) {
+          sheet.classList.toggle(GROUND_MATERIAL, lit);
+        });
+      }
+
+      wearGround();
       apply(showing, false);
 
       // Quick look runs this file with pointer events live, so the pointer —
