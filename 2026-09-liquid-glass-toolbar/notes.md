@@ -344,6 +344,25 @@ side, which is what the eye reads and what `getBBox()` leaves out.
   same amber walked up until it clears the sheet and no further. Past about
   `#ffd992` it stops being a colour and starts being a highlight.
 
+- **Ink opacity is not glass opacity, and the dim tone was paying for the
+  wrong one.** `--dim` is the quietest text in the component — the log's
+  timestamps and the closed panel's foot — and it sat at 0.46, which on a
+  surface you can see through is not a quiet tone, it is an absent one.
+  Measured through the glass rather than against it: the label is rendered
+  twice, once with `color: transparent`, so the sample is the real backdrop
+  including everything `backdrop-filter` did to it. The timestamps came out at
+  3.87:1 on the ground their material is for. It is 0.78 now — 0.86 on the two
+  that carry dark ink — and every material clears AA on its own ground: moss
+  10.65, slate 10.65, basalt 12.19, carnelian 7.58, crystal 7.57, alabaster
+  5.27.
+
+  The lever *not* pulled is the interesting half. Thickening the tint or
+  turning the backdrop's `brightness` down would raise the same numbers by
+  making the sheet less of a sheet, and backdrop `brightness` barely moves them
+  anyway — 2.89 to 2.87, measured, because what the text sits on is mostly the
+  tint by then. No tint, no opacity and no filter scalar changed here. The ink
+  got louder and the glass stayed glass.
+
 - **Thin the tint, and the filter has to take the work.** The first version of
   the set carried its colour in the tint, at 42–64% opacity. That is a coloured
   surface with a texture underneath it rather than glass: nothing of the page
@@ -616,10 +635,28 @@ question. What a rail of thumbnails is being asked is *what is this thing*, and
 six tints of one bar answer what it is made of. The states answer what it does,
 and they are the reason to open the study.
 
-So one material — moss, the one the component ships as — and the legs of its
-behaviour. The full six are still in `component.css` and still shown in
-`demo.html`, which is the page making that argument; the card is not the place
-to enumerate a palette.
+So one material and the legs of its behaviour. The full six are still in
+`component.css` and still shown in `demo.html`, which is the page making that
+argument; the card is not the place to enumerate a palette.
+
+**Which one it is follows the rail's ground, because a sheet of glass cannot
+answer that for itself.** What glass contrasts against is behind it, not in it,
+so a material is right for a ground rather than right in general — and
+`component.css` already says so, in as many words: a light theme is not the dark
+one turned up, the two are two materials of one construction, and alabaster is
+the one drawn for warm paper. The thumbnail was simply never told. It wore moss
+on both, so on a light rail it was the green-grey cast on warm paper that the
+comment set out to avoid, and its log line measured 1.42:1 there against 15.29:1
+on the ground moss is for. Same construction, wrong material, and no amount of
+tuning the ink fixes a sheet that is on the wrong side of the paper.
+
+The preview toggles `--alabaster` on a light ground and takes it off on a dark
+one, on load and again on `preview:theme`. Worst text on each after the swap:
+alabaster 5.27:1 lit, moss 10.65:1 dark. It is the same trade the rest of the
+contract asks for — the thumbnail answers the ground by re-theming from
+outside, using a modifier the study already declares, and `component.css` still
+knows nothing about `data-theme`. The demo page keeps all six on its own stage,
+where the ground is the study's to choose.
 
 Two legs rather than three, and the sheet dropped is whichever one the top sheet
 is not holding — the top one is not fixed to a state, it is a bar that opens, and
