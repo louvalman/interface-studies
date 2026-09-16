@@ -48,7 +48,7 @@
   /* --- the surface the tuning is demonstrated on ----------------------- */
   --struck-tones-bg: #f2efe9;
   --struck-tones-fg: #16151a;
-  --struck-tones-muted: #6d675e;
+  --struck-tones-muted: #686257;
   --struck-tones-line: rgba(22, 21, 26, 0.14);
   --struck-tones-fill: rgba(22, 21, 26, 0.045);
   --struck-tones-accent: #a8702a;
@@ -73,6 +73,12 @@
      rasterised at 0.7 on the rail. */
   --struck-tones-pitch-h: 2.5rem;
   --struck-tones-pitch-span: 3.6%;
+  /* The bar draws the interval, which makes it a graphic carrying meaning
+     rather than decoration — so it owes 3:1 against the pad it sits on, in
+     both themes. 0.28 measured 1.83:1 and was well under; 0.55 is 3.79:1,
+     which leaves the headroom the ratio's blind spots argue for. */
+  --struck-tones-pitch-rest: 0.55;
+  --struck-tones-pitch-hover: 0.72;
 
   --struck-tones-label-size: 0.625rem;
   --struck-tones-label-tracking: 0.16em;
@@ -188,6 +194,21 @@
 .struck-tones__arm:focus-visible {
   outline: 2px solid var(--struck-tones-fg);
   outline-offset: 2px;
+}
+
+/* There is no CSS path to audio, so with component.js absent this control has
+   nothing to switch. It ships disabled in component.html and the script enables
+   it — the component reads as what it is without script rather than offering a
+   button that does nothing. A disabled control is outside the contrast floor in
+   WCAG's own terms, which is why this may go this quiet. */
+.struck-tones__arm:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.struck-tones__arm:disabled:hover {
+  color: var(--struck-tones-muted);
+  border-color: var(--struck-tones-line);
 }
 
 /* --- the read-out: what the last strike was ------------------------------
@@ -365,14 +386,14 @@
   height: calc(50% + var(--struck-tones-step, 0) * var(--struck-tones-pitch-span));
   border-radius: 1px;
   background: var(--struck-tones-fg);
-  opacity: 0.28;
+  opacity: var(--struck-tones-pitch-rest);
   transition:
     height var(--struck-tones-transition),
     opacity var(--struck-tones-transition),
     background var(--struck-tones-transition);
 }
 
-.struck-tones__pad:hover .struck-tones__pitch::after { opacity: 0.45; }
+.struck-tones__pad:hover .struck-tones__pitch::after { opacity: var(--struck-tones-pitch-hover); }
 
 .struck-tones__pad-name {
   font-size: var(--struck-tones-body-size);
@@ -397,7 +418,7 @@
 
 @keyframes struck-tones-hit-bar {
   0% { opacity: 1; background: var(--struck-tones-accent); }
-  100% { opacity: 0.28; background: var(--struck-tones-fg); }
+  100% { opacity: var(--struck-tones-pitch-rest); background: var(--struck-tones-fg); }
 }
 
 .struck-tones__pad[data-hit] {
@@ -482,9 +503,9 @@
 }
 
 @keyframes struck-tones-sweep-bar {
-  0% { opacity: 0.28; background: var(--struck-tones-fg); }
+  0% { opacity: var(--struck-tones-pitch-rest); background: var(--struck-tones-fg); }
   2% { opacity: 1; background: var(--struck-tones-accent); }
-  18%, 100% { opacity: 0.28; background: var(--struck-tones-fg); }
+  18%, 100% { opacity: var(--struck-tones-pitch-rest); background: var(--struck-tones-fg); }
 }
 
 /* The playhead: a line crossing the envelope once per strike, so the drawing

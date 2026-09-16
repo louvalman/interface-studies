@@ -306,6 +306,12 @@
     /* --- arming ------------------------------------------------------------ */
 
     if (arm) {
+      /* The markup ships this disabled, because without this file there is no
+         audio to arm and a control that does nothing is worse than one that
+         says so. Enabling it is the first thing the script does — everything
+         else on the component already works without it. */
+      arm.disabled = false;
+
       arm.addEventListener('click', function () {
         armed = !armed;
         arm.setAttribute('aria-pressed', armed ? 'true' : 'false');

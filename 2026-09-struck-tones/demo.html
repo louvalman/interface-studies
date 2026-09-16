@@ -612,7 +612,7 @@
       <section class="struck-tones" aria-label="Sound palette">
         <header class="struck-tones__head">
           <p class="struck-tones__label">Struck tones</p>
-          <button class="struck-tones__arm" type="button" data-arm aria-pressed="false">
+          <button class="struck-tones__arm" type="button" data-arm aria-pressed="false" disabled>
             <span class="struck-tones__arm-dot" aria-hidden="true"></span>
             <span class="struck-tones__arm-text" data-arm-text>Sound off</span>
           </button>
@@ -684,7 +684,7 @@
       <section class="struck-tones struck-tones--hushed" aria-label="Sound palette, hushed envelope">
         <header class="struck-tones__head">
           <p class="struck-tones__label">Struck tones</p>
-          <button class="struck-tones__arm" type="button" data-arm aria-pressed="false">
+          <button class="struck-tones__arm" type="button" data-arm aria-pressed="false" disabled>
             <span class="struck-tones__arm-dot" aria-hidden="true"></span>
             <span class="struck-tones__arm-text" data-arm-text>Sound off</span>
           </button>
@@ -756,7 +756,7 @@
       <section class="struck-tones struck-tones--close" aria-label="Sound palette, close tuning">
         <header class="struck-tones__head">
           <p class="struck-tones__label">Struck tones</p>
-          <button class="struck-tones__arm" type="button" data-arm aria-pressed="false">
+          <button class="struck-tones__arm" type="button" data-arm aria-pressed="false" disabled>
             <span class="struck-tones__arm-dot" aria-hidden="true"></span>
             <span class="struck-tones__arm-text" data-arm-text>Sound off</span>
           </button>
@@ -927,6 +927,13 @@
               envelope. Keyframes rather than a timer, so the index&rsquo;s one
               <code>animation-play-state</code> rule stops all of it while the
               rail is being dragged.</p>
+            <p>Without <code>component.js</code> the component is still the
+              component: the tuning list, the pad steps and the envelope are all
+              CSS reading the same tokens, so the card states its set correctly
+              with no script at all. What the script adds is the sound, which CSS
+              cannot reach &mdash; so the arm switch ships <code>disabled</code>
+              in <code>component.html</code> and the script enables it, rather
+              than offering a control that does nothing.</p>
           </li>
         </ol>
 

@@ -54,6 +54,13 @@ because a sound nobody hears still has to deliver what it was carrying.
   rather than a timer, so the index's one `animation-play-state` rule stops all
   of it while the rail is being dragged.
 
+  Without `component.js` the component is still the component: the tuning list,
+  the pad steps and the envelope are all CSS reading the same tokens, so the
+  card states its set correctly with no script at all. What the script adds is
+  the sound, which CSS cannot reach — so the arm switch ships `disabled` in
+  `component.html` and the script enables it, rather than offering a control
+  that does nothing.
+
 Inspiration: none — original design. The tuning is the one borrowed thing and
 it is borrowed from music rather than from an interface: the intervals are a
 just-ish fifth and fourth against a 528Hz tonic, and 2.76 is roughly where the
