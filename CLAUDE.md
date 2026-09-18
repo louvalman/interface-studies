@@ -1360,6 +1360,30 @@ git config user.name  "Louis Dyrhauge"
 git config user.email "94385943+louvalman@users.noreply.github.com"
 ```
 
+**The rules above are enforced, because stating them was not enough.** Each
+one here was broken after being written down — the identity rule by the two
+commits that immediately followed it, which a fresh container authored as its
+own default. `.githooks/pre-commit` refuses an author or committer address that
+is not the noreply one and warns on a branch named after a tool;
+`.githooks/commit-msg` refuses an attribution trailer, a session link and a
+generated-with line.
+
+`.git/hooks` is not tracked and does not survive a clone, so the hooks are a
+versioned directory plus one setting each clone needs once:
+
+```
+git config core.hooksPath .githooks
+```
+
+`.claude/hooks/session-start.sh` does that and sets the identity at the start
+of every session, so a machine that has never seen this repo is correct before
+its first commit rather than after it. A clone used outside that runs the line
+above by hand — and the two server-side guards are worth having under both,
+since a hook is only as good as the client that runs it: GitHub's **Block
+command line pushes that expose my email**, in the account's email settings,
+which would have caught every address that got in here, and a repository
+ruleset restricting the commit author email, which catches the rest.
+
 **Branch names say what the work is.** No tool prefixes, no generated pairs of
 a mood and a dead physicist. `inked-demo-rows` and `masthead-copy` are what a
 branch should read like; `determined-noether-1ofsaf` says nothing, and thirty
