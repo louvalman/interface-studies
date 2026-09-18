@@ -1023,7 +1023,17 @@
   // Between one card starting and the next. Not decoration: the wave is what
   // keeps the cost off a single frame, since a performing card is an unpaused
   // card and every card starting at once is every preview restyling at once.
-  const DEMO_STAGGER = 420;
+  //
+  // It is a relay rather than a ripple, and the number is what makes it one.
+  // Against the hold, the stagger decides how many cards are open together:
+  // four of them overlap while it is under DEMO_HOLD / 3, and at 420 the whole
+  // row was open for the better part of a second, which reads as the rail
+  // flashing rather than as a wave crossing it. Past that third the count comes
+  // down a card at a time — here three at the peak, each one clearly leading
+  // the next, and every card gets a beat where it is the newest thing moving.
+  // One at a time exactly would want the stagger at DEMO_HOLD or the hold
+  // shortened to meet it; that is a different effect and not what this is.
+  const DEMO_STAGGER = 850;
   // A beat that could not run asks again on this rather than waiting out the
   // full gap. Everything it waits on — a pointer gone, the overlay closed, a
   // gesture ended — arrives without announcing itself.
