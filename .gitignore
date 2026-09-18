@@ -51,3 +51,12 @@ __pycache__/
 /SCRATCH*.md
 !/README.md
 !/CLAUDE.md
+
+# One reference image is not ours to redistribute.
+# 2026-09-raster-pulse/ref.png is a poster set carrying someone else's brand —
+# the logo, the wordmark and the tagline — and a public repo redistributes it
+# whole, which the study itself is careful not to do. The Inspiration line in
+# that folder's notes.md still says where the build came from, which is the
+# part a reader needs. Nothing links ref.png in any case: the index and every
+# demo page show preview.html, the live component.
+2026-09-raster-pulse/ref.png
