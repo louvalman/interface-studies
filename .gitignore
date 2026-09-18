@@ -1,6 +1,8 @@
 # Claude Code
-# CLAUDE.md and .claude/settings.json are shared and stay in the repo — they
-# are the rules for this project. Only per-machine state is ignored.
+# CLAUDE.md is shared and stays in the repo — it is the rules for this project,
+# and the README points at it. Only per-machine state is ignored. There is no
+# .claude/ directory at present; these lines are here so that if one is ever
+# added, the local half of it cannot land in a commit.
 .claude/settings.local.json
 .claude/*.local.json
 
@@ -35,3 +37,17 @@ __pycache__/
 # side-by-side comparisons). Scoped to root-level .html so it cannot swallow
 # _template/, which is part of the repo.
 /_*.html
+
+# Scratch notes at the root, same idea and the same scoping. A handoff or a
+# to-do list is written to be read once and thrown away, and one of them was
+# committed and shipped for a fortnight before anyone noticed — it carried a
+# local path, a build-environment note and a list of what had not been tested
+# yet. README.md and CLAUDE.md are named explicitly so this cannot reach them;
+# a study's own notes.md is never at the root, so it is untouched either way.
+/_*.md
+/HANDOFF*.md
+/NOTES*.md
+/TODO*.md
+/SCRATCH*.md
+!/README.md
+!/CLAUDE.md
