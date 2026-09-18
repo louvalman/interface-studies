@@ -17,7 +17,7 @@ in the same gesture.
   Without the `min()` a one-column board grows a phantom track to fit a
   two-column tile: measured, `grid-template-columns` resolves to `134px 8px`
   and the wide tiles sit 16px proud of the narrow ones. Rows are deliberately
-  not clamped, so the 2×2 plate and the 1×2 screen tile are still double-height
+  not clamped, so the 2×2 plate and the 1×2 ladder tile are still double-height
   at one column and the tile that led at four columns still leads at 320px.
 
 - **Twelve cells, because twelve divides by four, three, two and one.** One
@@ -67,12 +67,21 @@ in the same gesture.
   the ladder's clock — comes back with it. `--scripted` is the switch, and it
   is only set where the browser can actually morph.
 
-- **Flat, unlit colour, and the adjacencies are meant to disagree.** Nine
-  fields, no gradient and no tint on any of them; the lift is a 5px offset
-  block of the same ink rather than a blur, because a soft shadow would put
-  light into a register that has none. The cream sits fifth in the ink strip
-  rather than ninth — last, it was too close to the chalk the tile is made of
-  and the strip read as though it had been cut short.
+- **One plate, one accent, and the accent is always the same thing.** Flat and
+  unlit — no gradient, no tint — and the lift is a 5px offset block of the
+  same ink rather than a blur, because a soft shadow would put light into a
+  register that has none. The accent marks the cells a tile is occupying and
+  nothing else, in the lead's mini-board, in the span rows and on the ladder,
+  so the colour means one thing everywhere it appears.
+
+  This was nine flat fields for two rounds, meant to disagree with each other,
+  and the count was what was wrong rather than any of the values. Laid out
+  beside the other studies at thumbnail size it was the only polychrome card
+  in the set: every one of the others spends exactly one colour — struck
+  tones one amber curve, the toolbar one moss sheet, the plate one acid green
+  — and a board of twelve cells arriving with nine read as a swatch chart
+  before it read as an arrangement. The colour was doing the thing the grid
+  was supposed to do.
 
 Dense packing is what makes it a bento rather than a stack: a tile too big for
 the gap the cursor is on waits, and a later unit tile backfills the hole. The
@@ -83,7 +92,11 @@ follows, and the tiles are written in the order they should be read.
 The row height is measured rather than chosen. A tile's face gets the row less
 48px — two for the border, 36 for the panel's padding, ten for the panel's gap
 to its own closed details — and the tallest thing any face has to hold is the
-mark tile's 117px. 11rem is the first round figure that clears it. Every
+flow tile's 101px — a drawing, a label and a line of type. 11rem is the first
+round figure that clears it, and it was measured against 117px when that
+drawing was larger; the constraint has since relaxed and the row has not,
+because what sets it now is the lead's proportion rather than the tightest
+face. Every
 earlier value clipped something, and quietly: at 7rem six tiles, at 9rem four,
 by 2 to 37 pixels each. Two smaller findings came out of the same sweep. A
 figure set at `line-height: 1` overflows its own line box by about 0.15em,
@@ -105,56 +118,50 @@ fit an opened tile. Height-based slot queries and rows that grow to their
 content are mutually exclusive, and the height half of the queries is what that
 buys.
 
-The tiles hold a risograph edition, and the subject earns a line because the
-first one did not survive contact with the rule above it. A `layout` study
-styles its tiles properly, which means the tiles have to be *about* something,
-and the first draft made them a hand-knotted rug — a made object with a spec
-sheet, which fits the seven slots exactly and gives the palette tile nine
-dyed fields to hold. What it does not do is give the palette a reason to be
-nine. A riso does: six drums laid one over another, and the overlaps are the
-other three colours, so the strip is a fact about the press rather than a row
-of swatches next to a picture. The lead's drawing gets the same upgrade — an
-overprint where two shapes meet, and one drum a few millimetres off register,
-which is what the thing is recognised by before any of its colours are.
+The tiles are about the board they are sitting in, and that took three
+subjects to arrive at. A `layout` study styles its tiles properly, which means
+the tiles have to be *about* something — and the first two drafts reached
+outside for it. A hand-knotted rug, then a risograph edition: both fit the
+seven slots exactly, because a made object with a spec sheet always will, and
+both made the board a page about a fictional product with a grid behind it.
+The tell was on the rail rather than on the demo page. Every other card in the
+set says what its own study does — the dot field's card reads *no shape is
+drawn here, every dot is asked where it sits*; the gradient card shows its own
+three ramps with their own percentages — and this one was advertising
+something that does not exist.
 
-The three screen bands are the part that changed most. They were three warp
-pitches, which is one drawing at three sizes; they are three rulings at three
-angles now, and the angle is not decoration — two drums screened alike beat
-against each other where they overlap, and offsetting them is what stops it.
-15°, 45° and 75° is the classic set minus yellow's 0°, which is left out
-because a band of horizontal rules in a tile full of horizontal type reads as
-ruled lines rather than as a screen.
+So the lead draws the board's own twelve cells at four columns, the span tile
+draws one tile being clamped from two columns to one, and the ladder draws the
+four rungs. All three are the same primitive: a row of cells with some of them
+filled. One primitive rather than three pictures is the point — the
+diagrams and the thing they describe are made of the same part, and re-theming
+the component re-themes every drawing on it. The four unit tiles carry the
+figures, which is the other thing the set does: 12 cells, 7 tiles, 460ms.
 
-And a screen is a ratio, not a line width, which is what caught the thumbnail.
-`preview.html` restates the hairline against the scale the index reports —
-the usual correction, because at 0.35 of a device pixel a 1px rule stops being
-antialiased at all — and restating it alone puts 2.86px of ink into a 3px
-pitch. Measured on the card at 0.7, the three rows went from 11 / 20 / 33% ink
-to 32 / 43 / 95: the fine row is not a fine screen there, it is a flat navy
-block, and the tile's whole claim that these are three rulings had stopped
-being true at the size most people see it. The pitches are restated with the
-weight now, from the values the component itself declares, and the ratio holds
-— 11 / 20 / 33 at full size and at 0.7 alike. Worth knowing generally: a
-correction that scales one half of a ratio breaks it, and the breakage only
-shows at the scale the correction exists for.
+What that cost is worth naming. The nine-colour register is gone, and with it
+the one decision in this study that was not about arrangement. The study is
+narrower for it and that is the right trade for a `layout` study — the
+contract says the type scopes the subject, and a palette that interesting was
+the subject for as long as it was there.
 
-Contrast departure, recorded under the rule in CLAUDE.md. The lead plate's
-muted tone — its kicker, the two facts in its foot, and the paragraph it opens
-into — measures **3.48:1**
-against the petrol, under the 4.5:1 floor and above the 3:1 hard floor. It is
-deliberate and it is structural rather than careless: the plate is one of the
-nine, and cream `#f3ecda` on `#2f6a63` tops out at 5.30:1 at full opacity, so
-there is 0.8 of room above the floor and nothing to mute into. Clearing 4.5:1
-needs 0.89 alpha, which is not a muted tone, it is the ink.
+No contrast departure, and it is worth saying what removed it rather than
+leaving the section out. The lead plate's muted tone — its kicker, the two
+facts in its foot, and the paragraph it opens into — measured **3.48:1** on
+`#2f6a63`, recorded here as a departure under the rule in CLAUDE.md. The
+argument for keeping it was that the plate was one of the nine and that cream
+`#f3ecda` on that petrol tops out at 5.30:1 at full opacity, so there was
+nothing to mute into. That argument died with the nine: the plate is now just
+the plate, free to be whatever depth it wants. It is `#1f4a47`, the value that
+note already named as the way out, and every text node in the component clears
+AA in both themes — worst 4.74:1, measured by computed colour.
 
-The honest cost: "500 × 700 mm" and "300gsm rag" are said nowhere else, so
-this is a real departure rather than an ornamental repeat, and a darker plate
-would remove it — `#1f4a47` carries the same muting at 5.00:1. It was kept
-because the plate being one of the nine is the decision the whole ink strip
-rests on. Everything else in the component clears AA in both themes; the
-figures reach 14.11:1.
+Worth keeping as a lesson rather than as a departure: the ceiling was set when
+the plate was chosen, several steps before any type went on it, and it was
+only payable because the thing that fixed the plate in place was a decision
+elsewhere. Remove the constraint and the departure is not a trade any more, it
+is just a darker green.
 
-Inspiration: Tal R — the colour register only. Flat unlit fields, forms drawn
-rather than traced, and colours set next to each other that are not trying to
-get along. None of his compositions are here and the arrangement is this
-study's own; what was taken is the refusal to shade anything.
+Inspiration: none — original design. It carried a Tal R line for two rounds,
+for the nine-colour register and the refusal to shade anything, and half of
+that is gone: what is left is flat unlit colour, which is common property and
+not a debt. The arrangement was always this study's own.

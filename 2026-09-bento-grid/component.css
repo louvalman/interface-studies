@@ -31,7 +31,7 @@
   /* The row has to clear the tallest stack of things in a tile that CANNOT
      shrink. At one column every tile is full width and so takes the wide
      composition: label, a two-line aside and a figure is about 99px of content
-     in a tile that used to offer 76, and the screen's three bands will not go
+     in a tile that used to offer 76, and the ladder's four rungs will not go
      below 130px however little room they are given. The floor was 7rem and
      that is where all of it came from.
 
@@ -63,30 +63,26 @@
   --bento-grid-shadow: 0 1px 0 rgba(29, 26, 22, 0.05);
   --bento-grid-shadow-lift: 0 5px 0 rgba(29, 26, 22, 0.14);
 
-  /* The nine. Flat and unlit — no gradient, no tint, no shadow on any of
-     them. Adjacent pairs are meant to disagree slightly; that is the whole
-     register, and softening one to make it sit better takes it out. */
-  --bento-grid-c1: #c1493a;
-  --bento-grid-c2: #e0a136;
-  --bento-grid-c3: #7c8b39;
-  --bento-grid-c4: #2f6a63;
-  --bento-grid-c5: #474080;
-  --bento-grid-c6: #a5487c;
-  --bento-grid-c7: #dd8a70;
-  --bento-grid-c8: #2b2925;
-  --bento-grid-c9: #e9dcbf;
+  /* One plate, one accent, and nothing else coloured. This was nine flat
+     fields — a register meant to disagree with itself — and the count is
+     what was wrong with it rather than any of the values: laid out beside the
+     other studies at thumbnail size it was the only polychrome thing in the
+     set, and it read as a swatch chart before it read as an arrangement. A
+     board of twelve cells has enough going on without nine colours arguing
+     across it, and the accent does more work as the only one.
 
-  /* The lead tile is a plate of one of them rather than a surface. */
-  --bento-grid-plate: var(--bento-grid-c4);
+     Flat and unlit still holds, which is the half worth keeping: no gradient,
+     no tint, no shadow on the plate or the accent. */
+  --bento-grid-plate: #1f4a47;
   --bento-grid-plate-ink: #f3ecda;
   --bento-grid-plate-line: rgba(29, 26, 22, 0.38);
+  --bento-grid-accent: #c1493a;
 
   /* The two values drawn in device pixels rather than layout ones, pulled out
      because something rendering this shrunk — a thumbnail scaled to 0.7 — has
      to be able to hand them back. A hairline asked for at 1px and rasterised
      at 0.7 of one stops being antialiased and starts being a smear. */
   --bento-grid-line-weight: 1px;
-  --bento-grid-band-weight: 1px;
 
   /* Type. Three sizes and nothing between them. */
   --bento-grid-font: system-ui, sans-serif;
@@ -109,26 +105,21 @@
 
   /* The specimens inside a tile. Small, but a size is a size. */
   --bento-grid-field-min: 4rem;
-  --bento-grid-strip-h: 1.75rem;
-  --bento-grid-mark-size: 3rem;
+  --bento-grid-mark-size: 3.25rem;
   --bento-grid-specimen-gap: 0.5rem;
   --bento-grid-specimen-label-gap: 0.3rem;
   --bento-grid-specimen-min: 1.25rem;
   --bento-grid-tile-gap: 0.625rem;
   --bento-grid-foot-gap: 0.5rem;
-  --bento-grid-band-coarse: 9px;
-  --bento-grid-band-medium: 5px;
-  --bento-grid-band-fine: 3px;
-  /* Screen angles, and they are the reason the three bands are not the same
-     drawing at three sizes. Two drums screened at the same angle beat against
-     each other and the overlap moirés; offsetting them by 30° is what
-     stops it, which is why a press has an angle per colour rather than one it
-     likes. 15/45/75 is the classic set minus yellow's 0° — a band at 0°
-     would be horizontal rules, and horizontal rules in a tile full of
-     horizontal type read as ruled lines rather than as a screen. */
-  --bento-grid-angle-coarse: 15deg;
-  --bento-grid-angle-medium: 45deg;
-  --bento-grid-angle-fine: 75deg;
+  /* The cell, which is the one drawing primitive in the component. Every
+     diagram on the board — the lead's mini-board, the span tile's two rows,
+     the ladder's four rungs — is a row of these, some filled. One primitive
+     rather than three pictures is the point: the tiles are talking about the
+     same twelve cells they are sitting in. */
+  --bento-grid-cell-h: 0.875rem;
+  --bento-grid-cell-gap: 0.1875rem;
+  --bento-grid-cell-off: rgba(29, 26, 22, 0.12);
+  --bento-grid-cell-mid: rgba(29, 26, 22, 0.3);
 
   /* The two slot thresholds. See the container queries at the foot of the
      file for why they are content-box figures rather than tile widths. */
@@ -347,7 +338,7 @@
      Refusing to shrink instead put half the tiles into a scroll bar.
 
      But a <summary> does not clip, so a box shrunk under its content spills
-     it rather than hiding it — which is what drew the screen's bands straight
+     it rather than hiding it — which is what drew the ladder's rungs straight
      through the paragraph below them. So: shrink, and clip. The clip is a
      guarantee that a tile can never draw outside itself, not a licence to
      overfill one; the row height below is sized so nothing reaches it. */
@@ -481,13 +472,19 @@
   --bento-grid-muted: rgba(243, 236, 218, 0.7);
   --bento-grid-line: var(--bento-grid-plate-line);
   --bento-grid-sheen: rgba(255, 255, 255, 0.1);
+  /* An unfilled cell is a tint of the ink everywhere else in the component,
+     and on the plate that ink is the plate's own dark — so the tint would be
+     a darker petrol on petrol, which is a hole rather than an empty track.
+     Off the plate it goes the other way. */
+  --bento-grid-cell-off: rgba(243, 236, 218, 0.22);
+  --bento-grid-cell-mid: rgba(243, 236, 218, 0.52);
   background: var(--bento-grid-plate);
   border-color: var(--bento-grid-plate-line);
 }
 
-/* The drawn field: flat shapes on a flat ground, no gradient anywhere in it.
-   It is the one tile carrying an image, and it is drawn rather than
-   photographed so it re-tones with the nine above. */
+/* The drawn field: the board's own twelve cells, at the size you can read
+   them. Flat, no gradient anywhere in it, and drawn from the same two tokens
+   as everything else, so re-theming the component re-themes the diagram. */
 .bento-grid__field {
   display: block;
   width: 100%;
@@ -504,48 +501,67 @@
   margin-block: var(--bento-grid-tile-gap);
 }
 
-/* --- the ink strip ------------------------------------------------------ */
+/* --- the cell, and every diagram made of it ------------------------------ */
 
-/* Nine flat fields, flush. The join is the point: on press these are laid over
-   one another, so a gap would turn an overprint into nine separate swatches. */
-.bento-grid__inks {
+/* A row of cells, some filled. `--n` is how many the row holds, set by a
+   modifier rather than an inline style so component.html stays markup. The
+   cells are flush-gapped rather than flush: these are drawings of tracks in a
+   grid, and a grid has gutters. */
+.bento-grid__cells {
   display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(0, 1fr);
+  grid-template-columns: repeat(var(--bento-grid-n, 4), minmax(0, 1fr));
+  gap: var(--bento-grid-cell-gap);
   flex: none;
-  height: var(--bento-grid-strip-h);
-  border-radius: calc(var(--bento-grid-radius) / 2);
-  overflow: hidden;
 }
 
-.bento-grid__swatch { background: var(--bento-grid-swatch); }
+.bento-grid__cells--n4 { --bento-grid-n: 4; }
+.bento-grid__cells--n3 { --bento-grid-n: 3; }
+.bento-grid__cells--n2 { --bento-grid-n: 2; }
+.bento-grid__cells--n1 { --bento-grid-n: 1; }
 
-.bento-grid__swatch:nth-child(1) { --bento-grid-swatch: var(--bento-grid-c1); }
-.bento-grid__swatch:nth-child(2) { --bento-grid-swatch: var(--bento-grid-c2); }
-.bento-grid__swatch:nth-child(3) { --bento-grid-swatch: var(--bento-grid-c3); }
-.bento-grid__swatch:nth-child(4) { --bento-grid-swatch: var(--bento-grid-c4); }
-/* The cream sits fifth rather than ninth. Last, it is 1.6 OKL off the chalk
-   the tile is made of and the strip read as though it had been cut short;
-   inboard it reads as one of the nine, which is what it is. */
-.bento-grid__swatch:nth-child(5) { --bento-grid-swatch: var(--bento-grid-c9); }
-.bento-grid__swatch:nth-child(6) { --bento-grid-swatch: var(--bento-grid-c5); }
-.bento-grid__swatch:nth-child(7) { --bento-grid-swatch: var(--bento-grid-c6); }
-.bento-grid__swatch:nth-child(8) { --bento-grid-swatch: var(--bento-grid-c7); }
-.bento-grid__swatch:nth-child(9) { --bento-grid-swatch: var(--bento-grid-c8); }
+.bento-grid__cell {
+  /* A height, not a min-height. The rung it sits in is a `1fr` share of
+     whatever the tile has spare, and a cell that stretches into that share
+     stops being a cell and becomes a bar: measured in a 1x2 tile, four rungs
+     of 14px cells came out 106px tall each. The rungs still divide the room
+     evenly; the cells just sit at the top of their own. */
+  height: var(--bento-grid-cell-h);
+  border-radius: calc(var(--bento-grid-radius) / 3);
+  background: var(--bento-grid-cell-off);
+}
 
-/* --- the screen bands --------------------------------------------------- */
+/* The one coloured thing in the component, and it is always the same thing:
+   the cells a tile is actually occupying. */
+.bento-grid__cell--on { background: var(--bento-grid-accent); }
 
-.bento-grid__screen {
+/* A tile that is neither the lead nor a unit — the 2x1 and the 1x2. Drawn
+   between the two so a mini-board has the same three weights the real one
+   has. */
+.bento-grid__cell--mid { background: var(--bento-grid-cell-mid); }
+
+/* A cell that wants two columns and is being clamped to what the row has.
+   Dashed on the side that was cut, which is the whole of the span tile's
+   argument drawn rather than described. */
+.bento-grid__cell--wide { grid-column: span min(2, var(--bento-grid-n, 4)); }
+
+.bento-grid__cell--cut {
+  background: transparent;
+  border: var(--bento-grid-line-weight) dashed var(--bento-grid-accent);
+}
+
+/* --- the ladder --------------------------------------------------------- */
+
+.bento-grid__ladder {
   display: grid;
   gap: var(--bento-grid-specimen-gap);
   flex: 1;
 
   /* `minmax(min-content, 1fr)`, not `minmax(0, 1fr)`, and no `min-height: 0`
-     on the block. Three equal shares of whatever the tile has left is right
-     while there IS anything left — but opened, this tile's panel also carries
-     an aside and a detail, and the screen was what paid for them: measured with
-     every tile open, all three rows resolved to a height of exactly 0 while
-     their bands stayed 20px, so the labels and the bands drew on top of each
+     on the block. Equal shares of whatever the tile has left is right while
+     there IS anything left — but opened, this tile's panel also carries an
+     aside and a detail, and the ladder is what paid for them: measured with
+     every tile open, all four rows resolved to a height of exactly 0 while
+     their cells stayed 14px, so the labels and the cells drew on top of each
      other and straight through the paragraph below.
 
      A 1fr row that is allowed to reach zero will, the moment anything else in
@@ -557,41 +573,23 @@
   grid-auto-rows: minmax(min-content, 1fr);
 }
 
-.bento-grid__screen-row {
+/* The span tile is a 2x1 — wide and one row tall — and stacking its two
+   rows in it overflowed the face by 8px at every board width, measured: a
+   label, an aside, and two labelled rows do not fit in 128px. Laid across, the
+   comparison uses the shape the tile actually has, and the two states sit side
+   by side, which is what a comparison wants anyway. */
+.bento-grid__ladder--across {
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  column-gap: var(--bento-grid-tile-gap);
+}
+
+.bento-grid__ladder-row {
   display: grid;
-  /* Same floor, for the same reason: the band is the specimen. */
+  /* Same floor, for the same reason: the cells are the specimen. */
   grid-template-rows: auto minmax(min-content, 1fr);
   gap: var(--bento-grid-specimen-label-gap);
-}
-
-.bento-grid__band {
-  --bento-grid-band-ink: var(--bento-grid-c8);
-  min-height: var(--bento-grid-specimen-min);
-  border-radius: calc(var(--bento-grid-radius) / 3);
-  background-color: var(--bento-grid-c9);
-  background-image: repeating-linear-gradient(
-    var(--bento-grid-band-angle),
-    var(--bento-grid-band-ink) 0 var(--bento-grid-band-weight),
-    transparent var(--bento-grid-band-weight) var(--bento-grid-band-pitch)
-  );
-}
-
-.bento-grid__band--coarse {
-  --bento-grid-band-pitch: var(--bento-grid-band-coarse);
-  --bento-grid-band-angle: var(--bento-grid-angle-coarse);
-  --bento-grid-band-ink: var(--bento-grid-c1);
-}
-
-.bento-grid__band--medium {
-  --bento-grid-band-pitch: var(--bento-grid-band-medium);
-  --bento-grid-band-angle: var(--bento-grid-angle-medium);
-  --bento-grid-band-ink: var(--bento-grid-c4);
-}
-
-.bento-grid__band--fine {
-  --bento-grid-band-pitch: var(--bento-grid-band-fine);
-  --bento-grid-band-angle: var(--bento-grid-angle-fine);
-  --bento-grid-band-ink: var(--bento-grid-c5);
+  align-content: start;
 }
 
 /* --- the register mark -------------------------------------------------- */
@@ -658,14 +656,8 @@
   text-wrap: pretty;
 }
 
-/* The last five fields of the ink strip, which a narrow slot cannot show
-   without each one becoming a stripe. Four reads as a palette; nine at 14px
-   each reads as noise. */
-.bento-grid__swatch:nth-child(n + 5) { display: none; }
-
 @container bento-grid-tile (min-width: 16rem) {
   .bento-grid__aside { display: block; }
-  .bento-grid__swatch:nth-child(n + 5) { display: block; }
 }
 
 /* A floor under the above, and it is the board's question rather than the
@@ -687,7 +679,7 @@
      tile, one of them bigger. A stat tile given four times the area should
      become a stat tile, so the figure nearly doubles. */
   .bento-grid__figure { font-size: calc(var(--bento-grid-figure-size) * 1.9); }
-  .bento-grid__inks { height: calc(var(--bento-grid-strip-h) * 1.6); }
+  .bento-grid__cell { min-height: calc(var(--bento-grid-cell-h) * 1.5); }
 }
 
 /* --- the ladder, stepped ------------------------------------------------ */
