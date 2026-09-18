@@ -2,8 +2,11 @@
 
 This repo is Interface Studies: interface components built in code and kept as
 self-contained studies, so the decisions behind each one stay legible and it
-survives being copied out on its own. Some start from an interface found
-elsewhere; others are built from scratch against original Figma designs.
+survives being copied out on its own. A study is an argument about a handful of
+decisions — a type scale, a border treatment, how a thing behaves when you
+reach for it — worked out at the size where they can be seen. Several are
+designed here from nothing; several take a technique noticed in someone else's
+work and do something of their own with it.
 
 Read these rules before adding to or editing anything in this repo.
 
@@ -24,13 +27,12 @@ Every study lives in its own folder, named `YYYY-MM-slug`:
 `component.js` is allowed as a seventh file, but only under the conditions in
 **JavaScript** below.
 
-`ref.png` is the one that may be missing. A study built from an original
-design has nothing to reference and keeps `_template/`'s placeholder — two
-do. And a reference that carries someone else's brand whole is not ours to
-redistribute once the repo is public: `2026-09-raster-pulse`'s is gitignored
-and was purged from the history, so that folder holds five files and no
-reference image. The `Inspiration:` line at the bottom of its `notes.md` is
-what records where the build came from, which is the part a reader needs.
+`ref.png` is the one that may be missing, and two studies have no use for
+one. Where a reference exists it is a working record rather than part of the
+study, so a folder can also go without it deliberately:
+`2026-09-raster-pulse`'s carried a whole brand and is gitignored and purged,
+leaving five files. The `Inspiration:` line at the bottom of a `notes.md` is
+where provenance lives either way.
 
 `_template/` holds a stubbed, commented copy of these files. Copy it when
 starting a new study.
@@ -77,14 +79,18 @@ itself a decision — a construction that was changed on purpose, a mechanism th
 reference has that this one does not — and name it in a bullet, where the other
 decisions are.
 
-## Extraction, not pixel-matching
+## Where a study starts from someone else's work
 
-The standing rule, and it does not need restating per study. When a reference
-comes from someone else's interface, take the handful of decisions that make it
-work and leave its content and its branding — the copy, the logo, the product
-name, the photography are not what is being captured. A version that is 80%
-visually faithful but isolates the right four decisions is correct. A
-pixel-perfect clone carrying someone else's brand is not.
+Most of what follows is about building a component well, and applies whatever
+gave you the idea. This section is the exception: it covers only the studies
+that began from an interface seen elsewhere, and it is the standing rule for
+them, stated once here and not restated per study.
+
+Take the handful of decisions that make the thing work and leave its content
+and its branding — the copy, the logo, the product name, the photography are
+not what is being captured. A version that is 80% visually faithful but
+isolates the right four decisions is correct. A pixel-perfect clone carrying
+someone else's brand is not.
 
 The bar is higher than swapping the palette. If the item set, the lockup, the
 silhouette and the sample copy all still map one-to-one onto the reference,
@@ -93,9 +99,6 @@ copied along with everything else, which is the failure this rule exists to
 prevent. Take the construction and then have an opinion of your own with it:
 change what the component is *for*, what it is made of, or how it behaves, and
 let the borrowed part be the technique rather than the object.
-
-A component built from an original design has no such constraint: build what
-the design specifies.
 
 ## `type:` scopes the output
 
