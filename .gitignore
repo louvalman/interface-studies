@@ -60,3 +60,8 @@ __pycache__/
 # part a reader needs. Nothing links ref.png in any case: the index and every
 # demo page show preview.html, the live component.
 2026-09-raster-pulse/ref.png
+
+# Skills are personal, not repo content. A skill installed to the account is
+# available in every session and every repo — putting one here would scope it
+# to this project and publish it with the code.
+.claude/skills/
