@@ -1414,6 +1414,13 @@ that says what was wrong, what was measured, and what was decided. The same
 register `notes.md` uses, for the same reason. A subject that names a file and
 a verb describes the diff, which the diff already does.
 
+Proportionately, though. A wording change, a renamed example, a trimmed
+paragraph — those get a subject line and stop. The reasoning is owed where
+someone would otherwise have to work out why, not on every edit. And the
+message says what changed, never who it is for: the log is published, and one
+that reads as though it were written to impress whoever is browsing is worse
+than one that is merely terse.
+
 **A pull request leaves a ref that outlives everything.** GitHub writes
 `refs/pull/N/head` for every pull request ever opened, and it is immutable: it
 survives the branch being deleted, `git push --delete` cannot reach it, and a
