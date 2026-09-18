@@ -31,14 +31,14 @@
   /* The row has to clear the tallest stack of things in a tile that CANNOT
      shrink. At one column every tile is full width and so takes the wide
      composition: label, a two-line aside and a figure is about 99px of content
-     in a tile that used to offer 76, and the weave's three bands will not go
+     in a tile that used to offer 76, and the screen's three bands will not go
      below 130px however little room they are given. The floor was 7rem and
      that is where all of it came from.
 
      Set from the measurement rather than by eye. A tile's face gets the row
      less 48px — two for the border, 36 for the panel's padding, ten for the
      panel's gap to its own closed details — and the tallest thing any face has
-     to hold is the motif tile at 117px: an 11px label, a two-line 38px aside,
+     to hold is the mark tile at 117px: an 11px label, a two-line 38px aside,
      a 48px mark and two 10px gaps. 176px is the first round figure that clears
      it. Every earlier value clipped something: at 7rem, six tiles; at 9rem,
      four; and the failures were small and quiet, 2 to 37 pixels, which is the
@@ -110,7 +110,7 @@
   /* The specimens inside a tile. Small, but a size is a size. */
   --bento-grid-field-min: 4rem;
   --bento-grid-strip-h: 1.75rem;
-  --bento-grid-motif-size: 3rem;
+  --bento-grid-mark-size: 3rem;
   --bento-grid-specimen-gap: 0.5rem;
   --bento-grid-specimen-label-gap: 0.3rem;
   --bento-grid-specimen-min: 1.25rem;
@@ -119,6 +119,16 @@
   --bento-grid-band-coarse: 9px;
   --bento-grid-band-medium: 5px;
   --bento-grid-band-fine: 3px;
+  /* Screen angles, and they are the reason the three bands are not the same
+     drawing at three sizes. Two drums screened at the same angle beat against
+     each other and the overlap moirés; offsetting them by 30° is what
+     stops it, which is why a press has an angle per colour rather than one it
+     likes. 15/45/75 is the classic set minus yellow's 0° — a band at 0°
+     would be horizontal rules, and horizontal rules in a tile full of
+     horizontal type read as ruled lines rather than as a screen. */
+  --bento-grid-angle-coarse: 15deg;
+  --bento-grid-angle-medium: 45deg;
+  --bento-grid-angle-fine: 75deg;
 
   /* The two slot thresholds. See the container queries at the foot of the
      file for why they are content-box figures rather than tile widths. */
@@ -337,7 +347,7 @@
      Refusing to shrink instead put half the tiles into a scroll bar.
 
      But a <summary> does not clip, so a box shrunk under its content spills
-     it rather than hiding it — which is what drew the weave's bands straight
+     it rather than hiding it — which is what drew the screen's bands straight
      through the paragraph below them. So: shrink, and clip. The clip is a
      guarantee that a tile can never draw outside itself, not a licence to
      overfill one; the row height below is sized so nothing reaches it. */
@@ -487,18 +497,18 @@
   /* NOT `min-height: 0`. As a flex child with `flex: 1` and nothing to stop it,
      the field is the one element in the tile that will shrink all the way to
      nothing to make room for the type — and it did: at a 480px frame the hero
-     kept its label, title, meta and paragraph and drew no rug at all. The
+     kept its label, title, meta and paragraph and drew no print at all. The
      drawn field is what the lead tile is FOR, so it is the last thing that
      gives, not the first. */
   min-height: var(--bento-grid-field-min);
   margin-block: var(--bento-grid-tile-gap);
 }
 
-/* --- the colourway strip ------------------------------------------------ */
+/* --- the ink strip ------------------------------------------------------ */
 
-/* Nine flat fields, flush. The join is the point; a gap would turn a bolt of
-   colour into nine swatches. */
-.bento-grid__way {
+/* Nine flat fields, flush. The join is the point: on press these are laid over
+   one another, so a gap would turn an overprint into nine separate swatches. */
+.bento-grid__inks {
   display: grid;
   grid-auto-flow: column;
   grid-auto-columns: minmax(0, 1fr);
@@ -523,9 +533,9 @@
 .bento-grid__swatch:nth-child(8) { --bento-grid-swatch: var(--bento-grid-c7); }
 .bento-grid__swatch:nth-child(9) { --bento-grid-swatch: var(--bento-grid-c8); }
 
-/* --- the weave bands ---------------------------------------------------- */
+/* --- the screen bands --------------------------------------------------- */
 
-.bento-grid__weave {
+.bento-grid__screen {
   display: grid;
   gap: var(--bento-grid-specimen-gap);
   flex: 1;
@@ -533,7 +543,7 @@
   /* `minmax(min-content, 1fr)`, not `minmax(0, 1fr)`, and no `min-height: 0`
      on the block. Three equal shares of whatever the tile has left is right
      while there IS anything left — but opened, this tile's panel also carries
-     an aside and a detail, and the weave was what paid for them: measured with
+     an aside and a detail, and the screen was what paid for them: measured with
      every tile open, all three rows resolved to a height of exactly 0 while
      their bands stayed 20px, so the labels and the bands drew on top of each
      other and straight through the paragraph below.
@@ -541,13 +551,13 @@
      A 1fr row that is allowed to reach zero will, the moment anything else in
      the tile wants the room. The floor is what stops it; the panel scrolls
      instead, which is what its overflow is for. Third time this shape of bug
-     has turned up in this file — the drawn field, the motif, and now these —
+     has turned up in this file — the drawn field, the mark, and now these —
      and it is always the same one: a flex or grid child with no floor is the
      thing that pays for the type. */
   grid-auto-rows: minmax(min-content, 1fr);
 }
 
-.bento-grid__weave-row {
+.bento-grid__screen-row {
   display: grid;
   /* Same floor, for the same reason: the band is the specimen. */
   grid-template-rows: auto minmax(min-content, 1fr);
@@ -560,28 +570,42 @@
   border-radius: calc(var(--bento-grid-radius) / 3);
   background-color: var(--bento-grid-c9);
   background-image: repeating-linear-gradient(
-    90deg,
+    var(--bento-grid-band-angle),
     var(--bento-grid-band-ink) 0 var(--bento-grid-band-weight),
     transparent var(--bento-grid-band-weight) var(--bento-grid-band-pitch)
   );
 }
 
-.bento-grid__band--coarse { --bento-grid-band-pitch: var(--bento-grid-band-coarse); --bento-grid-band-ink: var(--bento-grid-c1); }
-.bento-grid__band--medium { --bento-grid-band-pitch: var(--bento-grid-band-medium); --bento-grid-band-ink: var(--bento-grid-c4); }
-.bento-grid__band--fine   { --bento-grid-band-pitch: var(--bento-grid-band-fine);   --bento-grid-band-ink: var(--bento-grid-c5); }
+.bento-grid__band--coarse {
+  --bento-grid-band-pitch: var(--bento-grid-band-coarse);
+  --bento-grid-band-angle: var(--bento-grid-angle-coarse);
+  --bento-grid-band-ink: var(--bento-grid-c1);
+}
 
-/* --- the motif ---------------------------------------------------------- */
+.bento-grid__band--medium {
+  --bento-grid-band-pitch: var(--bento-grid-band-medium);
+  --bento-grid-band-angle: var(--bento-grid-angle-medium);
+  --bento-grid-band-ink: var(--bento-grid-c4);
+}
 
-.bento-grid__motif {
+.bento-grid__band--fine {
+  --bento-grid-band-pitch: var(--bento-grid-band-fine);
+  --bento-grid-band-angle: var(--bento-grid-angle-fine);
+  --bento-grid-band-ink: var(--bento-grid-c5);
+}
+
+/* --- the register mark -------------------------------------------------- */
+
+.bento-grid__mark {
   display: block;
   width: 100%;
-  max-width: var(--bento-grid-motif-size);
+  max-width: var(--bento-grid-mark-size);
   height: auto;
   margin: auto;
   /* Same trap the drawn field fell into: as a flex child it shrinks below its
      own aspect-ratio height to make room for the type, and in a slot wide
      enough to show the aside it had collapsed from 64px to about 20px. The
-     motif is the tile's subject, so it does not pay for the sentence. */
+     mark is the tile's subject, so it does not pay for the sentence. */
   flex: none;
 }
 
@@ -634,8 +658,8 @@
   text-wrap: pretty;
 }
 
-/* The last five fields of the colourway, which a narrow slot cannot show
-   without each one becoming a stripe. Four reads as a colourway; nine at 14px
+/* The last five fields of the ink strip, which a narrow slot cannot show
+   without each one becoming a stripe. Four reads as a palette; nine at 14px
    each reads as noise. */
 .bento-grid__swatch:nth-child(n + 5) { display: none; }
 
@@ -663,7 +687,7 @@
      tile, one of them bigger. A stat tile given four times the area should
      become a stat tile, so the figure nearly doubles. */
   .bento-grid__figure { font-size: calc(var(--bento-grid-figure-size) * 1.9); }
-  .bento-grid__way { height: calc(var(--bento-grid-strip-h) * 1.6); }
+  .bento-grid__inks { height: calc(var(--bento-grid-strip-h) * 1.6); }
 }
 
 /* --- the ladder, stepped ------------------------------------------------ */

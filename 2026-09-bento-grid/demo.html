@@ -632,42 +632,42 @@
               <details class="bento-grid__panel">
                 <summary class="bento-grid__face">
                   <span class="bento-grid__cue" aria-hidden="true"></span>
-                  <p class="bento-grid__label">Edition 04 &middot; hand-knotted</p>
-                  <h3 class="bento-grid__title">Nine colours that argue</h3>
+                  <p class="bento-grid__label">Edition 04 &middot; risograph</p>
+                  <h3 class="bento-grid__title">Nine colours from six drums</h3>
                   <svg
                     class="bento-grid__field"
                     viewBox="0 0 220 120"
                     preserveAspectRatio="xMidYMid meet"
                     role="img"
-                    aria-label="The woven field: a cream ground inside a striped border, carrying a brick disc, an ochre stepped diamond and two olive bars.">
+                    aria-label="The printed field: a brick disc and an olive block on cream paper, overprinting to a third colour where they meet, with one drum landing a few millimetres off register.">
                     <rect x="0" y="0" width="220" height="120" fill="var(--bento-grid-c9)" />
-                    <g fill="var(--bento-grid-c8)">
-                      <rect x="0" y="0" width="220" height="7" />
-                      <rect x="0" y="113" width="220" height="7" />
-                    </g>
                     <g fill="var(--bento-grid-c2)">
-                      <rect x="10" y="14" width="8" height="92" />
-                      <rect x="26" y="14" width="8" height="92" />
-                      <rect x="186" y="14" width="8" height="92" />
-                      <rect x="202" y="14" width="8" height="92" />
+                      <rect x="30" y="18" width="78" height="8" />
+                      <rect x="30" y="94" width="78" height="8" />
                     </g>
-                    <circle cx="78" cy="60" r="30" fill="var(--bento-grid-c1)" />
-                    <path d="M148 30 L172 60 L148 90 L124 60 Z" fill="var(--bento-grid-c5)" />
-                    <path d="M148 44 L160 60 L148 76 L136 60 Z" fill="var(--bento-grid-c2)" />
-                    <g fill="var(--bento-grid-c3)">
-                      <rect x="48" y="16" width="60" height="9" />
-                      <rect x="48" y="95" width="60" height="9" />
-                    </g>
-                    <circle cx="78" cy="60" r="11" fill="var(--bento-grid-c6)" />
+                    <circle cx="80" cy="60" r="34" fill="var(--bento-grid-c1)" />
+                    <rect x="88" y="26" width="86" height="68" fill="var(--bento-grid-c3)" />
+                    <!-- The lens where the disc and the block overlap, drawn rather than
+                         blended: mix-blend-mode would make the drawing depend on whatever
+                         ground it lands on, and this component is copied out. No clipPath
+                         either — this markup appears five times across the folder's pages,
+                         and an id would be five ids. -->
+                    <path d="M88 26.95 A34 34 0 0 1 88 93.05 Z" fill="var(--bento-grid-c6)" />
+                    <!-- One drum landing short of the mark. It is the thing a risograph is
+                         recognised by before any of its colours are, and it is the reason the
+                         trim carries a register target at all — see the Mark tile. -->
+                    <rect x="82" y="21" width="86" height="68" fill="none"
+                          stroke="var(--bento-grid-c5)" stroke-width="2.5" />
                   </svg>
                   <div class="bento-grid__foot">
-                    <p class="bento-grid__meta">200 &times; 300 cm</p>
-                    <p class="bento-grid__meta">Gotland wool</p>
+                    <p class="bento-grid__meta">500 &times; 700 mm</p>
+                    <p class="bento-grid__meta">300gsm rag</p>
                   </div>
                 </summary>
                 <p class="bento-grid__detail">
-                  Knotted on a cotton warp over eleven weeks. The border is carried in
-                  two pitches so it reads as one band at a distance and as two up close.
+                  Six drums, two passes, and the overlaps are where the other three
+                  colours come from. Registration runs to a millimetre or so on this
+                  press, so no two sheets in the edition land quite the same.
                 </p>
               </details>
             </li>
@@ -676,12 +676,12 @@
               <details class="bento-grid__panel">
                 <summary class="bento-grid__face">
                   <span class="bento-grid__cue" aria-hidden="true"></span>
-                  <h3 class="bento-grid__label">Colourway</h3>
+                  <h3 class="bento-grid__label">Inks</h3>
                   <p class="bento-grid__aside">
-                    Dyed in one bath, so nothing quite matches and nothing quite
-                    clashes.
+                    Six drums laid one over another. Where two overlap you get a
+                    third, so the palette is larger than the press.
                   </p>
-                  <div class="bento-grid__way" role="img" aria-label="The nine colours of the edition, flush, brick through cream">
+                  <div class="bento-grid__inks" role="img" aria-label="The nine colours of the edition, flush, brick through cream">
                     <span class="bento-grid__swatch"></span>
                     <span class="bento-grid__swatch"></span>
                     <span class="bento-grid__swatch"></span>
@@ -693,16 +693,16 @@
                     <span class="bento-grid__swatch"></span>
                   </div>
                   <div class="bento-grid__foot">
-                    <p class="bento-grid__meta">9 fields</p>
-                    <p class="bento-grid__meta">One bath</p>
+                    <p class="bento-grid__meta">6 drums</p>
+                    <p class="bento-grid__meta">9 colours</p>
                   </div>
                 </summary>
                 <div class="bento-grid__detail">
                   Four of the nine show in a narrow slot; the rest arrive when there is
                   room to read them as colour rather than as stripes.
                   <dl>
-                    <dt>Lot</dt><dd>04&ndash;B</dd>
-                    <dt>Fastness</dt><dd>6 of 8</dd>
+                    <dt>Passes</dt><dd>2</dd>
+                    <dt>Tolerance</dt><dd>&plusmn; 1.5 mm</dd>
                   </dl>
                 </div>
               </details>
@@ -712,31 +712,31 @@
               <details class="bento-grid__panel">
                 <summary class="bento-grid__face">
                   <span class="bento-grid__cue" aria-hidden="true"></span>
-                  <h3 class="bento-grid__label">Weave</h3>
+                  <h3 class="bento-grid__label">Screen</h3>
                   <p class="bento-grid__aside">
-                    Three pitches in one field: the coarse rows carry the pattern, the
-                    fine ones carry the ground.
+                    Three rulings and three angles. The angle is what keeps two drums
+                    from beating against each other where they overlap.
                   </p>
-                  <div class="bento-grid__weave">
-                    <div class="bento-grid__weave-row">
+                  <div class="bento-grid__screen">
+                    <div class="bento-grid__screen-row">
                       <p class="bento-grid__meta">Coarse</p>
                       <div class="bento-grid__band bento-grid__band--coarse"></div>
                     </div>
-                    <div class="bento-grid__weave-row">
+                    <div class="bento-grid__screen-row">
                       <p class="bento-grid__meta">Medium</p>
                       <div class="bento-grid__band bento-grid__band--medium"></div>
                     </div>
-                    <div class="bento-grid__weave-row">
+                    <div class="bento-grid__screen-row">
                       <p class="bento-grid__meta">Fine</p>
                       <div class="bento-grid__band bento-grid__band--fine"></div>
                     </div>
                   </div>
                 </summary>
                 <div class="bento-grid__detail">
-                  Pitch is set at the loom and cannot be changed once the warp is on.
+                  Ruling is set on the drum and cannot be changed mid-run.
                   <dl>
-                    <dt>Warp</dt><dd>Cotton, 12/6</dd>
-                    <dt>Pile</dt><dd>11 mm</dd>
+                    <dt>Coarse</dt><dd>60 lpi, 15&deg;</dd>
+                    <dt>Fine</dt><dd>110 lpi, 75&deg;</dd>
                   </dl>
                 </div>
               </details>
@@ -746,19 +746,19 @@
               <details class="bento-grid__panel">
                 <summary class="bento-grid__face">
                   <span class="bento-grid__cue" aria-hidden="true"></span>
-                  <h3 class="bento-grid__label">Knots</h3>
+                  <h3 class="bento-grid__label">Ruling</h3>
                   <p class="bento-grid__aside">
-                    Counted across the ground, not the border, which runs denser.
+                    Measured on the ground, not the border, which is screened finer.
                   </p>
                   <div class="bento-grid__foot">
-                    <p class="bento-grid__figure">160</p>
-                    <p class="bento-grid__meta">per dm&sup2;</p>
+                    <p class="bento-grid__figure">85</p>
+                    <p class="bento-grid__meta">lines / inch</p>
                   </div>
                 </summary>
                 <div class="bento-grid__detail">
                   <dl>
-                    <dt>Ground</dt><dd>160 / dm&sup2;</dd>
-                    <dt>Border</dt><dd>190 / dm&sup2;</dd>
+                    <dt>Ground</dt><dd>85 lpi</dd>
+                    <dt>Border</dt><dd>110 lpi</dd>
                   </dl>
                 </div>
               </details>
@@ -768,23 +768,24 @@
               <details class="bento-grid__panel">
                 <summary class="bento-grid__face">
                   <span class="bento-grid__cue" aria-hidden="true"></span>
-                  <h3 class="bento-grid__label">Motif</h3>
+                  <h3 class="bento-grid__label">Mark</h3>
                   <p class="bento-grid__aside">
-                    The stepped diamond, repeated four times along the long edge.
+                    The register target, printed into the trim and cut away.
                   </p>
                   <svg
-                    class="bento-grid__motif"
+                    class="bento-grid__mark"
                     viewBox="0 0 48 48"
                     role="img"
-                    aria-label="A stepped diamond with a disc at its centre">
-                    <path d="M24 2 L46 24 L24 46 L2 24 Z" fill="var(--bento-grid-c5)" />
-                    <path d="M24 12 L36 24 L24 36 L12 24 Z" fill="var(--bento-grid-c2)" />
-                    <circle cx="24" cy="24" r="6" fill="var(--bento-grid-c1)" />
+                    aria-label="A register target: a ring quartered in two colours, with a light centre">
+                    <circle cx="24" cy="24" r="20" fill="var(--bento-grid-c5)" />
+                    <path d="M24 4 A20 20 0 0 1 44 24 L24 24 Z" fill="var(--bento-grid-c1)" />
+                    <path d="M24 44 A20 20 0 0 1 4 24 L24 24 Z" fill="var(--bento-grid-c1)" />
+                    <circle cx="24" cy="24" r="6" fill="var(--bento-grid-c9)" />
                   </svg>
                 </summary>
                 <div class="bento-grid__detail">
                   <dl>
-                    <dt>Repeat</dt><dd>4 &times;</dd>
+                    <dt>Printed</dt><dd>4 per sheet</dd>
                     <dt>Origin</dt><dd>Drawn, not traced</dd>
                   </dl>
                 </div>
@@ -795,19 +796,19 @@
               <details class="bento-grid__panel">
                 <summary class="bento-grid__face">
                   <span class="bento-grid__cue" aria-hidden="true"></span>
-                  <h3 class="bento-grid__label">Size</h3>
+                  <h3 class="bento-grid__label">Sheet</h3>
                   <p class="bento-grid__aside">
-                    Cut to the loom width; the length is where the edition varies.
+                    Cut to the drum width; the length is where the edition varies.
                   </p>
                   <div class="bento-grid__foot">
-                    <p class="bento-grid__figure">200</p>
-                    <p class="bento-grid__meta">&times; 300 cm</p>
+                    <p class="bento-grid__figure">500</p>
+                    <p class="bento-grid__meta">&times; 700 mm</p>
                   </div>
                 </summary>
                 <div class="bento-grid__detail">
                   <dl>
-                    <dt>Width</dt><dd>200 cm</dd>
-                    <dt>Length</dt><dd>280&ndash;310 cm</dd>
+                    <dt>Width</dt><dd>500 mm</dd>
+                    <dt>Length</dt><dd>690&ndash;710 mm</dd>
                   </dl>
                 </div>
               </details>
@@ -817,19 +818,19 @@
               <details class="bento-grid__panel">
                 <summary class="bento-grid__face">
                   <span class="bento-grid__cue" aria-hidden="true"></span>
-                  <h3 class="bento-grid__label">Wool</h3>
+                  <h3 class="bento-grid__label">Stock</h3>
                   <p class="bento-grid__aside">
-                    Undyed in the ground, so colour sits on grey, not white.
+                    Uncoated and warm, so the inks sit on cream rather than on white.
                   </p>
                   <div class="bento-grid__foot">
-                    <p class="bento-grid__figure">100</p>
-                    <p class="bento-grid__meta">% Gotland</p>
+                    <p class="bento-grid__figure">300</p>
+                    <p class="bento-grid__meta">gsm rag</p>
                   </div>
                 </summary>
                 <div class="bento-grid__detail">
                   <dl>
-                    <dt>Staple</dt><dd>90 mm</dd>
-                    <dt>Spun</dt><dd>2-ply, worsted</dd>
+                    <dt>Grain</dt><dd>Long</dd>
+                    <dt>Finish</dt><dd>Mould-made</dd>
                   </dl>
                 </div>
               </details>
@@ -847,19 +848,19 @@
               <details class="bento-grid__panel">
                 <summary class="bento-grid__face">
                   <span class="bento-grid__cue" aria-hidden="true"></span>
-                  <h3 class="bento-grid__label">Knots</h3>
+                  <h3 class="bento-grid__label">Ruling</h3>
                   <p class="bento-grid__aside">
-                    Counted across the ground, not the border, which runs denser.
+                    Measured on the ground, not the border, which is screened finer.
                   </p>
                   <div class="bento-grid__foot">
-                    <p class="bento-grid__figure">160</p>
-                    <p class="bento-grid__meta">per dm&sup2;</p>
+                    <p class="bento-grid__figure">85</p>
+                    <p class="bento-grid__meta">lines / inch</p>
                   </div>
                 </summary>
                 <div class="bento-grid__detail">
                   <dl>
-                    <dt>Ground</dt><dd>160 / dm&sup2;</dd>
-                    <dt>Border</dt><dd>190 / dm&sup2;</dd>
+                    <dt>Ground</dt><dd>85 lpi</dd>
+                    <dt>Border</dt><dd>110 lpi</dd>
                   </dl>
                 </div>
               </details>
@@ -868,19 +869,19 @@
               <details class="bento-grid__panel">
                 <summary class="bento-grid__face">
                   <span class="bento-grid__cue" aria-hidden="true"></span>
-                  <h3 class="bento-grid__label">Knots</h3>
+                  <h3 class="bento-grid__label">Ruling</h3>
                   <p class="bento-grid__aside">
-                    Counted across the ground, not the border, which runs denser.
+                    Measured on the ground, not the border, which is screened finer.
                   </p>
                   <div class="bento-grid__foot">
-                    <p class="bento-grid__figure">160</p>
-                    <p class="bento-grid__meta">per dm&sup2;</p>
+                    <p class="bento-grid__figure">85</p>
+                    <p class="bento-grid__meta">lines / inch</p>
                   </div>
                 </summary>
                 <div class="bento-grid__detail">
                   <dl>
-                    <dt>Ground</dt><dd>160 / dm&sup2;</dd>
-                    <dt>Border</dt><dd>190 / dm&sup2;</dd>
+                    <dt>Ground</dt><dd>85 lpi</dd>
+                    <dt>Border</dt><dd>110 lpi</dd>
                   </dl>
                 </div>
               </details>
@@ -889,19 +890,19 @@
               <details class="bento-grid__panel">
                 <summary class="bento-grid__face">
                   <span class="bento-grid__cue" aria-hidden="true"></span>
-                  <h3 class="bento-grid__label">Knots</h3>
+                  <h3 class="bento-grid__label">Ruling</h3>
                   <p class="bento-grid__aside">
-                    Counted across the ground, not the border, which runs denser.
+                    Measured on the ground, not the border, which is screened finer.
                   </p>
                   <div class="bento-grid__foot">
-                    <p class="bento-grid__figure">160</p>
-                    <p class="bento-grid__meta">per dm&sup2;</p>
+                    <p class="bento-grid__figure">85</p>
+                    <p class="bento-grid__meta">lines / inch</p>
                   </div>
                 </summary>
                 <div class="bento-grid__detail">
                   <dl>
-                    <dt>Ground</dt><dd>160 / dm&sup2;</dd>
-                    <dt>Border</dt><dd>190 / dm&sup2;</dd>
+                    <dt>Ground</dt><dd>85 lpi</dd>
+                    <dt>Border</dt><dd>110 lpi</dd>
                   </dl>
                 </div>
               </details>
@@ -923,42 +924,42 @@
                 <details class="bento-grid__panel">
                   <summary class="bento-grid__face">
                     <span class="bento-grid__cue" aria-hidden="true"></span>
-                    <p class="bento-grid__label">Edition 04 &middot; hand-knotted</p>
-                    <h3 class="bento-grid__title">Nine colours that argue</h3>
+                    <p class="bento-grid__label">Edition 04 &middot; risograph</p>
+                    <h3 class="bento-grid__title">Nine colours from six drums</h3>
                     <svg
                       class="bento-grid__field"
                       viewBox="0 0 220 120"
                       preserveAspectRatio="xMidYMid meet"
                       role="img"
-                      aria-label="The woven field: a cream ground inside a striped border, carrying a brick disc, an ochre stepped diamond and two olive bars.">
+                      aria-label="The printed field: a brick disc and an olive block on cream paper, overprinting to a third colour where they meet, with one drum landing a few millimetres off register.">
                       <rect x="0" y="0" width="220" height="120" fill="var(--bento-grid-c9)" />
-                      <g fill="var(--bento-grid-c8)">
-                        <rect x="0" y="0" width="220" height="7" />
-                        <rect x="0" y="113" width="220" height="7" />
-                      </g>
                       <g fill="var(--bento-grid-c2)">
-                        <rect x="10" y="14" width="8" height="92" />
-                        <rect x="26" y="14" width="8" height="92" />
-                        <rect x="186" y="14" width="8" height="92" />
-                        <rect x="202" y="14" width="8" height="92" />
+                        <rect x="30" y="18" width="78" height="8" />
+                        <rect x="30" y="94" width="78" height="8" />
                       </g>
-                      <circle cx="78" cy="60" r="30" fill="var(--bento-grid-c1)" />
-                      <path d="M148 30 L172 60 L148 90 L124 60 Z" fill="var(--bento-grid-c5)" />
-                      <path d="M148 44 L160 60 L148 76 L136 60 Z" fill="var(--bento-grid-c2)" />
-                      <g fill="var(--bento-grid-c3)">
-                        <rect x="48" y="16" width="60" height="9" />
-                        <rect x="48" y="95" width="60" height="9" />
-                      </g>
-                      <circle cx="78" cy="60" r="11" fill="var(--bento-grid-c6)" />
+                      <circle cx="80" cy="60" r="34" fill="var(--bento-grid-c1)" />
+                      <rect x="88" y="26" width="86" height="68" fill="var(--bento-grid-c3)" />
+                      <!-- The lens where the disc and the block overlap, drawn rather than
+                           blended: mix-blend-mode would make the drawing depend on whatever
+                           ground it lands on, and this component is copied out. No clipPath
+                           either — this markup appears five times across the folder's pages,
+                           and an id would be five ids. -->
+                      <path d="M88 26.95 A34 34 0 0 1 88 93.05 Z" fill="var(--bento-grid-c6)" />
+                      <!-- One drum landing short of the mark. It is the thing a risograph is
+                           recognised by before any of its colours are, and it is the reason the
+                           trim carries a register target at all — see the Mark tile. -->
+                      <rect x="82" y="21" width="86" height="68" fill="none"
+                            stroke="var(--bento-grid-c5)" stroke-width="2.5" />
                     </svg>
                     <div class="bento-grid__foot">
-                      <p class="bento-grid__meta">200 &times; 300 cm</p>
-                      <p class="bento-grid__meta">Gotland wool</p>
+                      <p class="bento-grid__meta">500 &times; 700 mm</p>
+                      <p class="bento-grid__meta">300gsm rag</p>
                     </div>
                   </summary>
                   <p class="bento-grid__detail">
-                    Knotted on a cotton warp over eleven weeks. The border is carried in
-                    two pitches so it reads as one band at a distance and as two up close.
+                    Six drums, two passes, and the overlaps are where the other three
+                    colours come from. Registration runs to a millimetre or so on this
+                    press, so no two sheets in the edition land quite the same.
                   </p>
                 </details>
               </li>
@@ -967,12 +968,12 @@
                 <details class="bento-grid__panel">
                   <summary class="bento-grid__face">
                     <span class="bento-grid__cue" aria-hidden="true"></span>
-                    <h3 class="bento-grid__label">Colourway</h3>
+                    <h3 class="bento-grid__label">Inks</h3>
                     <p class="bento-grid__aside">
-                      Dyed in one bath, so nothing quite matches and nothing quite
-                      clashes.
+                      Six drums laid one over another. Where two overlap you get a
+                      third, so the palette is larger than the press.
                     </p>
-                    <div class="bento-grid__way" role="img" aria-label="The nine colours of the edition, flush, brick through cream">
+                    <div class="bento-grid__inks" role="img" aria-label="The nine colours of the edition, flush, brick through cream">
                       <span class="bento-grid__swatch"></span>
                       <span class="bento-grid__swatch"></span>
                       <span class="bento-grid__swatch"></span>
@@ -984,16 +985,16 @@
                       <span class="bento-grid__swatch"></span>
                     </div>
                     <div class="bento-grid__foot">
-                      <p class="bento-grid__meta">9 fields</p>
-                      <p class="bento-grid__meta">One bath</p>
+                      <p class="bento-grid__meta">6 drums</p>
+                      <p class="bento-grid__meta">9 colours</p>
                     </div>
                   </summary>
                   <div class="bento-grid__detail">
                     Four of the nine show in a narrow slot; the rest arrive when there is
                     room to read them as colour rather than as stripes.
                     <dl>
-                      <dt>Lot</dt><dd>04&ndash;B</dd>
-                      <dt>Fastness</dt><dd>6 of 8</dd>
+                      <dt>Passes</dt><dd>2</dd>
+                      <dt>Tolerance</dt><dd>&plusmn; 1.5 mm</dd>
                     </dl>
                   </div>
                 </details>
@@ -1003,31 +1004,31 @@
                 <details class="bento-grid__panel">
                   <summary class="bento-grid__face">
                     <span class="bento-grid__cue" aria-hidden="true"></span>
-                    <h3 class="bento-grid__label">Weave</h3>
+                    <h3 class="bento-grid__label">Screen</h3>
                     <p class="bento-grid__aside">
-                      Three pitches in one field: the coarse rows carry the pattern, the
-                      fine ones carry the ground.
+                      Three rulings and three angles. The angle is what keeps two drums
+                      from beating against each other where they overlap.
                     </p>
-                    <div class="bento-grid__weave">
-                      <div class="bento-grid__weave-row">
+                    <div class="bento-grid__screen">
+                      <div class="bento-grid__screen-row">
                         <p class="bento-grid__meta">Coarse</p>
                         <div class="bento-grid__band bento-grid__band--coarse"></div>
                       </div>
-                      <div class="bento-grid__weave-row">
+                      <div class="bento-grid__screen-row">
                         <p class="bento-grid__meta">Medium</p>
                         <div class="bento-grid__band bento-grid__band--medium"></div>
                       </div>
-                      <div class="bento-grid__weave-row">
+                      <div class="bento-grid__screen-row">
                         <p class="bento-grid__meta">Fine</p>
                         <div class="bento-grid__band bento-grid__band--fine"></div>
                       </div>
                     </div>
                   </summary>
                   <div class="bento-grid__detail">
-                    Pitch is set at the loom and cannot be changed once the warp is on.
+                    Ruling is set on the drum and cannot be changed mid-run.
                     <dl>
-                      <dt>Warp</dt><dd>Cotton, 12/6</dd>
-                      <dt>Pile</dt><dd>11 mm</dd>
+                      <dt>Coarse</dt><dd>60 lpi, 15&deg;</dd>
+                      <dt>Fine</dt><dd>110 lpi, 75&deg;</dd>
                     </dl>
                   </div>
                 </details>
@@ -1037,19 +1038,19 @@
                 <details class="bento-grid__panel">
                   <summary class="bento-grid__face">
                     <span class="bento-grid__cue" aria-hidden="true"></span>
-                    <h3 class="bento-grid__label">Knots</h3>
+                    <h3 class="bento-grid__label">Ruling</h3>
                     <p class="bento-grid__aside">
-                      Counted across the ground, not the border, which runs denser.
+                      Measured on the ground, not the border, which is screened finer.
                     </p>
                     <div class="bento-grid__foot">
-                      <p class="bento-grid__figure">160</p>
-                      <p class="bento-grid__meta">per dm&sup2;</p>
+                      <p class="bento-grid__figure">85</p>
+                      <p class="bento-grid__meta">lines / inch</p>
                     </div>
                   </summary>
                   <div class="bento-grid__detail">
                     <dl>
-                      <dt>Ground</dt><dd>160 / dm&sup2;</dd>
-                      <dt>Border</dt><dd>190 / dm&sup2;</dd>
+                      <dt>Ground</dt><dd>85 lpi</dd>
+                      <dt>Border</dt><dd>110 lpi</dd>
                     </dl>
                   </div>
                 </details>
@@ -1059,23 +1060,24 @@
                 <details class="bento-grid__panel">
                   <summary class="bento-grid__face">
                     <span class="bento-grid__cue" aria-hidden="true"></span>
-                    <h3 class="bento-grid__label">Motif</h3>
+                    <h3 class="bento-grid__label">Mark</h3>
                     <p class="bento-grid__aside">
-                      The stepped diamond, repeated four times along the long edge.
+                      The register target, printed into the trim and cut away.
                     </p>
                     <svg
-                      class="bento-grid__motif"
+                      class="bento-grid__mark"
                       viewBox="0 0 48 48"
                       role="img"
-                      aria-label="A stepped diamond with a disc at its centre">
-                      <path d="M24 2 L46 24 L24 46 L2 24 Z" fill="var(--bento-grid-c5)" />
-                      <path d="M24 12 L36 24 L24 36 L12 24 Z" fill="var(--bento-grid-c2)" />
-                      <circle cx="24" cy="24" r="6" fill="var(--bento-grid-c1)" />
+                      aria-label="A register target: a ring quartered in two colours, with a light centre">
+                      <circle cx="24" cy="24" r="20" fill="var(--bento-grid-c5)" />
+                      <path d="M24 4 A20 20 0 0 1 44 24 L24 24 Z" fill="var(--bento-grid-c1)" />
+                      <path d="M24 44 A20 20 0 0 1 4 24 L24 24 Z" fill="var(--bento-grid-c1)" />
+                      <circle cx="24" cy="24" r="6" fill="var(--bento-grid-c9)" />
                     </svg>
                   </summary>
                   <div class="bento-grid__detail">
                     <dl>
-                      <dt>Repeat</dt><dd>4 &times;</dd>
+                      <dt>Printed</dt><dd>4 per sheet</dd>
                       <dt>Origin</dt><dd>Drawn, not traced</dd>
                     </dl>
                   </div>
@@ -1086,19 +1088,19 @@
                 <details class="bento-grid__panel">
                   <summary class="bento-grid__face">
                     <span class="bento-grid__cue" aria-hidden="true"></span>
-                    <h3 class="bento-grid__label">Size</h3>
+                    <h3 class="bento-grid__label">Sheet</h3>
                     <p class="bento-grid__aside">
-                      Cut to the loom width; the length is where the edition varies.
+                      Cut to the drum width; the length is where the edition varies.
                     </p>
                     <div class="bento-grid__foot">
-                      <p class="bento-grid__figure">200</p>
-                      <p class="bento-grid__meta">&times; 300 cm</p>
+                      <p class="bento-grid__figure">500</p>
+                      <p class="bento-grid__meta">&times; 700 mm</p>
                     </div>
                   </summary>
                   <div class="bento-grid__detail">
                     <dl>
-                      <dt>Width</dt><dd>200 cm</dd>
-                      <dt>Length</dt><dd>280&ndash;310 cm</dd>
+                      <dt>Width</dt><dd>500 mm</dd>
+                      <dt>Length</dt><dd>690&ndash;710 mm</dd>
                     </dl>
                   </div>
                 </details>
@@ -1108,19 +1110,19 @@
                 <details class="bento-grid__panel">
                   <summary class="bento-grid__face">
                     <span class="bento-grid__cue" aria-hidden="true"></span>
-                    <h3 class="bento-grid__label">Wool</h3>
+                    <h3 class="bento-grid__label">Stock</h3>
                     <p class="bento-grid__aside">
-                      Undyed in the ground, so colour sits on grey, not white.
+                      Uncoated and warm, so the inks sit on cream rather than on white.
                     </p>
                     <div class="bento-grid__foot">
-                      <p class="bento-grid__figure">100</p>
-                      <p class="bento-grid__meta">% Gotland</p>
+                      <p class="bento-grid__figure">300</p>
+                      <p class="bento-grid__meta">gsm rag</p>
                     </div>
                   </summary>
                   <div class="bento-grid__detail">
                     <dl>
-                      <dt>Staple</dt><dd>90 mm</dd>
-                      <dt>Spun</dt><dd>2-ply, worsted</dd>
+                      <dt>Grain</dt><dd>Long</dd>
+                      <dt>Finish</dt><dd>Mould-made</dd>
                     </dl>
                   </div>
                 </details>
@@ -1143,42 +1145,42 @@
               <details class="bento-grid__panel">
                 <summary class="bento-grid__face">
                   <span class="bento-grid__cue" aria-hidden="true"></span>
-                  <p class="bento-grid__label">Edition 04 &middot; hand-knotted</p>
-                  <h3 class="bento-grid__title">Nine colours that argue</h3>
+                  <p class="bento-grid__label">Edition 04 &middot; risograph</p>
+                  <h3 class="bento-grid__title">Nine colours from six drums</h3>
                   <svg
                     class="bento-grid__field"
                     viewBox="0 0 220 120"
                     preserveAspectRatio="xMidYMid meet"
                     role="img"
-                    aria-label="The woven field: a cream ground inside a striped border, carrying a brick disc, an ochre stepped diamond and two olive bars.">
+                    aria-label="The printed field: a brick disc and an olive block on cream paper, overprinting to a third colour where they meet, with one drum landing a few millimetres off register.">
                     <rect x="0" y="0" width="220" height="120" fill="var(--bento-grid-c9)" />
-                    <g fill="var(--bento-grid-c8)">
-                      <rect x="0" y="0" width="220" height="7" />
-                      <rect x="0" y="113" width="220" height="7" />
-                    </g>
                     <g fill="var(--bento-grid-c2)">
-                      <rect x="10" y="14" width="8" height="92" />
-                      <rect x="26" y="14" width="8" height="92" />
-                      <rect x="186" y="14" width="8" height="92" />
-                      <rect x="202" y="14" width="8" height="92" />
+                      <rect x="30" y="18" width="78" height="8" />
+                      <rect x="30" y="94" width="78" height="8" />
                     </g>
-                    <circle cx="78" cy="60" r="30" fill="var(--bento-grid-c1)" />
-                    <path d="M148 30 L172 60 L148 90 L124 60 Z" fill="var(--bento-grid-c5)" />
-                    <path d="M148 44 L160 60 L148 76 L136 60 Z" fill="var(--bento-grid-c2)" />
-                    <g fill="var(--bento-grid-c3)">
-                      <rect x="48" y="16" width="60" height="9" />
-                      <rect x="48" y="95" width="60" height="9" />
-                    </g>
-                    <circle cx="78" cy="60" r="11" fill="var(--bento-grid-c6)" />
+                    <circle cx="80" cy="60" r="34" fill="var(--bento-grid-c1)" />
+                    <rect x="88" y="26" width="86" height="68" fill="var(--bento-grid-c3)" />
+                    <!-- The lens where the disc and the block overlap, drawn rather than
+                         blended: mix-blend-mode would make the drawing depend on whatever
+                         ground it lands on, and this component is copied out. No clipPath
+                         either — this markup appears five times across the folder's pages,
+                         and an id would be five ids. -->
+                    <path d="M88 26.95 A34 34 0 0 1 88 93.05 Z" fill="var(--bento-grid-c6)" />
+                    <!-- One drum landing short of the mark. It is the thing a risograph is
+                         recognised by before any of its colours are, and it is the reason the
+                         trim carries a register target at all — see the Mark tile. -->
+                    <rect x="82" y="21" width="86" height="68" fill="none"
+                          stroke="var(--bento-grid-c5)" stroke-width="2.5" />
                   </svg>
                   <div class="bento-grid__foot">
-                    <p class="bento-grid__meta">200 &times; 300 cm</p>
-                    <p class="bento-grid__meta">Gotland wool</p>
+                    <p class="bento-grid__meta">500 &times; 700 mm</p>
+                    <p class="bento-grid__meta">300gsm rag</p>
                   </div>
                 </summary>
                 <p class="bento-grid__detail">
-                  Knotted on a cotton warp over eleven weeks. The border is carried in
-                  two pitches so it reads as one band at a distance and as two up close.
+                  Six drums, two passes, and the overlaps are where the other three
+                  colours come from. Registration runs to a millimetre or so on this
+                  press, so no two sheets in the edition land quite the same.
                 </p>
               </details>
             </li>
@@ -1187,12 +1189,12 @@
               <details class="bento-grid__panel">
                 <summary class="bento-grid__face">
                   <span class="bento-grid__cue" aria-hidden="true"></span>
-                  <h3 class="bento-grid__label">Colourway</h3>
+                  <h3 class="bento-grid__label">Inks</h3>
                   <p class="bento-grid__aside">
-                    Dyed in one bath, so nothing quite matches and nothing quite
-                    clashes.
+                    Six drums laid one over another. Where two overlap you get a
+                    third, so the palette is larger than the press.
                   </p>
-                  <div class="bento-grid__way" role="img" aria-label="The nine colours of the edition, flush, brick through cream">
+                  <div class="bento-grid__inks" role="img" aria-label="The nine colours of the edition, flush, brick through cream">
                     <span class="bento-grid__swatch"></span>
                     <span class="bento-grid__swatch"></span>
                     <span class="bento-grid__swatch"></span>
@@ -1204,16 +1206,16 @@
                     <span class="bento-grid__swatch"></span>
                   </div>
                   <div class="bento-grid__foot">
-                    <p class="bento-grid__meta">9 fields</p>
-                    <p class="bento-grid__meta">One bath</p>
+                    <p class="bento-grid__meta">6 drums</p>
+                    <p class="bento-grid__meta">9 colours</p>
                   </div>
                 </summary>
                 <div class="bento-grid__detail">
                   Four of the nine show in a narrow slot; the rest arrive when there is
                   room to read them as colour rather than as stripes.
                   <dl>
-                    <dt>Lot</dt><dd>04&ndash;B</dd>
-                    <dt>Fastness</dt><dd>6 of 8</dd>
+                    <dt>Passes</dt><dd>2</dd>
+                    <dt>Tolerance</dt><dd>&plusmn; 1.5 mm</dd>
                   </dl>
                 </div>
               </details>
@@ -1223,31 +1225,31 @@
               <details class="bento-grid__panel">
                 <summary class="bento-grid__face">
                   <span class="bento-grid__cue" aria-hidden="true"></span>
-                  <h3 class="bento-grid__label">Weave</h3>
+                  <h3 class="bento-grid__label">Screen</h3>
                   <p class="bento-grid__aside">
-                    Three pitches in one field: the coarse rows carry the pattern, the
-                    fine ones carry the ground.
+                    Three rulings and three angles. The angle is what keeps two drums
+                    from beating against each other where they overlap.
                   </p>
-                  <div class="bento-grid__weave">
-                    <div class="bento-grid__weave-row">
+                  <div class="bento-grid__screen">
+                    <div class="bento-grid__screen-row">
                       <p class="bento-grid__meta">Coarse</p>
                       <div class="bento-grid__band bento-grid__band--coarse"></div>
                     </div>
-                    <div class="bento-grid__weave-row">
+                    <div class="bento-grid__screen-row">
                       <p class="bento-grid__meta">Medium</p>
                       <div class="bento-grid__band bento-grid__band--medium"></div>
                     </div>
-                    <div class="bento-grid__weave-row">
+                    <div class="bento-grid__screen-row">
                       <p class="bento-grid__meta">Fine</p>
                       <div class="bento-grid__band bento-grid__band--fine"></div>
                     </div>
                   </div>
                 </summary>
                 <div class="bento-grid__detail">
-                  Pitch is set at the loom and cannot be changed once the warp is on.
+                  Ruling is set on the drum and cannot be changed mid-run.
                   <dl>
-                    <dt>Warp</dt><dd>Cotton, 12/6</dd>
-                    <dt>Pile</dt><dd>11 mm</dd>
+                    <dt>Coarse</dt><dd>60 lpi, 15&deg;</dd>
+                    <dt>Fine</dt><dd>110 lpi, 75&deg;</dd>
                   </dl>
                 </div>
               </details>
@@ -1257,19 +1259,19 @@
               <details class="bento-grid__panel">
                 <summary class="bento-grid__face">
                   <span class="bento-grid__cue" aria-hidden="true"></span>
-                  <h3 class="bento-grid__label">Knots</h3>
+                  <h3 class="bento-grid__label">Ruling</h3>
                   <p class="bento-grid__aside">
-                    Counted across the ground, not the border, which runs denser.
+                    Measured on the ground, not the border, which is screened finer.
                   </p>
                   <div class="bento-grid__foot">
-                    <p class="bento-grid__figure">160</p>
-                    <p class="bento-grid__meta">per dm&sup2;</p>
+                    <p class="bento-grid__figure">85</p>
+                    <p class="bento-grid__meta">lines / inch</p>
                   </div>
                 </summary>
                 <div class="bento-grid__detail">
                   <dl>
-                    <dt>Ground</dt><dd>160 / dm&sup2;</dd>
-                    <dt>Border</dt><dd>190 / dm&sup2;</dd>
+                    <dt>Ground</dt><dd>85 lpi</dd>
+                    <dt>Border</dt><dd>110 lpi</dd>
                   </dl>
                 </div>
               </details>
@@ -1279,23 +1281,24 @@
               <details class="bento-grid__panel">
                 <summary class="bento-grid__face">
                   <span class="bento-grid__cue" aria-hidden="true"></span>
-                  <h3 class="bento-grid__label">Motif</h3>
+                  <h3 class="bento-grid__label">Mark</h3>
                   <p class="bento-grid__aside">
-                    The stepped diamond, repeated four times along the long edge.
+                    The register target, printed into the trim and cut away.
                   </p>
                   <svg
-                    class="bento-grid__motif"
+                    class="bento-grid__mark"
                     viewBox="0 0 48 48"
                     role="img"
-                    aria-label="A stepped diamond with a disc at its centre">
-                    <path d="M24 2 L46 24 L24 46 L2 24 Z" fill="var(--bento-grid-c5)" />
-                    <path d="M24 12 L36 24 L24 36 L12 24 Z" fill="var(--bento-grid-c2)" />
-                    <circle cx="24" cy="24" r="6" fill="var(--bento-grid-c1)" />
+                    aria-label="A register target: a ring quartered in two colours, with a light centre">
+                    <circle cx="24" cy="24" r="20" fill="var(--bento-grid-c5)" />
+                    <path d="M24 4 A20 20 0 0 1 44 24 L24 24 Z" fill="var(--bento-grid-c1)" />
+                    <path d="M24 44 A20 20 0 0 1 4 24 L24 24 Z" fill="var(--bento-grid-c1)" />
+                    <circle cx="24" cy="24" r="6" fill="var(--bento-grid-c9)" />
                   </svg>
                 </summary>
                 <div class="bento-grid__detail">
                   <dl>
-                    <dt>Repeat</dt><dd>4 &times;</dd>
+                    <dt>Printed</dt><dd>4 per sheet</dd>
                     <dt>Origin</dt><dd>Drawn, not traced</dd>
                   </dl>
                 </div>
@@ -1306,19 +1309,19 @@
               <details class="bento-grid__panel">
                 <summary class="bento-grid__face">
                   <span class="bento-grid__cue" aria-hidden="true"></span>
-                  <h3 class="bento-grid__label">Size</h3>
+                  <h3 class="bento-grid__label">Sheet</h3>
                   <p class="bento-grid__aside">
-                    Cut to the loom width; the length is where the edition varies.
+                    Cut to the drum width; the length is where the edition varies.
                   </p>
                   <div class="bento-grid__foot">
-                    <p class="bento-grid__figure">200</p>
-                    <p class="bento-grid__meta">&times; 300 cm</p>
+                    <p class="bento-grid__figure">500</p>
+                    <p class="bento-grid__meta">&times; 700 mm</p>
                   </div>
                 </summary>
                 <div class="bento-grid__detail">
                   <dl>
-                    <dt>Width</dt><dd>200 cm</dd>
-                    <dt>Length</dt><dd>280&ndash;310 cm</dd>
+                    <dt>Width</dt><dd>500 mm</dd>
+                    <dt>Length</dt><dd>690&ndash;710 mm</dd>
                   </dl>
                 </div>
               </details>
@@ -1328,19 +1331,19 @@
               <details class="bento-grid__panel">
                 <summary class="bento-grid__face">
                   <span class="bento-grid__cue" aria-hidden="true"></span>
-                  <h3 class="bento-grid__label">Wool</h3>
+                  <h3 class="bento-grid__label">Stock</h3>
                   <p class="bento-grid__aside">
-                    Undyed in the ground, so colour sits on grey, not white.
+                    Uncoated and warm, so the inks sit on cream rather than on white.
                   </p>
                   <div class="bento-grid__foot">
-                    <p class="bento-grid__figure">100</p>
-                    <p class="bento-grid__meta">% Gotland</p>
+                    <p class="bento-grid__figure">300</p>
+                    <p class="bento-grid__meta">gsm rag</p>
                   </div>
                 </summary>
                 <div class="bento-grid__detail">
                   <dl>
-                    <dt>Staple</dt><dd>90 mm</dd>
-                    <dt>Spun</dt><dd>2-ply, worsted</dd>
+                    <dt>Grain</dt><dd>Long</dd>
+                    <dt>Finish</dt><dd>Mould-made</dd>
                   </dl>
                 </div>
               </details>
@@ -1461,7 +1464,7 @@
             <p>Nine fields, no gradient and no tint on any of them; the lift is a
               5px offset block of the same ink rather than a blur, because a
               soft shadow would put light into a register that has none. The
-              cream sits fifth in the colourway rather than ninth &mdash; last,
+              cream sits fifth in the ink strip rather than ninth &mdash; last,
               it was too close to the chalk the tile is made of and the strip
               read as though it had been cut short.</p>
           </li>
@@ -1469,7 +1472,7 @@
 
         <p class="demo__notes-lede">
           The row height is measured rather than chosen. A tile's face gets the
-          row less 48px, and the tallest thing any face has to hold is the motif
+          row less 48px, and the tallest thing any face has to hold is the mark
           tile's 117px; 11rem is the first round figure that clears it. Every
           earlier value clipped something, and quietly &mdash; at 7rem six
           tiles, at 9rem four, by 2 to 37 pixels each. A figure set at
