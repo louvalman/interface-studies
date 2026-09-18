@@ -91,7 +91,7 @@
      from these two numbers at run time rather than loaded from a file — the
      same argument the rest of the block makes, applied to a room. */
   --struck-tones-tone: 3400;            /* Hz — the lowpass over the whole voice */
-  --struck-tones-air: 0.26;             /* how much room, 0–1 */
+  --struck-tones-air: 0.18;             /* how much room, 0–1 */
   --struck-tones-air-size: 1.7;         /* seconds of tail */
 
   /* --- the surface the tuning is demonstrated on ----------------------- */
