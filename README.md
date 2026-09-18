@@ -12,7 +12,7 @@ wherever it lands.
 Each study is a folder named `YYYY-MM-slug`:
 
 ```
-2026-09-brutalist-price-card/
+2026-09-inked-plate-card/
 ├── ref.png          the reference image, where the study has one
 ├── notes.md         the decisions the build captures, and why
 ├── component.html   the markup for the component, and nothing else
