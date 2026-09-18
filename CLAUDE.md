@@ -1042,6 +1042,15 @@ apart. It is a wave crossing the rail rather than everything flashing at once,
 and the stagger is not decoration — a performing card is an unpaused card, so
 every card starting together is every preview restyling on one frame.
 
+`DEMO_STAGGER` against `DEMO_HOLD` is what decides how much of a wave it is,
+and the two have to be read together. Below `DEMO_HOLD / 3` every card on
+screen is open at the same time for most of a second, which is the flash the
+stagger exists to prevent wearing a delay; above it the count comes down a card
+at a time. It runs at 850 against a 2200 hold — three cards at the peak, each
+leading the next plainly enough to be followed, and the last one still opening
+while the first is up. A stagger at the hold or past it is a relay of one card
+at a time, which is a different thing and not what this is.
+
 It is there because of an asymmetry that is invisible in the code: `handoff` is
 what tells a card at the mark to perform, and it returns early unless
 `coarse.matches`. On a phone the card being read introduces itself; on a desktop
@@ -1105,8 +1114,10 @@ between marks is dropped, and a dropped beat costs a whole period: measured over
 again on `DEMO_RETRY`, because everything it waits on — a pointer gone, the
 overlay closed, a gesture ended — arrives without announcing itself.
 
-**What it costs, measured.** Four cards perform at once at the peak of a wave,
-which is the case `wantPaused` holds down to two during the drift. Over 25s of
+**What it costs, measured.** Three cards perform at once at the peak of a wave,
+which is the case `wantPaused` holds down to two during the drift. The figures
+below were taken at the old 420 stagger, where four overlapped, so they are a
+ceiling on what it costs now rather than a reading of it. Over 25s of
 drift against the same page with one card: unthrottled it is not there at all —
 median 16.7ms either way, p95 33.4ms either way, and the wave's worst frame is
 the better of the two at 83ms against 100ms. At 4x it is real: p95 83ms to
