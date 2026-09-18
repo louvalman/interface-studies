@@ -1340,3 +1340,58 @@ reader of the badge, not a third declaration, which is why it needed nothing
 added to it — and it is the test of whether that rule is holding: anything new
 that wants to know a study's type reads the badge, and a change that has it
 write the type down somewhere is the thing this section is about.
+
+## Git, and why the history is part of the repo
+
+This repo is meant to be read by people who did not write it, so the log is
+part of what is published. These rules exist because the first pass at making
+it public found the history in worse shape than the code.
+
+**One author identity, and it is the GitHub noreply address.**
+`Louis Dyrhauge <94385943+louvalman@users.noreply.github.com>`, on author and
+committer alike. Commit metadata is permanent and world-readable the moment a
+repo goes public, and it is the half of a commit nobody proofreads: two
+personal inboxes sat in this history for 265 commits before anyone looked.
+A machine that has not been configured yet is the usual way one gets in, so
+configure it before the first commit rather than after:
+
+```
+git config user.name  "Louis Dyrhauge"
+git config user.email "94385943+louvalman@users.noreply.github.com"
+```
+
+**Branch names say what the work is.** No tool prefixes, no generated pairs of
+a mood and a dead physicist. `inked-demo-rows` and `masthead-copy` are what a
+branch should read like; `determined-noether-1ofsaf` says nothing, and thirty
+eight of them in a public branch dropdown read as an abandoned workspace rather
+than as a portfolio. The name also outlives the branch, because it is quoted in
+every merge commit that closes it — which is how a prefix nobody thought about
+ends up in fifty-eight subject lines.
+
+**Delete a branch when it lands.** Merged branches are not history — the
+commits are in `main` either way — and an unmerged one that has gone quiet for
+a week is an abandoned experiment, not work in progress. What they are is a
+second copy of the history that no rewrite reaches: cleaning `main` while forty
+branches still carry the old commits removes nothing at all.
+
+**No attribution trailers, and no links to a session.** Not `Co-Authored-By:`
+pointing at a tool, not a URL for the conversation a change came out of. The
+first is a claim about a person that a tool is not, and the second is
+account-scoped workflow metadata that means nothing to a reader and does not
+stop being a link because the repo went public. A trailer is also easy to miss
+in bulk: these were matched case-sensitively once and one `Co-authored-by:`
+survived the sweep.
+
+**A commit message is a claim and then its reasoning.** The house style is
+already in the log and it is worth keeping: a subject that states what changed
+as a sentence about the work — "The tiles hold a risograph edition, not a rug",
+"The glass was fine; the ink and the material choice were not" — and a body
+that says what was wrong, what was measured, and what was decided. The same
+register `notes.md` uses, for the same reason. A subject that names a file and
+a verb describes the diff, which the diff already does.
+
+**Rewriting history is a pre-publication move only.** It works here because the
+repo is private: nobody outside ever held the old SHAs, so they are unreachable
+the moment they are unreferenced. Once the repo is public, a force-push does
+not recall what has been cloned, forked or indexed, and the honest answer to a
+leak found after that point is to rotate what leaked rather than to rewrite.
