@@ -17,7 +17,7 @@ in the same gesture.
   Without the `min()` a one-column board grows a phantom track to fit a
   two-column tile: measured, `grid-template-columns` resolves to `134px 8px`
   and the wide tiles sit 16px proud of the narrow ones. Rows are deliberately
-  not clamped, so the 2×2 plate and the 1×2 weave tile are still double-height
+  not clamped, so the 2×2 plate and the 1×2 screen tile are still double-height
   at one column and the tile that led at four columns still leads at 320px.
 
 - **Twelve cells, because twelve divides by four, three, two and one.** One
@@ -70,7 +70,7 @@ in the same gesture.
 - **Flat, unlit colour, and the adjacencies are meant to disagree.** Nine
   fields, no gradient and no tint on any of them; the lift is a 5px offset
   block of the same ink rather than a blur, because a soft shadow would put
-  light into a register that has none. The cream sits fifth in the colourway
+  light into a register that has none. The cream sits fifth in the ink strip
   rather than ninth — last, it was too close to the chalk the tile is made of
   and the strip read as though it had been cut short.
 
@@ -83,7 +83,7 @@ follows, and the tiles are written in the order they should be read.
 The row height is measured rather than chosen. A tile's face gets the row less
 48px — two for the border, 36 for the panel's padding, ten for the panel's gap
 to its own closed details — and the tallest thing any face has to hold is the
-motif tile's 117px. 11rem is the first round figure that clears it. Every
+mark tile's 117px. 11rem is the first round figure that clears it. Every
 earlier value clipped something, and quietly: at 7rem six tiles, at 9rem four,
 by 2 to 37 pixels each. Two smaller findings came out of the same sweep. A
 figure set at `line-height: 1` overflows its own line box by about 0.15em,
@@ -105,18 +105,52 @@ fit an opened tile. Height-based slot queries and rows that grow to their
 content are mutually exclusive, and the height half of the queries is what that
 buys.
 
+The tiles hold a risograph edition, and the subject earns a line because the
+first one did not survive contact with the rule above it. A `layout` study
+styles its tiles properly, which means the tiles have to be *about* something,
+and the first draft made them a hand-knotted rug — a made object with a spec
+sheet, which fits the seven slots exactly and gives the palette tile nine
+dyed fields to hold. What it does not do is give the palette a reason to be
+nine. A riso does: six drums laid one over another, and the overlaps are the
+other three colours, so the strip is a fact about the press rather than a row
+of swatches next to a picture. The lead's drawing gets the same upgrade — an
+overprint where two shapes meet, and one drum a few millimetres off register,
+which is what the thing is recognised by before any of its colours are.
+
+The three screen bands are the part that changed most. They were three warp
+pitches, which is one drawing at three sizes; they are three rulings at three
+angles now, and the angle is not decoration — two drums screened alike beat
+against each other where they overlap, and offsetting them is what stops it.
+15°, 45° and 75° is the classic set minus yellow's 0°, which is left out
+because a band of horizontal rules in a tile full of horizontal type reads as
+ruled lines rather than as a screen.
+
+And a screen is a ratio, not a line width, which is what caught the thumbnail.
+`preview.html` restates the hairline against the scale the index reports —
+the usual correction, because at 0.35 of a device pixel a 1px rule stops being
+antialiased at all — and restating it alone puts 2.86px of ink into a 3px
+pitch. Measured on the card at 0.7, the three rows went from 11 / 20 / 33% ink
+to 32 / 43 / 95: the fine row is not a fine screen there, it is a flat navy
+block, and the tile's whole claim that these are three rulings had stopped
+being true at the size most people see it. The pitches are restated with the
+weight now, from the values the component itself declares, and the ratio holds
+— 11 / 20 / 33 at full size and at 0.7 alike. Worth knowing generally: a
+correction that scales one half of a ratio breaks it, and the breakage only
+shows at the scale the correction exists for.
+
 Contrast departure, recorded under the rule in CLAUDE.md. The lead plate's
-muted tone — its kicker, and the two facts in its foot — measures **3.48:1**
+muted tone — its kicker, the two facts in its foot, and the paragraph it opens
+into — measures **3.48:1**
 against the petrol, under the 4.5:1 floor and above the 3:1 hard floor. It is
 deliberate and it is structural rather than careless: the plate is one of the
 nine, and cream `#f3ecda` on `#2f6a63` tops out at 5.30:1 at full opacity, so
 there is 0.8 of room above the floor and nothing to mute into. Clearing 4.5:1
 needs 0.89 alpha, which is not a muted tone, it is the ink.
 
-The honest cost: "200 × 300 cm" and "Gotland wool" are said nowhere else, so
+The honest cost: "500 × 700 mm" and "300gsm rag" are said nowhere else, so
 this is a real departure rather than an ornamental repeat, and a darker plate
 would remove it — `#1f4a47` carries the same muting at 5.00:1. It was kept
-because the plate being one of the nine is the decision the whole colourway
+because the plate being one of the nine is the decision the whole ink strip
 rests on. Everything else in the component clears AA in both themes; the
 figures reach 14.11:1.
 
