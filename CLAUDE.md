@@ -12,8 +12,8 @@ Read these rules before adding to or editing anything in this repo.
 Every study lives in its own folder, named `YYYY-MM-slug`:
 
 ```
-2026-09-brutalist-price-card/
-├── ref.png          the reference image: a source screenshot, or a Figma export
+2026-09-inked-plate-card/
+├── ref.png          reference documentation, if there is any
 ├── notes.md         the decisions the build captures, and why
 ├── component.html   the markup for the component, and nothing else
 ├── component.css    self-contained, BEM-namespaced styles
@@ -23,6 +23,14 @@ Every study lives in its own folder, named `YYYY-MM-slug`:
 
 `component.js` is allowed as a seventh file, but only under the conditions in
 **JavaScript** below.
+
+`ref.png` is the one that may be missing. A study built from an original
+design has nothing to reference and keeps `_template/`'s placeholder — two
+do. And a reference that carries someone else's brand whole is not ours to
+redistribute once the repo is public: `2026-09-raster-pulse`'s is gitignored
+and was purged from the history, so that folder holds five files and no
+reference image. The `Inspiration:` line at the bottom of its `notes.md` is
+what records where the build came from, which is the part a reader needs.
 
 `_template/` holds a stubbed, commented copy of these files. Copy it when
 starting a new study.
@@ -752,8 +760,9 @@ stylesheet, and it never links a `component.css` or reaches into a study's
 classes. A study folder must keep working with the index deleted.
 
 Each card iframes that folder's `preview.html` — so the index shows the live
-component, not `ref.png`. The reference image stays in the folder as the record
-of what the build was based on; it is not what gets displayed.
+component, not `ref.png`. A reference image is a record of what the build was
+based on rather than something the site shows, which is why one can be
+withheld — see the folder structure above — without any page changing.
 
 A touch release is the platform's, end to end — its momentum, its snap, its
 deceleration curve. Nothing in `index.js` animates the landing.
