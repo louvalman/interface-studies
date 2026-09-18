@@ -1,0 +1,22 @@
+#!/bin/sh
+# Attribution guard. See the Git section of CLAUDE.md.
+#
+# Trailers pointing at a tool, and links to the session a change came out of,
+# are not something a reader of this repo can use. Twenty-nine session URLs
+# and a hundred and ninety-one trailers had to be stripped by a rewrite once.
+
+msg="$1"
+fail=0
+
+if grep -qiE '^\s*co-authored-by:.*(anthropic|openai|noreply@google)' "$msg"; then
+  echo "commit-msg: an attribution trailer points at a tool." >&2; fail=1
+fi
+if grep -qiE '^\s*claude-session:|https://claude\.ai/' "$msg"; then
+  echo "commit-msg: the message links a working session." >&2; fail=1
+fi
+if grep -qiE 'generated with \[?(claude|codex|copilot)' "$msg"; then
+  echo "commit-msg: the message carries a generated-with line." >&2; fail=1
+fi
+
+[ "$fail" = 1 ] && { echo "" >&2; echo "  Remove the line and commit again. CLAUDE.md, Git section." >&2; exit 1; }
+exit 0

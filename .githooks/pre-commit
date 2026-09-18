@@ -1,0 +1,47 @@
+#!/bin/sh
+# Identity guard. See the Git section of CLAUDE.md.
+#
+# git identity comes from machine config, not from the repo, so a fresh clone
+# or a fresh container commits as whatever that machine happens to say. This
+# repo had two personal inboxes and a work address in its history before
+# anyone looked, and the rule written into CLAUDE.md did not stop the very
+# next commit from breaking it. A rule an agent reads is not enforcement.
+
+EXPECTED="94385943+louvalman@users.noreply.github.com"
+
+email=$(git var GIT_AUTHOR_IDENT | sed -n 's/.*<\(.*\)>.*/\1/p')
+cemail=$(git var GIT_COMMITTER_IDENT | sed -n 's/.*<\(.*\)>.*/\1/p')
+
+fail=0
+for pair in "author:$email" "committer:$cemail"; do
+  role=${pair%%:*}; addr=${pair#*:}
+  if [ "$addr" != "$EXPECTED" ]; then
+    echo "pre-commit: $role email is '$addr'" >&2
+    fail=1
+  fi
+done
+
+if [ "$fail" = 1 ]; then
+  cat >&2 <<MSG
+
+  Expected: $EXPECTED
+
+  Fix it for this repo:
+    git config user.name  "Louis Dyrhauge"
+    git config user.email "$EXPECTED"
+
+  Commit metadata is permanent and public. Fixing it afterwards means
+  rewriting history, which is only free before publication.
+MSG
+  exit 1
+fi
+
+branch=$(git symbolic-ref --short HEAD 2>/dev/null || echo '')
+case "$branch" in
+  claude/*|codex/*|cursor/*|bot/*)
+    echo "pre-commit: warning — branch '$branch' is named after a tool, not the work." >&2
+    echo "  The name is quoted in the merge commit that closes it and outlives the branch." >&2
+    ;;
+esac
+
+exit 0
