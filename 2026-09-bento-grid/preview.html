@@ -110,42 +110,41 @@
           <details class="bento-grid__panel">
             <summary class="bento-grid__face">
               <span class="bento-grid__cue" aria-hidden="true"></span>
-              <p class="bento-grid__label">Edition 04 &middot; risograph</p>
-              <h3 class="bento-grid__title">Nine colours from six drums</h3>
+              <p class="bento-grid__label">The board</p>
+              <h3 class="bento-grid__title">Twelve cells, four ways</h3>
               <svg
                 class="bento-grid__field"
                 viewBox="0 0 220 120"
                 preserveAspectRatio="xMidYMid meet"
                 role="img"
-                aria-label="The printed field: a brick disc and an olive block on cream paper, overprinting to a third colour where they meet, with one drum landing a few millimetres off register.">
-                <rect x="0" y="0" width="220" height="120" fill="var(--bento-grid-c9)" />
-                <g fill="var(--bento-grid-c2)">
-                  <rect x="30" y="18" width="78" height="8" />
-                  <rect x="30" y="94" width="78" height="8" />
+                aria-label="The board's own twelve cells at four columns: a two-by-two lead, a wide tile, a tall tile and four units.">
+                <!-- The seven tiles, in the twelve cells, at four columns. This is
+                     a picture of the thing it is printed on, which is the whole
+                     idea: no cell here is invented, and the three weights are the
+                     three the real board has. -->
+                <rect x="0" y="0" width="107.5" height="78.33" rx="5"
+                      fill="var(--bento-grid-accent)" />
+                <rect x="112.5" y="0" width="107.5" height="36.67" rx="5"
+                      fill="var(--bento-grid-cell-mid)" />
+                <rect x="112.5" y="41.67" width="51.25" height="78.33" rx="5"
+                      fill="var(--bento-grid-cell-mid)" />
+                <g fill="var(--bento-grid-cell-off)">
+                  <rect x="168.75" y="41.67" width="51.25" height="36.67" rx="5" />
+                  <rect x="168.75" y="83.33" width="51.25" height="36.67" rx="5" />
+                  <rect x="0" y="83.33" width="51.25" height="36.67" rx="5" />
+                  <rect x="56.25" y="83.33" width="51.25" height="36.67" rx="5" />
                 </g>
-                <circle cx="80" cy="60" r="34" fill="var(--bento-grid-c1)" />
-                <rect x="88" y="26" width="86" height="68" fill="var(--bento-grid-c3)" />
-                <!-- The lens where the disc and the block overlap, drawn rather than
-                     blended: mix-blend-mode would make the drawing depend on whatever
-                     ground it lands on, and this component is copied out. No clipPath
-                     either — this markup appears five times across the folder's pages,
-                     and an id would be five ids. -->
-                <path d="M88 26.95 A34 34 0 0 1 88 93.05 Z" fill="var(--bento-grid-c6)" />
-                <!-- One drum landing short of the mark. It is the thing a risograph is
-                     recognised by before any of its colours are, and it is the reason the
-                     trim carries a register target at all — see the Mark tile. -->
-                <rect x="82" y="21" width="86" height="68" fill="none"
-                      stroke="var(--bento-grid-c5)" stroke-width="2.5" />
               </svg>
               <div class="bento-grid__foot">
-                <p class="bento-grid__meta">500 &times; 700 mm</p>
-                <p class="bento-grid__meta">300gsm rag</p>
+                <p class="bento-grid__meta">7 tiles</p>
+                <p class="bento-grid__meta">12 cells</p>
               </div>
             </summary>
             <p class="bento-grid__detail">
-              Six drums, two passes, and the overlaps are where the other three
-              colours come from. Registration runs to a millimetre or so on this
-              press, so no two sheets in the edition land quite the same.
+              Dense packing is what makes this a board rather than a stack: a tile
+              too big for the gap waits, and a later unit backfills the hole. So
+              reading order and DOM order are the same thing here, and the screen
+              order is the one that moves.
             </p>
           </details>
         </li>
@@ -154,33 +153,35 @@
           <details class="bento-grid__panel">
             <summary class="bento-grid__face">
               <span class="bento-grid__cue" aria-hidden="true"></span>
-              <h3 class="bento-grid__label">Inks</h3>
+              <h3 class="bento-grid__label">Span</h3>
               <p class="bento-grid__aside">
-                Six drums laid one over another. Where two overlap you get a
-                third, so the palette is larger than the press.
+                Two columns asked for; one column available. The ask is clamped.
               </p>
-              <div class="bento-grid__inks" role="img" aria-label="The nine colours of the edition, flush, brick through cream">
-                <span class="bento-grid__swatch"></span>
-                <span class="bento-grid__swatch"></span>
-                <span class="bento-grid__swatch"></span>
-                <span class="bento-grid__swatch"></span>
-                <span class="bento-grid__swatch"></span>
-                <span class="bento-grid__swatch"></span>
-                <span class="bento-grid__swatch"></span>
-                <span class="bento-grid__swatch"></span>
-                <span class="bento-grid__swatch"></span>
-              </div>
-              <div class="bento-grid__foot">
-                <p class="bento-grid__meta">6 drums</p>
-                <p class="bento-grid__meta">9 colours</p>
+              <div class="bento-grid__ladder bento-grid__ladder--across">
+                <div class="bento-grid__ladder-row">
+                  <p class="bento-grid__meta">4 columns</p>
+                  <div class="bento-grid__cells bento-grid__cells--n4" role="img"
+                       aria-label="A two-column tile in a four-column row, with two cells left over">
+                    <span class="bento-grid__cell bento-grid__cell--wide bento-grid__cell--on"></span>
+                    <span class="bento-grid__cell"></span>
+                    <span class="bento-grid__cell"></span>
+                  </div>
+                </div>
+                <div class="bento-grid__ladder-row">
+                  <p class="bento-grid__meta">1 column</p>
+                  <div class="bento-grid__cells bento-grid__cells--n1" role="img"
+                       aria-label="The same tile on a one-column board, clamped to one cell">
+                    <span class="bento-grid__cell bento-grid__cell--wide bento-grid__cell--on"></span>
+                  </div>
+                </div>
               </div>
             </summary>
             <div class="bento-grid__detail">
-              Four of the nine show in a narrow slot; the rest arrive when there is
-              room to read them as colour rather than as stripes.
+              Without the clamp a one-column board grows a phantom track to fit the
+              tile, and the wide ones sit proud of the narrow ones.
               <dl>
-                <dt>Passes</dt><dd>2</dd>
-                <dt>Tolerance</dt><dd>&plusmn; 1.5 mm</dd>
+                <dt>Rule</dt><dd>span min(2, cols)</dd>
+                <dt>Measured</dt><dd>134px 8px</dd>
               </dl>
             </div>
           </details>
@@ -190,31 +191,49 @@
           <details class="bento-grid__panel">
             <summary class="bento-grid__face">
               <span class="bento-grid__cue" aria-hidden="true"></span>
-              <h3 class="bento-grid__label">Screen</h3>
+              <h3 class="bento-grid__label">Ladder</h3>
               <p class="bento-grid__aside">
-                Three rulings and three angles. The angle is what keeps two drums
-                from beating against each other where they overlap.
+                Three queries set one number. Every span clamps against it.
               </p>
-              <div class="bento-grid__screen">
-                <div class="bento-grid__screen-row">
-                  <p class="bento-grid__meta">Coarse</p>
-                  <div class="bento-grid__band bento-grid__band--coarse"></div>
+              <div class="bento-grid__ladder">
+                <div class="bento-grid__ladder-row">
+                  <p class="bento-grid__meta">4</p>
+                  <div class="bento-grid__cells bento-grid__cells--n4" role="img" aria-label="Four tracks">
+                    <span class="bento-grid__cell bento-grid__cell--on"></span>
+                    <span class="bento-grid__cell"></span>
+                    <span class="bento-grid__cell"></span>
+                    <span class="bento-grid__cell"></span>
+                  </div>
                 </div>
-                <div class="bento-grid__screen-row">
-                  <p class="bento-grid__meta">Medium</p>
-                  <div class="bento-grid__band bento-grid__band--medium"></div>
+                <div class="bento-grid__ladder-row">
+                  <p class="bento-grid__meta">3</p>
+                  <div class="bento-grid__cells bento-grid__cells--n3" role="img" aria-label="Three tracks">
+                    <span class="bento-grid__cell bento-grid__cell--on"></span>
+                    <span class="bento-grid__cell"></span>
+                    <span class="bento-grid__cell"></span>
+                  </div>
                 </div>
-                <div class="bento-grid__screen-row">
-                  <p class="bento-grid__meta">Fine</p>
-                  <div class="bento-grid__band bento-grid__band--fine"></div>
+                <div class="bento-grid__ladder-row">
+                  <p class="bento-grid__meta">2</p>
+                  <div class="bento-grid__cells bento-grid__cells--n2" role="img" aria-label="Two tracks">
+                    <span class="bento-grid__cell bento-grid__cell--on"></span>
+                    <span class="bento-grid__cell"></span>
+                  </div>
+                </div>
+                <div class="bento-grid__ladder-row">
+                  <p class="bento-grid__meta">1</p>
+                  <div class="bento-grid__cells bento-grid__cells--n1" role="img" aria-label="One track">
+                    <span class="bento-grid__cell bento-grid__cell--on"></span>
+                  </div>
                 </div>
               </div>
             </summary>
             <div class="bento-grid__detail">
-              Ruling is set on the drum and cannot be changed mid-run.
+              The rungs are container widths, not viewport widths — the board reads
+              the box it was dropped into.
               <dl>
-                <dt>Coarse</dt><dd>60 lpi, 15&deg;</dd>
-                <dt>Fine</dt><dd>110 lpi, 75&deg;</dd>
+                <dt>Rungs</dt><dd>44 / 29 / 22rem</dd>
+                <dt>Sets</dt><dd>--cols, nothing else</dd>
               </dl>
             </div>
           </details>
@@ -224,19 +243,19 @@
           <details class="bento-grid__panel">
             <summary class="bento-grid__face">
               <span class="bento-grid__cue" aria-hidden="true"></span>
-              <h3 class="bento-grid__label">Ruling</h3>
+              <h3 class="bento-grid__label">Cells</h3>
               <p class="bento-grid__aside">
-                Measured on the ground, not the border, which is screened finer.
+                Twelve divides by four, three, two and one.
               </p>
               <div class="bento-grid__foot">
-                <p class="bento-grid__figure">85</p>
-                <p class="bento-grid__meta">lines / inch</p>
+                <p class="bento-grid__figure">12</p>
+                <p class="bento-grid__meta">at rest</p>
               </div>
             </summary>
             <div class="bento-grid__detail">
               <dl>
-                <dt>Ground</dt><dd>85 lpi</dd>
-                <dt>Border</dt><dd>110 lpi</dd>
+                <dt>At rest</dt><dd>12 cells</dd>
+                <dt>One open</dt><dd>15 cells</dd>
               </dl>
             </div>
           </details>
@@ -246,25 +265,30 @@
           <details class="bento-grid__panel">
             <summary class="bento-grid__face">
               <span class="bento-grid__cue" aria-hidden="true"></span>
-              <h3 class="bento-grid__label">Mark</h3>
+              <h3 class="bento-grid__label">Flow</h3>
               <p class="bento-grid__aside">
-                The register target, printed into the trim and cut away.
+                A tile too big for the gap waits; a later unit fills it.
               </p>
               <svg
                 class="bento-grid__mark"
                 viewBox="0 0 48 48"
                 role="img"
-                aria-label="A register target: a ring quartered in two colours, with a light centre">
-                <circle cx="24" cy="24" r="20" fill="var(--bento-grid-c5)" />
-                <path d="M24 4 A20 20 0 0 1 44 24 L24 24 Z" fill="var(--bento-grid-c1)" />
-                <path d="M24 44 A20 20 0 0 1 4 24 L24 24 Z" fill="var(--bento-grid-c1)" />
-                <circle cx="24" cy="24" r="6" fill="var(--bento-grid-c9)" />
+                aria-label="A small board where a unit tile has backfilled the gap a wide tile could not use">
+                <rect x="0" y="0" width="31" height="14" rx="3" fill="var(--bento-grid-cell-mid)" />
+                <rect x="34" y="0" width="14" height="14" rx="3" fill="var(--bento-grid-accent)" />
+                <g fill="var(--bento-grid-cell-off)">
+                  <rect x="0" y="17" width="31" height="14" rx="3" />
+                  <rect x="34" y="17" width="14" height="14" rx="3" />
+                  <rect x="0" y="34" width="14" height="14" rx="3" />
+                  <rect x="17" y="34" width="14" height="14" rx="3" />
+                  <rect x="34" y="34" width="14" height="14" rx="3" />
+                </g>
               </svg>
             </summary>
             <div class="bento-grid__detail">
               <dl>
-                <dt>Printed</dt><dd>4 per sheet</dd>
-                <dt>Origin</dt><dd>Drawn, not traced</dd>
+                <dt>Flow</dt><dd>row dense</dd>
+                <dt>Costs</dt><dd>visual order</dd>
               </dl>
             </div>
           </details>
@@ -274,19 +298,19 @@
           <details class="bento-grid__panel">
             <summary class="bento-grid__face">
               <span class="bento-grid__cue" aria-hidden="true"></span>
-              <h3 class="bento-grid__label">Sheet</h3>
+              <h3 class="bento-grid__label">Tiles</h3>
               <p class="bento-grid__aside">
-                Cut to the drum width; the length is where the edition varies.
+                One leads, one wide, one tall, four units.
               </p>
               <div class="bento-grid__foot">
-                <p class="bento-grid__figure">500</p>
-                <p class="bento-grid__meta">&times; 700 mm</p>
+                <p class="bento-grid__figure">7</p>
+                <p class="bento-grid__meta">one leads</p>
               </div>
             </summary>
             <div class="bento-grid__detail">
               <dl>
-                <dt>Width</dt><dd>500 mm</dd>
-                <dt>Length</dt><dd>690&ndash;710 mm</dd>
+                <dt>Sizes</dt><dd>2&times;2, 2&times;1, 1&times;2</dd>
+                <dt>Units</dt><dd>4</dd>
               </dl>
             </div>
           </details>
@@ -296,19 +320,19 @@
           <details class="bento-grid__panel">
             <summary class="bento-grid__face">
               <span class="bento-grid__cue" aria-hidden="true"></span>
-              <h3 class="bento-grid__label">Stock</h3>
+              <h3 class="bento-grid__label">Morph</h3>
               <p class="bento-grid__aside">
-                Uncoated and warm, so the inks sit on cream rather than on white.
+                A grid cannot tween a re-pack, so the tiles are moved.
               </p>
               <div class="bento-grid__foot">
-                <p class="bento-grid__figure">300</p>
-                <p class="bento-grid__meta">gsm rag</p>
+                <p class="bento-grid__figure">460</p>
+                <p class="bento-grid__meta">ms, eased out</p>
               </div>
             </summary>
             <div class="bento-grid__detail">
               <dl>
-                <dt>Grain</dt><dd>Long</dd>
-                <dt>Finish</dt><dd>Mould-made</dd>
+                <dt>Curve</dt><dd>0.16, 1, 0.3, 1</dd>
+                <dt>Without JS</dt><dd>it still opens</dd>
               </dl>
             </div>
           </details>
@@ -367,6 +391,13 @@
       var DWELL = 5600;
 
       // First entry is where it starts, and what quick look opens on.
+      // Three columns rests, and it is the frame that decides it rather than
+      // the arrangement being the best one. At three the board is four rows
+      // deep, which fits a 480x600 thumbnail; at four it is three rows and
+      // sits as a squat band with a third of the frame empty above and below
+      // it, with the lead a third smaller. Four columns was tried for a round
+      // — it puts a unit tile under the 16rem the aside needs, so the six
+      // paragraphs go — and the copy was the better thing to cut.
       var VARIANTS = [
         { id: 'three',  label: 'Three columns', cols: 3, open: -1 },
         { id: 'opened', label: 'A tile opened', cols: 3, open: SHOWN },
@@ -439,44 +470,13 @@
       // answer BOTH. A card at the index's 0.7 with this stage's 0.5 draws a
       // 1px border at 0.35 of a device pixel, which is not a hairline, it is a
       // grey suggestion. The two multiply; so does the correction.
-      // The three authored screen pitches, read once and before anything here
-      // overrides them, because the correction below is a multiple of what the
-      // component asked for rather than a number of this file's own.
-      var PITCH = ['coarse', 'medium', 'fine'].map(function (k) {
-        return {
-          name: '--bento-grid-band-' + k,
-          px: parseFloat(
-            getComputedStyle(root).getPropertyValue('--bento-grid-band-' + k)
-          ) || 0
-        };
-      });
-
       function scale(n) {
         var total = (n && n > 0 ? n : 1) * STAGE;
         if (total >= 1) {
           root.style.removeProperty('--bento-grid-line-weight');
-          root.style.removeProperty('--bento-grid-band-weight');
-          PITCH.forEach(function (p) { root.style.removeProperty(p.name); });
           return;
         }
-        var k = 1 / total;
-        var px = k.toFixed(2) + 'px';
-        root.style.setProperty('--bento-grid-line-weight', px);
-        root.style.setProperty('--bento-grid-band-weight', px);
-
-        // The pitches go up with the weight, and that is not tidiness — it
-        // is the difference between a screen and a solid. A screen is a ratio,
-        // not a line width: 1px of ink in a 3px pitch is a third covered, and
-        // that third is what the fine row IS. Restating the weight alone puts
-        // 2.86px of ink in the same 3px. Measured on the card at 0.7, the
-        // three rows went from 11 / 20 / 33% ink to 32 / 43 / 95 — the fine
-        // one is not a fine screen there, it is a flat navy block, and the
-        // tile's whole claim that these are three rulings had quietly stopped
-        // being true at the size most people see it. Scaled together the ratio
-        // holds: 11 / 20 / 33 at 1 and at 0.7 alike, measured.
-        PITCH.forEach(function (p) {
-          if (p.px) root.style.setProperty(p.name, (p.px * k).toFixed(2) + 'px');
-        });
+        root.style.setProperty('--bento-grid-line-weight', (1 / total).toFixed(2) + 'px');
       }
 
       scale(1);
