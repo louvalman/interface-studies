@@ -1390,6 +1390,29 @@ that says what was wrong, what was measured, and what was decided. The same
 register `notes.md` uses, for the same reason. A subject that names a file and
 a verb describes the diff, which the diff already does.
 
+**A pull request leaves a ref that outlives everything.** GitHub writes
+`refs/pull/N/head` for every pull request ever opened, and it is immutable: it
+survives the branch being deleted, `git push --delete` cannot reach it, and a
+history rewrite does not touch it. On a public repo anyone may fetch it. This
+was found one step before publication with `main` already clean at 267 commits
+and 47 PR refs still holding the original 613 — including a work address on
+twenty-six commits that appeared on no branch at all, and so had been missed by
+every scan that looked at branches. Two rules follow. Verify with a **mirror**
+clone, because an ordinary clone fetches only `refs/heads` and will report a
+repo clean when it is not:
+
+```
+git clone --mirror <url> verify.git && cd verify.git
+git for-each-ref --format='%(refname)' | sed -E 's|^(refs/[^/]+)/.*|\1|' | sort | uniq -c
+git log --all --format='%an|%ae|%cn|%ce|%B' | grep -icE '<patterns>'
+```
+
+And do the work on branches merged locally rather than through pull requests,
+unless a pull request is earning something — a review, a CI gate, a record of a
+discussion. A PR opened only to move a commit from one branch to another buys
+nothing and leaves a ref that cannot be removed without deleting the
+repository, which is what it cost here.
+
 **Rewriting history is a pre-publication move only.** It works here because the
 repo is private: nobody outside ever held the old SHAs, so they are unreachable
 the moment they are unreferenced. Once the repo is public, a force-push does
