@@ -13,7 +13,7 @@ Each study is a folder named `YYYY-MM-slug`:
 
 ```
 2026-09-inked-plate-card/
-├── ref.png          the reference image, where the study has one
+├── ref.png          reference documentation, if there is any
 ├── notes.md         the decisions the build captures, and why
 ├── component.html   the markup for the component, and nothing else
 ├── component.css    self-contained, BEM-namespaced styles
