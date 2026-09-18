@@ -30,8 +30,9 @@ The component still works without it: script enhances, it does not constitute.
 ## Adding a study
 
 1. Copy `_template/` to a new folder named `YYYY-MM-slug`.
-2. Add `ref.png` — the reference image: a screenshot of the source, or an
-   export of the Figma frame the component was built from.
+2. Add `ref.png` — a screenshot of the source, or an export of the Figma frame
+   the component was built from. A study built from an original design has
+   nothing to reference and keeps the template's placeholder; two of them do.
 3. Fill in `notes.md`: `type:` on the first line, then a short paragraph on what
    the component is, then the specific decisions the build captures. The
    `Inspiration:` line — a URL, or a note that the design is original — is the
@@ -53,6 +54,36 @@ Open `index.html` to browse. Each card opens that folder's `demo.html`.
 
 The rules for what belongs in each file live in `CLAUDE.md`.
 
+## Working in a clone
+
+The repo enforces its own git rules, and the enforcement needs one line per
+clone:
+
+```
+git config core.hooksPath .githooks
+```
+
+`.git/hooks`, where git actually looks, lives inside `.git` and is never
+cloned — so a hook written there reaches no other machine. The hooks are a
+tracked directory instead, and that setting is what points git at it. Without
+it the files sit there doing nothing.
+
+`.githooks/pre-commit` refuses a commit whose author or committer address is
+not the repo's, and warns on a branch named after a tool. `.githooks/commit-msg`
+refuses an attribution trailer, a link to a working session, and a
+generated-with line. Every one of those is something that had to be stripped
+out of this history by a rewrite once, which is why they are checked rather
+than merely written down — the rules are in `CLAUDE.md`, and the file could not
+enforce itself.
+
+Claude Code sessions set both the identity and the hooks path themselves, from
+`.claude/`. A clone used from a terminal sets them by hand:
+
+```
+git config user.name  "Louis Dyrhauge"
+git config user.email "94385943+louvalman@users.noreply.github.com"
+```
+
 ## License
 
 The code is MIT — see `LICENSE`. Copy a folder out and use it; that is what the
@@ -62,6 +93,11 @@ isolation is for.
 interface seen elsewhere, its reference image is someone else's work, kept in
 the folder as the record of what the build was based on and credited on that
 study's `Inspiration:` line. Those images belong to their respective owners and
-are not the author's to license. The components themselves carry none of it —
-the copy, the branding and the photography are deliberately left behind, which
-is the rule the whole repo is built on.
+are not the author's to license. One is not in the repo at all: the reference
+for `2026-09-raster-pulse` carried a whole brand — a logo, a wordmark and a
+tagline — and a public repo would have handed all of it on, so it is kept
+locally and the `Inspiration:` line does the work instead.
+
+The components themselves carry none of it — the copy, the branding and the
+photography are deliberately left behind, which is the rule the whole repo is
+built on.
