@@ -79,12 +79,12 @@ itself a decision — a construction that was changed on purpose, a mechanism th
 reference has that this one does not — and name it in a bullet, where the other
 decisions are.
 
-## Where a study starts from someone else's work
+## Where a study is inspired by someone else's work
 
 Most of what follows is about building a component well, and applies whatever
 gave you the idea. This section is the exception: it covers only the studies
-that began from an interface seen elsewhere, and it is the standing rule for
-them, stated once here and not restated per study.
+that took something from an interface seen elsewhere, and it is the standing
+rule for them, stated once here and not restated per study.
 
 Take the handful of decisions that make the thing work and leave its content
 and its branding — the copy, the logo, the product name, the photography are
