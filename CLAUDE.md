@@ -257,13 +257,6 @@ So check the ceiling when the palette is chosen, not when the type goes on. A
 surface that needs muted text on it needs to be dark enough, or light enough,
 to have somewhere to mute into.
 
-### One last thing, since these studies get copied
-
-This headroom is a study repo's licence. A public service does not have it: in
-the EU the Web Accessibility Directive makes EN 301 549 — and through it WCAG
-AA — a legal floor with no aesthetic exception. Take the technique from these
-folders; do not take the exception with it.
-
 ## component.html
 
 Only the markup for the component. No `<html>`, no `<head>`, no wrapper divs
