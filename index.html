@@ -15,6 +15,7 @@
       href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" />
 
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="canonical" href="https://interface-studies.pages.dev/" />
 
     <!-- What a link to this page looks like when it is pasted somewhere: a
        title, a sentence and a card image, rather than a bare URL. og.png is a
@@ -22,19 +23,21 @@
        the page — Slack, Discord, iMessage and LinkedIn read these tags off the
        raw HTML and fetch the image, and none of them will rasterise an SVG.
 
-       The paths are relative, which Slack, Discord and iMessage resolve
-       against the page they fetched. Facebook and LinkedIn want absolute ones:
-       when this gets a host, prefix both with it and add a matching og:url and
-       <link rel="canonical">. Nothing else here changes. -->
+       Slack, Discord and iMessage resolve a relative path against the page
+       they fetched; Facebook and LinkedIn want an absolute one. The host is
+       interface-studies.pages.dev, so og:image carries it, and og:url and the
+       canonical link below say which URL this page is. Move the host and all
+       three move with it. -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Interface Studies" />
+    <meta property="og:url" content="https://interface-studies.pages.dev/" />
     <meta
       property="og:title"
       content="Interface Studies — exploring interaction and aesthetics" />
     <meta
       property="og:description"
       content="Each study is one component, built in code and kept small enough to stay legible. Open one for the decisions behind it." />
-    <meta property="og:image" content="og.png" />
+    <meta property="og:image" content="https://interface-studies.pages.dev/og.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta

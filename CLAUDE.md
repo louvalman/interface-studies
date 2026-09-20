@@ -291,6 +291,13 @@ somewhere. Title and description come from the page's own `<h1>` and lede;
 that the favicon and the back link already come from. A folder copied out
 loses the picture and keeps the words.
 
+`og:url` and `<link rel="canonical">` are the exception to that, and they are
+absolute because there is no relative way to say which URL a page is. Each
+demo names its own — `…pages.dev/<slug>/demo.html` — so a page that is
+syndicated or scraped points home rather than competing with itself. A copied
+folder carries the pointer too, which is the cost: it is a page saying where
+it came from, and that is the honest reading of a copy anyway.
+
 ### The demo page renders notes.md
 
 The decisions are the study. A page that shows five states and names none
@@ -905,10 +912,11 @@ keep in step.
 
 `og.png` at the root is the social card: a 1200x630 render of the masthead,
 kept as a file because no scraper runs the page, and as a PNG because none of
-them will rasterise an SVG. The paths in the tags are relative — Slack, Discord
-and iMessage resolve those against the page they fetched. Facebook and LinkedIn
-want absolute ones, so when this gets a host, prefix them with it and add a
-matching `og:url` and `<link rel="canonical">`.
+them will rasterise an SVG. Slack, Discord and iMessage resolve a relative path
+against the page they fetched; Facebook and LinkedIn want an absolute one. The
+host is `interface-studies.pages.dev`, so the index's `og:image` carries it and
+`og:url` and `<link rel="canonical">` name the page. Those three are the only
+places the host is written down — move the site and they are what moves.
 
 `og.html` is what that PNG is a photograph of. It is not a page anyone visits
 and nothing links to it; it exists so that changing the card is an edit rather
