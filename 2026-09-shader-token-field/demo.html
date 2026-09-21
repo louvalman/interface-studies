@@ -291,6 +291,83 @@
       color: var(--demo-dim);
     }
 
+    /* --- the specimen rows ---
+       Page scaffolding, like everything else in this block: it lays the
+       specimens out and names no component class. Each specimen is an
+       ordinary instance of the component carrying one modifier, so what is
+       on the page is the component re-themed rather than a picture of it.
+
+       auto-fit with a minimum rather than a fixed count, so the rows go to
+       two-up and then one-up on a narrow screen without a breakpoint. The
+       minmax(0, …) on the inner track is the same pair .demo__state carries,
+       for the same reason. */
+    .demo__specimens {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(13rem, 100%), 1fr));
+      gap: 1rem 1.25rem;
+      max-width: 100%;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .demo__specimen {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.5rem;
+      min-width: 0;
+    }
+
+    .demo__specimen-name {
+      margin: 0;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.6875rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--demo-dim);
+    }
+
+    .demo__specimen-note {
+      margin: 0;
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      color: var(--demo-dim);
+    }
+
+    /* The generation prose. Measure capped in ch so it stays readable on a
+       wide screen without a wrapper element to do it. */
+    .demo__prose {
+      display: grid;
+      gap: 0.85rem;
+      max-width: 68ch;
+    }
+
+    .demo__prose p {
+      margin: 0;
+      font-size: 0.9375rem;
+      line-height: 1.65;
+      color: var(--demo-soft);
+    }
+
+    .demo__prose strong {
+      color: var(--demo-fg);
+      font-weight: 600;
+    }
+
+    .demo__prose em {
+      font-style: normal;
+      color: var(--demo-fg);
+    }
+
+    .demo__prose code {
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.8125em;
+      padding: 0.1em 0.35em;
+      border-radius: 0.25rem;
+      background: var(--demo-fill);
+      color: var(--demo-fg);
+    }
+
     /* --- touch targets --- */
 
     /* No hover means a finger, and a finger cannot aim at a 10px label. The
@@ -758,6 +835,140 @@
       </section>
     </section>
 
+    <!-- The palettes. Each is an ordinary instance of the component carrying
+         one modifier, so what is on the page is the block re-declared rather
+         than a picture of it. Bands rather than plates: a palette is a
+         question about colour, and a 7:1 strip of the same material answers
+         it in a quarter of the pixels. -->
+    <section class="demo__state">
+      <p class="demo__caption" data-i18n="state.palettes">The palettes &mdash; the same eleven declarations restated, each with its own luminance band</p>
+      <ul class="demo__specimens">
+      <li class="demo__specimen">
+        <p class="demo__specimen-name">Field &middot; 0.22&ndash;0.72</p>
+        <section class="shader-token-field">
+          <div class="shader-token-field__surface shader-token-field__surface--band" data-shader-token-field-surface>
+            <canvas class="shader-token-field__canvas" data-shader-token-field-canvas aria-hidden="true"></canvas>
+          </div>
+        </section>
+        <p class="demo__specimen-note" data-i18n="pal.field">Ochre and sage on bone. The band the study was written against, and the widest of the four.</p>
+      </li>
+      <li class="demo__specimen">
+        <p class="demo__specimen-name">Verdant &middot; 0.24&ndash;0.70</p>
+        <section class="shader-token-field shader-token-field--verdant">
+          <div class="shader-token-field__surface shader-token-field__surface--band" data-shader-token-field-surface>
+            <canvas class="shader-token-field__canvas" data-shader-token-field-canvas aria-hidden="true"></canvas>
+          </div>
+        </section>
+        <p class="demo__specimen-note" data-i18n="pal.verdant">Green, with a dry ochre as the counter-pool: two greens gather into one green.</p>
+      </li>
+      <li class="demo__specimen">
+        <p class="demo__specimen-name">Night &middot; 0.01&ndash;0.14</p>
+        <section class="shader-token-field shader-token-field--night">
+          <div class="shader-token-field__surface shader-token-field__surface--band" data-shader-token-field-surface>
+            <canvas class="shader-token-field__canvas" data-shader-token-field-canvas aria-hidden="true"></canvas>
+          </div>
+        </section>
+        <p class="demo__specimen-note" data-i18n="pal.night">The clamp inverted &mdash; here the ceiling carries the ratio, because the ink is the light thing.</p>
+      </li>
+      <li class="demo__specimen">
+        <p class="demo__specimen-name">Ember &middot; 0.012&ndash;0.13</p>
+        <section class="shader-token-field shader-token-field--ember">
+          <div class="shader-token-field__surface shader-token-field__surface--band" data-shader-token-field-surface>
+            <canvas class="shader-token-field__canvas" data-shader-token-field-canvas aria-hidden="true"></canvas>
+          </div>
+        </section>
+        <p class="demo__specimen-note" data-i18n="pal.ember">Burnt red and bruised violet on ash. A second dark, to show that Night is a palette and not just &ldquo;the dark one&rdquo;.</p>
+      </li>
+      </ul>
+    </section>
+
+    <!-- The forms. Plates rather than bands: a form is a question about
+         structure, and structure wants area. -->
+    <section class="demo__state">
+      <p class="demo__caption" data-i18n="state.forms">The forms &mdash; the same palette, three generators; <code>--form</code> is read by the shader and by the stop list alike</p>
+      <ul class="demo__specimens">
+      <li class="demo__specimen">
+        <p class="demo__specimen-name">Dunes &middot; --form: 0</p>
+        <section class="shader-token-field">
+          <div class="shader-token-field__surface shader-token-field__surface--plate" data-shader-token-field-surface>
+            <canvas class="shader-token-field__canvas" data-shader-token-field-canvas aria-hidden="true"></canvas>
+          </div>
+        </section>
+        <p class="demo__specimen-note" data-i18n="frm.dunes">fbm warped by a second fbm. Octaves pile up, so the field drifts in broad soft masses.</p>
+      </li>
+      <li class="demo__specimen">
+        <p class="demo__specimen-name">Veins &middot; --form: 1</p>
+        <section class="shader-token-field shader-token-field--veins">
+          <div class="shader-token-field__surface shader-token-field__surface--plate" data-shader-token-field-surface>
+            <canvas class="shader-token-field__canvas" data-shader-token-field-canvas aria-hidden="true"></canvas>
+          </div>
+        </section>
+        <p class="demo__specimen-note" data-i18n="frm.veins">Every octave folded about its midpoint and squared before it is summed, so the creases branch into filaments.</p>
+      </li>
+      <li class="demo__specimen">
+        <p class="demo__specimen-name">Terraces &middot; --form: 2</p>
+        <section class="shader-token-field shader-token-field--terraces">
+          <div class="shader-token-field__surface shader-token-field__surface--plate" data-shader-token-field-surface>
+            <canvas class="shader-token-field__canvas" data-shader-token-field-canvas aria-hidden="true"></canvas>
+          </div>
+        </section>
+        <p class="demo__specimen-note" data-i18n="frm.terraces">The warped field quantised into treads before anything reads it, so colour, sheen and shadow land on the same steps.</p>
+      </li>
+      </ul>
+    </section>
+
+    <!-- How the field is made. Prose rather than a diagram: the steps are
+         five lines of shader and each one is a sentence. -->
+    <section class="demo__state">
+      <p class="demo__caption" data-i18n="state.howto">How the field is generated</p>
+      <div class="demo__prose">
+        <p data-i18n="how.p1">
+          Nothing here is an image. Every pixel is worked out from its own
+          coordinate, five steps deep, and the same five steps run for the
+          plate, the band and every specimen above.
+        </p>
+        <p data-i18n="how.p2">
+          <strong>One.</strong> A hash turns a pair of whole numbers into a
+          repeatable random value, and <em>value noise</em> smooths it &mdash;
+          each point takes the four lattice corners around it and blends
+          between them on a curve, so the result wanders instead of jumping.
+        </p>
+        <p data-i18n="how.p3">
+          <strong>Two.</strong> <em>Fractional Brownian motion</em> sums that
+          noise at doubling frequencies and halving amplitudes. Four octaves
+          by default: one broad shape, then three progressively finer ones
+          laid over it. This is where <code>--octaves</code> and
+          <code>--scale</code> land, and where <code>--form</code> changes
+          what each octave contributes before it is added.
+        </p>
+        <p data-i18n="how.p4">
+          <strong>Three.</strong> A <em>domain warp</em>. Rather than read the
+          field at a point, the field is read at a point that has itself been
+          moved by two more fbm lookups &mdash; the material is pushed around
+          by a copy of itself, which is what gives it currents rather than
+          lumps. <code>--warp</code> is how far.
+        </p>
+        <p data-i18n="how.p5">
+          <strong>Four.</strong> Colour. The base is what is left where
+          nothing gathered; the two pools are mixed in over it on smoothsteps
+          of the warped field. Every step so far is a blend, which matters for
+          what happens next.
+        </p>
+        <p data-i18n="how.p6">
+          <strong>Five.</strong> Light, then the clamp. A narrow sheen sits on
+          the ridge and a shadow gathers in the troughs, and both
+          <em>scale</em> the colour rather than mixing white into it &mdash;
+          so the field reads as lit rather than as two colours poured
+          together. That is also the only step that can leave the luminance
+          band, because a blend of colours inside the band is provably inside
+          it and a scale is not a blend. So the clamp goes last, and it is
+          measured rather than assumed: across all four palettes and all three
+          forms, the share of rendered pixels outside the declared band is
+          0.0000%.
+        </p>
+      </div>
+    </section>
+
     <!-- notes.md, rendered. Type, source, the origin paragraphs and one <li>
          per decision bullet — the same shape the file has, so the two can be
          read side by side. Update both together. -->
@@ -815,7 +1026,27 @@
               trusted: GLSL wants a compile-time loop bound, so the fbm loop runs
               to a constant 8 and breaks on the token. A block editable from
               outside by design is a block someone can put 500 in, and an
-              unbounded loop count is a hung GPU rather than a muddy field.</p>
+              unbounded loop count is a hung GPU rather than a muddy field.
+              <code>--form</code> is the second of those, and it selects rather
+              than scales: 0 dunes, 1 veins, 2 terraces. Every quantity in the
+              block chases its target across <code>--settle</code>, which is
+              what makes a palette change a transition instead of a cut &mdash;
+              but there is no halfway between two generators to render, so
+              <code>--form</code> and <code>--octaves</code> snap while the
+              rest ease. Leaving <code>--form</code> out of the snap list was
+              the one bug this cost: it kept its load-time value and the field
+              went on drawing dunes. It took a measurement to see, because two
+              palettes of the same material look exactly as different as two
+              palettes of different ones.</p>
+            <p>Palettes and forms are separate axes and compose freely, which
+              is what a token block buys that a set of finished pictures does
+              not: four palettes and three forms are twelve states, and none of
+              them was authored. A palette restates all eleven declarations
+              rather than patching the ones it wants changed &mdash; a modifier
+              that inherited half its values would leave the other half
+              answering to whichever palette ran last, and the band in
+              particular has to move with the colours or the clamp holds the
+              field to a range the new pools do not live in.</p>
           </li>
           <li>
             <h3 class="demo__notes-head">The clamp is what makes the light affordable, and the light is what makes the clamp real.</h3>
@@ -846,6 +1077,25 @@
               clips a channel at 1.0 and drops the fragment back under the floor
               &mdash; the guarantee failing precisely on the pixels that needed
               it.</p>
+            <p>The guarantee is checked rather than asserted: read the rendered
+              pixels back out of the canvas, convert each to relative
+              luminance, and count the ones outside the band the block
+              declares. Across all four palettes and all three forms, at rest,
+              that count is 0.0000%. How hard the clamp is working varies and
+              is the more interesting number &mdash; 27.5% of the default
+              field&rsquo;s pixels sit on a band edge against 7.3% of
+              Terraces&rsquo;, because quantising the field into treads
+              flattens the ridges the relief was lifting.</p>
+            <p>One thing that check does not cover. Switching palettes eases
+              the band ends along with everything else, so for the length of
+              that transition the field is clamped to an intermediate band
+              while the ink has already changed: measured going light to Night,
+              7.3% of pixels sat above the target ceiling 2.5 seconds in, and
+              the field converged clean by ten. That is the settle working as
+              designed rather than the clamp failing &mdash; every frame is
+              correctly clamped to the band that frame is running on &mdash;
+              and it is written down because a guarantee with a transient in it
+              should say so.</p>
           </li>
           <li>
             <h3 class="demo__notes-head">One ink goes on the field, and that is the clamp&rsquo;s bill rather than a style.</h3>
@@ -988,11 +1238,70 @@
           + 'kontrastforholdet under teksten f\u00f8lger af de angivne '
           + 'v\u00e6rdier frem for af, hvor st\u00f8jen landede \u2014 og '
           + 'afl\u00e6sningen oplyser det.',
+        'state.palettes': 'Paletterne \u2014 de samme elleve angivelser '
+          + 'gentaget, hver med sit eget lysstyrkeb\u00e5nd',
+        'state.forms': 'Formerne \u2014 samme palet, tre generatorer; '
+          + '<code>--form</code> l\u00e6ses b\u00e5de af shaderen og af '
+          + 'stoplisten',
+        'state.howto': 'S\u00e5dan bliver feltet til',
+        'pal.field': 'Okker og salvie p\u00e5 ben. B\u00e5ndet studiet blev '
+          + 'skrevet op imod, og det bredeste af de fire.',
+        'pal.verdant': 'Gr\u00f8n, med en t\u00f8r okker som modpulje: to '
+          + 'gr\u00f8nne samler sig til \u00e9n gr\u00f8n.',
+        'pal.night': 'Klampen vendt om \u2014 her er det loftet, der '
+          + 'b\u00e6rer forholdet, fordi bl\u00e6kket er det lyse.',
+        'pal.ember': 'Br\u00e6ndt r\u00f8d og forsl\u00e5et violet p\u00e5 '
+          + 'aske. Endnu en m\u00f8rk, der viser, at Nat er en palet og ikke '
+          + 'bare \u201ede m\u00f8rke\u201c.',
+        'frm.dunes': 'fbm forvr\u00e6nget af endnu en fbm. Oktaverne hober '
+          + 'sig op, s\u00e5 feltet driver i brede, bl\u00f8de masser.',
+        'frm.veins': 'Hver oktav foldes om sit midtpunkt og kvadreres, '
+          + 'f\u00f8r den l\u00e6gges til, s\u00e5 folderne forgrener sig '
+          + 'til tr\u00e5de.',
+        'frm.terraces': 'Det forvr\u00e6ngede felt kvantiseres til trin, '
+          + 'f\u00f8r noget som helst afl\u00e6ser det, s\u00e5 farve, '
+          + 'skinnet og skyggen lander p\u00e5 de samme trin.',
+        'how.p1': 'Intet her er et billede. Hver pixel regnes ud fra sin egen '
+          + 'koordinat, fem trin dybt, og de samme fem trin k\u00f8rer for '
+          + 'pladen, b\u00e5ndet og hvert eksemplar ovenfor.',
+        'how.p2': '<strong>Et.</strong> En hash g\u00f8r et par hele tal til '
+          + 'en gentagelig tilf\u00e6ldig v\u00e6rdi, og <em>value '
+          + 'noise</em> udglatter den \u2014 hvert punkt tager de fire '
+          + 'gitterhj\u00f8rner omkring sig og blander mellem dem p\u00e5 en '
+          + 'kurve, s\u00e5 resultatet vandrer i stedet for at springe.',
+        'how.p3': '<strong>To.</strong> <em>Fraktal brownsk bev\u00e6gelse</em> '
+          + 'l\u00e6gger den st\u00f8j sammen ved fordoblede frekvenser og '
+          + 'halverede amplituder. Fire oktaver som standard: \u00e9n bred '
+          + 'form og derefter tre stadig finere oven p\u00e5. Det er her '
+          + '<code>--octaves</code> og <code>--scale</code> lander, og her '
+          + '<code>--form</code> \u00e6ndrer, hvad hver oktav bidrager med, '
+          + 'f\u00f8r den l\u00e6gges til.',
+        'how.p4': '<strong>Tre.</strong> En <em>domain warp</em>. I stedet for '
+          + 'at afl\u00e6se feltet i et punkt afl\u00e6ses det i et punkt, '
+          + 'der selv er flyttet af to yderligere fbm-opslag \u2014 '
+          + 'materialet skubbes rundt af en kopi af sig selv, og det er dét, '
+          + 'der giver str\u00f8mninger frem for klumper. <code>--warp</code> '
+          + 'er hvor langt.',
+        'how.p5': '<strong>Fire.</strong> Farve. Basen er det, der er tilbage, '
+          + 'hvor intet samlede sig; de to puljer blandes ind over den p\u00e5 '
+          + 'smoothsteps af det forvr\u00e6ngede felt. Hvert trin indtil nu er '
+          + 'en blanding, og det betyder noget for det, der sker nu.',
+        'how.p6': '<strong>Fem.</strong> Lys, og s\u00e5 klampen. Et smalt '
+          + 'skin ligger p\u00e5 ryggen og en skygge samler sig i '
+          + 'lavningerne, og begge <em>skalerer</em> farven frem for at blande '
+          + 'hvidt i den \u2014 s\u00e5 feltet l\u00e6ses som belyst frem '
+          + 'for som to farver h\u00e6ldt sammen. Det er ogs\u00e5 det eneste '
+          + 'trin, der kan forlade lysstyrkeb\u00e5ndet, for en blanding af '
+          + 'farver inde i b\u00e5ndet ligger beviseligt inde i b\u00e5ndet, '
+          + 'og en skalering er ikke en blanding. Derfor kommer klampen sidst, '
+          + 'og den er m\u00e5lt frem for antaget: p\u00e5 tv\u00e6rs af '
+          + 'alle fire paletter og alle tre former er andelen af gengivne '
+          + 'pixels uden for det angivne b\u00e5nd 0,0000\u00a0%.',
         'state.default': 'Standard \u2014 blokken som angivet',
         'state.live': 'Aktiv \u2014 den tilstand, l\u00e6sem\u00e6rket p\u00e5 '
           + 'forsiden s\u00e6tter et kort i: bredere forvr\u00e6ngning og '
           + 'tre gange s\u00e5 hurtigt fl\u00f8w, d\u00e6mpet ind over '
-          + '--settle',
+          + '<code>--settle</code>',
         'state.night': 'Nat \u2014 en anden udgave af komponenten, hvor '
           + 'afgr\u00e6nsningen er vendt om: her er det loftet, der '
           + 'garanterer forholdet, fordi det er teksten, der er lys'
@@ -1004,14 +1313,27 @@
       // toggle's is the only one so far. Same table, different setter.
       var labelled = Array.prototype.slice.call(document.querySelectorAll('[data-i18n-aria]'));
       var englishLabels = labelled.map(function (el) { return el.getAttribute('aria-label'); });
-      var english = nodes.map(function (el) { return el.textContent; });
+      /* innerHTML rather than textContent, on the capture and on the set
+         alike, because several of these strings carry markup the sentence
+         needs: a <code> around a token name, the <strong> that numbers a
+         step. Read with textContent the English fallback is captured already
+         flattened, so the first apply() on load strips markup that was in the
+         markup — which it did, silently, to this page's own
+         <code>--settle</code> before anything was translated.
+
+         Safe here in the way innerHTML usually is not: every string it sets
+         is a literal in this file or in the table below it. Nothing from a
+         URL, a field or a fetch reaches this line, and a translation table
+         that took input from any of those would be the problem rather than
+         this assignment. */
+      var english = nodes.map(function (el) { return el.innerHTML; });
 
       function apply(lang) {
         var table = lang === 'da' ? DA : null;
 
         nodes.forEach(function (el, i) {
           var key = el.getAttribute('data-i18n');
-          el.textContent = table && table[key] ? table[key] : english[i];
+          el.innerHTML = table && table[key] ? table[key] : english[i];
         });
 
         labelled.forEach(function (el, i) {

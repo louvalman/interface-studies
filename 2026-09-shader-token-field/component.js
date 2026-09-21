@@ -103,6 +103,11 @@
          outside by design, and an octave count is a loop bound. */
       scale: clamp(num('scale', 2.4), 0.05, 40),
       octaves: Math.round(clamp(num('octaves', 4), 1, MAX_OCTAVES)),
+      /* Which of the three generators draws it. Clamped like --octaves and
+         for the same reason: it selects a branch in the shader, so a value
+         outside the set has to become one inside it rather than whatever the
+         GPU does with an unmatched int. */
+      form: Math.round(clamp(num('form', 0), 0, 2)),
       warp: clamp(num('warp', 0.42), 0, 4),
       relief: clamp(num('relief', 0.9), 0, 3),
       grain: clamp(num('grain', 0.035), 0, 0.5),
@@ -172,7 +177,7 @@
     'uniform vec3 u_base, u_poolA, u_poolB;\n' +
     'uniform float u_scale, u_warp, u_grain, u_relief;\n' +
     'uniform float u_floor, u_ceil;\n' +
-    'uniform int u_octaves;\n' +
+    'uniform int u_octaves, u_form;\n' +
     'out vec4 fragColor;\n' +
 
     'float hash(vec2 p) {\n' +
@@ -194,10 +199,41 @@
     '  float a = 0.5, sum = 0.0, norm = 0.0;\n' +
     '  for (int i = 0; i < ' + MAX_OCTAVES + '; i++) {\n' +
     '    if (i >= u_octaves) break;\n' +
-    '    sum += a * vnoise(p); norm += a;\n' +
+    '    float v = vnoise(p);\n' +
+    /* FORM_VEINS folds each octave about its midpoint before it is summed.
+       The fold is what makes the difference: |2v-1| is creased at v = 0.5,
+       so every octave contributes a crease, and summing creased octaves
+       gives filaments that branch instead of clouds that pile up. Folding
+       the SUM instead would crease once and leave the material smooth
+       either side of it.
+
+       The square is not decoration either. The fold alone is smoother than
+       what it replaced — |2v-1| never reaches the ends its input did, so the
+       sum lands in a narrower band around the middle and rendered flatter
+       than the dunes it was meant to contrast with. Squaring pushes the
+       low end down and leaves the crest where it is, which is what turns a
+       fold into a filament. */
+    '  if (u_form == 1) { v = 1.0 - abs(v * 2.0 - 1.0); v *= v; }\n' +
+    '    sum += a * v; norm += a;\n' +
     '    p *= 2.02; a *= 0.5;\n' +
     '  }\n' +
     '  return sum / max(norm, 1e-5);\n' +
+    '}\n' +
+
+    /* FORM_TERRACES quantises the field into risers and treads. The tread is
+       floor(), the riser is a smoothstep across the middle third of each
+       fraction rather than a hard edge — a hard edge is a step function on a
+       value that varies per fragment, which aliases into stair-stepped jaggies
+       the moment the field is drawn below its layout size, and the rail draws
+       it at 0.7. */
+    'float terrace(float v, float n) {\n' +
+    /* fbm of a [0,1] noise is an average, so it clusters around the middle
+       and barely reaches the ends: quantising it raw spends most of the
+       treads on values the field never takes, and the two or three it does
+       reach are too far apart to read as contours. Stretching the middle
+       half across the whole range first is what puts every tread in play. */
+    '  float s = clamp((v - 0.25) * 2.0, 0.0, 1.0) * n;\n' +
+    '  return (floor(s) + smoothstep(0.42, 0.58, fract(s))) / n;\n' +
     '}\n' +
 
     'void main() {\n' +
@@ -211,6 +247,13 @@
     '                fbm(p + vec2(5.2, 1.3) - vec2(u_phase, 0.0)));\n' +
     '  float f = fbm(p + u_warp * 4.0 * q);\n' +
     '  float g = fbm(p * 1.7 + 11.0 + q);\n' +
+
+    /* The terrace is taken here, on the warped field and before anything
+       reads it, so the colour mix, the ridge and the trough all land on the
+       same treads. Terracing after the colour would band the hue and leave
+       the light continuous, which reads as a printing fault rather than as
+       contours. */
+    '  if (u_form == 2) { f = terrace(f, 7.0); g = terrace(g, 5.0); }\n' +
 
     /* Linear light throughout. The pools gather, the base is what is left. */
     '  vec3 col = u_base;\n' +
@@ -307,7 +350,8 @@
     gl.useProgram(prog);
     var u = {};
     ['u_res', 'u_phase', 'u_base', 'u_poolA', 'u_poolB', 'u_scale', 'u_warp',
-      'u_grain', 'u_relief', 'u_floor', 'u_ceil', 'u_octaves'].forEach(function (name) {
+      'u_grain', 'u_relief', 'u_floor', 'u_ceil', 'u_octaves',
+      'u_form'].forEach(function (name) {
       u[name] = gl.getUniformLocation(prog, name);
     });
 
@@ -437,6 +481,7 @@
         gl.uniform1f(g.u.u_floor, cur.lumFloor);
         gl.uniform1f(g.u.u_ceil, cur.lumCeil);
         gl.uniform1i(g.u.u_octaves, cur.octaves);
+        gl.uniform1i(g.u.u_form, cur.form);
 
         gl.drawArrays(gl.TRIANGLES, 0, 3);
 
@@ -477,7 +522,13 @@
         }
       });
 
+      /* Snapped, not chased. An octave count and a form are selectors — a
+         loop bound and a branch — and there is no halfway between two of
+         them to render, so easing them would hand the shader 1.4 octaves and
+         a form that is neither. The scalars above are quantities and ease;
+         these are choices and switch. */
       cur.octaves = target.octaves;
+      cur.form = target.form;
       cur.bufferScale = target.bufferScale;
       return moved;
     }
