@@ -1362,10 +1362,16 @@ page is set in, what the studies are made of, where else the set exists, what
 types they cover, and how many there are. The last two are written from the
 cards, so neither is a number anyone keeps by hand.
 
-The `Figma` row is the companion file on Figma Community, and it is a row
-rather than a fourth circle in the handles nav above it — for the reason the
-tip jar is not one either: that row is handles, and one published file is not
-one. It sits third, with the two authored rows rather than after the counts,
+**Figma is in the footer twice, and the two are not the same link.** The
+circle in the handles nav is the profile, which is a handle and so belongs
+where the handles are. The `Figma` row in the meta list is the companion file
+on Figma Community — one published file, which is not a handle, for the reason
+the tip jar is not one either. The row says something about the set that the
+profile does not: this is where the set is also drawn. Drop the row and the
+direct link to the file goes with it; the nav only says the person has an
+account.
+
+The row sits third, with the two authored rows rather than after the counts,
 so the pair the script writes stays together. Its link takes `.foot__author`'s
 treatment rather than a new one, which is the same argument the tip jar
 settles: a second inline-link treatment in one footer reads as a different
