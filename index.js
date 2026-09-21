@@ -131,15 +131,15 @@
       'ghost.month.nov': 'november',
       'ghost.month.dec': 'december',
       'foot.blurb': 'Hvert studie er en mappe, der står for sig selv: sin egen '
-        + 'markup, sit eget stylesheet, sine egne tokens. Kopiér en ud, og '
-        + 'den virker videre.',
+        + 'markup, sit eget stylesheet, sine egne tokens og, hvor der er brug '
+        + 'for det, sit eget script. Kopiér en ud, og den virker videre.',
       'foot.inspiration': 'Nogle studier tager udgangspunkt i en grænseflade '
         + 'set andre steder. Når de gør, står linket på Inspiration-linjen '
         + 'sidst i mappens notes.md; er designet originalt, står det der i '
         + 'stedet.',
       'foot.typefaces': 'Skrifttyper',
       'foot.stack': 'Stack',
-      'foot.stackVal': 'HTML og CSS, intet byggetrin',
+      'foot.stackVal': 'HTML, CSS og vanilla JS, intet byggetrin',
       'foot.types': 'Typer',
       'foot.studies': 'Studier',
       'foot.builtBy': 'Bygget af',

@@ -943,6 +943,14 @@ lede — so a headline change means editing `index.html`, then `og.html`, then
 re-rendering, and skipping the last two leaves a link that pastes as one page
 and opens as another.
 
+Its `Stack` row is shorter than the footer's on purpose, and that is not a
+drift to correct. The page says `HTML, CSS and vanilla JS, no build step`,
+where `vanilla` carries the no-framework claim and there is room for it. The
+card says `HTML, CSS & JS`, because the card is 1200x630 of fixed width read
+at a glance in a link unfurl: measured, `vanilla` widens the meta block by
+120px, takes that width off the lede's column and wraps it from two lines to
+three. Naming the JS at all is the honest part, and it survives the cut.
+
 Its meta row is the exception, and deliberately not a copy: the masthead's row
 is the newest study's date, read off the cards at runtime, and baked into a PNG
 that is wrong from the next study onward. The card states three things about
