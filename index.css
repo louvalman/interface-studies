@@ -1694,7 +1694,11 @@ body.is-locked {
 
 /* The one link in the footer bar that is a name rather than a control, so
    it is underlined rather than left to hover to announce itself. */
-.foot__author {
+/* One inline-link treatment in the footer, for the reason the tip jar is set
+   like the back-to-top link: a second one down here would read as a different
+   kind of link. The meta list's Figma row takes it too. */
+.foot__author,
+.foot__val a {
   color: var(--ink);
   text-decoration: none;
   border-bottom: 1px solid var(--hairline);
@@ -1702,12 +1706,15 @@ body.is-locked {
 }
 
 .foot__author:hover,
-.foot__author:active {
+.foot__val a:hover,
+.foot__author:active,
+.foot__val a:active {
   color: var(--accent);
   border-bottom-color: var(--accent);
 }
 
-.foot__author:focus-visible {
+.foot__author:focus-visible,
+.foot__val a:focus-visible {
   outline: 2px solid var(--ink);
   outline-offset: 3px;
   border-radius: 0.2rem;

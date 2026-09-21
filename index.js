@@ -136,6 +136,7 @@
         + 'set andre steder. Når de gør, står linket på Inspiration-linjen '
         + 'sidst i mappens notes.md; er designet originalt, står det der i '
         + 'stedet.',
+      'foot.figmaVal': 'Fil på Figma Community',
       'foot.typefaces': 'Skrifttyper',
       'foot.stack': 'Stack',
       'foot.stackVal': 'HTML og CSS, intet byggetrin',
