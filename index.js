@@ -70,11 +70,11 @@
       'type.navigation': 'Navigation',
       'type.layout': 'Layout',
       'filter.all': 'Alle',
-      'piece.liquidGlassToolbar.title': 'Værktøjslinje i flydende glas',
+      'piece.liquidGlassToolbar.title': 'Liquid glass toolbar',
       'piece.liquidGlassToolbar.note': 'Én glasflade der skifter form — det '
         + 'valgte punkt folder sig ud til en pille med etiket, søgning til et '
         + 'felt, loggen til et panel — i seks materialer fra én opskrift.',
-      'cta.quickLookToolbar': 'Hurtigt kig: Værktøjslinje i flydende glas',
+      'cta.quickLookToolbar': 'Hurtigt kig: Liquid glass toolbar',
       'piece.shaderTokenField.title': 'Afgr\u00e6nsede shaders',
       'piece.shaderTokenField.note': 'Et gradientfelt tegnet to gange ud fra '
         + '\u00e9n angivelse \u2014 \u00e9n gang af en CSS-stopliste, \u00e9n '
