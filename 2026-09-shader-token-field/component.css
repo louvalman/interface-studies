@@ -45,6 +45,12 @@
   --shader-token-field-relief: 0.9;       /* directional lift, 0–1: see the band */
   --shader-token-field-grain: 0.035;      /* per-pixel dither, added before the clamp */
 
+  /* Which generator draws it: 0 dunes, 1 veins, 2 terraces. The three
+     modifiers below set this AND restate the stop list, because a token the
+     GPU could read and the CSS could not would be the one place the two
+     renderings stopped being one declaration. */
+  --shader-token-field-form: 0;           /* 0 dunes, 1 veins, 2 terraces */
+
   /* --- the motion -----------------------------------------------------
      --flow is the only thing time does here: the noise is advected through
      itself at this rate. The rest of the component's motion is CSS.
@@ -360,4 +366,121 @@
   --shader-token-field-line: rgba(242, 239, 232, 0.16);
 
   --shader-token-field-grain: 0.032;
+}
+
+/* --- the other palettes -------------------------------------------------
+   Each is the same eleven declarations the root block makes, restated. Not a
+   patch over the default: a palette that inherited half its values would
+   leave the half it did not restate answering to whichever palette ran last,
+   and the band in particular has to move with the colours or the clamp is
+   holding the field to a range the new pools do not live in.
+
+   The band is the part to get right first, and it is chosen before the
+   colours rather than after. Every pool sits inside it, so the clamp is
+   holding the sheen and the shadow rather than fighting the palette, and the
+   worst case against the field ink clears 4.5:1 by construction — the ratio
+   is a property of the two band ends and the ink, not of where the noise
+   landed. Both of these leave more headroom than the two above them, which
+   were measured at 4.81:1. */
+
+/* Light, green. The counter-pool is a dry ochre rather than a second green:
+   two greens gather into one green, and the pools exist to be told apart. */
+.shader-token-field--verdant {
+  --shader-token-field-base: #cdd8b8;     /* Y 0.656 */
+  --shader-token-field-pool-a: #7d9a6b;   /* Y 0.285 */
+  --shader-token-field-pool-b: #b9a86a;   /* Y 0.394 */
+
+  --shader-token-field-lum-floor: 0.24;
+  --shader-token-field-lum-ceil: 0.70;
+  --shader-token-field-relief: 0.85;
+  --shader-token-field-field-ink: #10170f;   /* 5.04:1 against the floor */
+
+  --shader-token-field-surface: #eef0e6;
+  --shader-token-field-ink: #10170f;
+  --shader-token-field-ink-soft: #4d564a;
+  --shader-token-field-line: rgba(16, 23, 15, 0.14);
+
+  --shader-token-field-grain: 0.035;
+}
+
+/* Dark, warm. The second dark in the set, and it is here to show that the
+   night version is a palette rather than "the dark one" — the pools are a
+   burnt red and a bruised violet, which on a 0.012–0.13 band read as embers
+   in ash rather than as a tinted grey. */
+.shader-token-field--ember {
+  --shader-token-field-base: #2a1f1c;     /* Y 0.016 */
+  --shader-token-field-pool-a: #6b3a2c;   /* Y 0.063 */
+  --shader-token-field-pool-b: #4a3550;   /* Y 0.046 */
+
+  --shader-token-field-lum-floor: 0.012;
+  --shader-token-field-lum-ceil: 0.13;
+  --shader-token-field-relief: 1.5;
+  --shader-token-field-field-ink: #f6ece2;   /* 5.00:1 against the ceiling */
+
+  --shader-token-field-surface: #17120f;
+  --shader-token-field-ink: #f6ece2;
+  --shader-token-field-ink-soft: #ab9f94;
+  --shader-token-field-line: rgba(246, 236, 226, 0.16);
+
+  --shader-token-field-grain: 0.030;
+}
+
+/* --- the other forms ----------------------------------------------------
+   The palette says what the field is made of; the form says how it is put
+   together. They are independent on purpose — any palette above composes
+   with any form here — which is what a token block buys that a set of
+   finished pictures does not.
+
+   Each modifier states the form twice, because the study renders twice.
+   `--form` is the branch the fragment shader takes. The rule beneath it is
+   the stop list's answer to the same question, in the only vocabulary CSS
+   has for it: gradient geometry. They are not the same picture and were
+   never going to be — one is per-fragment noise and the other is three
+   ellipses — but they are the same ARGUMENT about the material, which is
+   the thing the two renderings are supposed to share. A form the GPU could
+   draw and the stop list could not would be the point where this study
+   stopped being one declaration read twice. */
+
+/* Filaments. Every octave is folded about its midpoint before it is summed,
+   so the creases branch instead of piling up. The stop list answers with
+   tighter, more eccentric ellipses and harder stops: the same move toward
+   something with edges. */
+.shader-token-field--veins {
+  --shader-token-field-form: 1;
+  --shader-token-field-scale: 2.0;
+  /* The fold halves the field's dynamic range — |2v-1| never reaches the
+     ends its input did — so the relief is raised to put the range back
+     rather than left to render a flatter version of the same palette. */
+  --shader-token-field-relief: 1.25;
+}
+
+.shader-token-field--veins .shader-token-field__surface {
+  background-image:
+    radial-gradient(38% 92% at 22% 30%, var(--shader-token-field-pool-a) 0%, transparent 46%),
+    radial-gradient(30% 86% at 74% 62%, var(--shader-token-field-pool-b) 0%, transparent 44%),
+    radial-gradient(52% 44% at 52% 98%, var(--shader-token-field-pool-a) 0%, transparent 52%);
+  background-size: 150% 150%, 160% 150%, 150% 140%;
+}
+
+/* Contours. The warped field is quantised into treads before anything reads
+   it, so the colour, the sheen and the shadow all land on the same steps.
+   The stop list answers with repeating-gradient bands over the pools —
+   CSS's own way of saying a continuous thing has been cut into levels. */
+.shader-token-field--terraces {
+  --shader-token-field-form: 2;
+  --shader-token-field-scale: 2.6;
+  --shader-token-field-warp: 0.30;
+}
+
+.shader-token-field--terraces .shader-token-field__surface {
+  background-image:
+    repeating-linear-gradient(
+      152deg,
+      rgba(0, 0, 0, 0.09) 0 6%,
+      rgba(255, 255, 255, 0.05) 6% 12%),
+    radial-gradient(64% 80% at 22% 28%, var(--shader-token-field-pool-a) 0%, transparent 60%),
+    radial-gradient(56% 72% at 76% 64%, var(--shader-token-field-pool-b) 0%, transparent 58%),
+    radial-gradient(90% 68% at 54% 100%, var(--shader-token-field-pool-a) 0%, transparent 70%);
+  background-size: 100% 100%, 150% 150%, 160% 150%, 150% 140%;
+  background-position: 0 0, 26% 34%, 74% 62%, 50% 96%;
 }

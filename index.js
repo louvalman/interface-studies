@@ -71,11 +71,11 @@
       'type.navigation': 'Navigation',
       'type.layout': 'Layout',
       'filter.all': 'Alle',
-      'piece.liquidGlassToolbar.title': 'Værktøjslinje i flydende glas',
+      'piece.liquidGlassToolbar.title': 'Liquid glass toolbar',
       'piece.liquidGlassToolbar.note': 'Én glasflade der skifter form — det '
         + 'valgte punkt folder sig ud til en pille med etiket, søgning til et '
         + 'felt, loggen til et panel — i seks materialer fra én opskrift.',
-      'cta.quickLookToolbar': 'Hurtigt kig: Værktøjslinje i flydende glas',
+      'cta.quickLookToolbar': 'Hurtigt kig: Liquid glass toolbar',
       'piece.shaderTokenField.title': 'Afgr\u00e6nsede shaders',
       'piece.shaderTokenField.note': 'Et gradientfelt tegnet to gange ud fra '
         + '\u00e9n angivelse \u2014 \u00e9n gang af en CSS-stopliste, \u00e9n '
@@ -91,41 +91,41 @@
         + 'afspillet fra filer. Den er tavs som udgangspunkt og tegner alt, '
         + 'hvad den siger.',
       'cta.quickLookStruck': 'Hurtigt kig: Anslagstoner',
-      'piece.bentoGrid.title': 'Interaktivt bento-gitter',
+      'piece.bentoGrid.title': 'Interaktivt bento-grid',
       'piece.bentoGrid.note': 'Syv fliser, der hver angiver den plads, de '
-        + 'ønsker, på et gitter der afkorter hvert spænd efter sit eget '
+        + 'ønsker, på et grid, der afkorter hvert spænd efter sit eget '
         + 'antal kolonner. Hver flise svarer på den plads, den lander i, '
         + 'frem for på den modifikator, den fik — og åbner man én, pakkes '
         + 'tavlen om omkring den.',
-      'cta.quickLookBento': 'Hurtigt kig: Interaktivt bento-gitter',
+      'cta.quickLookBento': 'Hurtigt kig: Interaktivt bento-grid',
       'piece.inkedPlate.title': 'Kort med tegnede plader',
       'piece.inkedPlate.note': 'En billedplade og en tekstplade med afskårne '
-        + 'hjørner mod hinanden, over et punktgitter med snitmærker. '
+        + 'hjørner mod hinanden, over et grid af punkter med snitmærker. '
         + 'Stregtegningen tegner sig selv ved indlæsning i ren CSS — hver '
         + 'streg angiver en længde på 1, så ét sæt keyframes tegner dem alle '
         + 'uden at måle nogen af dem.',
       'cta.quickLookInked': 'Hurtigt kig: Kort med tegnede plader',
       'piece.rasterPulse.title': 'Rasterpuls',
       'piece.rasterPulse.note': 'Et plakatkort, hvis punktfelt selv regner '
-        + 'sin form ud. Hvert punkt bærer intet andet end sin koordinat i '
-        + 'gitteret; CSS udleder, om det hører til mønsteret, hvilken af to '
+        + 'sin form ud. Hvert punkt bærer intet andet end sin gridkoordinat; '
+        + 'CSS udleder, om det hører til mønsteret, hvilken af to '
         + 'toner det får, og hvor det ligger i den puls, der vandrer gennem '
         + 'feltet.',
       'cta.quickLookRaster': 'Hurtigt kig: Rasterpuls',
-      'piece.drawnGradients.title': 'Tegnede gradienter',
+      'piece.drawnGradients.title': 'Tegnede gradients',
       'piece.drawnGradients.note': 'Gradientflader lavet ved at tegne nogle få '
         + 'overlappende SVG-former i flad farve og sløre dem til ukendelighed. '
         + 'En trappeformet silhuet lægger derefter fladen ind i en tekstblok, '
         + 'med trinnene på de samme linjer.',
-      'cta.quickLookGradients': 'Hurtigt kig: Tegnede gradienter',
-      'piece.detailReveal.title': 'Kort med detaljeafsløring',
+      'cta.quickLookGradients': 'Hurtigt kig: Tegnede gradients',
+      'piece.detailReveal.title': 'Kort med detaljepanel',
       'piece.detailReveal.note': 'Et detaljepanel der stiger op fra bundkanten '
         + 'ved hover og skubber den hvilende etiket op foran sig. Rummer ethvert '
         + 'indhold; en kortvariant tilføjer højdekurver og en pulserende nål.',
       'cta.openDemo': 'Åbn demo',
       'cta.openFigma': 'Åbn i Figma',
       'cta.quickLook': 'Hurtigt kig',
-      'cta.quickLookOf': 'Hurtigt kig: Kort med detaljeafsløring',
+      'cta.quickLookOf': 'Hurtigt kig: Kort med detaljepanel',
       'ghost.title': 'Kommende studie',
       'ghost.month.oct': 'oktober',
       'ghost.month.nov': 'november',

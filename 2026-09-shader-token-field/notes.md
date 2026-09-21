@@ -25,7 +25,26 @@ actually running on, including the contrast ratio the block guarantees.
   runs to a constant 8 and breaks on the token, and the token is clamped to
   1–8 before it gets there. A block editable from outside by design is a block
   someone can put 500 in, and an unbounded loop count is a hung GPU rather
-  than a muddy field.
+  than a muddy field. `--form` is the second of those, and it selects rather
+  than scales: 0 dunes, 1 veins, 2 terraces. The distinction matters at the
+  point the uniforms are eased. Every quantity in the block chases its target
+  across `--settle`, which is what makes a palette change a transition instead
+  of a cut — but there is no halfway between two generators to render, so
+  `--form` and `--octaves` snap while the rest ease. Leaving `--form` out of
+  the snap list was the one bug this cost: it kept its load-time value, the
+  variant switched everywhere else, and the field went on drawing dunes. It
+  took a measurement to see — the edge energy of the three forms came back
+  identical to three decimal places — because two palettes of the same
+  material look exactly as different as two palettes of different ones.
+
+  Palettes and forms are separate axes and compose freely, which is what a
+  token block buys that a set of finished pictures does not: four palettes and
+  three forms are twelve states, and none of them was authored. A palette
+  restates all eleven declarations rather than patching the ones it wants
+  changed — a modifier that inherited half its values would leave the other
+  half answering to whichever palette ran last, and the band in particular has
+  to move with the colours or the clamp holds the field to a range the new
+  pools do not live in.
 
 - **The clamp is what makes the light affordable, and the light is what makes
   the clamp real.** Every fragment's WCAG relative luminance is clamped into
@@ -52,6 +71,27 @@ actually running on, including the contrast ratio the block guarantees.
   obvious scale-up clips a channel at 1.0 and drops the fragment back under
   the floor — the guarantee failing precisely on the pixels that needed it.
   Lowering to the ceiling is a scale, which cannot clip.
+
+  The guarantee is checked rather than asserted, and the check is worth having
+  written down because it is cheap: read the rendered pixels back out of the
+  canvas, convert each to relative luminance, and count the ones outside the
+  band the block declares. Across all four palettes and all three forms, at
+  rest, that count is 0.0000% — `field` 0.22–0.72, `verdant` 0.24–0.70,
+  `night` 0.01–0.14, `ember` 0.012–0.13, and the two new forms on the bands
+  their palettes bring. How hard the clamp is working varies and is the more
+  interesting number: 27.5% of `field`'s pixels sit on a band edge against
+  7.3% of `terraces`', because quantising the field into treads flattens the
+  ridges the relief was lifting, so there is less for the clamp to catch.
+
+  One thing the check does not cover, and it is the one place the ratio is
+  briefly weaker than the read-out claims. Switching palettes eases the band
+  ends along with everything else, so for the length of that transition the
+  field is clamped to an intermediate band while the ink has already changed —
+  measured going light to `night`, 7.3% of pixels sat above the target ceiling
+  2.5 seconds in, and the field converged clean by ten. That is the settle
+  working as designed rather than the clamp failing: every frame is correctly
+  clamped to the band that frame is running on. It is recorded here because a
+  guarantee with a transient in it should say so.
 
 - **One ink goes on the field, and that is the clamp's bill rather than a
   style.** A second, muted tier needs a lighter ink, and against a floor of
