@@ -1,0 +1,55 @@
+<!--
+  The component markup, and nothing else. This file is the contract: it is the
+  exact markup component.css expects, and it is what gets copied out.
+
+  The two canvases are empty on purpose. Without component.js they stay
+  transparent and the stop list underneath is what you see — which is the
+  component, not a degradation of it.
+-->
+
+<section class="shader-token-field">
+
+  <div class="shader-token-field__surface shader-token-field__surface--plate" data-shader-token-field-surface>
+    <canvas class="shader-token-field__canvas" data-shader-token-field-canvas aria-hidden="true"></canvas>
+    <div class="shader-token-field__inscription">
+      <p class="shader-token-field__kicker">Luminance band</p>
+      <p class="shader-token-field__line">
+        No pixel behind this line is lighter than the ceiling or darker than
+        the floor. The ratio under a letter is a property of the field, not of
+        the pixel that happened to land there.
+      </p>
+    </div>
+  </div>
+
+  <div class="shader-token-field__surface shader-token-field__surface--band" data-shader-token-field-surface>
+    <canvas class="shader-token-field__canvas" data-shader-token-field-canvas aria-hidden="true"></canvas>
+  </div>
+
+  <dl class="shader-token-field__readout">
+    <div class="shader-token-field__row">
+      <dt>Frequency</dt>
+      <dd data-shader-token-field-value="scale">2.4 &middot; 4 oct</dd>
+    </div>
+    <div class="shader-token-field__row">
+      <dt>Warp</dt>
+      <dd data-shader-token-field-value="warp">0.42</dd>
+    </div>
+    <div class="shader-token-field__row">
+      <dt>Flow</dt>
+      <dd data-shader-token-field-value="flow">0.05 / s</dd>
+    </div>
+    <div class="shader-token-field__row">
+      <dt>Band</dt>
+      <dd data-shader-token-field-value="band">0.22 &ndash; 0.72 Y</dd>
+    </div>
+    <div class="shader-token-field__row">
+      <dt>Worst case</dt>
+      <dd data-shader-token-field-value="ratio">4.81:1</dd>
+    </div>
+    <div class="shader-token-field__row">
+      <dt>Drawn by</dt>
+      <dd data-shader-token-field-value="renderer">Stop list</dd>
+    </div>
+  </dl>
+
+</section>

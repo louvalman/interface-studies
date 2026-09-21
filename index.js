@@ -75,6 +75,15 @@
         + 'valgte punkt folder sig ud til en pille med etiket, søgning til et '
         + 'felt, loggen til et panel — i seks materialer fra én opskrift.',
       'cta.quickLookToolbar': 'Hurtigt kig: Værktøjslinje i flydende glas',
+      'piece.shaderTokenField.title': 'Shaderfelt af tokens',
+      'piece.shaderTokenField.note': 'Et gradientfelt, hvis shader-parametre '
+        + 'er en token-blok: otte tal og tre farver, l\u00e6st \u00e9n gang '
+        + 'af en stopliste, der ikke kr\u00e6ver script, og \u00e9n gang af '
+        + 'grafikkortet. Hvert fragments lysstyrke afgr\u00e6nses til et '
+        + 'angivet b\u00e5nd, s\u00e5 kontrastgulvet under teksten er et '
+        + 'l\u00f8fte, v\u00e6rdierne giver, frem for en m\u00e5ling taget '
+        + 'bagefter.',
+      'cta.quickLookShader': 'Hurtigt kig: Shaderfelt af tokens',
       'piece.struckTones.title': 'Anslagstoner',
       'piece.struckTones.note': 'En lydpalet til en gr\u00e6nseflade, skrevet '
         + 'som en token-blok: fire lyde angivet som en stemning, en klang, et '

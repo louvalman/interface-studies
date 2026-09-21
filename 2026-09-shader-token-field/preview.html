@@ -1,0 +1,289 @@
+<!doctype html>
+<!--
+  The thumbnail the landing page iframes: ONE instance of the component,
+  centred on the demo's background, with no captions and no other states.
+
+  Keep it minimal — it is rendered small. It links component.css and never
+  redefines it, exactly like demo.html. If you change the component's markup,
+  change it here too; this file and component.html should stay in step.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shader token field — preview</title>
+
+  <!-- Same font loading as demo.html. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap">
+
+  <link rel="stylesheet" href="component.css">
+
+  <!-- The ground, before the first paint. The index loads this frame with
+     ?theme= on the src, so a thumbnail is never drawn on the wrong one and
+     then corrected. Opened on its own, with no query, it keeps the light
+     ground. -->
+  <script>
+    var theme = new URLSearchParams(location.search).get('theme');
+    if (theme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+  </script>
+
+  <style>
+    /* Thumbnail scaffolding only. Nothing here may name a component class. */
+
+    /* The shared ground, and the only colour this page writes. Both values are
+       literals repeated in every folder rather than shared from anywhere — the
+       folder has to survive being copied out — but they have to be the same
+       two numbers in all of them, or the rail stops reading as one set of
+       cards. That is what this ground is for: it is the rail's, not the
+       component's, which is why it follows the index into dark rather than
+       staying lit under it. Copy both lines as they are.
+
+       And nothing on top of them. Whatever this study's demo.html stages the
+       component on — a grid, a gradient, a lit stage — stays on the demo page.
+       A card with a surface under it in a row of cards with none reads as a
+       different kind of card before it reads as this study, which is what the
+       shared ground exists to prevent.
+
+       Both grounds are going to happen to this card, so check it on both
+       before calling the study finished — every variant, at the rail's scale
+       as well as at full size. A component standing on its own surface needs
+       nothing: it sits as a lit plate on the dark ground, which is what it is.
+       A component whose type sits on the GROUND inherits an ink colour that
+       can only be right in one of the two, and the preview has to move it —
+       by handing the component its own tunables in from outside, or by
+       applying a dark modifier component.css declares. Never by writing a
+       rule against a component class, and never off prefers-color-scheme:
+       the rail can be dark under a light desktop, so [data-theme] is the
+       only thing worth answering. */
+    :root { --preview-ground: #f3f2ef; }
+    :root[data-theme="dark"] { --preview-ground: #191b1e; }
+
+    /* <html> carries it as well as <body>, so the background does not
+       propagate to the viewport canvas and leave a seam at the frame edge. */
+    html { background-color: var(--preview-ground); }
+
+    /* The component's own width token, handed in from outside rather than a
+       rule written against its class. The rail lays this document out at
+       480px and the component asks for 480; a card wants air around it. */
+    .stage {
+      --shader-token-field-width: 25rem;
+      max-width: 100%;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background-color: var(--preview-ground);
+      font-family: system-ui, sans-serif;
+    }
+  
+    /* The index has told this thumbnail that the rail is moving under a
+       finger. Every animation in the document stops for the length of the
+       gesture and picks up where it left off.
+
+       It is here rather than in the component because it is the rail's
+       problem, not the study's: a same-origin iframe shares the index's main
+       thread, so a card that keeps animating while it is being dragged is
+       animating against the drag, on the same thread the drag needs. Measured
+       across the whole rail: 80 dropped frames in a two-card drag against 20
+       with this in.
+
+       Global on purpose. It has to reach the component without naming a
+       single one of its classes — the same rule the rest of this file keeps.
+       Transitions are deliberately left out: stopping those mid-gesture makes
+       states snap instead of settle, and they are not what costs. */
+    :root[data-preview-paused] *,
+    :root[data-preview-paused] *::before,
+    :root[data-preview-paused] *::after {
+      animation-play-state: paused !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <section class="shader-token-field">
+
+      <div class="shader-token-field__surface shader-token-field__surface--plate" data-shader-token-field-surface>
+        <canvas class="shader-token-field__canvas" data-shader-token-field-canvas aria-hidden="true"></canvas>
+        <div class="shader-token-field__inscription">
+          <p class="shader-token-field__kicker">Luminance band</p>
+          <p class="shader-token-field__line">
+            No pixel behind this line is lighter than the ceiling or darker than
+            the floor. The ratio under a letter is a property of the field, not of
+            the pixel that happened to land there.
+          </p>
+        </div>
+      </div>
+
+      <div class="shader-token-field__surface shader-token-field__surface--band" data-shader-token-field-surface>
+        <canvas class="shader-token-field__canvas" data-shader-token-field-canvas aria-hidden="true"></canvas>
+      </div>
+
+      <dl class="shader-token-field__readout">
+        <div class="shader-token-field__row">
+          <dt>Frequency</dt>
+          <dd data-shader-token-field-value="scale">2.4 &middot; 4 oct</dd>
+        </div>
+        <div class="shader-token-field__row">
+          <dt>Warp</dt>
+          <dd data-shader-token-field-value="warp">0.42</dd>
+        </div>
+        <div class="shader-token-field__row">
+          <dt>Flow</dt>
+          <dd data-shader-token-field-value="flow">0.05 / s</dd>
+        </div>
+        <div class="shader-token-field__row">
+          <dt>Band</dt>
+          <dd data-shader-token-field-value="band">0.22 &ndash; 0.72 Y</dd>
+        </div>
+        <div class="shader-token-field__row">
+          <dt>Worst case</dt>
+          <dd data-shader-token-field-value="ratio">4.81:1</dd>
+        </div>
+        <div class="shader-token-field__row">
+          <dt>Drawn by</dt>
+          <dd data-shader-token-field-value="renderer">Stop list</dd>
+        </div>
+      </dl>
+
+    </section>
+  </div>
+
+  <script src="component.js"></script>
+
+  <script>
+    (function () {
+      var CHANNEL = 'interface-studies';
+      var root = document.querySelector('.shader-token-field');
+      if (!root) return;
+
+      /* Three states worth stepping through, and the third is the argument:
+         the same recipe with the GPU handed back, so the stop list is what is
+         on screen. It is asked for the way everything else is asked for here
+         — a token — because that is what the study is about. */
+      var VARIANTS = [
+        { id: 'field', label: 'Field', classes: [], props: {} },
+        { id: 'night', label: 'Night', classes: ['shader-token-field--night'], props: {} },
+        { id: 'stopped', label: 'Stop list only', classes: [], props: { 'gpu': '0' } }
+      ];
+
+      var P = '--shader-token-field-';
+      var rested = null;
+      var stepped = false;
+
+      function apply(variant) {
+        VARIANTS.forEach(function (v) {
+          v.classes.forEach(function (c) { root.classList.remove(c); });
+          Object.keys(v.props).forEach(function (k) { root.style.removeProperty(P + k); });
+        });
+        variant.classes.forEach(function (c) { root.classList.add(c); });
+        Object.keys(variant.props).forEach(function (k) {
+          root.style.setProperty(P + k, variant.props[k]);
+        });
+      }
+
+      /* The card rests on whichever version the rail is NOT. Its two grounds
+         are #f3f2ef and #191b1e and the night surface is #141614 — 1.2 OK ΔE
+         off the dark ground, which is no edge at all — so resting the light
+         plate there and the night plate on paper is the widest separation the
+         study already had. The resting variant is rotated to the front of the
+         reported list rather than merely applied: quick look takes index 0 as
+         what is showing, so applying one and reporting another leaves the
+         overlay naming the wrong card. */
+      function restFor(theme) {
+        return theme === 'dark' ? 'field' : 'night';
+      }
+
+      function rest() {
+        var want = restFor(document.documentElement.getAttribute('data-theme'));
+        var i = 0;
+        for (var n = 0; n < VARIANTS.length; n++) {
+          if (VARIANTS[n].id === want) { i = n; break; }
+        }
+        if (i > 0) VARIANTS.unshift(VARIANTS.splice(i, 1)[0]);
+        rested = VARIANTS[0];
+        apply(rested);
+      }
+
+      rest();
+
+      window.addEventListener('message', function (event) {
+        var data = event.data;
+        if (!data || data.source !== CHANNEL) return;
+
+        /* What `active` means here: the field stirs. --live widens the warp
+           and triples the flow, and component.js eases the uniforms across
+           --settle rather than cutting to them. */
+        if (data.type === 'preview') {
+          root.classList.toggle('shader-token-field--live', data.active === true);
+        }
+
+        if (data.type === 'preview:variant') {
+          var variant = VARIANTS[data.index];
+          if (variant) { stepped = variant !== VARIANTS[0]; apply(variant); }
+        }
+
+        /* How much this document's pixels are being shrunk on screen. The
+           field is drawn per fragment, so the drawing buffer wants the pixels
+           that will be shown rather than the ones this page is laid out in —
+           and the grain, one hash per fragment, is what notices. */
+        if (data.type === 'preview:scale') {
+          var n = Number(data.scale);
+          if (isFinite(n) && n > 0) root.style.setProperty(P + 'buffer-scale', n);
+        }
+
+        /* The one message a preview may not ignore, and the one place this
+           study cannot answer it the way every other folder does. The global
+           animation-play-state rule in the style block above is still there
+           and still correct; it simply has nothing to stop. What is animating
+           is a requestAnimationFrame loop, and no CSS rule reaches one — so
+           the pause is handed to the component as a token, and the loop is
+           not scheduled again until it comes back. */
+        if (data.type === 'preview:pause') {
+          if (data.paused === true) {
+            document.documentElement.setAttribute('data-preview-paused', '');
+            root.style.setProperty(P + 'run', '0');
+          } else {
+            document.documentElement.removeAttribute('data-preview-paused');
+            root.style.setProperty(P + 'run', '1');
+          }
+        }
+
+        /* The ground is the rail's and follows the index into dark. The
+           component is a plate with its own surface and is not touched by it
+           — except that which plate rests here depends on the ground, and a
+           card quick look has stepped somewhere has been asked for that
+           variant, so it is left alone. */
+        if (data.type === 'preview:theme') {
+          if (data.theme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+          } else {
+            document.documentElement.removeAttribute('data-theme');
+          }
+          if (!stepped) rest();
+        }
+      });
+
+      /* Quick look runs this file with the pointer live, so focus ends up in
+         here and the overlay's own Escape handler never sees the key. */
+      if (window.parent !== window) {
+        document.addEventListener('keydown', function (event) {
+          if (event.key !== 'Escape') return;
+          window.parent.postMessage({ source: CHANNEL, type: 'preview:key', key: 'Escape' }, '*');
+        });
+
+        window.parent.postMessage({
+          source: CHANNEL,
+          type: 'preview:ready',
+          variants: VARIANTS.map(function (v) { return { id: v.id, label: v.label }; })
+        }, '*');
+      }
+    })();
+  </script>
+
+</body>
+</html>

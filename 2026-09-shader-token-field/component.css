@@ -1,0 +1,355 @@
+/*
+  2026-09-shader-token-field — self-contained, no globals, no imports.
+
+  An aesthetic study whose token block happens to be a set of shader uniforms.
+  Every value below is either a colour, a size, or a number `component.js`
+  hands to a fragment shader — and the second kind is the point. A GPU field
+  described as eight numbers is re-themeable from outside in exactly the way a
+  type scale is; described as a texture or as a literal in a JS object it is
+  not.
+
+  The block reads in four groups, and they are the four questions a field has
+  to answer: how coarse it is, how it moves, what colours gather in it, and how
+  light it is allowed to get. Override `--shader-token-field-scale` from a
+  parent and the whole field coarsens. Override `--shader-token-field-pool-a`
+  and both renderings change together, because both read this one declaration.
+
+  Both renderings: the stop list below draws the field with no script at all,
+  and the canvas draws it again on the GPU over the top. They are not a
+  component and its fallback — they are one recipe rendered two ways, and the
+  read-out says which of them you are looking at.
+
+  Everything the outside world says to this component, it says in the cascade,
+  including the two things that are not design decisions at all:
+  `--shader-token-field-run` stops the render loop (an animation-play-state
+  rule cannot reach a requestAnimationFrame loop) and
+  `--shader-token-field-buffer-scale` says how much the surface is being shrunk
+  on screen, so the drawing buffer is sized for the pixels that will actually
+  be shown. component.js watches this element's own `style` and `class`
+  attributes and re-reads the block when either moves; it never polls.
+*/
+
+.shader-token-field {
+  /* --- the field ------------------------------------------------------
+     How coarse it is and how far it is pushed around. Unitless on purpose:
+     these go to the GPU as floats, and `calc()` multiplies them happily.
+
+     --octaves is the one value that is clamped rather than trusted. GLSL
+     requires a compile-time loop bound, so the fbm loop runs to a constant 8
+     and breaks on this number — and component.js clamps it to 1..8 before it
+     gets there, because a token block is editable from outside by design and
+     an unbounded loop count is a hung GPU rather than a muddy field. */
+  --shader-token-field-scale: 2.4;        /* noise frequency, in field widths */
+  --shader-token-field-octaves: 4;        /* fbm depth, 1–8 */
+  --shader-token-field-warp: 0.42;        /* domain warp, 0–1 */
+  --shader-token-field-relief: 0.9;       /* directional lift, 0–1: see the band */
+  --shader-token-field-grain: 0.035;      /* per-pixel dither, added before the clamp */
+
+  /* --- the motion -----------------------------------------------------
+     --flow is the only thing time does here: the noise is advected through
+     itself at this rate. The rest of the component's motion is CSS.
+
+     --run is not a design value. It is the pause: the index sends a card
+     `preview:pause` when the rail starts moving, and the CSS rule that
+     answers that for every other study — animation-play-state: paused — does
+     nothing at all to a render loop. So the loop answers a token instead, and
+     the preview writes it the same way it writes the buffer scale. */
+  --shader-token-field-flow: 0.05;        /* field widths per second */
+  --shader-token-field-settle: 900ms;     /* how fast the uniforms chase a change */
+  --shader-token-field-run: 1;            /* 0 stops the render loop */
+  --shader-token-field-gpu: 1;            /* 0 hands the surface to the stop list */
+  --shader-token-field-buffer-scale: 1;   /* × devicePixelRatio for the buffer */
+
+  /* --- the colours ----------------------------------------------------
+     Read by the stop list below AND parsed into vec3 uniforms, from this one
+     declaration, so the two renderings cannot drift apart. component.js
+     resolves each through a probe element rather than parsing it: an
+     unregistered custom property comes back from getComputedStyle as the
+     string it was authored as, so `oklch(...)` arrives as the seven
+     characters `oklch(`. Writing it to an element's `color` and reading the
+     computed value back hands the parsing to the engine.
+
+     All three sit inside the band declared below, which is what makes the
+     stop list safe as well as the shader: every sRGB blend of two colours has
+     each channel between theirs, and relative luminance rises with every
+     channel, so a blend of colours inside the band is inside the band. That
+     is the whole of the stop list, which is why it needs no clamp.
+
+     It is also why --relief exists. Blending alone cannot leave the band, so
+     a clamp over a blend is decoration — it can never fire. What leaves the
+     band is the shader's light, which is added rather than mixed. Measured
+     over the default plate: 25.7% of pixels sit outside the band before the
+     clamp and 0.00% after; on the night version, 8.7% and 0.00%. The two
+     versions exercise opposite ends of it — the light one overshoots the
+     ceiling (0.988 against 0.72), the night one bottoms out under the floor
+     (0.000 against 0.01) — which is the light and the shadow respectively. */
+  --shader-token-field-base: #d9d2c0;     /* Y 0.647 */
+  --shader-token-field-pool-a: #8fa38c;   /* Y 0.339 */
+  --shader-token-field-pool-b: #c39a62;   /* Y 0.356 */
+
+  /* --- the band -------------------------------------------------------
+     The contrast floor, declared rather than measured. The shader clamps
+     every fragment's WCAG relative luminance into this range before it
+     encodes, so the worst-case ratio against the ink is known from these two
+     numbers and does not depend on where the noise happened to land.
+
+     0.22 against this ink is 4.81:1 — above the 4.5 floor with a little
+     headroom, because the ratio models neither weight nor size and sitting on
+     the line is not the same as clearing it. Raising the floor lifts every
+     ratio on the field together; it also flattens the field, which is the
+     trade the number is making.
+
+     Only one ink goes on the field, and that is a consequence of this rather
+     than a style choice. A second, muted tier would need the ink itself to be
+     lighter, and against a floor of 0.22 anything lighter than about #2a2622
+     is already under 4.5:1 — so the field's hierarchy is size and tracking,
+     not colour. Muting into a clamped field is the one thing the clamp cannot
+     give you. */
+  --shader-token-field-lum-floor: 0.22;
+  --shader-token-field-lum-ceil: 0.72;
+  --shader-token-field-field-ink: #14120f;
+
+  /* --- the frame ------------------------------------------------------
+     The component's own surface, which is not the field: the read-out stands
+     on it, and its two text tiers are 15.9:1 and 6.8:1 — ordinary contrast,
+     because nothing is clamping anything here. */
+  --shader-token-field-surface: #f0ece2;
+  --shader-token-field-ink: #14120f;
+  --shader-token-field-ink-soft: #55504a;
+  --shader-token-field-line: rgba(20, 18, 15, 0.14);
+
+  --shader-token-field-font: "Plus Jakarta Sans", system-ui, sans-serif;
+  --shader-token-field-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --shader-token-field-width: 30rem;
+  --shader-token-field-pad: 1.25rem;
+  --shader-token-field-gap: 0.75rem;
+  --shader-token-field-radius: 0.875rem;
+  --shader-token-field-plate-aspect: 4 / 3;
+  --shader-token-field-band-aspect: 7 / 1;
+
+  --shader-token-field-kicker-size: 0.6875rem;
+  --shader-token-field-kicker-tracking: 0.18em;
+  --shader-token-field-line-size: 0.9375rem;
+  --shader-token-field-row-size: 0.75rem;
+
+  --shader-token-field-lift: 2px;
+  --shader-token-field-transition: 260ms cubic-bezier(0.16, 1, 0.3, 1);
+  /* -------------------------------------------------------------------- */
+
+  display: grid;
+  gap: var(--shader-token-field-gap);
+  box-sizing: border-box;
+  width: var(--shader-token-field-width);
+  /* The width above is what it wants; this is what it will accept. */
+  max-width: 100%;
+  padding: var(--shader-token-field-pad);
+
+  background: var(--shader-token-field-surface);
+  color: var(--shader-token-field-ink);
+  border-radius: var(--shader-token-field-radius);
+
+  font-family: var(--shader-token-field-font);
+}
+
+/* --- the surfaces ------------------------------------------------------
+   Two of them, at two aspect ratios, and the reason is not shape variety: a
+   field that is a recipe rather than a picture has to resolve at whatever
+   proportion it is given. The band is the same three colours and the same
+   four numbers as the plate, 7:1 instead of 4:3.
+
+   The stop list is the background of the surface itself. Sized past the box
+   and positioned off-centre, so that --live can move each pool a different
+   distance: that is the whole of the no-script motion, and it is real motion
+   rather than a still frame standing in for one. */
+.shader-token-field__surface {
+  position: relative;
+  overflow: hidden;
+  border-radius: calc(var(--shader-token-field-radius) - var(--shader-token-field-pad) * 0.35);
+  max-width: 100%;
+
+  background-color: var(--shader-token-field-base);
+  background-image:
+    radial-gradient(68% 86% at 20% 26%, var(--shader-token-field-pool-a) 0%, transparent 62%),
+    radial-gradient(58% 76% at 78% 66%, var(--shader-token-field-pool-b) 0%, transparent 58%),
+    radial-gradient(92% 70% at 54% 100%, var(--shader-token-field-pool-a) 0%, transparent 70%);
+  background-repeat: no-repeat;
+  background-size: 150% 150%, 160% 150%, 150% 140%;
+  background-position: 26% 34%, 74% 62%, 50% 96%;
+
+  transition:
+    background-position 2400ms cubic-bezier(0.33, 0, 0.2, 1),
+    transform var(--shader-token-field-transition);
+}
+
+.shader-token-field__surface--plate { aspect-ratio: var(--shader-token-field-plate-aspect); }
+.shader-token-field__surface--band { aspect-ratio: var(--shader-token-field-band-aspect); }
+
+/* The GPU's copy, over the top. Transparent until component.js has drawn
+   into it, so the stop list is what shows while it has not — and what shows
+   for good if no script ever runs. */
+.shader-token-field__canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 420ms ease-out;
+}
+
+.shader-token-field__surface[data-shader-token-field-drawn] .shader-token-field__canvas {
+  opacity: 1;
+}
+
+/* --- what stands on the field -----------------------------------------
+   One ink, two sizes. See the band notes above for why there is no second
+   tier here. */
+.shader-token-field__inscription {
+  position: relative;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  padding: clamp(0.9rem, 4.5%, 1.4rem);
+  color: var(--shader-token-field-field-ink);
+}
+
+.shader-token-field__kicker {
+  margin: 0;
+  font-family: var(--shader-token-field-mono);
+  font-size: var(--shader-token-field-kicker-size);
+  letter-spacing: var(--shader-token-field-kicker-tracking);
+  text-transform: uppercase;
+}
+
+.shader-token-field__line {
+  margin: 0;
+  max-width: 34ch;
+  font-size: var(--shader-token-field-line-size);
+  font-weight: 500;
+  line-height: 1.45;
+  letter-spacing: -0.01em;
+}
+
+/* The rule under the kicker is the hover affordance, and it is CSS from end
+   to end — nothing about being looked at reaches the shader. */
+.shader-token-field__kicker::after {
+  content: "";
+  display: block;
+  height: 1px;
+  margin-top: 0.4rem;
+  width: 1.5rem;
+  background: currentColor;
+  transition: width var(--shader-token-field-transition);
+}
+
+/* --- the read-out ------------------------------------------------------
+   The token block, printed. component.js overwrites each value from
+   getComputedStyle, so the component states the numbers it is actually
+   running on rather than a copy of them; the text in the markup is what a
+   reader sees when no script runs, and it is the same set of defaults. */
+.shader-token-field__readout {
+  margin: 0.25rem 0 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr));
+  gap: 0.5rem 1rem;
+}
+
+.shader-token-field__row {
+  display: grid;
+  gap: 0.15rem;
+  padding-top: 0.45rem;
+  border-top: 1px solid var(--shader-token-field-line);
+  min-width: 0;
+}
+
+.shader-token-field__row dt {
+  font-family: var(--shader-token-field-mono);
+  font-size: 0.5625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--shader-token-field-ink-soft);
+}
+
+.shader-token-field__row dd {
+  margin: 0;
+  font-family: var(--shader-token-field-mono);
+  font-size: var(--shader-token-field-row-size);
+  font-variant-numeric: tabular-nums;
+  color: var(--shader-token-field-ink);
+  overflow-wrap: anywhere;
+}
+
+/* --- being looked at ---------------------------------------------------
+   Two separate things, deliberately. Hover is a pointer on the component and
+   is CSS only. --live is the state the index's read mark and the demo's own
+   wave put the component into: the field stirs, which means a larger warp and
+   a faster flow. component.js re-reads the block when the class lands and
+   eases the uniforms across --settle, so the GPU's copy arrives at the new
+   values on the same sort of curve the stop list transitions on rather than
+   snapping to them. */
+.shader-token-field:hover .shader-token-field__surface { transform: translateY(calc(var(--shader-token-field-lift) * -1)); }
+.shader-token-field:hover .shader-token-field__kicker::after { width: 3.25rem; }
+
+.shader-token-field--live {
+  --shader-token-field-warp: 0.72;
+  --shader-token-field-flow: 0.16;
+}
+
+.shader-token-field--live .shader-token-field__surface {
+  background-position: 36% 46%, 62% 50%, 44% 84%;
+}
+
+/* A finger cannot hover. The press reaches the same lift, and --live is the
+   state the thumbnail is put into anyway — on a coarse pointer the index
+   tells the card to perform rather than waiting for a hover that will never
+   fire. */
+@media (hover: none) {
+  .shader-token-field:active .shader-token-field__surface { transform: translateY(calc(var(--shader-token-field-lift) * -1)); }
+  .shader-token-field:active .shader-token-field__kicker::after { width: 3.25rem; }
+}
+
+/* Content that moves unasked is the whole of the preference. The stop list
+   stops transitioning and component.js draws one frame and never schedules
+   another — it reads the same query, because a render loop is not an
+   animation and no CSS rule can stop one. */
+@media (prefers-reduced-motion: reduce) {
+  .shader-token-field__surface,
+  .shader-token-field__canvas,
+  .shader-token-field__kicker::after { transition: none; }
+}
+
+/* --- the night version -------------------------------------------------
+   A whole second version of the component rather than a corrected palette,
+   which is why it is a modifier here and not something the preview hands in
+   from outside. The clamp inverts with it: in the light version the floor is
+   what guarantees the ratio, because the ink is dark and the darkest pixel is
+   the worst case; here the ink is light and the ceiling is. 0.14 against this
+   ink is 4.81:1 — the same number from the other end. */
+.shader-token-field--night {
+  --shader-token-field-base: #222623;     /* Y 0.018 */
+  --shader-token-field-pool-a: #3b5148;   /* Y 0.073 */
+  --shader-token-field-pool-b: #5a462e;   /* Y 0.067 */
+
+  /* The pools are LIGHTER than the base here, where in the light version
+     they are darker: a pool gathers colour, and on a dark ground colour
+     arrives as light. */
+  --shader-token-field-lum-floor: 0.01;
+  --shader-token-field-lum-ceil: 0.14;
+
+  /* More gain than the light version, for the reason given beside the light
+     in component.js: this band is a quarter as wide, so the same number
+     would barely move inside it. */
+  --shader-token-field-relief: 1.4;
+  --shader-token-field-field-ink: #f2efe8;
+
+  --shader-token-field-surface: #141614;
+  --shader-token-field-ink: #f2efe8;
+  --shader-token-field-ink-soft: #a8a39a;
+  --shader-token-field-line: rgba(242, 239, 232, 0.16);
+
+  --shader-token-field-grain: 0.032;
+}
