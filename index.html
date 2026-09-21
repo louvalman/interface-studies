@@ -203,12 +203,39 @@
          narrow viewport the chips need the full width, so the areas restack
          and the controls go back up beside the count - see index.css. -->
       <div class="rail__head">
-        <p class="rail__count">
-          <span data-i18n="rail.study">Study</span>
-          <span id="rail-index">01</span>
-          /
-          <span id="rail-total">01</span>
-        </p>
+        <!-- The count and the file link are one line. The count says where
+           you are in the set; the link says where the set is also drawn, in
+           the same micro-caps so the line reads as one thing rather than as
+           a label with a button stuck after it. It is here rather than in
+           the footer because a link nobody scrolls to is a link nobody
+           follows, and rather than in the masthead because that row is facts
+           the page counts from the cards — this is neither. -->
+        <div class="rail__line">
+          <p class="rail__count">
+            <span data-i18n="rail.study">Study</span>
+            <span id="rail-index">01</span>
+            /
+            <span id="rail-total">01</span>
+          </p>
+          <a
+            class="rail__figma"
+            href="https://www.figma.com/community/file/1683607518896928224"
+            target="_blank"
+            rel="noopener noreferrer">
+            <span data-i18n="rail.figma">Figma file</span>
+            <svg
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.4"
+              aria-hidden="true">
+              <path
+                d="M4 12 12 4M6 4h6v6"
+                stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+          </a>
+        </div>
         <nav
           class="rail__nav"
           data-i18n-aria="a11y.carousel"
@@ -1059,22 +1086,6 @@
             <dt class="foot__key" data-i18n="foot.stack">Stack</dt>
             <dd class="foot__val" data-i18n="foot.stackVal">
               HTML and CSS, no build step
-            </dd>
-          </div>
-          <!-- The file the set is also drawn in. Not a second copy of the
-             Figma circle above: that one is the profile, which is a handle
-             and so belongs in that nav; this is one published file, which
-             is not, for the reason the tip jar is not either. It sits with
-             the two authored rows rather than after the counts, so the pair
-             index.js writes stays together. -->
-          <div class="foot__row">
-            <dt class="foot__key">Figma</dt>
-            <dd class="foot__val">
-              <a
-                href="https://www.figma.com/community/file/1683607518896928224"
-                target="_blank"
-                rel="noopener noreferrer"
-                data-i18n="foot.figmaVal">Community file</a>
             </dd>
           </div>
           <!-- What the set covers, not just how much of it there is. The

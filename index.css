@@ -584,7 +584,7 @@ body.is-locked {
   align-items: end;
 }
 
-.rail__count { grid-area: count; }
+.rail__line { grid-area: count; }
 .rail__filter { grid-area: filter; }
 
 .rail__nav {
@@ -593,9 +593,59 @@ body.is-locked {
   padding: 0 var(--gutter) 0.875rem 1rem;
 }
 
+/* The line the count sits on, and the file link with it. The padding that
+   used to be the count's is the line's now, so both sit on the same baseline
+   and the nav still lands where it did. min-width: 0 because the cell is a
+   minmax(0, 1fr) track and a nowrap label in a flex item would otherwise
+   refuse to let it shrink.
+
+   It wraps below about 520px, where the nav has come up beside the count and
+   there is no room for both — and the wrap is free: measured with the link
+   and with it removed, the head is 79px either way at 1440 and 106px either
+   way at 390 and 320, in both languages, because below 52rem the nav column
+   is already taller than two lines of micro-caps. The link drops under the
+   count at the gutter rather than squeezing against the buttons. */
+.rail__line {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.5rem;
+  min-width: 0;
+  padding: 0 0 1.25rem var(--gutter);
+}
+
+/* Set like quick look's link and tracked like the count beside it: one
+   off-site link on the page reads as one kind of thing, and on this line the
+   count is what it has to line up with. */
+.rail__figma {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  text-decoration: none;
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--accent);
+}
+
+.rail__figma:hover { text-decoration: underline; }
+
+.rail__figma:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 4px;
+  border-radius: 0.25rem;
+}
+
+.rail__figma svg {
+  width: 0.8rem;
+  height: 0.8rem;
+}
+
 .rail__count {
   margin: 0;
-  padding: 0 0 1.25rem var(--gutter);
+  padding: 0;
   /* "Study 01 / 05" is one thing to read; a narrow bar may drop the buttons to
      their own line, but it may never break the label across two. */
   white-space: nowrap;
@@ -1694,11 +1744,7 @@ body.is-locked {
 
 /* The one link in the footer bar that is a name rather than a control, so
    it is underlined rather than left to hover to announce itself. */
-/* One inline-link treatment in the footer, for the reason the tip jar is set
-   like the back-to-top link: a second one down here would read as a different
-   kind of link. The meta list's Figma row takes it too. */
-.foot__author,
-.foot__val a {
+.foot__author {
   color: var(--ink);
   text-decoration: none;
   border-bottom: 1px solid var(--hairline);
@@ -1706,15 +1752,12 @@ body.is-locked {
 }
 
 .foot__author:hover,
-.foot__val a:hover,
-.foot__author:active,
-.foot__val a:active {
+.foot__author:active {
   color: var(--accent);
   border-bottom-color: var(--accent);
 }
 
-.foot__author:focus-visible,
-.foot__val a:focus-visible {
+.foot__author:focus-visible {
   outline: 2px solid var(--ink);
   outline-offset: 3px;
   border-radius: 0.2rem;

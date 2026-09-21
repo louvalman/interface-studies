@@ -1008,6 +1008,35 @@ and an anchor may not contain a button. Everything the overlay shows is read
 back out of that block, so no title, note or path is written twice. That is the
 only file outside the study folder that a new study may touch.
 
+### Figma is on the page twice, and the two are not the same link
+
+The link on the rail's count line is the companion file on Figma Community.
+The circle in the footer's handles nav is the profile. One is where this set
+is also drawn; the other is that the person has an account, which is what
+that nav is for — the same test that keeps the tip jar out of it.
+
+The file link sits on the count line rather than in the footer or the
+masthead, and both of those were tried. The footer is below the fold and a
+link nobody scrolls to is a link nobody follows. The masthead's meta row
+costs nothing to add to — measured, 31px with one item and 31px with two, at
+1440, 390 and 320 — so the objection to it was never pixels: that row is
+facts the page counts from the cards, and two items were evicted from it
+once already for repeating what the page said elsewhere. A file link is
+neither counted nor derived. The count line is above the fold, already in
+micro-caps, and already about the set rather than about any one study.
+
+It is set like quick look's link and tracked like the count beside it, at
+`0.16em` rather than that link's `0.14em`, because on this line the count is
+what it has to line up with.
+
+Below about 520px it wraps under the count, because that is where the nav has
+come up beside it and there is no room for both. That costs nothing: measured
+with the link and with it removed, the rail head is 79px either way at 1440
+and 106px either way at 390 and 320, in both languages — below 52rem the nav
+column is already taller than two lines of micro-caps, so the second line
+lands in height the row had anyway. Which is also why it is not hidden on a
+phone: hiding it would buy no pixels.
+
 ### A card may name the board it was drawn in
 
 `data-figma` on the `<article class="piece">` block is the board in the
@@ -1357,25 +1386,10 @@ calls the thing an `Inspiration` line, which is what the files call it. It said
 "source" for a while, a second word for something already named, in the one
 place a reader is being sent to go and look at it.
 
-The meta list is five rows and each says something the others do not: what the
-page is set in, what the studies are made of, where else the set exists, what
-types they cover, and how many there are. The last two are written from the
-cards, so neither is a number anyone keeps by hand.
-
-**Figma is in the footer twice, and the two are not the same link.** The
-circle in the handles nav is the profile, which is a handle and so belongs
-where the handles are. The `Figma` row in the meta list is the companion file
-on Figma Community — one published file, which is not a handle, for the reason
-the tip jar is not one either. The row says something about the set that the
-profile does not: this is where the set is also drawn. Drop the row and the
-direct link to the file goes with it; the nav only says the person has an
-account.
-
-The row sits third, with the two authored rows rather than after the counts,
-so the pair the script writes stays together. Its link takes `.foot__author`'s
-treatment rather than a new one, which is the same argument the tip jar
-settles: a second inline-link treatment in one footer reads as a different
-kind of link.
+The meta list is four rows and each says something the others do not: what the
+page is set in, what the studies are made of, what types they cover, and how
+many there are. The last two are written from the cards, so neither is a number
+anyone keeps by hand.
 
 The `Types` row reads the same badges the chips do, through the same
 `typeCounts`/`typeOrder`, so both list them commonest-first in the same order —
