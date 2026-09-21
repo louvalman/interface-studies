@@ -1034,32 +1034,37 @@ only file outside the study folder that a new study may touch.
 
 ### Figma is on the page twice, and the two are not the same link
 
-The link on the rail's count line is the companion file on Figma Community.
-The circle in the footer's handles nav is the profile. One is where this set
-is also drawn; the other is that the person has an account, which is what
-that nav is for — the same test that keeps the tip jar out of it.
+The `Figma` item in the masthead's meta row is the companion file on Figma
+Community. The circle in the footer's handles nav is the profile. One is
+where this set is also drawn; the other is that the person has an account,
+which is what that nav is for — the same test that keeps the tip jar out of
+it.
 
-The file link sits on the count line rather than in the footer or the
-masthead, and both of those were tried. The footer is below the fold and a
-link nobody scrolls to is a link nobody follows. The masthead's meta row
-costs nothing to add to — measured, 31px with one item and 31px with two, at
-1440, 390 and 320 — so the objection to it was never pixels: that row is
-facts the page counts from the cards, and two items were evicted from it
-once already for repeating what the page said elsewhere. A file link is
-neither counted nor derived. The count line is above the fold, already in
-micro-caps, and already about the set rather than about any one study.
+**The file link is a stated exception to the meta row's rule, not a fit for
+it.** That row is otherwise facts the page counts from the cards, and two
+items were evicted from it once for repeating what the page said elsewhere —
+so a link that is neither counted nor derived is a departure, and worth
+naming as one rather than quietly widening the rule. What earns it is that
+the alternatives are worse. The footer is below the fold on every viewport,
+and a link nobody scrolls to is a link nobody follows. The rail's count line
+is above the fold and was tried, but it puts a link in a bar that is
+otherwise entirely controls — the count, the type chips, the carousel
+buttons — and reads as one.
 
-It is set like quick look's link and tracked like the count beside it, at
-`0.16em` rather than that link's `0.14em`, because on this line the count is
-what it has to line up with.
+The row had the room, which was never the question but is worth having
+measured: 31px with one item and 31px with two, at 1440, 390 and 320, with
+the first card keeping every pixel it had above the fold in both languages.
 
-Below about 520px it wraps under the count, because that is where the nav has
-come up beside it and there is no room for both. That costs nothing: measured
-with the link and with it removed, the rail head is 79px either way at 1440
-and 106px either way at 390 and 320, in both languages — below 52rem the nav
-column is already taller than two lines of micro-caps, so the second line
-lands in height the row had anyway. Which is also why it is not hidden on a
-phone: hiding it would buy no pixels.
+It is set like quick look's link rather than like the byline's — accent and
+an arrow, because it leaves the site, where the byline's hairline underline
+reads as prose. It keeps the row's own size and case, because the values
+here are mono 13px in sentence case and a link that changed either would
+stop being a value.
+
+**No Figma mark beside it.** The values in this row are plain facts in mono,
+and a brand glyph would make one of them a different kind of object. The
+mark already does that job in the footer, where the thing it labels is a
+handle.
 
 ### A card may name the board it was drawn in
 

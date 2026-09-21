@@ -188,14 +188,48 @@
          already on the page twice. The count went the same way: the rail
          states its own total below, which is where a reader takes it from.
 
-         What is left is the date, which says whether the set is still moving
-         and is written by index.js from the cards. A link is not that rule
-         and does not go here — the companion Figma file was tried in this row
-         and sits on the rail's count line instead. -->
+         The date is one of them: whether the set is still moving, written by
+         index.js from the cards. The companion Figma file is the other, and
+         it is the one item here that is neither counted nor derived — which
+         is a departure from the rule above and a deliberate one. It is here
+         because the alternatives are worse: the footer is below the fold on
+         every viewport, and the rail's count line put a link in a bar that
+         is otherwise all controls. The row had the room, measured: 31px with
+         one item and 31px with two, at 1440, 390 and 320, with the first
+         card keeping every pixel it had above the fold.
+
+         No Figma mark beside it. The values in this row are plain facts in
+         mono, and a brand glyph would make one of them a different kind of
+         object; the mark does that job in the footer, where it is a handle.
+         The arrow is the page's own, and it is there because the link leaves
+         the site. -->
       <dl class="head__meta">
         <div class="head__meta-item">
           <dt class="head__meta-key" data-i18n="meta.latest">Latest</dt>
           <dd class="head__meta-val" id="meta-latest">&mdash;</dd>
+        </div>
+        <div class="head__meta-item">
+          <dt class="head__meta-key">Figma</dt>
+          <dd class="head__meta-val">
+            <a
+              class="head__meta-link"
+              href="https://www.figma.com/community/file/1683607518896928224"
+              target="_blank"
+              rel="noopener noreferrer">
+              <span data-i18n="meta.figma">Community file</span>
+              <svg
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+                aria-hidden="true">
+                <path
+                  d="M4 12 12 4M6 4h6v6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+            </a>
+          </dd>
         </div>
       </dl>
     </header>
@@ -207,39 +241,12 @@
          narrow viewport the chips need the full width, so the areas restack
          and the controls go back up beside the count - see index.css. -->
       <div class="rail__head">
-        <!-- The count and the file link are one line. The count says where
-           you are in the set; the link says where the set is also drawn, in
-           the same micro-caps so the line reads as one thing rather than as
-           a label with a button stuck after it. It is here rather than in
-           the footer because a link nobody scrolls to is a link nobody
-           follows, and rather than in the masthead because that row is facts
-           the page counts from the cards — this is neither. -->
-        <div class="rail__line">
-          <p class="rail__count">
-            <span data-i18n="rail.study">Study</span>
-            <span id="rail-index">01</span>
-            /
-            <span id="rail-total">01</span>
-          </p>
-          <a
-            class="rail__figma"
-            href="https://www.figma.com/community/file/1683607518896928224"
-            target="_blank"
-            rel="noopener noreferrer">
-            <span data-i18n="rail.figma">Figma file</span>
-            <svg
-              viewBox="0 0 16 16"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.4"
-              aria-hidden="true">
-              <path
-                d="M4 12 12 4M6 4h6v6"
-                stroke-linecap="round"
-                stroke-linejoin="round" />
-            </svg>
-          </a>
-        </div>
+        <p class="rail__count">
+          <span data-i18n="rail.study">Study</span>
+          <span id="rail-index">01</span>
+          /
+          <span id="rail-total">01</span>
+        </p>
         <nav
           class="rail__nav"
           data-i18n-aria="a11y.carousel"

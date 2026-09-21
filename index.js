@@ -64,8 +64,8 @@
         + 'bladre gennem dets varianter, eller åbn studiet for '
         + 'beslutningerne og teknikkerne bag.',
       'meta.latest': 'Seneste',
+      'meta.figma': 'Community-fil',
       'rail.study': 'Studie',
-      'rail.figma': 'Figma-fil',
       'type.card': 'Kort',
       'type.aesthetic': 'Æstetik',
       'type.navigation': 'Navigation',
