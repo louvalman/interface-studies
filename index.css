@@ -584,7 +584,7 @@ body.is-locked {
   align-items: end;
 }
 
-.rail__count { grid-area: count; }
+.rail__line { grid-area: count; }
 .rail__filter { grid-area: filter; }
 
 .rail__nav {
@@ -593,9 +593,59 @@ body.is-locked {
   padding: 0 var(--gutter) 0.875rem 1rem;
 }
 
+/* The line the count sits on, and the file link with it. The padding that
+   used to be the count's is the line's now, so both sit on the same baseline
+   and the nav still lands where it did. min-width: 0 because the cell is a
+   minmax(0, 1fr) track and a nowrap label in a flex item would otherwise
+   refuse to let it shrink.
+
+   It wraps below about 520px, where the nav has come up beside the count and
+   there is no room for both — and the wrap is free: measured with the link
+   and with it removed, the head is 79px either way at 1440 and 106px either
+   way at 390 and 320, in both languages, because below 52rem the nav column
+   is already taller than two lines of micro-caps. The link drops under the
+   count at the gutter rather than squeezing against the buttons. */
+.rail__line {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.5rem;
+  min-width: 0;
+  padding: 0 0 1.25rem var(--gutter);
+}
+
+/* Set like quick look's link and tracked like the count beside it: one
+   off-site link on the page reads as one kind of thing, and on this line the
+   count is what it has to line up with. */
+.rail__figma {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  text-decoration: none;
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--accent);
+}
+
+.rail__figma:hover { text-decoration: underline; }
+
+.rail__figma:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 4px;
+  border-radius: 0.25rem;
+}
+
+.rail__figma svg {
+  width: 0.8rem;
+  height: 0.8rem;
+}
+
 .rail__count {
   margin: 0;
-  padding: 0 0 1.25rem var(--gutter);
+  padding: 0;
   /* "Study 01 / 05" is one thing to read; a narrow bar may drop the buttons to
      their own line, but it may never break the label across two. */
   white-space: nowrap;
@@ -1513,6 +1563,18 @@ body.is-locked {
   color: var(--ink-soft);
 }
 
+/* The two links sit in a row. Measured at the panel's 288px floor, both fit
+   on one line in English and in Danish, so the wrap is a floor under a label
+   longer than these rather than something the current pair reaches — and it
+   is a wrap rather than a squeeze because these are two whole labels, not a
+   line of prose. */
+.lightbox__links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 1.1rem;
+}
+
 .lightbox__link {
   flex: none;
   display: inline-flex;
@@ -1525,6 +1587,10 @@ body.is-locked {
   text-transform: uppercase;
   color: var(--accent);
 }
+
+/* Same trap as the variants bar: `display: inline-flex` above is an author
+   rule and `[hidden]` is only a UA rule, so it has to be said explicitly. */
+.lightbox__link[hidden] { display: none; }
 
 .lightbox__link:hover { text-decoration: underline; }
 

@@ -180,14 +180,18 @@
         </span>
       </p>
 
-      <!-- Both halves are facts the page can count, and neither is in the
-         lede. "Scope — a few decisions" and "Each study — stands alone" used
-         to sit here: the lede says the first in its own first sentence and the
-         footer says the second in full, so the row spent ninety pixels
-         repeating what was already on the page twice. A count and a date say
-         how much is here and whether it is still moving, which is what a
-         masthead is for and what nothing else on the page states. Both are
-         written by index.js from the cards. -->
+      <!-- One item, and the rule it is the last survivor of: a fact the page
+         can count, not in the lede, and said nowhere else. "Scope — a few
+         decisions" and "Each study — stands alone" used to sit here — the
+         lede says the first in its own first sentence and the footer says the
+         second in full, so the row spent ninety pixels repeating what was
+         already on the page twice. The count went the same way: the rail
+         states its own total below, which is where a reader takes it from.
+
+         What is left is the date, which says whether the set is still moving
+         and is written by index.js from the cards. A link is not that rule
+         and does not go here — the companion Figma file was tried in this row
+         and sits on the rail's count line instead. -->
       <dl class="head__meta">
         <div class="head__meta-item">
           <dt class="head__meta-key" data-i18n="meta.latest">Latest</dt>
@@ -203,12 +207,39 @@
          narrow viewport the chips need the full width, so the areas restack
          and the controls go back up beside the count - see index.css. -->
       <div class="rail__head">
-        <p class="rail__count">
-          <span data-i18n="rail.study">Study</span>
-          <span id="rail-index">01</span>
-          /
-          <span id="rail-total">01</span>
-        </p>
+        <!-- The count and the file link are one line. The count says where
+           you are in the set; the link says where the set is also drawn, in
+           the same micro-caps so the line reads as one thing rather than as
+           a label with a button stuck after it. It is here rather than in
+           the footer because a link nobody scrolls to is a link nobody
+           follows, and rather than in the masthead because that row is facts
+           the page counts from the cards — this is neither. -->
+        <div class="rail__line">
+          <p class="rail__count">
+            <span data-i18n="rail.study">Study</span>
+            <span id="rail-index">01</span>
+            /
+            <span id="rail-total">01</span>
+          </p>
+          <a
+            class="rail__figma"
+            href="https://www.figma.com/community/file/1683607518896928224"
+            target="_blank"
+            rel="noopener noreferrer">
+            <span data-i18n="rail.figma">Figma file</span>
+            <svg
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.4"
+              aria-hidden="true">
+              <path
+                d="M4 12 12 4M6 4h6v6"
+                stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+          </a>
+        </div>
         <nav
           class="rail__nav"
           data-i18n-aria="a11y.carousel"
@@ -305,7 +336,11 @@
          — set the date and let it land. And the number is written from the
          card's position afterwards, so leave the em dash alone. Both were a
          second source of truth for something already stated once, and a card
-         added at the front used to invalidate every number below it. -->
+         added at the front used to invalidate every number below it.
+         data-figma is optional, and it is the board in the companion Figma
+         file the study was drawn in. Quick look draws the link where a card
+         names one and nothing where it does not, so a study without a board
+         needs no entry. -->
       <div
         class="rail__track"
         data-rail-track
@@ -1027,6 +1062,22 @@
                   d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
               </svg>
             </a>
+            <a
+              class="foot__icon"
+              href="https://www.figma.com/@louval"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Figma">
+              <!-- The mark drawn solid rather than in its five colours, the
+                 way the other two are: at 0.95rem a gap between the shapes
+                 is half a pixel and mushes, so the silhouette is what
+                 survives the size. -->
+              <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                <path
+                  d="M8 .5H5.5a2.5 2.5 0 0 0 0 5H8zM8 5.5H5.5a2.5 2.5 0 0 0 0 5H8zM8 10.5H5.5a2.5 2.5 0 0 0 0 5H8zM8 .5h2.5a2.5 2.5 0 0 1 0 5H8z" />
+                <circle cx="10.5" cy="8" r="2.5" />
+              </svg>
+            </a>
           </nav>
         </div>
 
@@ -1165,22 +1216,48 @@
             aria-live="polite"></p>
         </nav>
 
+        <!-- Two links, and the second is drawn only where the card names a
+           board. Both carry the same arrow rather than one of them a Figma
+           mark: they are the same kind of control — this page, left — and
+           the label is what says where to. -->
         <footer class="lightbox__foot">
           <p class="lightbox__note" data-lightbox-note></p>
-          <a class="lightbox__link" href="#" data-lightbox-demo>
-            <span data-i18n="cta.openDemo">Open demo</span>
-            <svg
-              viewBox="0 0 16 16"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.4"
-              aria-hidden="true">
-              <path
-                d="M4 12 12 4M6 4h6v6"
-                stroke-linecap="round"
-                stroke-linejoin="round" />
-            </svg>
-          </a>
+          <div class="lightbox__links">
+            <a class="lightbox__link" href="#" data-lightbox-demo>
+              <span data-i18n="cta.openDemo">Open demo</span>
+              <svg
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+                aria-hidden="true">
+                <path
+                  d="M4 12 12 4M6 4h6v6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+            </a>
+            <a
+              class="lightbox__link"
+              href="#"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-lightbox-figma
+              hidden>
+              <span data-i18n="cta.openFigma">Open in Figma</span>
+              <svg
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+                aria-hidden="true">
+                <path
+                  d="M4 12 12 4M6 4h6v6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+            </a>
+          </div>
         </footer>
       </div>
     </div>

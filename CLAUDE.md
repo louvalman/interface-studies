@@ -1024,6 +1024,55 @@ and an anchor may not contain a button. Everything the overlay shows is read
 back out of that block, so no title, note or path is written twice. That is the
 only file outside the study folder that a new study may touch.
 
+### Figma is on the page twice, and the two are not the same link
+
+The link on the rail's count line is the companion file on Figma Community.
+The circle in the footer's handles nav is the profile. One is where this set
+is also drawn; the other is that the person has an account, which is what
+that nav is for — the same test that keeps the tip jar out of it.
+
+The file link sits on the count line rather than in the footer or the
+masthead, and both of those were tried. The footer is below the fold and a
+link nobody scrolls to is a link nobody follows. The masthead's meta row
+costs nothing to add to — measured, 31px with one item and 31px with two, at
+1440, 390 and 320 — so the objection to it was never pixels: that row is
+facts the page counts from the cards, and two items were evicted from it
+once already for repeating what the page said elsewhere. A file link is
+neither counted nor derived. The count line is above the fold, already in
+micro-caps, and already about the set rather than about any one study.
+
+It is set like quick look's link and tracked like the count beside it, at
+`0.16em` rather than that link's `0.14em`, because on this line the count is
+what it has to line up with.
+
+Below about 520px it wraps under the count, because that is where the nav has
+come up beside it and there is no room for both. That costs nothing: measured
+with the link and with it removed, the rail head is 79px either way at 1440
+and 106px either way at 390 and 320, in both languages — below 52rem the nav
+column is already taller than two lines of micro-caps, so the second line
+lands in height the row had anyway. Which is also why it is not hidden on a
+phone: hiding it would buy no pixels.
+
+### A card may name the board it was drawn in
+
+`data-figma` on the `<article class="piece">` block is the board in the
+companion Figma file the study was drawn in, and quick look draws an `Open in
+Figma` link beside `Open demo` where a card carries one. It is optional and
+most cards have none: no attribute, no link, and nothing else reads it. The
+link opens in a new tab and takes neither `?lang=` nor `?theme=` — Figma
+resolves neither, and the choice is this site's rather than something to hand
+to another one.
+
+It sits on the card rather than in the folder's `notes.md`, which is the
+opposite of where the `Inspiration:` line sits, and the reason is the wall the
+type already runs into: the index cannot read a `notes.md` over `file://`. A
+declaration in the folder would have to be copied onto the card anyway, and one
+hand-kept pair is one more than this repo wants. What that costs is a folder
+copied out: it carries its inspiration and not its board. If the Figma file
+ever becomes part of what a study *is* rather than a companion to it, the line
+belongs in `notes.md` and the card becomes the second copy, the way `type:`
+already works.
+
 The preview iframe carries its path in `data-src`, not `src`. Every card on the
 page is a live component — which is the point, and also what it costs: one
 thumbnail alone runs 289 dots on their own animations, and the rail drifts, so
