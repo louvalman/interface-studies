@@ -368,6 +368,142 @@
       color: var(--demo-fg);
     }
 
+    /* --- the specimen lightbox ---
+       Page chrome. Every selector here is a .demo* class: the component
+       inside the dialog is sized by handing its own width token in on the
+       element, in the markup, never by a rule written against its class.
+
+       The trigger is display:none until the page's own script adds .demo-js
+       to <html>, because a button that opens a dialog is a button that does
+       nothing without script. Gated on a class rather than the `hidden`
+       attribute on purpose — .demo__specimen-open sets its own display, and
+       an author rule beats the UA rule for [hidden], which is the same trap
+       the preview contract warns about for variant elements. */
+    .demo__specimen-name {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .demo__specimen-open {
+      display: none;
+      flex: none;
+      width: 1.35rem;
+      height: 1.35rem;
+      padding: 0;
+      place-items: center;
+      border: 0;
+      border-radius: 0.3rem;
+      background: transparent;
+      color: var(--demo-dim);
+      cursor: pointer;
+      transition: color 200ms ease, background-color 200ms ease;
+    }
+
+    .demo-js .demo__specimen-open { display: grid; }
+
+    .demo__specimen-open:hover {
+      color: var(--demo-fg);
+      background: var(--demo-fill);
+    }
+
+    .demo__specimen-open:focus-visible {
+      outline: 2px solid var(--demo-fg);
+      outline-offset: 2px;
+    }
+
+    .demo__specimen-open svg { width: 0.8125rem; height: 0.8125rem; }
+
+    /* The dialog itself. max-height plus overflow rather than arithmetic on
+       the component's height: the plate is aspect-ratio'd off its width, so
+       a short viewport is a scroll rather than a formula. */
+    .demo__lightbox {
+      width: min(92vw, 44rem);
+      max-width: 92vw;
+      max-height: 90vh;
+      overflow: auto;
+      margin: auto;
+      padding: 1.25rem;
+      box-sizing: border-box;
+      border: 1px solid var(--demo-line);
+      border-radius: 0.9rem;
+      background: var(--demo-ground);
+      color: var(--demo-fg);
+    }
+
+    /* ::backdrop does not inherit from the page in every engine, so the
+       colour is stated rather than taken from a token. */
+    .demo__lightbox::backdrop {
+      background: rgba(12, 11, 9, 0.62);
+      backdrop-filter: blur(2px);
+    }
+
+    .demo__lightbox-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1rem;
+      margin: 0 0 0.9rem;
+    }
+
+    .demo__lightbox-title {
+      margin: 0;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.6875rem;
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--demo-dim);
+    }
+
+    .demo__lightbox-close {
+      flex: none;
+      width: 1.85rem;
+      height: 1.85rem;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      border: 0;
+      border-radius: 999px;
+      background: var(--demo-fill);
+      color: var(--demo-soft);
+      cursor: pointer;
+      transition: color 200ms ease, background-color 200ms ease;
+    }
+
+    .demo__lightbox-close:hover { color: var(--demo-fg); }
+
+    .demo__lightbox-close:focus-visible {
+      outline: 2px solid var(--demo-fg);
+      outline-offset: 2px;
+    }
+
+    .demo__lightbox-close svg { width: 0.875rem; height: 0.875rem; }
+
+    /* The component is centred in the dialog and may shrink with it. Same
+       pair .demo__state carries, for the same reason. */
+    .demo__lightbox-stage {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      justify-items: center;
+      max-width: 100%;
+    }
+
+    .demo__lightbox-note {
+      margin: 0.9rem 0 0;
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      color: var(--demo-dim);
+    }
+
+    /* A finger cannot aim at a 13px icon. Matches the rest of this page's
+       touch handling, which grows the page's controls and leaves the
+       component alone. */
+    @media (hover: none) {
+      .demo__specimen-open { width: 2.25rem; height: 2.25rem; }
+      .demo__lightbox-close { width: 2.75rem; height: 2.75rem; }
+    }
+
     /* --- touch targets --- */
 
     /* No hover means a finger, and a finger cannot aim at a 10px label. The
@@ -844,7 +980,7 @@
       <p class="demo__caption" data-i18n="state.palettes">The palettes &mdash; the same eleven declarations restated, each with its own luminance band</p>
       <ul class="demo__specimens">
       <li class="demo__specimen">
-        <p class="demo__specimen-name">Field &middot; 0.22&ndash;0.72</p>
+        <p class="demo__specimen-name"><span data-specimen-name>Field &middot; 0.22&ndash;0.72</span><button class="demo__specimen-open" type="button" data-open-specimen data-i18n-aria="a11y.expand" aria-label="Show this specimen larger"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4" stroke-linecap="round" stroke-linejoin="round" /></svg></button></p>
         <section class="shader-token-field">
           <div class="shader-token-field__surface shader-token-field__surface--band" data-shader-token-field-surface>
             <canvas class="shader-token-field__canvas" data-shader-token-field-canvas aria-hidden="true"></canvas>
@@ -853,7 +989,7 @@
         <p class="demo__specimen-note" data-i18n="pal.field">Ochre and sage on bone. The band the study was written against, and the widest of the four.</p>
       </li>
       <li class="demo__specimen">
-        <p class="demo__specimen-name">Verdant &middot; 0.24&ndash;0.70</p>
+        <p class="demo__specimen-name"><span data-specimen-name>Verdant &middot; 0.24&ndash;0.70</span><button class="demo__specimen-open" type="button" data-open-specimen data-i18n-aria="a11y.expand" aria-label="Show this specimen larger"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4" stroke-linecap="round" stroke-linejoin="round" /></svg></button></p>
         <section class="shader-token-field shader-token-field--verdant">
           <div class="shader-token-field__surface shader-token-field__surface--band" data-shader-token-field-surface>
             <canvas class="shader-token-field__canvas" data-shader-token-field-canvas aria-hidden="true"></canvas>
@@ -862,7 +998,7 @@
         <p class="demo__specimen-note" data-i18n="pal.verdant">Green, with a dry ochre as the counter-pool: two greens gather into one green.</p>
       </li>
       <li class="demo__specimen">
-        <p class="demo__specimen-name">Night &middot; 0.01&ndash;0.14</p>
+        <p class="demo__specimen-name"><span data-specimen-name>Night &middot; 0.01&ndash;0.14</span><button class="demo__specimen-open" type="button" data-open-specimen data-i18n-aria="a11y.expand" aria-label="Show this specimen larger"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4" stroke-linecap="round" stroke-linejoin="round" /></svg></button></p>
         <section class="shader-token-field shader-token-field--night">
           <div class="shader-token-field__surface shader-token-field__surface--band" data-shader-token-field-surface>
             <canvas class="shader-token-field__canvas" data-shader-token-field-canvas aria-hidden="true"></canvas>
@@ -871,7 +1007,7 @@
         <p class="demo__specimen-note" data-i18n="pal.night">The clamp inverted &mdash; here the ceiling carries the ratio, because the ink is the light thing.</p>
       </li>
       <li class="demo__specimen">
-        <p class="demo__specimen-name">Ember &middot; 0.012&ndash;0.13</p>
+        <p class="demo__specimen-name"><span data-specimen-name>Ember &middot; 0.012&ndash;0.13</span><button class="demo__specimen-open" type="button" data-open-specimen data-i18n-aria="a11y.expand" aria-label="Show this specimen larger"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4" stroke-linecap="round" stroke-linejoin="round" /></svg></button></p>
         <section class="shader-token-field shader-token-field--ember">
           <div class="shader-token-field__surface shader-token-field__surface--band" data-shader-token-field-surface>
             <canvas class="shader-token-field__canvas" data-shader-token-field-canvas aria-hidden="true"></canvas>
@@ -888,7 +1024,7 @@
       <p class="demo__caption" data-i18n="state.forms">The forms &mdash; the same palette, three generators; <code>--form</code> is read by the shader and by the stop list alike</p>
       <ul class="demo__specimens">
       <li class="demo__specimen">
-        <p class="demo__specimen-name">Dunes &middot; --form: 0</p>
+        <p class="demo__specimen-name"><span data-specimen-name>Dunes &middot; --form: 0</span><button class="demo__specimen-open" type="button" data-open-specimen data-i18n-aria="a11y.expand" aria-label="Show this specimen larger"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4" stroke-linecap="round" stroke-linejoin="round" /></svg></button></p>
         <section class="shader-token-field">
           <div class="shader-token-field__surface shader-token-field__surface--plate" data-shader-token-field-surface>
             <canvas class="shader-token-field__canvas" data-shader-token-field-canvas aria-hidden="true"></canvas>
@@ -897,7 +1033,7 @@
         <p class="demo__specimen-note" data-i18n="frm.dunes">fbm warped by a second fbm. Octaves pile up, so the field drifts in broad soft masses.</p>
       </li>
       <li class="demo__specimen">
-        <p class="demo__specimen-name">Veins &middot; --form: 1</p>
+        <p class="demo__specimen-name"><span data-specimen-name>Veins &middot; --form: 1</span><button class="demo__specimen-open" type="button" data-open-specimen data-i18n-aria="a11y.expand" aria-label="Show this specimen larger"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4" stroke-linecap="round" stroke-linejoin="round" /></svg></button></p>
         <section class="shader-token-field shader-token-field--veins">
           <div class="shader-token-field__surface shader-token-field__surface--plate" data-shader-token-field-surface>
             <canvas class="shader-token-field__canvas" data-shader-token-field-canvas aria-hidden="true"></canvas>
@@ -906,7 +1042,7 @@
         <p class="demo__specimen-note" data-i18n="frm.veins">Every octave folded about its midpoint and squared before it is summed, so the creases branch into filaments.</p>
       </li>
       <li class="demo__specimen">
-        <p class="demo__specimen-name">Terraces &middot; --form: 2</p>
+        <p class="demo__specimen-name"><span data-specimen-name>Terraces &middot; --form: 2</span><button class="demo__specimen-open" type="button" data-open-specimen data-i18n-aria="a11y.expand" aria-label="Show this specimen larger"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4" stroke-linecap="round" stroke-linejoin="round" /></svg></button></p>
         <section class="shader-token-field shader-token-field--terraces">
           <div class="shader-token-field__surface shader-token-field__surface--plate" data-shader-token-field-surface>
             <canvas class="shader-token-field__canvas" data-shader-token-field-canvas aria-hidden="true"></canvas>
@@ -968,6 +1104,84 @@
         </p>
       </div>
     </section>
+
+    <!-- The specimen lightbox. One component instance, in the markup at load
+         so component.js's boot() picks it up like any other — a root added
+         afterwards is never set up, because boot() runs once. It costs
+         nothing while the dialog is closed: a closed <dialog> is display:none,
+         so the surface measures zero and the draw is skipped.
+
+         Which palette or form it shows is a modifier swapped on its root at
+         open time, and the component's own MutationObserver on class re-reads
+         the token block — the same channel preview.html uses for variants.
+
+         The width is handed in as an inline style on the component's own
+         element, never as a rule in this page's stylesheet: the component
+         declares --shader-token-field-width on its root, and a declaration on
+         the element beats one inherited from an ancestor, so a value set on
+         .demo__lightbox-stage would be shadowed and do nothing. -->
+    <dialog class="demo__lightbox" data-lightbox aria-labelledby="demo-lightbox-title">
+      <div class="demo__lightbox-head">
+        <h2 class="demo__lightbox-title" id="demo-lightbox-title" data-lightbox-title></h2>
+        <button class="demo__lightbox-close" type="button" data-lightbox-close
+                data-i18n-aria="a11y.close" aria-label="Close">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path d="M4 4l8 8M12 4l-8 8" stroke-linecap="round" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="demo__lightbox-stage">
+        <section class="shader-token-field" data-lightbox-field
+                 style="--shader-token-field-width: min(86vw, 40rem);">
+
+          <div class="shader-token-field__surface shader-token-field__surface--plate" data-shader-token-field-surface>
+            <canvas class="shader-token-field__canvas" data-shader-token-field-canvas aria-hidden="true"></canvas>
+            <div class="shader-token-field__inscription">
+              <p class="shader-token-field__kicker">Luminance band</p>
+              <p class="shader-token-field__line">
+                The field cannot get light enough, or dark enough, to lose
+                this text.
+              </p>
+            </div>
+          </div>
+
+          <div class="shader-token-field__surface shader-token-field__surface--band" data-shader-token-field-surface>
+            <canvas class="shader-token-field__canvas" data-shader-token-field-canvas aria-hidden="true"></canvas>
+          </div>
+
+          <dl class="shader-token-field__readout">
+            <div class="shader-token-field__row">
+              <dt>Frequency</dt>
+              <dd data-shader-token-field-value="scale">2.4 &middot; 4 oct</dd>
+            </div>
+            <div class="shader-token-field__row">
+              <dt>Warp</dt>
+              <dd data-shader-token-field-value="warp">0.42</dd>
+            </div>
+            <div class="shader-token-field__row">
+              <dt>Flow</dt>
+              <dd data-shader-token-field-value="flow">0.05 / s</dd>
+            </div>
+            <div class="shader-token-field__row">
+              <dt>Band</dt>
+              <dd data-shader-token-field-value="band">0.22 &ndash; 0.72 Y</dd>
+            </div>
+            <div class="shader-token-field__row">
+              <dt>Worst case</dt>
+              <dd data-shader-token-field-value="ratio">4.81:1</dd>
+            </div>
+            <div class="shader-token-field__row">
+              <dt>Drawn by</dt>
+              <dd data-shader-token-field-value="renderer">Stop list</dd>
+            </div>
+          </dl>
+
+        </section>
+      </div>
+
+      <p class="demo__lightbox-note" data-lightbox-note></p>
+    </dialog>
 
     <!-- notes.md, rendered. Type, source, the origin paragraphs and one <li>
          per decision bullet — the same shape the file has, so the two can be
@@ -1137,11 +1351,24 @@
               and drops the oldest with no warning, which on the index would be a
               card going blank for no visible reason: the rail is eight previews
               and growing, quick look opens a ninth, and this page alone holds
-              six surfaces. So one <code>OffscreenCanvas</code> draws every
+              fifteen surfaces across eleven roots &mdash; three states, seven
+              specimens and the one in the lightbox. So one
+              <code>OffscreenCanvas</code> draws every
               surface and hands each one an <code>ImageBitmap</code>, and the
               draw list is sorted by buffer size so the shared buffer is
-              reallocated once per distinct size rather than once per surface
-              &mdash; two a frame on this page instead of six. Where
+              reallocated once per distinct size rather than once per surface.
+              That is what makes the specimen rows affordable at all:
+              per-context they would be past Chromium&rsquo;s cap on this page
+              by themselves.</p>
+            <p>The lightbox is the case that shows the sizing is doing real
+              work rather than being a formality. Its component is in the
+              markup at load, because <code>boot()</code> runs once and a root
+              added afterwards is never set up &mdash; and it costs nothing
+              while the dialog is shut, since a closed <code>&lt;dialog&gt;</code>
+              is <code>display: none</code>, <code>measure()</code> gets a zero
+              rect and returns false, and the draw is skipped. Opening it gives
+              the surface a size and it starts.</p>
+            <p>Where
               <code>OffscreenCanvas</code>, <code>bitmaprenderer</code> or WebGL2
               is missing, nothing happens at all and the stop list stands, which
               is not a fallback so much as the other half of the study: the two
@@ -1221,6 +1448,8 @@
 
       var DA = {
         'a11y.theme': 'M\u00f8rk tilstand',
+        'a11y.expand': 'Vis dette eksemplar st\u00f8rre',
+        'a11y.close': 'Luk',
         'back': 'Alle studier',
         'notes.title': 'Beslutninger',
         'notes.type': 'Type',
@@ -1431,6 +1660,68 @@
       }
 
       paint();
+    })();
+
+    /* --- the specimen lightbox ----------------------------------------
+       Page chrome, like the language and theme controls above it.
+
+       <dialog>.showModal() rather than a scripted panel, for the reason the
+       notes block is a <details>: modal is what the element already is —
+       focus trap, Escape, the top layer, an inert page behind it, and focus
+       returned to the trigger on close. None of that is worth reimplementing,
+       and all of it is wrong when it is reimplemented.
+
+       It reads the modifiers off whichever specimen was clicked rather than
+       holding a table of them, so the palettes and the forms both work and a
+       new specimen needs nothing added here. */
+    (function () {
+      var dialog = document.querySelector('[data-lightbox]');
+      var field = document.querySelector('[data-lightbox-field]');
+      var title = document.querySelector('[data-lightbox-title]');
+      var note = document.querySelector('[data-lightbox-note]');
+      if (!dialog || !field || !dialog.showModal) return;
+
+      var BASE = 'shader-token-field';
+
+      /* The trigger is hidden until this line runs, so the button never
+         exists for a reader whose script did not. */
+      document.documentElement.classList.add('demo-js');
+
+      function modifiersOf(el) {
+        return Array.prototype.filter.call(el.classList, function (c) {
+          return c.indexOf(BASE + '--') === 0;
+        });
+      }
+
+      function open(button) {
+        var item = button.closest('.demo__specimen');
+        if (!item) return;
+        var source = item.querySelector('.' + BASE);
+        if (!source) return;
+
+        /* Swap the modifier set. component.js observes `class` on its own
+           root, so re-reading the token block is its business, not this
+           page's — nothing here touches a uniform or a colour. */
+        modifiersOf(field).forEach(function (c) { field.classList.remove(c); });
+        modifiersOf(source).forEach(function (c) { field.classList.add(c); });
+
+        var name = item.querySelector('[data-specimen-name]');
+        var body = item.querySelector('.demo__specimen-note');
+        title.textContent = name ? name.textContent.trim() : '';
+        note.textContent = body ? body.textContent.trim() : '';
+
+        dialog.showModal();
+      }
+
+      document.addEventListener('click', function (event) {
+        var button = event.target.closest('[data-open-specimen]');
+        if (button) { open(button); return; }
+        if (event.target.closest('[data-lightbox-close]')) { dialog.close(); return; }
+        /* A click that lands on the dialog element itself is a click on the
+           backdrop: the panel's own padding box is covered by its children,
+           so anything reaching this node came from outside it. */
+        if (event.target === dialog) dialog.close();
+      });
     })();
 
   })();

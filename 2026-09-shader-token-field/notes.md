@@ -122,10 +122,20 @@ actually running on, including the contrast ratio the block guarantees.
   contexts — Chromium at sixteen — and drops the oldest with no warning, which
   on the index would be a card going blank for no visible reason: the rail is
   eight previews and growing, quick look opens a ninth, and this demo page
-  alone holds six surfaces. So one `OffscreenCanvas` draws every surface and
-  hands each one an `ImageBitmap`, and the draw list is sorted by buffer size
-  so the shared buffer is reallocated once per distinct size rather than once
-  per surface — two a frame on this page instead of six. Where
+  alone holds fifteen surfaces across eleven roots — three states, seven
+  specimens and the one in the lightbox. So one `OffscreenCanvas` draws every
+  surface and hands each one an `ImageBitmap`, and the draw list is sorted by
+  buffer size so the shared buffer is reallocated once per distinct size
+  rather than once per surface. That is what makes the specimen rows
+  affordable at all: per-context they would be past Chromium's cap on this
+  page by themselves.
+
+  The lightbox is the case that shows the sizing is doing real work rather
+  than being a formality. Its component is in the markup at load, because
+  `boot()` runs once and a root added afterwards is never set up — and it
+  costs nothing while the dialog is shut, since a closed `<dialog>` is
+  `display: none`, `measure()` gets a zero rect and returns false, and the
+  draw is skipped. Opening it gives the surface a size and it starts. Where
   `OffscreenCanvas`, `bitmaprenderer` or WebGL2 is missing, nothing happens at
   all and the stop list stands, which is not a fallback so much as the other
   half of the study: the two are one recipe rendered twice, and the read-out's
