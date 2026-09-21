@@ -65,7 +65,14 @@ actually running on, including the contrast ratio the block guarantees.
   with the field behind it, and on the index, where the card is drawn at 0.7,
   it was 10.5px of body copy and read as texture. One sentence at 18px leads
   the plate at both sizes, and it costs nothing — the plate is aspect-locked,
-  so the inscription floats inside a box that does not grow. Off the field, on
+  so the inscription floats inside a box that does not grow. It also stopped
+  saying `ceiling` and `floor`. Those are the names of two tokens — `--lum-ceil`
+  and `--lum-floor` — and the sentence was borrowing them to describe the
+  thing they configure, which reads as precision to whoever wrote them and as
+  nothing at all to a reader meeting the component cold. Sample copy is read
+  by someone who does not have the token block open; it says what the
+  component does in the words anyone would use for it, and the read-out beside
+  it is where the numbers live. Off the field, on
   the component's own surface, the read-out has ordinary tiers at 15.9:1 and
   6.8:1, because nothing is clamping anything there — and that surface carries
   a 1px edge in `--shader-token-field-line`, because #f0ece2 on the index's

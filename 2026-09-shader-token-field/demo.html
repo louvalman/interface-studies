@@ -10,7 +10,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Shader token field &mdash; Interface Studies</title>
+  <title>Banded shaders &mdash; Interface Studies</title>
 
   <!-- Font loading is the demo's job, never the component's. component.css
        names both families and falls back on its own if they never arrive. -->
@@ -31,8 +31,8 @@
   <meta property="og:type" content="article" />
   <meta property="og:site_name" content="Interface Studies" />
   <meta property="og:url" content="https://interface-studies.pages.dev/2026-09-shader-token-field/demo.html" />
-  <meta property="og:title" content="Shader token field &mdash; Interface Studies" />
-  <meta property="og:description" content="A gradient field written as a token block: the shader’s uniforms are custom properties, read by a stop list and by the GPU from one declaration, with the contrast floor clamped in the fragment shader rather than measured afterwards." />
+  <meta property="og:title" content="Banded shaders &mdash; Interface Studies" />
+  <meta property="og:description" content="A gradient field drawn twice from one declaration — once by a CSS stop list, once by a WebGL shader — so the two agree by construction. Every fragment’s luminance is clamped into a declared band, which is what puts a guaranteed contrast ratio under the type." />
   <meta property="og:image" content="../og.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
@@ -599,11 +599,11 @@
 
     <header class="demo__intro">
       <p class="demo__kicker">2026-09 &middot; <span data-i18n="type">Aesthetic</span></p>
-      <h1 class="demo__heading" data-i18n="heading">Shader token field</h1>
+      <h1 class="demo__heading" data-i18n="heading">Banded shaders</h1>
       <p class="demo__lede" data-i18n="lede">
-        A gradient field written as a token block. Eight numbers and three
-        colours declare what the field is, and the same declaration is read
-        twice &mdash; by a stop list that needs no script, and by a WebGL2
+        A gradient field drawn twice from one declaration. Eight numbers and
+        three colours declare what the field is, and that same declaration is
+        read twice &mdash; by a stop list that needs no script, and by a WebGL2
         fragment shader on the GPU. Every fragment&rsquo;s luminance is clamped
         into a declared band, so the contrast ratio under the type is a
         property of the tokens rather than of where the noise landed, and the
@@ -620,8 +620,8 @@
           <div class="shader-token-field__inscription">
             <p class="shader-token-field__kicker">Luminance band</p>
             <p class="shader-token-field__line">
-              No pixel behind this line is lighter than the ceiling or darker
-              than the floor.
+              The field cannot get light enough, or dark enough, to lose
+              this text.
             </p>
           </div>
         </div>
@@ -669,8 +669,8 @@
           <div class="shader-token-field__inscription">
             <p class="shader-token-field__kicker">Luminance band</p>
             <p class="shader-token-field__line">
-              No pixel behind this line is lighter than the ceiling or darker
-              than the floor.
+              The field cannot get light enough, or dark enough, to lose
+              this text.
             </p>
           </div>
         </div>
@@ -718,8 +718,8 @@
           <div class="shader-token-field__inscription">
             <p class="shader-token-field__kicker">Luminance band</p>
             <p class="shader-token-field__line">
-              No pixel behind this line is lighter than the ceiling or darker
-              than the floor.
+              The field cannot get light enough, or dark enough, to lose
+              this text.
             </p>
           </div>
         </div>
@@ -863,7 +863,16 @@
               body copy and read as texture. One sentence at 18px leads the
               plate at both sizes, and it costs nothing &mdash; the plate is
               aspect-locked, so the inscription floats inside a box that does
-              not grow. Off the field, on the
+              not grow. It also stopped saying <code>ceiling</code> and
+              <code>floor</code>. Those are the names of two tokens &mdash;
+              <code>--lum-ceil</code> and <code>--lum-floor</code> &mdash; and
+              the sentence was borrowing them to describe the thing they
+              configure, which reads as precision to whoever wrote them and as
+              nothing at all to a reader meeting the component cold. Sample
+              copy is read by someone who does not have the token block open;
+              it says what the component does in the words anyone would use
+              for it, and the read-out beside it is where the numbers live.
+              Off the field, on the
               component&rsquo;s own surface, the read-out has ordinary tiers at
               15.9:1 and 6.8:1, because nothing is clamping anything there
               &mdash; and that surface carries a 1px edge in
@@ -969,9 +978,10 @@
         'notes.none': 'Ingen \u2014 eget design',
         'notes.full': '\u2014 hele optegnelsen, ogs\u00e5 det der blev pr\u00f8vet og forkastet',
         'type': '\u00c6stetik',
-        'heading': 'Shaderfelt af tokens',
-        'lede': 'Et gradientfelt skrevet som en token-blok. Otte tal og tre '
-          + 'farver angiver, hvad feltet er, og den samme angivelse l\u00e6ses '
+        'heading': 'Afgr\u00e6nsede shaders',
+        'lede': 'Et gradientfelt tegnet to gange ud fra \u00e9n angivelse. '
+          + 'Otte tal og tre farver angiver, hvad feltet er, og den samme '
+          + 'angivelse l\u00e6ses '
           + 'to gange \u2014 af en stopliste, der ikke kr\u00e6ver script, og '
           + 'af en WebGL2-fragmentshader p\u00e5 grafikkortet. Hvert fragments '
           + 'lysstyrke afgr\u00e6nses til et angivet b\u00e5nd, s\u00e5 '

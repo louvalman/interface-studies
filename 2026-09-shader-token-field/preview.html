@@ -11,7 +11,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Shader token field — preview</title>
+  <title>Banded shaders — preview</title>
 
   <!-- Same font loading as demo.html. -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -83,7 +83,15 @@
       margin: 0;
       min-height: 100vh;
       display: grid;
-      place-items: center;
+      /* An implicit `auto` column is as wide as its max-content, so the
+         stage's own max-width: 100% resolves against the component's 400px
+         rather than against the viewport and the document scrolls sideways
+         under it. The explicit minmax(0, 1fr) is the half of the pair
+         CLAUDE.md names; the frame is always 480 wide so nothing showed, but
+         a file that only holds because nobody narrows it is not holding. */
+      grid-template-columns: minmax(0, 1fr);
+      justify-items: center;
+      align-items: center;
       background-color: var(--preview-ground);
       font-family: system-ui, sans-serif;
     }
@@ -119,8 +127,8 @@
         <div class="shader-token-field__inscription">
           <p class="shader-token-field__kicker">Luminance band</p>
           <p class="shader-token-field__line">
-            No pixel behind this line is lighter than the ceiling or darker
-            than the floor.
+            The field cannot get light enough, or dark enough, to lose
+            this text.
           </p>
         </div>
       </div>
