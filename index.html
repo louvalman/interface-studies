@@ -362,12 +362,11 @@
               class="piece__note"
               data-note
               data-i18n="piece.shaderTokenField.note">
-              A gradient field whose shader uniforms are a token block: eight
-              numbers and three colours, read once by a stop list that needs no
-              script and once by the GPU. Every fragment&rsquo;s luminance is
-              clamped into a declared band, so the contrast floor under the type
-              is a promise the tokens make rather than a measurement taken
-              afterwards.
+              A gradient field drawn twice from one declaration &mdash; once by
+              a CSS stop list, once by a WebGL shader &mdash; so the two agree by
+              construction. Every fragment&rsquo;s luminance is clamped into a
+              declared band, which is what puts a guaranteed contrast ratio under
+              the type.
             </p>
             <span class="piece__cta">
               <span class="piece__cta-text" data-i18n="cta.openDemo">

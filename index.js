@@ -76,13 +76,12 @@
         + 'felt, loggen til et panel — i seks materialer fra én opskrift.',
       'cta.quickLookToolbar': 'Hurtigt kig: Værktøjslinje i flydende glas',
       'piece.shaderTokenField.title': 'Shaderfelt af tokens',
-      'piece.shaderTokenField.note': 'Et gradientfelt, hvis shader-parametre '
-        + 'er en token-blok: otte tal og tre farver, l\u00e6st \u00e9n gang '
-        + 'af en stopliste, der ikke kr\u00e6ver script, og \u00e9n gang af '
-        + 'grafikkortet. Hvert fragments lysstyrke afgr\u00e6nses til et '
-        + 'angivet b\u00e5nd, s\u00e5 kontrastgulvet under teksten er et '
-        + 'l\u00f8fte, v\u00e6rdierne giver, frem for en m\u00e5ling taget '
-        + 'bagefter.',
+      'piece.shaderTokenField.note': 'Et gradientfelt tegnet to gange ud fra '
+        + '\u00e9n angivelse \u2014 \u00e9n gang af en CSS-stopliste, \u00e9n '
+        + 'gang af en WebGL-shader \u2014 s\u00e5 de to stemmer overens af '
+        + 'konstruktion. Hvert fragments lysstyrke afgr\u00e6nses til et '
+        + 'angivet b\u00e5nd, og det er d\u00e9t, der l\u00e6gger et garanteret '
+        + 'kontrastforhold under teksten.',
       'cta.quickLookShader': 'Hurtigt kig: Shaderfelt af tokens',
       'piece.struckTones.title': 'Anslagstoner',
       'piece.struckTones.note': 'En lydpalet til en gr\u00e6nseflade, skrevet '

@@ -64,11 +64,18 @@
        propagate to the viewport canvas and leave a seam at the frame edge. */
     html { background-color: var(--preview-ground); }
 
-    /* The component's own width token, handed in from outside rather than a
-       rule written against its class. The rail lays this document out at
-       480px and the component asks for 480; a card wants air around it. */
+    /* The stage is a box to centre in and nothing else. The width token is
+       NOT handed in here: the component declares
+       --shader-token-field-width on its own root, and a declaration on the
+       element beats one inherited from an ancestor, so a value set on this
+       parent is shadowed and does nothing. Written here it looked applied
+       and was not — the card sat at the component's own 30rem, which is
+       exactly the 480px this document is laid out at, so the only card on
+       the rail with no ground showing beside it. It goes in as an inline
+       style on the component root instead, at the foot of this file, which
+       is the same channel --buffer-scale, --run and the ground colours
+       already use. */
     .stage {
-      --shader-token-field-width: 25rem;
       max-width: 100%;
     }
 
@@ -112,9 +119,8 @@
         <div class="shader-token-field__inscription">
           <p class="shader-token-field__kicker">Luminance band</p>
           <p class="shader-token-field__line">
-            No pixel behind this line is lighter than the ceiling or darker than
-            the floor. The ratio under a letter is a property of the field, not of
-            the pixel that happened to land there.
+            No pixel behind this line is lighter than the ceiling or darker
+            than the floor.
           </p>
         </div>
       </div>
@@ -175,6 +181,11 @@
       var rested = null;
       var stepped = false;
 
+      /* The width, on the element rather than on an ancestor — see the note
+         on .stage above. The rail lays this document out at 480px and the
+         component asks for 30rem; a card wants ground showing beside it. */
+      root.style.setProperty(P + 'width', '25rem');
+
       function apply(variant) {
         VARIANTS.forEach(function (v) {
           v.classes.forEach(function (c) { root.classList.remove(c); });
@@ -186,16 +197,23 @@
         });
       }
 
-      /* The card rests on whichever version the rail is NOT. Its two grounds
-         are #f3f2ef and #191b1e and the night surface is #141614 — 1.2 OK ΔE
-         off the dark ground, which is no edge at all — so resting the light
-         plate there and the night plate on paper is the widest separation the
-         study already had. The resting variant is rotated to the front of the
-         reported list rather than merely applied: quick look takes index 0 as
-         what is showing, so applying one and reporting another leaves the
-         overlay naming the wrong card. */
+      /* The card rests on the version that belongs to the ground it is on:
+         the field on paper, the night plate on the dark rail. It used to
+         rest on the opposite one, on the reasoning that the night surface
+         was 1.2 OK ΔE off the dark ground and so had no edge there. That
+         number was wrong. Measured on the same scale CLAUDE.md quotes 0.30
+         on for the detail-reveal card, night on the dark ground is 2.60 and
+         the field on paper is 2.00 — so the inversion was trading a small
+         edge for a slightly larger one, and paying for it by putting a black
+         slab in a row of paper cards. What the inversion was standing in for
+         was a border, which the component now has; `struck-tones` holds the
+         rail at 1.83 ΔE against the same ground on exactly that. The
+         resting variant is rotated to the front of the reported list rather
+         than merely applied: quick look takes index 0 as what is showing, so
+         applying one and reporting another leaves the overlay naming the
+         wrong card. */
       function restFor(theme) {
-        return theme === 'dark' ? 'field' : 'night';
+        return theme === 'dark' ? 'night' : 'field';
       }
 
       function rest() {

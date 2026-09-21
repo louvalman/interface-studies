@@ -57,11 +57,19 @@ actually running on, including the contrast ratio the block guarantees.
   style.** A second, muted tier needs a lighter ink, and against a floor of
   0.22 anything lighter than about `#2a2622` is already under 4.5:1. So the
   hierarchy on the field is size and tracking — an 11px kicker at 0.18em over
-  a 15px line at 500 — and not colour. Muting into a clamped field is the one
+  an 18px line at 500 — and not colour. Muting into a clamped field is the one
   thing the clamp cannot give you, and it is worth knowing before the palette
-  is chosen rather than after the type goes on. Off the field, on the
-  component's own surface, the read-out has ordinary tiers at 15.9:1 and
-  6.8:1, because nothing is clamping anything there.
+  is chosen rather than after the type goes on. The line is 18px rather than
+  the 15px it was first set at because size is carrying the whole of that
+  hierarchy: at 15px over three lines the statement was a paragraph competing
+  with the field behind it, and on the index, where the card is drawn at 0.7,
+  it was 10.5px of body copy and read as texture. One sentence at 18px leads
+  the plate at both sizes, and it costs nothing — the plate is aspect-locked,
+  so the inscription floats inside a box that does not grow. Off the field, on
+  the component's own surface, the read-out has ordinary tiers at 15.9:1 and
+  6.8:1, because nothing is clamping anything there — and that surface carries
+  a 1px edge in `--shader-token-field-line`, because #f0ece2 on the index's
+  #f3f2ef ground is 2.00 OK ΔE and a plate that size needs to be a plate.
 
 - **One WebGL context for the whole document, blitted.** A browser caps live
   contexts — Chromium at sixteen — and drops the oldest with no warning, which

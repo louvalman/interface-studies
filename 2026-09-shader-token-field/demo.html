@@ -620,9 +620,8 @@
           <div class="shader-token-field__inscription">
             <p class="shader-token-field__kicker">Luminance band</p>
             <p class="shader-token-field__line">
-              No pixel behind this line is lighter than the ceiling or darker than
-              the floor. The ratio under a letter is a property of the field, not of
-              the pixel that happened to land there.
+              No pixel behind this line is lighter than the ceiling or darker
+              than the floor.
             </p>
           </div>
         </div>
@@ -670,9 +669,8 @@
           <div class="shader-token-field__inscription">
             <p class="shader-token-field__kicker">Luminance band</p>
             <p class="shader-token-field__line">
-              No pixel behind this line is lighter than the ceiling or darker than
-              the floor. The ratio under a letter is a property of the field, not of
-              the pixel that happened to land there.
+              No pixel behind this line is lighter than the ceiling or darker
+              than the floor.
             </p>
           </div>
         </div>
@@ -720,9 +718,8 @@
           <div class="shader-token-field__inscription">
             <p class="shader-token-field__kicker">Luminance band</p>
             <p class="shader-token-field__line">
-              No pixel behind this line is lighter than the ceiling or darker than
-              the floor. The ratio under a letter is a property of the field, not of
-              the pixel that happened to land there.
+              No pixel behind this line is lighter than the ceiling or darker
+              than the floor.
             </p>
           </div>
         </div>
@@ -855,12 +852,25 @@
             <p>A second, muted tier needs a lighter ink, and against a floor of
               0.22 anything lighter than about <code>#2a2622</code> is already
               under 4.5:1. So the hierarchy on the field is size and tracking
-              &mdash; an 11px kicker at 0.18em over a 15px line at 500 &mdash;
+              &mdash; an 11px kicker at 0.18em over an 18px line at 500 &mdash;
               and not colour. Muting into a clamped field is the one thing the
               clamp cannot give you, and it is worth knowing before the palette
-              is chosen rather than after the type goes on. Off the field, on the
+              is chosen rather than after the type goes on. The line is 18px
+              rather than the 15px it was first set at because size is carrying
+              the whole of that hierarchy: at 15px over three lines the
+              statement was a paragraph competing with the field behind it, and
+              on the index, where the card is drawn at 0.7, it was 10.5px of
+              body copy and read as texture. One sentence at 18px leads the
+              plate at both sizes, and it costs nothing &mdash; the plate is
+              aspect-locked, so the inscription floats inside a box that does
+              not grow. Off the field, on the
               component&rsquo;s own surface, the read-out has ordinary tiers at
-              15.9:1 and 6.8:1, because nothing is clamping anything there.</p>
+              15.9:1 and 6.8:1, because nothing is clamping anything there
+              &mdash; and that surface carries a 1px edge in
+              <code>--shader-token-field-line</code>, because
+              <code>#f0ece2</code> on the index&rsquo;s <code>#f3f2ef</code>
+              ground is 2.00 OK &Delta;E and a plate that size needs to be a
+              plate.</p>
           </li>
           <li>
             <h3 class="demo__notes-head">One WebGL context for the whole document, blitted.</h3>

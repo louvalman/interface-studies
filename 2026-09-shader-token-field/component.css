@@ -130,7 +130,7 @@
 
   --shader-token-field-kicker-size: 0.6875rem;
   --shader-token-field-kicker-tracking: 0.18em;
-  --shader-token-field-line-size: 0.9375rem;
+  --shader-token-field-line-size: 1.125rem;
   --shader-token-field-row-size: 0.75rem;
 
   --shader-token-field-lift: 2px;
@@ -147,6 +147,14 @@
 
   background: var(--shader-token-field-surface);
   color: var(--shader-token-field-ink);
+  /* The plate carries its own edge, in the same token the read-out's rules
+     take. Without it the surface is #f0ece2 on the index's #f3f2ef ground —
+     2.00 OK ΔE, which is an edge only in the sense that a number is not
+     zero — and the card had to be rested on its opposite variant to be seen
+     at all. An edge the component owns is the cheaper answer, and it is the
+     one the rest of the set already makes: `struck-tones` sits at 1.83 ΔE
+     against the same ground and reads as a plate, because it is bordered. */
+  border: 1px solid var(--shader-token-field-line);
   border-radius: var(--shader-token-field-radius);
 
   font-family: var(--shader-token-field-font);

@@ -530,6 +530,23 @@ against it, inline, so it beats the stylesheet's own media queries. That is a
 custom property being set from outside, which is what the property block is
 for; it is still not a rule written against a component class.
 
+**Hand a token in on the component's own element, never on a wrapper around
+it.** The property block sits on the root class, so the component declares
+every tunable on the very element the value has to reach — and a declaration
+on an element beats one inherited from an ancestor, whatever the specificity
+of the rule that set it. A value written on a stage or a stand-in parent is
+therefore shadowed by the component's own default and does nothing at all,
+silently, while reading exactly like it works. `2026-09-shader-token-field`
+put `--shader-token-field-width: 25rem` on its `.stage` and shipped at the
+component's own 30rem, which is precisely the 480px the preview is laid out
+at: the one card on the rail with no ground beside it, from a line that
+looked applied. Inline on the root is the channel every other handoff here
+already uses — `--buffer-scale`, `--run`, `2026-09-drawn-gradients`' per-theme
+colours — and it is the one to copy. The test is the same one the property
+block itself is held to, and it is worth actually running: read the value
+back off the component with `getComputedStyle` and see whether it is the one
+you handed in.
+
 `preview:pause` is the sixth, and it is the only one a preview may not ignore.
 A same-origin iframe shares the index's main thread, so a thumbnail that keeps
 animating while the rail is being dragged is animating against the drag, on the
