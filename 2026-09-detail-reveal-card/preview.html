@@ -46,6 +46,14 @@
       margin: 0;
       min-height: 100vh;
       display: grid;
+      /* An implicit auto column takes its max-content width and overflows
+         quite happily, which left the card's own max-width: 100% resolving
+         against 336px rather than against the frame: at 320 this page put a
+         sideways scrollbar across itself. The track has to be allowed to
+         shrink for the squeeze to reach the card. It changes nothing at the
+         480px the rail lays this out at — the card is 336 and centred either
+         way — and the pair is what _template/demo.html has carried all along. */
+      grid-template-columns: minmax(0, 1fr);
       place-items: center;
       background-color: var(--preview-ground);
       font-family: "Plus Jakarta Sans", system-ui, sans-serif;
@@ -124,7 +132,7 @@
   </a>
 
   <!--
-    Thumbnail scaffolding only. Two jobs, both driven by the index and both
+    Thumbnail scaffolding only. Three jobs, all driven by the index and all
     inert when this file is opened on its own:
 
       1. A card's iframe has pointer events off, so the component's :hover can
@@ -133,6 +141,9 @@
       2. Quick look asks for the component's variants and steps through them.
          The list lives here, because the index must never name a component
          class. It reports labels; the index just draws dots.
+      3. On the rail the card steps through the variants facing the rail on a
+         timer of its own, so the thumbnail shows what the panel is for rather
+         than standing on one card. See the rotation in the script.
 
     The base markup above matches component.html. The pin and the kicker are
     built here rather than sitting in the markup, because --map is the only
@@ -186,6 +197,82 @@
             ['+45 00 00 00 00', 'hello@example.com']
           ],
           meta: '86 people \u00b7 Est. 2019'
+        },
+
+        // A second place, so the rotation below has somewhere to go that is
+        // still the map: the point of stepping the card is that --map is a
+        // frame for a location rather than a picture of one, which one
+        // location cannot show. It is the same modifier re-themed from
+        // outside — bg, accent, art and the pin's position, handed in on the
+        // component's own element — which is demo.html's 'Map, re-themed'
+        // state, and nothing here is a rule written against a component
+        // class.
+        //
+        // The accent is amber rather than another coral: on the rail these
+        // two sit one step apart in a three-card cycle, and #ff7a5c against
+        // #e8b13d is the separation that has to carry at thumbnail size. It
+        // also clears 3:1 against both tones' surfaces — 3.63 on the light
+        // one, 9.21 on the dark — where Denmark's own light coral is 2.73.
+        // The arrow is the one thing the accent colours that carries meaning;
+        // the pin is decoration and owes nothing.
+        {
+          id: 'map-2', label: 'Location, second', tone: 'light',
+          classes: ['--map'], pin: true,
+          title: 'Portugal', pill: 'GMT+1', action: 'Porto',
+          kicker: '41.1579\u00b0 N \u00b7 8.6291\u00b0 W',
+          details: [
+            ['9 Placeholder Rua', '4050 Porto'],
+            ['+351 000 000 000', 'porto@example.com']
+          ],
+          meta: '22 people \u00b7 Est. 2023',
+          // The pin sits at 30% rather than mid-card, for the reason Denmark's
+          // does: the panel's label row is at about 46%, and a pin there lands
+          // on the type instead of on the map. It carries the contour rings
+          // with it — the base art centres them on the same pair.
+          //
+          // The mesh is amber against blue and green, with no coral in it. A
+          // warm-on-warm wash is what the first pass was, and beside Denmark
+          // at thumbnail size it read as the same card with the colour turned
+          // down: --map's light art opens at 0.28, so a light plate has very
+          // little to spend and every stop has to be worth its place.
+          vars: {
+            '--detail-reveal-card-bg': '#f1efe8',
+            '--detail-reveal-card-accent': '#a8710a',
+            '--detail-reveal-card-pin-x': '36%',
+            '--detail-reveal-card-pin-y': '30%',
+            '--detail-reveal-card-art':
+              'radial-gradient(42% 34% at 36% 30%, rgba(214, 138, 20, 0.52), transparent 70%),'
+              + 'radial-gradient(48% 40% at 72% 24%, rgba(46, 130, 196, 0.44), transparent 72%),'
+              + 'radial-gradient(48% 42% at 76% 76%, rgba(58, 166, 132, 0.38), transparent 72%),'
+              + 'radial-gradient(56% 48% at 22% 76%, rgba(190, 150, 60, 0.36), transparent 74%),'
+              + 'radial-gradient(80% 62% at 48% 44%, rgba(255, 255, 255, 0.50), transparent 74%),'
+              + 'linear-gradient(180deg, rgba(255, 255, 255, 0.46), transparent 46%)'
+          }
+        },
+        {
+          id: 'map-2-dark', label: 'Location, second, dark', tone: 'dark',
+          classes: ['--map', '--dark'], pin: true,
+          title: 'Portugal', pill: 'GMT+1', action: 'Porto',
+          kicker: '41.1579\u00b0 N \u00b7 8.6291\u00b0 W',
+          details: [
+            ['9 Placeholder Rua', '4050 Porto'],
+            ['+351 000 000 000', 'porto@example.com']
+          ],
+          meta: '22 people \u00b7 Est. 2023',
+          // No bg: --dark's #15171c is the surface, and it is what gives this
+          // card its edge on a light rail. Only the accent, the art and the
+          // pin are this place's.
+          vars: {
+            '--detail-reveal-card-accent': '#e8b13d',
+            '--detail-reveal-card-pin-x': '36%',
+            '--detail-reveal-card-pin-y': '30%',
+            '--detail-reveal-card-art':
+              'radial-gradient(40% 32% at 36% 30%, rgba(232, 177, 61, 0.50), transparent 70%),'
+              + 'radial-gradient(50% 40% at 72% 22%, rgba(50, 120, 200, 0.46), transparent 72%),'
+              + 'radial-gradient(48% 44% at 78% 76%, rgba(40, 175, 140, 0.42), transparent 72%),'
+              + 'radial-gradient(58% 50% at 24% 80%, rgba(180, 130, 40, 0.38), transparent 74%),'
+              + 'radial-gradient(100% 80% at 50% 30%, rgba(255, 255, 255, 0.06), transparent 70%)'
+          }
         }
       ];
 
@@ -202,17 +289,27 @@
         return el;
       }
 
-      // What is showing, so a theme switch can tell a card at rest from one
-      // quick look has stepped somewhere.
-      var current = null;
+      // The custom properties the variant showing now put on the card, so the
+      // next one can take them off again. Written on the component's own root
+      // rather than on anything around it: the property block lives on that
+      // element, and a declaration on the element beats one inherited from an
+      // ancestor whatever the specificity of the rule that set it — a value
+      // handed to a wrapper would be shadowed by the component's own default
+      // and do nothing at all, silently.
+      var vars = [];
 
       function apply(variant) {
-        current = variant;
         // Only the variant classes are touched, so --open survives a switch.
         VARIANTS.forEach(function (v) {
           v.classes.forEach(function (c) { root.classList.remove(BASE + c); });
         });
         variant.classes.forEach(function (c) { root.classList.add(BASE + c); });
+
+        vars.forEach(function (name) { root.style.removeProperty(name); });
+        vars = variant.vars ? Object.keys(variant.vars) : [];
+        vars.forEach(function (name) {
+          root.style.setProperty(name, variant.vars[name]);
+        });
 
         // `tone` is read by ordered() to pick the resting card against the
         // rail, and by nothing else — it no longer paints a surround. The
@@ -257,11 +354,15 @@
       // takes index 0 as what is showing: it opens on that dot and prints
       // that label. Applying one variant while reporting another as first
       // would leave the overlay naming the wrong card.
+      // Every card of the facing tone leads, in the order they are authored,
+      // and the rail's own tone follows. It was one card before the rotation
+      // below existed; now the cards it steps through are the leading group,
+      // so the edge argument covers all three rather than only the first.
       function ordered(dark) {
         var want = dark ? 'light' : 'dark';
-        var rest = VARIANTS.filter(function (v) { return v.tone === want; })[0];
-        if (!rest) return VARIANTS.slice();
-        return [rest].concat(VARIANTS.filter(function (v) { return v !== rest; }));
+        var facing = VARIANTS.filter(function (v) { return v.tone === want; });
+        if (!facing.length) return VARIANTS.slice();
+        return facing.concat(VARIANTS.filter(function (v) { return v.tone !== want; }));
       }
 
       function isDark() {
@@ -270,6 +371,103 @@
 
       var list = ordered(isDark());
       apply(list[0]);
+
+      // --- the rail rotation ---------------------------------------------
+      //
+      // The card steps through the three variants facing the rail — the base
+      // card, and the two locations — on a timer, and settles back to the
+      // first. A thumbnail standing on one of them says the component is that
+      // card; what this study is about is a panel that holds whatever the
+      // card is for, and one variant cannot make that argument. The two
+      // locations are what carries it: the same modifier, two places, so the
+      // map reads as a frame rather than as a picture.
+      //
+      // It stays inside the facing tone because the inversion above is an
+      // edge decision and it applies to every card in the cycle, not only to
+      // the one at rest. Measured against the light ground, the light base
+      // card is 0.30 OK dE and the light map 1.01 — both of them the same
+      // colour as the paper, with nothing drawing the card's edge. Stepping
+      // into either on a light rail would undo the thing the inversion is
+      // for, three times a cycle.
+      var CYCLE_MS = 7500;   // in the 6-8s band, and deliberately not the
+                             // inked plate's 6500: two cards on one period
+                             // restyle on one frame, every time.
+
+      var reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+      var cycleTimer = 0;
+      var cyclePos = 0;
+      var held = false;    // the rail is moving, or this card is off screen
+      var taken = false;   // a reader, or quick look, has asked for a variant
+
+      // The leading group ordered() built — however many cards face the rail.
+      function cycleLen() {
+        var tone = list[0].tone;
+        var n = 0;
+        while (n < list.length && list[n].tone === tone) n++;
+        return n;
+      }
+
+      // Two things end it outright. A reader who has asked for a variant
+      // outranks it, and for good — this file is what quick look loads too,
+      // and rotating under its dots would take the card they picked away from
+      // them. And reduced motion, which is the whole of what this is: content
+      // that changes on its own, unasked. Being held is neither, and the
+      // block below is about the difference.
+      // --- what holds a step, and what only defers it --------------------
+      //
+      // The rail pauses a card whenever it is off screen or the rail is
+      // moving, and on a drifting rail that is most of a card's life:
+      // measured on the live index over 70 seconds, this card was on screen
+      // for 56 of them and unpaused for 31. A timer cleared on every pause
+      // therefore counts unpaused time, and the card steps about once every
+      // 23 seconds instead of every 6 to 8 — measured, three steps in that
+      // 70 rather than ten.
+      //
+      // So the clock runs through the hold and only the swap waits. A step
+      // that comes due while the card is held is taken when it is let go,
+      // which on this rail is the moment the card arrives at the read mark —
+      // one swap, not the several the hold was worth. Nothing restyles off
+      // screen or under a finger, which is what the pause is for, and the
+      // cadence is wall clock, which is what was asked for.
+      //
+      // SETTLE_MS is the gap before that deferred swap. Without it a card
+      // swaps on the frame it arrives on, which is the frame the rail is
+      // already handing off on — and a preview that came due while it was
+      // still loading would change before its resting state had been seen at
+      // all.
+      var SETTLE_MS = 1200;
+
+      var due = false;
+
+      function heldNow() {
+        return held || document.hidden;
+      }
+
+      function cycleStop() {
+        clearTimeout(cycleTimer);
+        cycleTimer = 0;
+      }
+
+      function cycleSoon(ms) {
+        cycleStop();
+        if (taken || reduced.matches) return;
+        cycleTimer = setTimeout(function () {
+          cycleTimer = 0;
+          if (taken || reduced.matches) return;
+          if (heldNow()) { due = true; return; }
+          due = false;
+          cyclePos = (cyclePos + 1) % cycleLen();
+          apply(list[cyclePos]);
+          cycleSoon(CYCLE_MS);
+        }, ms);
+      }
+
+      // Let go of: the rail landed, the card came back on screen, or the tab
+      // did. A step already due is taken a beat later; otherwise the clock
+      // simply carries on.
+      function cycleRelease() {
+        cycleSoon(due ? SETTLE_MS : CYCLE_MS);
+      }
 
       window.addEventListener('message', function (event) {
         var data = event.data;
@@ -285,11 +483,15 @@
         // rather than restarting them, which is the point of pausing over
         // unloading.
         if (data.type === 'preview:pause') {
-          if (data.paused === true) {
+          held = data.paused === true;
+          if (held) {
             document.documentElement.setAttribute('data-preview-paused', '');
           } else {
             document.documentElement.removeAttribute('data-preview-paused');
           }
+          // The paused rule in the style block is CSS and reaches animations
+          // only; a timer is not an animation, so the rotation is held here.
+          if (!held) cycleRelease();
         }
 
         // The index was switched while this thumbnail was on screen. The
@@ -308,12 +510,26 @@
           } else {
             document.documentElement.removeAttribute('data-theme');
           }
-          var resting = current === list[0];
           list = ordered(dark);
-          if (resting) apply(list[0]);
+          if (!taken) {
+            // Same position in the new facing group, so a card two steps into
+            // its cycle stays two steps in rather than starting over. The
+            // groups are the same size either way, and if they ever are not,
+            // cycleLen() is what the next step reads.
+            apply(list[cyclePos % cycleLen()]);
+            due = false;
+            cycleSoon(CYCLE_MS);
+          }
         }
 
+        // A reader has picked a card, or quick look's own autoplay has. Either
+        // way the rotation is over for this document — it is not the index's
+        // to fight, and this is the same file quick look loads. In practice
+        // the overlay gets there first anyway: its autoplay steps at 4000ms
+        // and nothing here moves before 7500.
         if (data.type === 'preview:variant') {
+          taken = true;
+          cycleStop();
           var variant = list[data.index];
           if (variant) apply(variant);
         }
@@ -342,6 +558,21 @@
           type: 'preview:ready',
           variants: list.map(function (v) { return { id: v.id, label: v.label }; })
         }, '*');
+      }
+
+      // Framed only, so a file opened on its own still shows exactly what its
+      // markup says — the same claim the rest of this script makes.
+      if (window.parent !== window) {
+        document.addEventListener('visibilitychange', function () {
+          if (!document.hidden) cycleRelease();
+        });
+        if (reduced.addEventListener) {
+          reduced.addEventListener('change', function () {
+            if (reduced.matches) cycleStop();
+            else cycleSoon(CYCLE_MS);
+          });
+        }
+        cycleSoon(CYCLE_MS);
       }
     })();
   </script>

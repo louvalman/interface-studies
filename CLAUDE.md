@@ -627,6 +627,73 @@ Nor is it unloading: the document stays, so the animations pick up where they
 were instead of starting over, which is what a card that has been dropped and
 re-loaded does.
 
+### A preview may step its own variants, and the pause is what it has to get right
+
+`2026-09-inked-plate-card` and `2026-09-detail-reveal-card` do: the thumbnail
+walks three of the variants it reports on a timer of its own and settles back to
+the first. It is the same argument the demo wave makes about the rail, one card
+down. A thumbnail standing on one variant says the component *is* that variant,
+and where the study is that a surface and a drawing are a pair, or that a panel
+holds whatever the card is for, one of them cannot make the case.
+
+The rotation is the preview's, never the index's. The index does not ask a rail
+card for a variant and does not learn that any of this is happening — which is
+what keeps it from naming a component class, the rule the whole contract exists
+for. The block is optional in exactly the way the rest of the file is.
+
+Four rules, and each is one already kept somewhere else here.
+
+**A reader outranks it, for good.** The first `preview:variant` to arrive ends
+the rotation for the life of that document. This is the same file quick look
+loads, and a card that goes on rotating under the overlay's dots takes away the
+variant the reader picked — the failure the re-resting rule already names. The
+overlay gets there first in practice (its autoplay steps at 4000ms, and neither
+of these moves before 6500), but the guard is the rule and the arithmetic is
+only a comfort.
+
+**Reduced motion silences it.** Content that changes on its own, unasked, is the
+whole of what the preference is about — `driftsUnasked` for the drift and
+`demoable` for the wave make the same test.
+
+**The ground picks the group, where the ground decides which variants have an
+edge.** The inked plate's six surfaces include two with no edge on one of the
+two grounds — porcelain at 2.62 OK ΔE from the paper, graphite at 1.95 from the
+ink — so its trio is acid, ochre and graphite on paper and acid, ochre and chalk
+on ink. Both carry the envelope, so the drawings are the same three either way.
+The detail reveal already inverted for this reason and now does it for a group
+of three rather than for one card: its light base card is 0.30 ΔE from the paper
+and its light map 1.01, so the cycle stays in the tone facing away from the rail.
+Both rotate that group to the front of the reported list, for the reason the
+re-resting rule gives — quick look takes index 0 as what is showing.
+
+**The clock runs through `preview:pause`; only the swap waits.** This is the one
+that is not obvious, and getting it wrong is silent. A card is paused whenever
+it is off screen or the rail is moving, and on a drifting rail that is most of
+its life: measured on the live index over 70 seconds, the detail reveal card was
+on screen for 41 of them and unpaused for 16. A timer cleared on every pause
+therefore counts unpaused time, and the card steps about once every 23 seconds
+instead of every 6 to 8 — measured, three steps in that 70 rather than nine. So
+the timer is left to run, and a step that comes due while the card is held is
+taken when it is let go, after a short settle: one swap, not the several the
+hold was worth, and none of them off screen or under a finger, which is what the
+pause is for. The settle is there because a card otherwise swaps on the frame
+the rail is handing off on, and because a preview that came due while it was
+still loading would change before its resting state had been seen at all.
+
+What that buys, measured with a pointer resting on the card — which is the case
+where someone is actually looking: 6.3 to 8.9 seconds a step for the inked
+plate against a nominal 6.5, and 7.4 against 7.5 for the detail reveal. What it
+does not buy is that cadence on a rail nobody is pointing at, where a card is
+released once per pass and so steps once per pass. That is the honest ceiling of
+the current contract: `preview:pause` says that a card is held and not why, so a
+preview cannot tell the drift from a finger, and the drift is the case where a
+swap would be safe. Giving it a reason is a contract change for every folder,
+and it has not been made.
+
+The two periods are deliberately different — 6500 and 7500. Two cards on one
+period restyle on the same frame every time, which is the argument
+`DEMO_STAGGER` already makes one level up.
+
 The block is optional. A preview that ignores the messages still renders; it
 just sits still, and quick look shows it without dots. A preview opened on its own does nothing, because the script only
 posts back when it is framed. This is the one place a study folder may carry
