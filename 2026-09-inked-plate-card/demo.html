@@ -1995,14 +1995,27 @@
       // toggle's is the only one so far. Same table, different setter.
       var labelled = Array.prototype.slice.call(document.querySelectorAll('[data-i18n-aria]'));
       var englishLabels = labelled.map(function (el) { return el.getAttribute('aria-label'); });
-      var english = nodes.map(function (el) { return el.textContent; });
+      /* innerHTML rather than textContent, on the capture and on the set
+         alike. Several strings in a demo page want markup the sentence needs
+         — a <code> around a token name, a <strong> that numbers a step — and
+         read with textContent the English fallback is captured already
+         flattened, so the first apply() on load strips markup that was in the
+         markup, before anything has been translated. It fails silently and in
+         the one direction nobody checks.
+
+         Safe here in the way innerHTML usually is not: every string it sets
+         is a literal in this file or in the table above it. Nothing from a
+         URL, a field or a fetch reaches this line, and a translation table
+         that took input from any of those would be the problem rather than
+         this assignment. */
+      var english = nodes.map(function (el) { return el.innerHTML; });
 
       function apply(lang) {
         var table = lang === 'da' ? DA : null;
 
         nodes.forEach(function (el, i) {
           var key = el.getAttribute('data-i18n');
-          el.textContent = table && table[key] ? table[key] : english[i];
+          el.innerHTML = table && table[key] ? table[key] : english[i];
         });
 
         labelled.forEach(function (el, i) {

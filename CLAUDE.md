@@ -990,6 +990,22 @@ each document gets its own opaque origin and does not share it. `_template/`
 holds the block to copy. Translate the page's own prose only — component sample
 copy and class-name hints stay as they are.
 
+**The applier reads and writes `innerHTML`, not `textContent`, and every
+folder's copy does.** A demo page's prose wants markup the sentence needs — a
+`<code>` around a token name, a `<strong>` numbering a step — and `textContent`
+cannot carry it in either direction. It is the capture that makes this a trap
+rather than a limitation: the English fallback is read off the node at boot, so
+with `textContent` it is captured already flattened and the first `apply()` on
+load strips markup that was in the markup, before anything has been translated
+and whatever language the reader is in. `2026-09-shader-token-field`'s own
+`<code>--settle</code>` had been going that way unnoticed.
+
+It is safe here in the way `innerHTML` usually is not, and the reason is worth
+stating so nobody has to re-derive it: every string it sets is a literal in the
+page or in the table beside it. Nothing from a URL, a field or a fetch reaches
+that line. A translation table fed from any of those would be the problem, and
+this assignment would only be where it surfaced.
+
 The card list is hand-maintained in `index.html`. Adding a study means
 adding one `<article class="piece">` block to it, pointing at the new folder's
 `demo.html` and `preview.html`, and carrying a `data-date` — `index.js` sorts
