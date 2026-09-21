@@ -1008,6 +1008,26 @@ and an anchor may not contain a button. Everything the overlay shows is read
 back out of that block, so no title, note or path is written twice. That is the
 only file outside the study folder that a new study may touch.
 
+### A card may name the board it was drawn in
+
+`data-figma` on the `<article class="piece">` block is the board in the
+companion Figma file the study was drawn in, and quick look draws an `Open in
+Figma` link beside `Open demo` where a card carries one. It is optional and
+most cards have none: no attribute, no link, and nothing else reads it. The
+link opens in a new tab and takes neither `?lang=` nor `?theme=` — Figma
+resolves neither, and the choice is this site's rather than something to hand
+to another one.
+
+It sits on the card rather than in the folder's `notes.md`, which is the
+opposite of where the `Inspiration:` line sits, and the reason is the wall the
+type already runs into: the index cannot read a `notes.md` over `file://`. A
+declaration in the folder would have to be copied onto the card anyway, and one
+hand-kept pair is one more than this repo wants. What that costs is a folder
+copied out: it carries its inspiration and not its board. If the Figma file
+ever becomes part of what a study *is* rather than a companion to it, the line
+belongs in `notes.md` and the card becomes the second copy, the way `type:`
+already works.
+
 The preview iframe carries its path in `data-src`, not `src`. Every card on the
 page is a live component — which is the point, and also what it costs: one
 thumbnail alone runs 289 dots on their own animations, and the rail drifts, so

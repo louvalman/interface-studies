@@ -1513,6 +1513,18 @@ body.is-locked {
   color: var(--ink-soft);
 }
 
+/* The two links sit in a row. Measured at the panel's 288px floor, both fit
+   on one line in English and in Danish, so the wrap is a floor under a label
+   longer than these rather than something the current pair reaches — and it
+   is a wrap rather than a squeeze because these are two whole labels, not a
+   line of prose. */
+.lightbox__links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 1.1rem;
+}
+
 .lightbox__link {
   flex: none;
   display: inline-flex;
@@ -1525,6 +1537,10 @@ body.is-locked {
   text-transform: uppercase;
   color: var(--accent);
 }
+
+/* Same trap as the variants bar: `display: inline-flex` above is an author
+   rule and `[hidden]` is only a UA rule, so it has to be said explicitly. */
+.lightbox__link[hidden] { display: none; }
 
 .lightbox__link:hover { text-decoration: underline; }
 

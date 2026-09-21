@@ -122,6 +122,7 @@
         + 'ved hover og skubber den hvilende etiket op foran sig. Rummer ethvert '
         + 'indhold; en kortvariant tilføjer højdekurver og en pulserende nål.',
       'cta.openDemo': 'Åbn demo',
+      'cta.openFigma': 'Åbn i Figma',
       'cta.quickLook': 'Hurtigt kig',
       'cta.quickLookOf': 'Hurtigt kig: Kort med detaljeafsløring',
       'ghost.title': 'Kommende studie',
@@ -2677,6 +2678,7 @@
     const titleOut = box.querySelector('[data-lightbox-title], #lightbox-title');
     const noteOut = box.querySelector('[data-lightbox-note]');
     const demoOut = box.querySelector('[data-lightbox-demo]');
+    const figmaOut = box.querySelector('[data-lightbox-figma]');
     const closers = box.querySelectorAll('[data-lightbox-close]');
 
     const stage = box.querySelector('.lightbox__stage');
@@ -2904,6 +2906,15 @@
       noteOut.textContent = text(piece.querySelector('[data-note]'));
       // Already carries ?lang= when the card links do.
       demoOut.href = link.getAttribute('href');
+      // The board this study was drawn in, where the card names one. It is a
+      // Figma URL rather than a path on this site, so it takes neither ?lang=
+      // nor ?theme= — the other end resolves neither.
+      const figma = piece.getAttribute('data-figma');
+      if (figmaOut) {
+        if (figma) figmaOut.href = figma;
+        else figmaOut.removeAttribute('href');
+        figmaOut.hidden = !figma;
+      }
     }
 
     document.addEventListener('lang:change', () => {

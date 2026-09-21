@@ -305,7 +305,11 @@
          — set the date and let it land. And the number is written from the
          card's position afterwards, so leave the em dash alone. Both were a
          second source of truth for something already stated once, and a card
-         added at the front used to invalidate every number below it. -->
+         added at the front used to invalidate every number below it.
+         data-figma is optional, and it is the board in the companion Figma
+         file the study was drawn in. Quick look draws the link where a card
+         names one and nothing where it does not, so a study without a board
+         needs no entry. -->
       <div
         class="rail__track"
         data-rail-track
@@ -1165,22 +1169,48 @@
             aria-live="polite"></p>
         </nav>
 
+        <!-- Two links, and the second is drawn only where the card names a
+           board. Both carry the same arrow rather than one of them a Figma
+           mark: they are the same kind of control — this page, left — and
+           the label is what says where to. -->
         <footer class="lightbox__foot">
           <p class="lightbox__note" data-lightbox-note></p>
-          <a class="lightbox__link" href="#" data-lightbox-demo>
-            <span data-i18n="cta.openDemo">Open demo</span>
-            <svg
-              viewBox="0 0 16 16"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.4"
-              aria-hidden="true">
-              <path
-                d="M4 12 12 4M6 4h6v6"
-                stroke-linecap="round"
-                stroke-linejoin="round" />
-            </svg>
-          </a>
+          <div class="lightbox__links">
+            <a class="lightbox__link" href="#" data-lightbox-demo>
+              <span data-i18n="cta.openDemo">Open demo</span>
+              <svg
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+                aria-hidden="true">
+                <path
+                  d="M4 12 12 4M6 4h6v6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+            </a>
+            <a
+              class="lightbox__link"
+              href="#"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-lightbox-figma
+              hidden>
+              <span data-i18n="cta.openFigma">Open in Figma</span>
+              <svg
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+                aria-hidden="true">
+                <path
+                  d="M4 12 12 4M6 4h6v6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+            </a>
+          </div>
         </footer>
       </div>
     </div>
