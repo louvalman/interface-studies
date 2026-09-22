@@ -551,6 +551,33 @@ body.is-locked {
   color: var(--ink);
 }
 
+/* One value in this row is a link, and it is set like quick look's rather
+   than like the byline's: accent and an arrow, because it leaves the site,
+   where the byline's hairline underline reads as prose. It keeps the row's
+   own size and case — the values here are mono 13px in sentence case, and a
+   link that changed either would stop being a value. */
+.head__meta-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  text-decoration: none;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.head__meta-link:hover { text-decoration: underline; }
+
+.head__meta-link:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+  border-radius: 0.2rem;
+}
+
+.head__meta-link svg {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
 /* --- rail ------------------------------------------------------------- */
 
 /* The rail closes on its own rule — the progress track below the cards — and
@@ -584,7 +611,7 @@ body.is-locked {
   align-items: end;
 }
 
-.rail__line { grid-area: count; }
+.rail__count { grid-area: count; }
 .rail__filter { grid-area: filter; }
 
 .rail__nav {
@@ -593,59 +620,9 @@ body.is-locked {
   padding: 0 var(--gutter) 0.875rem 1rem;
 }
 
-/* The line the count sits on, and the file link with it. The padding that
-   used to be the count's is the line's now, so both sit on the same baseline
-   and the nav still lands where it did. min-width: 0 because the cell is a
-   minmax(0, 1fr) track and a nowrap label in a flex item would otherwise
-   refuse to let it shrink.
-
-   It wraps below about 520px, where the nav has come up beside the count and
-   there is no room for both — and the wrap is free: measured with the link
-   and with it removed, the head is 79px either way at 1440 and 106px either
-   way at 390 and 320, in both languages, because below 52rem the nav column
-   is already taller than two lines of micro-caps. The link drops under the
-   count at the gutter rather than squeezing against the buttons. */
-.rail__line {
-  display: flex;
-  align-items: baseline;
-  flex-wrap: wrap;
-  gap: 0.35rem 1.5rem;
-  min-width: 0;
-  padding: 0 0 1.25rem var(--gutter);
-}
-
-/* Set like quick look's link and tracked like the count beside it: one
-   off-site link on the page reads as one kind of thing, and on this line the
-   count is what it has to line up with. */
-.rail__figma {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  text-decoration: none;
-  font-family: var(--mono);
-  font-size: 0.6875rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  color: var(--accent);
-}
-
-.rail__figma:hover { text-decoration: underline; }
-
-.rail__figma:focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: 4px;
-  border-radius: 0.25rem;
-}
-
-.rail__figma svg {
-  width: 0.8rem;
-  height: 0.8rem;
-}
-
 .rail__count {
   margin: 0;
-  padding: 0;
+  padding: 0 0 1.25rem var(--gutter);
   /* "Study 01 / 05" is one thing to read; a narrow bar may drop the buttons to
      their own line, but it may never break the label across two. */
   white-space: nowrap;
