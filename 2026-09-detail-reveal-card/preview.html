@@ -439,6 +439,15 @@
 
       var due = false;
 
+      // The drift is deliberately not in this. A card held for the drift is on
+      // screen and being carried past, which is the one case where a swap is
+      // both worth making and safe: measured at 13 times the rate this steps
+      // at — 100 swap events in 25 seconds against none — it moves no part of
+      // the drift's frame distribution, at 1x or at 4x. A gesture must not
+      // hitch and an off-screen card is work for nobody, so those two hold.
+      //
+      // What the drift still holds is animating, which is a per-frame cost and
+      // a different question: `data-preview-paused` is set for all three.
       function heldNow() {
         return held || document.hidden;
       }
@@ -463,10 +472,19 @@
       }
 
       // Let go of: the rail landed, the card came back on screen, or the tab
-      // did. A step already due is taken a beat later; otherwise the clock
-      // simply carries on.
+      // did. A step already due is taken a beat later.
+      //
+      // Otherwise the clock carries on *where it was*, which is the whole of
+      // this function and easy to get wrong: rescheduling unconditionally
+      // restarts the interval, and a card is let go of far more often than
+      // every 6.5 seconds — under the drift it changes hands every time the
+      // read mark moves. Measured with the naive version, the timer was reset
+      // before it could ever fire and the card stepped 4 times in 70 seconds
+      // rather than 8, which read exactly like the hold it was supposed to
+      // have stopped being.
       function cycleRelease() {
-        cycleSoon(due ? SETTLE_MS : CYCLE_MS);
+        if (due) { cycleSoon(SETTLE_MS); return; }
+        if (!cycleTimer) cycleSoon(CYCLE_MS);
       }
 
       window.addEventListener('message', function (event) {
@@ -483,8 +501,12 @@
         // rather than restarting them, which is the point of pausing over
         // unloading.
         if (data.type === 'preview:pause') {
-          held = data.paused === true;
-          if (held) {
+          // Animations stop for all three reasons; the rotation stops for two.
+          // An index that predates `reason` sends none, and an absent reason
+          // reads as held — the cautious way round.
+          var frozen = data.paused === true;
+          held = frozen && data.reason !== 'drift';
+          if (frozen) {
             document.documentElement.setAttribute('data-preview-paused', '');
           } else {
             document.documentElement.removeAttribute('data-preview-paused');
