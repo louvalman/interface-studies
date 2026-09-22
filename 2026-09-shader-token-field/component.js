@@ -535,6 +535,7 @@
 
     function tick(now) {
       frame = 0;
+      if (!root.isConnected) { last = 0; return; }
       var dt = last ? Math.min((now - last) / 1000, 0.1) : 0.016;
       last = now;
 
@@ -547,9 +548,18 @@
     /* Two things stop the loop, and neither is a CSS rule, because no CSS
        rule can reach one. --run is the index's pause, arriving as a token on
        this element. Reduced motion is the reader's, and it means one frame
-       and no more — not a slower field. */
+       and no more — not a slower field.
+
+       And a root that has left the document stops for good. Nothing on this
+       site ever removes one, but a host that does — any framework unmounting
+       it — would otherwise leave the loop running on a detached node for the
+       life of the page, and worse than running: getComputedStyle on a
+       detached element returns empty strings, every token falls back to its
+       default, and --run reads as 1 again, so even a pause written on the way
+       out is undone by the read it triggers. */
     function schedule() {
       if (frame || !drawing) return;
+      if (!root.isConnected) return;
       if (!target.run || !target.gpu) return;
       if (calm && calm.matches) return;
       frame = requestAnimationFrame(tick);
@@ -581,6 +591,7 @@
     }
 
     function refresh() {
+      if (!root.isConnected) { stop(); return; }
       target = readTokens(root);
       paintReadout();
 

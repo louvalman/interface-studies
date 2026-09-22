@@ -30,6 +30,11 @@ A seventh file, `component.js`, is allowed where the study depends on the
 interaction or where CSS genuinely cannot do the job — three studies have one.
 The component still works without it: script enhances, it does not constitute.
 
+A study may also carry `component.react.jsx`, the component as a standalone
+React component for an app or a Figma code layer. It is generated from the
+three component files by `tools/react/` and never edited by hand — one study
+has one so far.
+
 Open `index.html` to browse. Each card opens that folder's `demo.html`.
 
 ## License
