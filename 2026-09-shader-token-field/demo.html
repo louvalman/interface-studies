@@ -1503,20 +1503,26 @@
           The same component as a standalone React file, for an app or a Figma
           code layer. It depends on nothing but React, and every prop is
           written onto the component&rsquo;s own root as a token it already
-          has &mdash; so Night, the stop list and the tuned values are the
-          ones on this page, not a second copy of them.
+          has &mdash; so the palettes, the forms, the stop list and the tuned
+          values are the ones on this page, not a second copy of them.
         </p>
 
 <pre class="demo__code"><code>import BandedShaders from "./component.react.jsx";
 
 &lt;BandedShaders /&gt;
-&lt;BandedShaders night /&gt;
-&lt;BandedShaders stopList /&gt;
+&lt;BandedShaders palette="night" /&gt;
+&lt;BandedShaders palette="verdant" form="veins" /&gt;
+&lt;BandedShaders stopList form="terraces" /&gt;
 &lt;BandedShaders tune warp={0.8} lumFloor={0.3} /&gt;</code></pre>
 
-        <!-- The language switch writes textContent, so the keys sit on the
-             runs between the code spans rather than on the paragraph. -->
-        <p class="demo__notes-lede"><span data-i18n="react.props.a">Untuned, each version keeps its own band, relief and palette; </span><code>tune</code><span data-i18n="react.props.b"> hands the eleven token props to the root instead. The prop list is also exported as </span><code>properties</code><span data-i18n="react.props.c">, in the shape Figma&rsquo;s shader controls take, for a code layer&rsquo;s panel.</span></p>
+        <p class="demo__notes-lede" data-i18n="react.props">
+          Untuned, each palette keeps its own colours and band and each form
+          its own scale, warp and relief; <code>tune</code> hands the eleven
+          token props to the root instead. The prop list is also exported as
+          <code>properties</code> &mdash; type, label, range and default for
+          every prop &mdash; for whatever panel a host builds, a Figma code
+          layer&rsquo;s included.
+        </p>
 
         <p class="demo__notes-foot">
           <a href="component.react.jsx" download>component.react.jsx</a>
@@ -1575,14 +1581,14 @@
         'react.lede': 'Den samme komponent som en selvst\u00e6ndig React-fil, til en app '
           + 'eller et kodelag i Figma. Den afh\u00e6nger ikke af andet end React, og '
           + 'hver prop skrives p\u00e5 komponentens egen rod som et token, den '
-          + 'allerede har \u2014 s\u00e5 Nat, stoplisten og de tilpassede v\u00e6rdier '
-          + 'er dem p\u00e5 denne side, ikke en kopi af dem.',
-        'react.props.a': 'Utilpasset beholder hver version sit eget b\u00e5nd, relief og '
-          + 'palet; ',
-        'react.props.b': ' giver i stedet de elleve token-props til roden. '
-          + 'Prop-listen eksporteres ogs\u00e5 som ',
-        'react.props.c': ', i den form Figmas shader-kontroller tager, til et '
-          + 'kodelags panel.',
+          + 'allerede har \u2014 s\u00e5 paletterne, formerne, stoplisten og de '
+          + 'tilpassede v\u00e6rdier er dem p\u00e5 denne side, ikke en kopi af dem.',
+        'react.props': 'Utilpasset beholder hver palet sine egne farver og sit eget '
+          + 'b\u00e5nd, og hver form sin egen skala, forvridning og relief; '
+          + '<code>tune</code> giver i stedet de elleve token-props til roden. '
+          + 'Prop-listen eksporteres ogs\u00e5 som <code>properties</code> \u2014 type, '
+          + 'etiket, interval og standardv\u00e6rdi for hver prop \u2014 til det panel en '
+          + 'v\u00e6rt bygger, et kodelag i Figma medregnet.',
         'react.foot': '\u2014 genereret ud fra component.html, .css og .js; ret dem, '
           + 'ikke denne',
         'type': '\u00c6stetik',

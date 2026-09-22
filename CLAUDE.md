@@ -892,8 +892,9 @@ throws instead of emitting an adapter that never boots.
 
 **It imports `react` and nothing else.** An import only one host can resolve
 makes the file not standalone, so nothing Figma-specific goes in. The prop
-list is exported as a plain `properties` object in the shape Figma's shader
-controls take, and a code layer wires it up there.
+list is exported as a plain `properties` object — type, label, range and
+default for every prop — and a code layer's panel, or any other host's, is
+built from that.
 
 **Props reach the component the way everything from outside already does:**
 written onto the component's own root as the custom properties and modifier
@@ -902,9 +903,11 @@ is the test the block was always held to, now with a panel attached. The
 adapter never styles the component. It plays the part `demo.html` plays —
 it loads the fonts, with `loadFonts={false}` for an app that loads its own —
 and hands over tokens. Where a modifier carries its own values, props that
-would write over them are gated. The shader's Night has its own band, relief
-and palette, so its eleven token props only land when `tune` is on; untuned,
-each version is the one on the demo page.
+would write over them are gated. A modifier axis becomes one prop that picks
+the class — the shader's `palette` and `form` — and since each palette carries
+its own colours and band and each form its own scale, warp and relief, the
+eleven token props only land when `tune` is on; untuned, every combination is
+the one on the demo page.
 
 **The folder still survives being copied out.** The adapter is
 self-contained, so a copied folder keeps a working one; what it loses is the

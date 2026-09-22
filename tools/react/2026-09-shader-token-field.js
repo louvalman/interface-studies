@@ -59,10 +59,12 @@ const src = `/*
   root and redraws.
 
     import BandedShaders from "./component.react.jsx";
-    <BandedShaders night tune warp={0.8} />
+    <BandedShaders palette="night" form="veins" />
+    <BandedShaders tune warp={0.8} />
 
-  In a Figma code layer, the prop list is exported as \`properties\` in the
-  same shape Figma's shader controls take, for the panel.
+  \`properties\` describes every prop — type, label, range, default — for
+  whatever panel a host builds, a Figma code layer's included. Palette and
+  form are also accepted as their index in that list.
 */
 import * as React from "react";
 
@@ -107,9 +109,22 @@ const TUNED = {
 };
 const COLOURS = { base: 1, poolA: 1, poolB: 1 };
 
+// The study's modifiers, one of each axis at a time. The first entry is the
+// bare class — field and dunes are what .shader-token-field is on its own.
+const PALETTES = ["field", "night", "verdant", "ember"];
+const FORMS = ["dunes", "veins", "terraces"];
+
+function pick(v, list) {
+  if (typeof v === "number") return list[v] || list[0];
+  return list.indexOf(v) >= 0 ? v : list[0];
+}
+
 function apply(root, p) {
+  const palette = pick(p.palette, PALETTES);
+  const form = pick(p.form, FORMS);
   root.className = "shader-token-field"
-    + (p.night ? " shader-token-field--night" : "")
+    + (palette !== PALETTES[0] ? " shader-token-field--" + palette : "")
+    + (form !== FORMS[0] ? " shader-token-field--" + form : "")
     + (p.live ? " shader-token-field--live" : "");
 
   const s = root.style;
@@ -117,9 +132,10 @@ function apply(root, p) {
   s.setProperty(P + "gpu", p.stopList ? "0" : "1");
   s.setProperty(P + "run", p.play ? "1" : "0");
 
-  // Untuned, each version keeps its own values — Night has its own band,
-  // relief and palette, and Day's numbers written over it would break its
-  // clamp. Tuning writes all of them, so the panel is one token block.
+  // Untuned, each modifier keeps its own values — a palette carries its own
+  // colours and band, a form its own scale, warp and relief, and the base
+  // class's numbers written over them would break both. Tuning writes all
+  // eleven, so the panel is one token block.
   for (const key in TUNED) {
     const name = P + TUNED[key];
     const v = p[key];
@@ -140,7 +156,8 @@ function apply(root, p) {
 }
 
 export const defaults = {
-  night: false,
+  palette: "field",
+  form: "dunes",
   stopList: false,
   live: false,
   play: true,
@@ -187,7 +204,8 @@ export default function BandedShaders(props) {
 }
 
 export const properties = {
-  night:    { type: "boolean", label: "Night", defaultValue: defaults.night },
+  palette:  { type: "string", label: "Palette", options: PALETTES, defaultValue: defaults.palette },
+  form:     { type: "string", label: "Form", options: FORMS, defaultValue: defaults.form },
   stopList: { type: "boolean", label: "Drawn by stop list", defaultValue: defaults.stopList },
   live:     { type: "boolean", label: "Live", defaultValue: defaults.live },
   play:     { type: "boolean", label: "Play", defaultValue: defaults.play },
