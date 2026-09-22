@@ -155,11 +155,19 @@
         // page together or the rail stops reading as one set of cards. What
         // the component sits on beyond the ground is the study's own, and is
         // not touched here.
-        // The rail is moving under a finger, or stepping to a card. Everything
-        // in here stops until it lands — see the paused rule in the style
-        // block above. Resuming picks the animations up where they were
-        // rather than restarting them, which is the point of pausing over
-        // unloading.
+        // The rail is moving under a finger, or stepping to a card, or this
+        // card is off screen. Everything in here stops until it lands — see
+        // the paused rule in the style block above. Resuming picks the
+        // animations up where they were rather than restarting them, which is
+        // the point of pausing over unloading.
+        //
+        // `data.reason` says which of the three it is — 'gesture', 'offscreen'
+        // or 'drift' — and this handler deliberately ignores it, which is the
+        // right default and what every study but two does. It is only worth
+        // reading if the preview does work of its own on a timer: the drift is
+        // the steady state with the card on screen, so a swap there is safe
+        // where one under a finger is not. Animating through the drift is a
+        // different question and the answer to it is no.
         if (data.type === 'preview:pause') {
           if (data.paused === true) {
             document.documentElement.setAttribute('data-preview-paused', '');

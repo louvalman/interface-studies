@@ -359,7 +359,8 @@ position:
 { source: 'interface-studies', type: 'preview:variant', index: n }
 { source: 'interface-studies', type: 'preview:scale', scale: n }
 { source: 'interface-studies', type: 'preview:theme', theme: 'light' | 'dark' }
-{ source: 'interface-studies', type: 'preview:pause', paused: true | false }
+{ source: 'interface-studies', type: 'preview:pause', paused: true | false,
+  reason: 'gesture' | 'offscreen' | 'drift' | '' }
 
 // preview -> index, once its listener is live
 { source: 'interface-studies', type: 'preview:ready',
@@ -567,6 +568,27 @@ shows the component stopped rather than at rest. What keeps a card from
 performing early is `active`, which is the read mark's, and it is untouched by
 any of this.
 
+**`reason` says which of the three it is**, because they are not the same thing
+to a preview that does work of its own on a timer. A gesture must not hitch and
+an off-screen card is work for nobody; the drift is the steady state, with the
+card on screen and being looked at. `wantPaused` always tested the three
+separately and threw the answer away at the boundary, so naming them costs
+nothing. It is additive: a preview that reads `paused` and ignores `reason`
+behaves exactly as it did before the field existed, which is what every folder
+but two does, and an absent reason reads as held — the cautious way round.
+
+What it does **not** license is animating through the drift. That is a
+per-frame cost and it is what the recalc numbers above rule out. The reason
+only ever governs work a preview does on its own clock; `data-preview-paused`
+is set for all three.
+
+The cache `syncPause` keeps is therefore keyed on the reason and not on the
+boolean, and that is the part worth not getting wrong. A card held for the
+drift that a finger then grabs stays `paused: true` throughout, so a cache
+keyed on the boolean would never post the change — and a preview that swaps
+through the drift would go on swapping through the gesture, which is the one
+thing the pause exists to prevent.
+
 At the mark means arrived, not nearest. Nearest flips at the halfway point
 between two cards, which is the right answer for the counter and the progress
 bar and the wrong one for whether a component should start performing — a card
@@ -626,6 +648,97 @@ resting state still animates; sending it to all five changed nothing measurable.
 Nor is it unloading: the document stays, so the animations pick up where they
 were instead of starting over, which is what a card that has been dropped and
 re-loaded does.
+
+### A preview may step its own variants, and the pause is what it has to get right
+
+`2026-09-inked-plate-card` and `2026-09-detail-reveal-card` do: the thumbnail
+walks three of the variants it reports on a timer of its own and settles back to
+the first. It is the same argument the demo wave makes about the rail, one card
+down. A thumbnail standing on one variant says the component *is* that variant,
+and where the study is that a surface and a drawing are a pair, or that a panel
+holds whatever the card is for, one of them cannot make the case.
+
+The rotation is the preview's, never the index's. The index does not ask a rail
+card for a variant and does not learn that any of this is happening — which is
+what keeps it from naming a component class, the rule the whole contract exists
+for. The block is optional in exactly the way the rest of the file is.
+
+Seven rules. The first three are each kept somewhere else here; the four about
+the pause are this block's own, and every one of them was found by measuring
+rather than by reading.
+
+**A reader outranks it, for good.** The first `preview:variant` to arrive ends
+the rotation for the life of that document. This is the same file quick look
+loads, and a card that goes on rotating under the overlay's dots takes away the
+variant the reader picked — the failure the re-resting rule already names. The
+overlay gets there first in practice (its autoplay steps at 4000ms, and neither
+of these moves before 6500), but the guard is the rule and the arithmetic is
+only a comfort.
+
+**Reduced motion silences it.** Content that changes on its own, unasked, is the
+whole of what the preference is about — `driftsUnasked` for the drift and
+`demoable` for the wave make the same test.
+
+**The ground picks the group, where the ground decides which variants have an
+edge.** The inked plate's six surfaces include two with no edge on one of the
+two grounds — porcelain at 2.62 OK ΔE from the paper, graphite at 1.95 from the
+ink — so its trio is acid, ochre and graphite on paper and acid, ochre and chalk
+on ink. Both carry the envelope, so the drawings are the same three either way.
+The detail reveal already inverted for this reason and now does it for a group
+of three rather than for one card: its light base card is 0.30 ΔE from the paper
+and its light map 1.01, so the cycle stays in the tone facing away from the rail.
+Both rotate that group to the front of the reported list, for the reason the
+re-resting rule gives — quick look takes index 0 as what is showing.
+
+**The drift does not hold it; a gesture and being off screen do.** This is what
+`reason` is for, and the case for it is measured rather than argued. At 13
+times the rate either preview swaps at — 100 swap events in 25 seconds against
+none, three runs a condition — a variant swap moves no part of the drift's
+frame distribution: median 16.7ms either way at 1x and 33.3ms either way at 4x,
+p95 identical, frames over 50ms 36.3 against 33.0 at 4x where the runs
+themselves span 31 to 46. At the natural rate it is not there at all. The work
+is real and small — about nine style recalcs a swap — and one swap a card every
+6.5 seconds never reaches the frame budget. What the recalc numbers higher up
+*do* rule out is animating through the drift, which is a per-frame cost and a
+different question: the card stays frozen either way.
+
+**The clock runs through a hold; only the swap waits.** A card held for a
+gesture or off screen still counts the time, and a step that comes due while it
+is held is taken when it is let go, after a short settle: one swap, not the
+several the hold was worth. The settle is there because a card otherwise swaps
+on the frame the rail is handing off on, and because a preview that came due
+while it was still loading would change before its resting state had been seen
+at all.
+
+**A release must not restart a running clock**, and this is the silent one. A
+card is let go of far more often than every 6.5 seconds — under the drift it
+changes hands every time the read mark moves — so rescheduling on every release
+resets the timer before it can ever fire. Measured with the naive version, the
+inked plate stepped 4 times in 70 seconds rather than 8, which reads exactly
+like the hold it was supposed to have stopped being. So a release reschedules
+only when a step is due or when no timer is pending.
+
+**A swap that lands frozen must not land blank.** The inked plate's swap *is*
+an animation, and a paused animation sits at its first frame — which for that
+component is `stroke-dashoffset: 1` on every path, an empty plate: measured, 0
+of 13 lines drawn. Since a drift swap is frozen by definition, the drawing is
+handed in finished instead, through the component's own draw tokens, a
+zero-duration animation being complete at time 0 with `both` filling to the end
+value whatever the play state is. 13 of 13 drawn, measured. The re-ink at the
+read mark is untouched, because `--live` drives it from a different token. The
+detail reveal needs none of this: its one animation is an ambient ping whose
+first frame is a visible ring, and everything else about its swap is a
+transition.
+
+What it comes to, on the live rail over 70 seconds: the inked plate steps 8
+times against 5 before the reason existed, the detail reveal 6 against 3. Both
+are now at their own ceiling, which is how long the card is on screen — 56
+seconds of that 70 for the one, 40 for the other. Off screen still holds, and
+should: the only way past that ceiling is animating for nobody.
+
+The two periods are deliberately different — 6500 and 7500. Two cards on one
+period restyle on the same frame every time, which is the argument
+`DEMO_STAGGER` already makes one level up.
 
 The block is optional. A preview that ignores the messages still renders; it
 just sits still, and quick look shows it without dots. A preview opened on its own does nothing, because the script only
