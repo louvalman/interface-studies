@@ -491,6 +491,31 @@
       text-underline-offset: 0.2em;
     }
 
+    /* The React adapter, as a second disclosure under the decisions. It is
+       the same element in the same measure, so it sits directly beneath
+       rather than a whole section's gap away. */
+    .demo__notes + .demo__notes { margin-top: 0; }
+
+    .demo__code {
+      margin: 1.1rem 0 0;
+      padding: 1rem 1.1rem;
+      border-radius: 0.5rem;
+      background: var(--demo-fill);
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.8125rem;
+      line-height: 1.7;
+      color: var(--demo-fg);
+      /* Wraps rather than scrolls. A pre sizes to its longest line, and the
+         usage line is wider than a phone — left to scroll, it pushed the
+         whole page sideways at 320px, which is the one thing CLAUDE.md asks a
+         page never to do. */
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      max-width: 100%;
+    }
+
+    .demo__code code { padding: 0; background: none; font-size: inherit; }
+
     /* The inspiration row, below the decisions rather than above them. */
     .demo__notes-meta--foot { margin-top: 2.5rem; }
     .demo__notes-meta--foot + .demo__notes-foot { margin-top: 1.1rem; }
@@ -933,6 +958,45 @@
     </div>
   </details>
 
+    <!-- The React adapter. Generated from this folder's three component files
+         by tools/react/ at the repo root — see "A React adapter, generated" in
+         CLAUDE.md. Closed, like the decisions: it is for someone taking the
+         component somewhere, not for someone looking at it. -->
+  <details class="demo__notes">
+    <summary class="demo__notes-summary">
+      <h2 class="demo__notes-title" data-i18n="react.title">React</h2>
+      <svg class="demo__notes-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+        <path d="M4 6l4 4 4-4" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </summary>
+
+    <div class="demo__notes-body">
+        <p class="demo__notes-lede" data-i18n="react.lede">
+          The same component as a standalone React file, for an app or a Figma
+          code layer. It depends on nothing but React, and every prop is
+          written onto the component&rsquo;s own root as a token it already
+          has &mdash; so Night, the stop list and the tuned values are the
+          ones on this page, not a second copy of them.
+        </p>
+
+<pre class="demo__code"><code>import BandedShaders from "./component.react.jsx";
+
+&lt;BandedShaders /&gt;
+&lt;BandedShaders night /&gt;
+&lt;BandedShaders stopList /&gt;
+&lt;BandedShaders tune warp={0.8} lumFloor={0.3} /&gt;</code></pre>
+
+        <!-- The language switch writes textContent, so the keys sit on the
+             runs between the code spans rather than on the paragraph. -->
+        <p class="demo__notes-lede"><span data-i18n="react.props.a">Untuned, each version keeps its own band, relief and palette; </span><code>tune</code><span data-i18n="react.props.b"> hands the eleven token props to the root instead. The prop list is also exported as </span><code>properties</code><span data-i18n="react.props.c">, in the shape Figma&rsquo;s shader controls take, for a code layer&rsquo;s panel.</span></p>
+
+        <p class="demo__notes-foot">
+          <a href="component.react.jsx" download>component.react.jsx</a>
+          <span data-i18n="react.foot">&mdash; generated from component.html, .css and .js; change those, not this</span>
+        </p>
+    </div>
+  </details>
+
   </div>
 
   <script src="component.js"></script>
@@ -977,6 +1041,20 @@
         'notes.inspiration': 'Inspiration',
         'notes.none': 'Ingen \u2014 eget design',
         'notes.full': '\u2014 hele optegnelsen, ogs\u00e5 det der blev pr\u00f8vet og forkastet',
+        'react.title': 'React',
+        'react.lede': 'Den samme komponent som en selvst\u00e6ndig React-fil, til en app '
+          + 'eller et kodelag i Figma. Den afh\u00e6nger ikke af andet end React, og '
+          + 'hver prop skrives p\u00e5 komponentens egen rod som et token, den '
+          + 'allerede har \u2014 s\u00e5 Nat, stoplisten og de tilpassede v\u00e6rdier '
+          + 'er dem p\u00e5 denne side, ikke en kopi af dem.',
+        'react.props.a': 'Utilpasset beholder hver version sit eget b\u00e5nd, relief og '
+          + 'palet; ',
+        'react.props.b': ' giver i stedet de elleve token-props til roden. '
+          + 'Prop-listen eksporteres ogs\u00e5 som ',
+        'react.props.c': ', i den form Figmas shader-kontroller tager, til et '
+          + 'kodelags panel.',
+        'react.foot': '\u2014 genereret ud fra component.html, .css og .js; ret dem, '
+          + 'ikke denne',
         'type': '\u00c6stetik',
         'heading': 'Afgr\u00e6nsede shaders',
         'lede': 'Et gradientfelt tegnet to gange ud fra \u00e9n angivelse. '

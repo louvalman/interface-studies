@@ -27,6 +27,10 @@ Every study lives in its own folder, named `YYYY-MM-slug`:
 `component.js` is allowed as a seventh file, but only under the conditions in
 **JavaScript** below.
 
+`component.react.jsx` is allowed beside them, and it is not written by hand:
+it is generated from the three component files and is the one place in a
+study a framework may appear. See **A React adapter, generated** below.
+
 `ref.png` is the one that may be missing, and two studies have no use for
 one. Where a reference exists it is a working record rather than part of the
 study, so a folder can also go without it deliberately:
@@ -275,6 +279,8 @@ All page-level context lives here, and only here:
 - an `<h1>` naming the study, with the type and a one-sentence lede
 - 2–3 states of the component: default, hover, and a content variant
 - `notes.md`, rendered — see below
+- where the study has a React adapter, a second closed `<details>` under the
+  decisions offering it — see **A React adapter, generated**
 
 demo.html links `component.css`; it never redefines it. If the demo needs a
 style, that style belongs in a `<style>` block scoped to the demo page's own
@@ -730,6 +736,10 @@ never carries a `<script>` tag either: `demo.html` and `preview.html` load
 `component.js` the same way they load `component.css`, and a folder copied out
 takes both.
 
+"No framework" is about the component, and it holds: nothing a study's own
+pages load may need one. A generated React adapter is not an exception to it,
+because the component is not in it — see the next section.
+
 ### View-transition pseudo-elements are the exception to "no global selectors"
 
 They attach to the document root and cannot be scoped by nesting, so the rule
@@ -749,12 +759,77 @@ tunable publishes the value onto `:root` from its own script for the length of
 the transition, and the rule carries a literal fallback for when no script
 ran.
 
+## A React adapter, generated
+
+A study may carry `component.react.jsx`: the component as a standalone React
+component, for dropping into an app or into a Figma code layer. It is allowed
+because it is an adapter rather than the component. The component is still
+`component.html`, `component.css` and `component.js`, and the adapter is
+something that carries those three into a React tree. It is optional and
+per-study — not in `_template/`, and never a sweep. A study gets one when
+someone wants to take it somewhere.
+
+**Generated, never edited.** `tools/react/<slug>.js` at the repo root builds
+it: the CSS and the markup are embedded verbatim, and `component.js` is embedded
+with only its boot swapped for a returned `setup()`, because React mounts after
+the script's own document scan has already run. Change the study, run the
+generator, commit both. A hand edit is a second source of truth until the next
+run overwrites it. The generator asserts the shape of the script it edits and
+throws instead of emitting an adapter that never boots.
+
+**It imports `react` and nothing else.** An import only one host can resolve
+makes the file not standalone, so nothing Figma-specific goes in. The prop
+list is exported as a plain `properties` object in the shape Figma's shader
+controls take, and a code layer wires it up there.
+
+**Props reach the component the way everything from outside already does:**
+written onto the component's own root as the custom properties and modifier
+classes `component.css` defines. The property block is the prop list, which
+is the test the block was always held to, now with a panel attached. The
+adapter never styles the component. It plays the part `demo.html` plays —
+it loads the fonts, with `loadFonts={false}` for an app that loads its own —
+and hands over tokens. Where a modifier carries its own values, props that
+would write over them are gated. The shader's Night has its own band, relief
+and palette, so its eleven token props only land when `tune` is on; untuned,
+each version is the one on the demo page.
+
+**The folder still survives being copied out.** The adapter is
+self-contained, so a copied folder keeps a working one; what it loses is the
+means to regenerate it. `tools/` is the one directory outside the study
+folders that knows about them, and that is allowed because nothing loads from
+it: no page, no preview, no adapter at runtime. Delete it and every study, the
+index and every generated adapter keep working. "No build step" is a rule
+about what the site serves, and the site serves nothing built — the adapter
+is committed output. One generator per study, and they share nothing: which
+tokens become props and how each lands is the part worth writing by hand,
+and it is the first thing a shared generator would abstract away.
+
+**A host that unmounts is new, and it found a bug.** Nothing on the site ever
+removes a component, so nothing ever tested one being removed. The shader's
+loop ran on after its root left the document — measured at 360 frame requests
+a second after unmounting three instances, with React's StrictMode double
+mount leaving two more running unseen. Pausing on the way out did not help:
+`getComputedStyle` on a detached element returns empty strings, every token
+falls back to its default, and `--run` reads as 1 again. `component.js` now
+stops when `root.isConnected` goes false. Any study with a loop or an
+observer needs the same guard before it gets an adapter, and the fix belongs
+in `component.js`, not in the adapter, because any host can remove it.
+
+**The check.** Bundle it into a React page under StrictMode, mount several
+instances, change a prop, unmount. Read the tokens back off the root with
+`getComputedStyle` rather than trusting that they were set, count WebGL
+contexts and frame requests, and narrow to 320px. For the shader, that meant
+one shared context for every instance, warp handed in and taken back out
+again, and 0 frames a second after unmount.
+
 ## Folders are independent
 
 Never edit or refactor across folders. Never extract a shared stylesheet, a
 shared token file, or a shared anything. Two studies that solve the same
 problem the same way should contain the same code twice — the duplication is
 intentional, because each folder has to survive being copied out on its own.
+`tools/` is not an exception: it holds generators nothing loads from, and each
+study's is its own — see **A React adapter, generated**.
 
 When asked to add a study, touch that folder and nothing else — with the
 single exception below.
