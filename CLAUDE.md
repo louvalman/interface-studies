@@ -365,7 +365,8 @@ position:
 { source: 'interface-studies', type: 'preview:variant', index: n }
 { source: 'interface-studies', type: 'preview:scale', scale: n }
 { source: 'interface-studies', type: 'preview:theme', theme: 'light' | 'dark' }
-{ source: 'interface-studies', type: 'preview:pause', paused: true | false }
+{ source: 'interface-studies', type: 'preview:pause', paused: true | false,
+  reason: 'gesture' | 'offscreen' | 'drift' | '' }
 
 // preview -> index, once its listener is live
 { source: 'interface-studies', type: 'preview:ready',
@@ -573,6 +574,27 @@ shows the component stopped rather than at rest. What keeps a card from
 performing early is `active`, which is the read mark's, and it is untouched by
 any of this.
 
+**`reason` says which of the three it is**, because they are not the same thing
+to a preview that does work of its own on a timer. A gesture must not hitch and
+an off-screen card is work for nobody; the drift is the steady state, with the
+card on screen and being looked at. `wantPaused` always tested the three
+separately and threw the answer away at the boundary, so naming them costs
+nothing. It is additive: a preview that reads `paused` and ignores `reason`
+behaves exactly as it did before the field existed, which is what every folder
+but two does, and an absent reason reads as held — the cautious way round.
+
+What it does **not** license is animating through the drift. That is a
+per-frame cost and it is what the recalc numbers above rule out. The reason
+only ever governs work a preview does on its own clock; `data-preview-paused`
+is set for all three.
+
+The cache `syncPause` keeps is therefore keyed on the reason and not on the
+boolean, and that is the part worth not getting wrong. A card held for the
+drift that a finger then grabs stays `paused: true` throughout, so a cache
+keyed on the boolean would never post the change — and a preview that swaps
+through the drift would go on swapping through the gesture, which is the one
+thing the pause exists to prevent.
+
 At the mark means arrived, not nearest. Nearest flips at the halfway point
 between two cards, which is the right answer for the counter and the progress
 bar and the wrong one for whether a component should start performing — a card
@@ -632,6 +654,97 @@ resting state still animates; sending it to all five changed nothing measurable.
 Nor is it unloading: the document stays, so the animations pick up where they
 were instead of starting over, which is what a card that has been dropped and
 re-loaded does.
+
+### A preview may step its own variants, and the pause is what it has to get right
+
+`2026-09-inked-plate-card` and `2026-09-detail-reveal-card` do: the thumbnail
+walks three of the variants it reports on a timer of its own and settles back to
+the first. It is the same argument the demo wave makes about the rail, one card
+down. A thumbnail standing on one variant says the component *is* that variant,
+and where the study is that a surface and a drawing are a pair, or that a panel
+holds whatever the card is for, one of them cannot make the case.
+
+The rotation is the preview's, never the index's. The index does not ask a rail
+card for a variant and does not learn that any of this is happening — which is
+what keeps it from naming a component class, the rule the whole contract exists
+for. The block is optional in exactly the way the rest of the file is.
+
+Seven rules. The first three are each kept somewhere else here; the four about
+the pause are this block's own, and every one of them was found by measuring
+rather than by reading.
+
+**A reader outranks it, for good.** The first `preview:variant` to arrive ends
+the rotation for the life of that document. This is the same file quick look
+loads, and a card that goes on rotating under the overlay's dots takes away the
+variant the reader picked — the failure the re-resting rule already names. The
+overlay gets there first in practice (its autoplay steps at 4000ms, and neither
+of these moves before 6500), but the guard is the rule and the arithmetic is
+only a comfort.
+
+**Reduced motion silences it.** Content that changes on its own, unasked, is the
+whole of what the preference is about — `driftsUnasked` for the drift and
+`demoable` for the wave make the same test.
+
+**The ground picks the group, where the ground decides which variants have an
+edge.** The inked plate's six surfaces include two with no edge on one of the
+two grounds — porcelain at 2.62 OK ΔE from the paper, graphite at 1.95 from the
+ink — so its trio is acid, ochre and graphite on paper and acid, ochre and chalk
+on ink. Both carry the envelope, so the drawings are the same three either way.
+The detail reveal already inverted for this reason and now does it for a group
+of three rather than for one card: its light base card is 0.30 ΔE from the paper
+and its light map 1.01, so the cycle stays in the tone facing away from the rail.
+Both rotate that group to the front of the reported list, for the reason the
+re-resting rule gives — quick look takes index 0 as what is showing.
+
+**The drift does not hold it; a gesture and being off screen do.** This is what
+`reason` is for, and the case for it is measured rather than argued. At 13
+times the rate either preview swaps at — 100 swap events in 25 seconds against
+none, three runs a condition — a variant swap moves no part of the drift's
+frame distribution: median 16.7ms either way at 1x and 33.3ms either way at 4x,
+p95 identical, frames over 50ms 36.3 against 33.0 at 4x where the runs
+themselves span 31 to 46. At the natural rate it is not there at all. The work
+is real and small — about nine style recalcs a swap — and one swap a card every
+6.5 seconds never reaches the frame budget. What the recalc numbers higher up
+*do* rule out is animating through the drift, which is a per-frame cost and a
+different question: the card stays frozen either way.
+
+**The clock runs through a hold; only the swap waits.** A card held for a
+gesture or off screen still counts the time, and a step that comes due while it
+is held is taken when it is let go, after a short settle: one swap, not the
+several the hold was worth. The settle is there because a card otherwise swaps
+on the frame the rail is handing off on, and because a preview that came due
+while it was still loading would change before its resting state had been seen
+at all.
+
+**A release must not restart a running clock**, and this is the silent one. A
+card is let go of far more often than every 6.5 seconds — under the drift it
+changes hands every time the read mark moves — so rescheduling on every release
+resets the timer before it can ever fire. Measured with the naive version, the
+inked plate stepped 4 times in 70 seconds rather than 8, which reads exactly
+like the hold it was supposed to have stopped being. So a release reschedules
+only when a step is due or when no timer is pending.
+
+**A swap that lands frozen must not land blank.** The inked plate's swap *is*
+an animation, and a paused animation sits at its first frame — which for that
+component is `stroke-dashoffset: 1` on every path, an empty plate: measured, 0
+of 13 lines drawn. Since a drift swap is frozen by definition, the drawing is
+handed in finished instead, through the component's own draw tokens, a
+zero-duration animation being complete at time 0 with `both` filling to the end
+value whatever the play state is. 13 of 13 drawn, measured. The re-ink at the
+read mark is untouched, because `--live` drives it from a different token. The
+detail reveal needs none of this: its one animation is an ambient ping whose
+first frame is a visible ring, and everything else about its swap is a
+transition.
+
+What it comes to, on the live rail over 70 seconds: the inked plate steps 8
+times against 5 before the reason existed, the detail reveal 6 against 3. Both
+are now at their own ceiling, which is how long the card is on screen — 56
+seconds of that 70 for the one, 40 for the other. Off screen still holds, and
+should: the only way past that ceiling is animating for nobody.
+
+The two periods are deliberately different — 6500 and 7500. Two cards on one
+period restyle on the same frame every time, which is the argument
+`DEMO_STAGGER` already makes one level up.
 
 The block is optional. A preview that ignores the messages still renders; it
 just sits still, and quick look shows it without dots. A preview opened on its own does nothing, because the script only
@@ -1018,6 +1131,14 @@ lede — so a headline change means editing `index.html`, then `og.html`, then
 re-rendering, and skipping the last two leaves a link that pastes as one page
 and opens as another.
 
+Its `Stack` row is shorter than the footer's on purpose, and that is not a
+drift to correct. The page says `HTML, CSS and vanilla JS, no build step`,
+where `vanilla` carries the no-framework claim and there is room for it. The
+card says `HTML, CSS & JS`, because the card is 1200x630 of fixed width read
+at a glance in a link unfurl: measured, `vanilla` widens the meta block by
+120px, takes that width off the lede's column and wraps it from two lines to
+three. Naming the JS at all is the honest part, and it survives the cut.
+
 Its meta row is the exception, and deliberately not a copy: the masthead's row
 is the newest study's date, read off the cards at runtime, and baked into a PNG
 that is wrong from the next study onward. The card states three things about
@@ -1065,6 +1186,22 @@ each document gets its own opaque origin and does not share it. `_template/`
 holds the block to copy. Translate the page's own prose only — component sample
 copy and class-name hints stay as they are.
 
+**The applier reads and writes `innerHTML`, not `textContent`, and every
+folder's copy does.** A demo page's prose wants markup the sentence needs — a
+`<code>` around a token name, a `<strong>` numbering a step — and `textContent`
+cannot carry it in either direction. It is the capture that makes this a trap
+rather than a limitation: the English fallback is read off the node at boot, so
+with `textContent` it is captured already flattened and the first `apply()` on
+load strips markup that was in the markup, before anything has been translated
+and whatever language the reader is in. `2026-09-shader-token-field`'s own
+`<code>--settle</code>` had been going that way unnoticed.
+
+It is safe here in the way `innerHTML` usually is not, and the reason is worth
+stating so nobody has to re-derive it: every string it sets is a literal in the
+page or in the table beside it. Nothing from a URL, a field or a fetch reaches
+that line. A translation table fed from any of those would be the problem, and
+this assignment would only be where it surfaced.
+
 The card list is hand-maintained in `index.html`. Adding a study means
 adding one `<article class="piece">` block to it, pointing at the new folder's
 `demo.html` and `preview.html`, and carrying a `data-date` — `index.js` sorts
@@ -1082,6 +1219,60 @@ The card is an `<article>` with a stretched link on the title rather than an
 and an anchor may not contain a button. Everything the overlay shows is read
 back out of that block, so no title, note or path is written twice. That is the
 only file outside the study folder that a new study may touch.
+
+### Figma is on the page twice, and the two are not the same link
+
+The `Figma` item in the masthead's meta row is the companion file on Figma
+Community. The circle in the footer's handles nav is the profile. One is
+where this set is also drawn; the other is that the person has an account,
+which is what that nav is for — the same test that keeps the tip jar out of
+it.
+
+**The file link is a stated exception to the meta row's rule, not a fit for
+it.** That row is otherwise facts the page counts from the cards, and two
+items were evicted from it once for repeating what the page said elsewhere —
+so a link that is neither counted nor derived is a departure, and worth
+naming as one rather than quietly widening the rule. What earns it is that
+the alternatives are worse. The footer is below the fold on every viewport,
+and a link nobody scrolls to is a link nobody follows. The rail's count line
+is above the fold and was tried, but it puts a link in a bar that is
+otherwise entirely controls — the count, the type chips, the carousel
+buttons — and reads as one.
+
+The row had the room, which was never the question but is worth having
+measured: 31px with one item and 31px with two, at 1440, 390 and 320, with
+the first card keeping every pixel it had above the fold in both languages.
+
+It is set like quick look's link rather than like the byline's — accent and
+an arrow, because it leaves the site, where the byline's hairline underline
+reads as prose. It keeps the row's own size and case, because the values
+here are mono 13px in sentence case and a link that changed either would
+stop being a value.
+
+**No Figma mark beside it.** The values in this row are plain facts in mono,
+and a brand glyph would make one of them a different kind of object. The
+mark already does that job in the footer, where the thing it labels is a
+handle.
+
+### A card may name the board it was drawn in
+
+`data-figma` on the `<article class="piece">` block is the board in the
+companion Figma file the study was drawn in, and quick look draws an `Open in
+Figma` link beside `Open demo` where a card carries one. It is optional and
+most cards have none: no attribute, no link, and nothing else reads it. The
+link opens in a new tab and takes neither `?lang=` nor `?theme=` — Figma
+resolves neither, and the choice is this site's rather than something to hand
+to another one.
+
+It sits on the card rather than in the folder's `notes.md`, which is the
+opposite of where the `Inspiration:` line sits, and the reason is the wall the
+type already runs into: the index cannot read a `notes.md` over `file://`. A
+declaration in the folder would have to be copied onto the card anyway, and one
+hand-kept pair is one more than this repo wants. What that costs is a folder
+copied out: it carries its inspiration and not its board. If the Figma file
+ever becomes part of what a study *is* rather than a companion to it, the line
+belongs in `notes.md` and the card becomes the second copy, the way `type:`
+already works.
 
 The preview iframe carries its path in `data-src`, not `src`. Every card on the
 page is a live component — which is the point, and also what it costs: one

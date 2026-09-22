@@ -5,8 +5,8 @@
   surface come in as the component's own re-theming channels, not as overrides
   of its internals.
 
-  Two things here differ from demo.html on purpose, and both are about being
-  read at thumbnail size.
+  Three things here differ from demo.html on purpose, and all of them are
+  about being read at thumbnail size.
 
   The ground: the shared one, in whichever theme the index is in — the #f3f2ef
   every study in this repo sits on, or the #191b1e they all take on a dark
@@ -39,6 +39,14 @@
   The cost, stated: the card in the rail now advertises a modifier rather than
   the component's unmodified default, and it is the loudest card on the page.
   The demo opens on porcelain, which is where the unmodified component is.
+
+  The rotation: the card does not stand on lime, it steps through three of the
+  six surfaces on a timer, one drawing each, and re-inks on every step. A
+  thumbnail showing one plate says the component is that plate; the study is
+  that the surface and the drawing are a pair, and six pairs cannot be argued
+  from one. Which three is not a taste decision and is worked out at CYCLE
+  below — two of the six have no edge on one of the two grounds, so the trio
+  changes with the theme and the drawings do not.
 -->
 <html lang="da">
 <head>
@@ -301,7 +309,7 @@
 
   <!--
     Thumbnail scaffolding, and the one place a study folder may carry
-    script. Two jobs, both driven by the index, both inert when this file is
+    script. Three jobs, all driven by the index, all inert when this file is
     opened on its own:
 
       1. A card's iframe has pointer events off, so the component's :hover can
@@ -309,9 +317,11 @@
          --live is what the component already has for that state. It also
          means the index's scroll-into-read-position is what re-inks the
          drawing — the observer the CSS-only draw cannot have.
-      2. Quick look steps through the three surfaces, each with its own
+      2. Quick look steps through the six surfaces, each with its own
          drawing. The list lives here because the index must never name a
          component class: it is handed labels and draws dots.
+      3. On the rail the card steps through three of them on a timer of its
+         own, re-inking on every step. See the rotation in the script.
 
     The resting state is the markup, not something this script applies, so the
     thumbnail is right with scripting off as well.
@@ -387,8 +397,173 @@
 
         var current = art.querySelector('.' + BASE + '__ink');
         var next = pool[variant.drawing].cloneNode(true);
+
+        // A swap that lands while animations are paused — which a drift swap
+        // does by definition — would otherwise arrive blank. The draw is an
+        // animation and a paused one sits at its first frame, which for this
+        // component is stroke-dashoffset: 1 on every path: an empty plate,
+        // measured, 0 of 13 lines drawn. So the drawing is handed in finished
+        // instead, through the component's own draw tokens — a zero-duration
+        // animation is complete at time 0 and `both` fills to the end value
+        // whatever the play state is. 13 of 13 drawn, measured.
+        //
+        // The stagger goes on the svg and not on the root, because each
+        // drawing declares its own on that element and a value inherited from
+        // an ancestor loses to it — the same trap the property-block rule
+        // names. The duration has no such declaration, so the root is where it
+        // belongs, and it is cleared again the moment a swap can animate.
+        //
+        // The re-ink at the read mark is untouched either way: `--live` drives
+        // it from --inked-plate-card-redraw, which is a different token.
+        if (document.documentElement.hasAttribute('data-preview-paused')) {
+          root.style.setProperty('--' + BASE + '-draw', '0s');
+          next.style.setProperty('--' + BASE + '-stagger', '0ms');
+        } else {
+          root.style.removeProperty('--' + BASE + '-draw');
+        }
+
         if (current) art.replaceChild(next, current);
         else art.appendChild(next);
+      }
+
+      function byId(id) {
+        return VARIANTS.filter(function (v) { return v.id === id; })[0];
+      }
+
+      // --- the rail rotation ---------------------------------------------
+      //
+      // Three surfaces, one drawing each, stepped on a timer so the card in
+      // the rail shows what the six plates are rather than standing on one of
+      // them. Replacing the ink node is what re-inks it, so each step is the
+      // drawing being made again — the same gesture the pointer gets, arriving
+      // on its own.
+      //
+      // Which three depends on the ground, and that is not a preference: two
+      // of the six have no edge on one of the two. Porcelain is 2.62 OK dE
+      // from the light ground and graphite 1.95 from the dark one, which is to
+      // say the same colour as the paper they would be sitting on, with
+      // nothing else drawing the plate's edge now that the plotter grid stays
+      // on the demo page. Acid and ochre clear both grounds comfortably —
+      // 19.74 and 18.92 on paper, 70.11 and 60.77 on ink — so they lead either
+      // way, and the third seat is graphite on paper and chalk on ink. Both of
+      // those carry the envelope, so the cycle is the same three drawings
+      // whichever way the page is: waterfall, vortex, envelope.
+      var CYCLE = {
+        light: ['acid', 'ochre', 'graphite'],
+        dark: ['acid', 'ochre', 'chalk']
+      };
+
+      // In the 6-8s band the rail was asked for, and deliberately not the same
+      // number the detail reveal card uses: two cards stepping on one period
+      // restyle on one frame, every time, which is the argument the demo
+      // wave's stagger already makes about the rail.
+      var CYCLE_MS = 6500;
+
+      var reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+      var cycleTimer = 0;
+      var cyclePos = 0;
+      var held = false;    // the rail is moving, or this card is off screen
+      var taken = false;   // a reader, or quick look, has asked for a variant
+
+      function isDark() {
+        return document.documentElement.getAttribute('data-theme') === 'dark';
+      }
+
+      // The trio leads the reported list and the other three follow, so quick
+      // look's dots open on the card the rail was showing and carry on in the
+      // order it was going — the same shape the detail reveal card's
+      // ordered() has. Acid leads both trios, which is what keeps the resting
+      // state the markup's rather than something this script applies: the
+      // thumbnail is right with scripting off too.
+      function ordered(dark) {
+        var lead = CYCLE[dark ? 'dark' : 'light'].map(byId);
+        return lead.concat(VARIANTS.filter(function (v) { return lead.indexOf(v) < 0; }));
+      }
+
+      var list = ordered(isDark());
+
+      function cycleLen() {
+        return CYCLE[isDark() ? 'dark' : 'light'].length;
+      }
+
+      // Two things end it outright. A reader who has asked for a variant
+      // outranks it, and for good — this file is what quick look loads too,
+      // and rotating under its dots would take the card they picked away from
+      // them. And reduced motion, which is the whole of what this is: content
+      // that changes on its own, unasked. Being held is neither, and the
+      // block below is about the difference.
+      // --- what holds a step, and what only defers it --------------------
+      //
+      // The rail pauses a card whenever it is off screen or the rail is
+      // moving, and on a drifting rail that is most of a card's life:
+      // measured on the live index over 70 seconds, this card was on screen
+      // for 56 of them and unpaused for 31. A timer cleared on every pause
+      // therefore counts unpaused time, and the card steps about once every
+      // 23 seconds instead of every 6 to 8 — measured, three steps in that
+      // 70 rather than ten.
+      //
+      // So the clock runs through the hold and only the swap waits. A step
+      // that comes due while the card is held is taken when it is let go,
+      // which on this rail is the moment the card arrives at the read mark —
+      // one swap, not the several the hold was worth. Nothing restyles off
+      // screen or under a finger, which is what the pause is for, and the
+      // cadence is wall clock, which is what was asked for.
+      //
+      // SETTLE_MS is the gap before that deferred swap. Without it a card
+      // swaps on the frame it arrives on, which is the frame the rail is
+      // already handing off on — and a preview that came due while it was
+      // still loading would change before its resting state had been seen at
+      // all.
+      var SETTLE_MS = 1200;
+
+      var due = false;
+
+      // The drift is deliberately not in this. A card held for the drift is on
+      // screen and being carried past, which is the one case where a swap is
+      // both worth making and safe: measured at 13 times the rate this steps
+      // at — 100 swap events in 25 seconds against none — it moves no part of
+      // the drift's frame distribution, at 1x or at 4x. A gesture must not
+      // hitch and an off-screen card is work for nobody, so those two hold.
+      //
+      // What the drift still holds is animating, which is a per-frame cost and
+      // a different question: `data-preview-paused` is set for all three.
+      function heldNow() {
+        return held || document.hidden;
+      }
+
+      function cycleStop() {
+        clearTimeout(cycleTimer);
+        cycleTimer = 0;
+      }
+
+      function cycleSoon(ms) {
+        cycleStop();
+        if (taken || reduced.matches) return;
+        cycleTimer = setTimeout(function () {
+          cycleTimer = 0;
+          if (taken || reduced.matches) return;
+          if (heldNow()) { due = true; return; }
+          due = false;
+          cyclePos = (cyclePos + 1) % cycleLen();
+          apply(list[cyclePos]);
+          cycleSoon(CYCLE_MS);
+        }, ms);
+      }
+
+      // Let go of: the rail landed, the card came back on screen, or the tab
+      // did. A step already due is taken a beat later.
+      //
+      // Otherwise the clock carries on *where it was*, which is the whole of
+      // this function and easy to get wrong: rescheduling unconditionally
+      // restarts the interval, and a card is let go of far more often than
+      // every 6.5 seconds — under the drift it changes hands every time the
+      // read mark moves. Measured with the naive version, the timer was reset
+      // before it could ever fire and the card stepped 4 times in 70 seconds
+      // rather than 8, which read exactly like the hold it was supposed to
+      // have stopped being.
+      function cycleRelease() {
+        if (due) { cycleSoon(SETTLE_MS); return; }
+        if (!cycleTimer) cycleSoon(CYCLE_MS);
       }
 
       window.addEventListener('message', function (event) {
@@ -399,8 +574,15 @@
           root.classList.toggle(BASE + '--live', data.active === true);
         }
 
+        // A reader has picked a card, or quick look's own autoplay has. Either
+        // way the rotation is over for this document — it is not the index's
+        // to fight, and this is the same file quick look loads. In practice
+        // the overlay gets there first anyway: its autoplay steps at 4000ms
+        // and nothing here moves before 6500.
         if (data.type === 'preview:variant') {
-          var variant = VARIANTS[data.index];
+          taken = true;
+          cycleStop();
+          var variant = list[data.index];
           if (variant) apply(variant);
         }
 
@@ -414,11 +596,19 @@
         // rather than restarting them, which is the point of pausing over
         // unloading.
         if (data.type === 'preview:pause') {
-          if (data.paused === true) {
+          // Animations stop for all three reasons; the rotation stops for two.
+          // An index that predates `reason` sends none, and an absent reason
+          // reads as held — the cautious way round.
+          var frozen = data.paused === true;
+          held = frozen && data.reason !== 'drift';
+          if (frozen) {
             document.documentElement.setAttribute('data-preview-paused', '');
           } else {
             document.documentElement.removeAttribute('data-preview-paused');
           }
+          // The paused rule above is CSS and reaches animations only; a timer
+          // is not an animation, so the rotation has to be held by hand.
+          if (!held) cycleRelease();
         }
 
         if (data.type === 'preview:theme') {
@@ -426,6 +616,21 @@
             document.documentElement.setAttribute('data-theme', 'dark');
           } else {
             document.documentElement.removeAttribute('data-theme');
+          }
+          // The third seat in the rotation swaps with the ground — graphite on
+          // paper, chalk on ink — so a card standing on it when the page is
+          // switched is standing on the one plate that has no edge there. Put
+          // it on the new trio's member at the same position, which leaves the
+          // first two untouched because they are the same two either way.
+          // Rebuilt, so the trio leading it is the one with an edge on the
+          // ground the page is now. Quick look loads its own frame with
+          // ?theme= on the src and is never switched underneath, so no dot it
+          // has drawn is left pointing at a different card by this.
+          list = ordered(isDark());
+          if (!taken) {
+            apply(list[cyclePos % cycleLen()]);
+            due = false;
+            cycleSoon(CYCLE_MS);
           }
         }
       });
@@ -451,8 +656,23 @@
         window.parent.postMessage({
           source: CHANNEL,
           type: 'preview:ready',
-          variants: VARIANTS.map(function (v) { return { id: v.id, label: v.label }; })
+          variants: list.map(function (v) { return { id: v.id, label: v.label }; })
         }, '*');
+      }
+
+      // Framed only, so a file opened on its own still shows exactly what its
+      // markup says — the same claim the rest of this script makes.
+      if (window.parent !== window) {
+        document.addEventListener('visibilitychange', function () {
+          if (!document.hidden) cycleRelease();
+        });
+        if (reduced.addEventListener) {
+          reduced.addEventListener('change', function () {
+            if (reduced.matches) cycleStop();
+            else cycleSoon(CYCLE_MS);
+          });
+        }
+        cycleSoon(CYCLE_MS);
       }
     })();
   </script>

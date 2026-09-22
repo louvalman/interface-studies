@@ -551,6 +551,33 @@ body.is-locked {
   color: var(--ink);
 }
 
+/* One value in this row is a link, and it is set like quick look's rather
+   than like the byline's: accent and an arrow, because it leaves the site,
+   where the byline's hairline underline reads as prose. It keeps the row's
+   own size and case — the values here are mono 13px in sentence case, and a
+   link that changed either would stop being a value. */
+.head__meta-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  text-decoration: none;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.head__meta-link:hover { text-decoration: underline; }
+
+.head__meta-link:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+  border-radius: 0.2rem;
+}
+
+.head__meta-link svg {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
 /* --- rail ------------------------------------------------------------- */
 
 /* The rail closes on its own rule — the progress track below the cards — and
@@ -1513,6 +1540,18 @@ body.is-locked {
   color: var(--ink-soft);
 }
 
+/* The two links sit in a row. Measured at the panel's 288px floor, both fit
+   on one line in English and in Danish, so the wrap is a floor under a label
+   longer than these rather than something the current pair reaches — and it
+   is a wrap rather than a squeeze because these are two whole labels, not a
+   line of prose. */
+.lightbox__links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 1.1rem;
+}
+
 .lightbox__link {
   flex: none;
   display: inline-flex;
@@ -1525,6 +1564,10 @@ body.is-locked {
   text-transform: uppercase;
   color: var(--accent);
 }
+
+/* Same trap as the variants bar: `display: inline-flex` above is an author
+   rule and `[hidden]` is only a UA rule, so it has to be said explicitly. */
+.lightbox__link[hidden] { display: none; }
 
 .lightbox__link:hover { text-decoration: underline; }
 

@@ -291,6 +291,219 @@
       color: var(--demo-dim);
     }
 
+    /* --- the specimen rows ---
+       Page scaffolding, like everything else in this block: it lays the
+       specimens out and names no component class. Each specimen is an
+       ordinary instance of the component carrying one modifier, so what is
+       on the page is the component re-themed rather than a picture of it.
+
+       auto-fit with a minimum rather than a fixed count, so the rows go to
+       two-up and then one-up on a narrow screen without a breakpoint. The
+       minmax(0, …) on the inner track is the same pair .demo__state carries,
+       for the same reason. */
+    .demo__specimens {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(13rem, 100%), 1fr));
+      gap: 1rem 1.25rem;
+      max-width: 100%;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .demo__specimen {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.5rem;
+      min-width: 0;
+    }
+
+    .demo__specimen-name {
+      margin: 0;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.6875rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--demo-dim);
+    }
+
+    .demo__specimen-note {
+      margin: 0;
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      color: var(--demo-dim);
+    }
+
+    /* The generation prose. Measure capped in ch so it stays readable on a
+       wide screen without a wrapper element to do it. */
+    .demo__prose {
+      display: grid;
+      gap: 0.85rem;
+      max-width: 68ch;
+    }
+
+    .demo__prose p {
+      margin: 0;
+      font-size: 0.9375rem;
+      line-height: 1.65;
+      color: var(--demo-soft);
+    }
+
+    .demo__prose strong {
+      color: var(--demo-fg);
+      font-weight: 600;
+    }
+
+    .demo__prose em {
+      font-style: normal;
+      color: var(--demo-fg);
+    }
+
+    .demo__prose code {
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.8125em;
+      padding: 0.1em 0.35em;
+      border-radius: 0.25rem;
+      background: var(--demo-fill);
+      color: var(--demo-fg);
+    }
+
+    /* --- the specimen lightbox ---
+       Page chrome. Every selector here is a .demo* class: the component
+       inside the dialog is sized by handing its own width token in on the
+       element, in the markup, never by a rule written against its class.
+
+       The trigger is display:none until the page's own script adds .demo-js
+       to <html>, because a button that opens a dialog is a button that does
+       nothing without script. Gated on a class rather than the `hidden`
+       attribute on purpose — .demo__specimen-open sets its own display, and
+       an author rule beats the UA rule for [hidden], which is the same trap
+       the preview contract warns about for variant elements. */
+    .demo__specimen-name {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .demo__specimen-open {
+      display: none;
+      flex: none;
+      width: 1.35rem;
+      height: 1.35rem;
+      padding: 0;
+      place-items: center;
+      border: 0;
+      border-radius: 0.3rem;
+      background: transparent;
+      color: var(--demo-dim);
+      cursor: pointer;
+      transition: color 200ms ease, background-color 200ms ease;
+    }
+
+    .demo-js .demo__specimen-open { display: grid; }
+
+    .demo__specimen-open:hover {
+      color: var(--demo-fg);
+      background: var(--demo-fill);
+    }
+
+    .demo__specimen-open:focus-visible {
+      outline: 2px solid var(--demo-fg);
+      outline-offset: 2px;
+    }
+
+    .demo__specimen-open svg { width: 0.8125rem; height: 0.8125rem; }
+
+    /* The dialog itself. max-height plus overflow rather than arithmetic on
+       the component's height: the plate is aspect-ratio'd off its width, so
+       a short viewport is a scroll rather than a formula. */
+    .demo__lightbox {
+      width: min(92vw, 44rem);
+      max-width: 92vw;
+      max-height: 90vh;
+      overflow: auto;
+      margin: auto;
+      padding: 1.25rem;
+      box-sizing: border-box;
+      border: 1px solid var(--demo-line);
+      border-radius: 0.9rem;
+      background: var(--demo-ground);
+      color: var(--demo-fg);
+    }
+
+    /* ::backdrop does not inherit from the page in every engine, so the
+       colour is stated rather than taken from a token. */
+    .demo__lightbox::backdrop {
+      background: rgba(12, 11, 9, 0.62);
+      backdrop-filter: blur(2px);
+    }
+
+    .demo__lightbox-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1rem;
+      margin: 0 0 0.9rem;
+    }
+
+    .demo__lightbox-title {
+      margin: 0;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.6875rem;
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--demo-dim);
+    }
+
+    .demo__lightbox-close {
+      flex: none;
+      width: 1.85rem;
+      height: 1.85rem;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      border: 0;
+      border-radius: 999px;
+      background: var(--demo-fill);
+      color: var(--demo-soft);
+      cursor: pointer;
+      transition: color 200ms ease, background-color 200ms ease;
+    }
+
+    .demo__lightbox-close:hover { color: var(--demo-fg); }
+
+    .demo__lightbox-close:focus-visible {
+      outline: 2px solid var(--demo-fg);
+      outline-offset: 2px;
+    }
+
+    .demo__lightbox-close svg { width: 0.875rem; height: 0.875rem; }
+
+    /* The component is centred in the dialog and may shrink with it. Same
+       pair .demo__state carries, for the same reason. */
+    .demo__lightbox-stage {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      justify-items: center;
+      max-width: 100%;
+    }
+
+    .demo__lightbox-note {
+      margin: 0.9rem 0 0;
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      color: var(--demo-dim);
+    }
+
+    /* A finger cannot aim at a 13px icon. Matches the rest of this page's
+       touch handling, which grows the page's controls and leaves the
+       component alone. */
+    @media (hover: none) {
+      .demo__specimen-open { width: 2.25rem; height: 2.25rem; }
+      .demo__lightbox-close { width: 2.75rem; height: 2.75rem; }
+    }
+
     /* --- touch targets --- */
 
     /* No hover means a finger, and a finger cannot aim at a 10px label. The
@@ -783,6 +996,218 @@
       </section>
     </section>
 
+    <!-- The palettes. Each is an ordinary instance of the component carrying
+         one modifier, so what is on the page is the block re-declared rather
+         than a picture of it. Bands rather than plates: a palette is a
+         question about colour, and a 7:1 strip of the same material answers
+         it in a quarter of the pixels. -->
+    <section class="demo__state">
+      <p class="demo__caption" data-i18n="state.palettes">The palettes &mdash; the same eleven declarations restated, each with its own luminance band</p>
+      <ul class="demo__specimens">
+      <li class="demo__specimen">
+        <p class="demo__specimen-name"><span data-specimen-name>Field &middot; 0.22&ndash;0.72</span><button class="demo__specimen-open" type="button" data-open-specimen data-i18n-aria="a11y.expand" aria-label="Show this specimen larger"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4" stroke-linecap="round" stroke-linejoin="round" /></svg></button></p>
+        <section class="shader-token-field">
+          <div class="shader-token-field__surface shader-token-field__surface--band" data-shader-token-field-surface>
+            <canvas class="shader-token-field__canvas" data-shader-token-field-canvas aria-hidden="true"></canvas>
+          </div>
+        </section>
+        <p class="demo__specimen-note" data-i18n="pal.field">Ochre and sage on bone. The band the study was written against, and the widest of the four.</p>
+      </li>
+      <li class="demo__specimen">
+        <p class="demo__specimen-name"><span data-specimen-name>Verdant &middot; 0.24&ndash;0.70</span><button class="demo__specimen-open" type="button" data-open-specimen data-i18n-aria="a11y.expand" aria-label="Show this specimen larger"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4" stroke-linecap="round" stroke-linejoin="round" /></svg></button></p>
+        <section class="shader-token-field shader-token-field--verdant">
+          <div class="shader-token-field__surface shader-token-field__surface--band" data-shader-token-field-surface>
+            <canvas class="shader-token-field__canvas" data-shader-token-field-canvas aria-hidden="true"></canvas>
+          </div>
+        </section>
+        <p class="demo__specimen-note" data-i18n="pal.verdant">Green, with a dry ochre as the counter-pool: two greens gather into one green.</p>
+      </li>
+      <li class="demo__specimen">
+        <p class="demo__specimen-name"><span data-specimen-name>Night &middot; 0.01&ndash;0.14</span><button class="demo__specimen-open" type="button" data-open-specimen data-i18n-aria="a11y.expand" aria-label="Show this specimen larger"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4" stroke-linecap="round" stroke-linejoin="round" /></svg></button></p>
+        <section class="shader-token-field shader-token-field--night">
+          <div class="shader-token-field__surface shader-token-field__surface--band" data-shader-token-field-surface>
+            <canvas class="shader-token-field__canvas" data-shader-token-field-canvas aria-hidden="true"></canvas>
+          </div>
+        </section>
+        <p class="demo__specimen-note" data-i18n="pal.night">The clamp inverted &mdash; here the ceiling carries the ratio, because the ink is the light thing.</p>
+      </li>
+      <li class="demo__specimen">
+        <p class="demo__specimen-name"><span data-specimen-name>Ember &middot; 0.012&ndash;0.13</span><button class="demo__specimen-open" type="button" data-open-specimen data-i18n-aria="a11y.expand" aria-label="Show this specimen larger"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4" stroke-linecap="round" stroke-linejoin="round" /></svg></button></p>
+        <section class="shader-token-field shader-token-field--ember">
+          <div class="shader-token-field__surface shader-token-field__surface--band" data-shader-token-field-surface>
+            <canvas class="shader-token-field__canvas" data-shader-token-field-canvas aria-hidden="true"></canvas>
+          </div>
+        </section>
+        <p class="demo__specimen-note" data-i18n="pal.ember">Burnt red and bruised violet on ash. A second dark, to show that Night is a palette and not just &ldquo;the dark one&rdquo;.</p>
+      </li>
+      </ul>
+    </section>
+
+    <!-- The forms. Plates rather than bands: a form is a question about
+         structure, and structure wants area. -->
+    <section class="demo__state">
+      <p class="demo__caption" data-i18n="state.forms">The forms &mdash; the same palette, three generators; <code>--form</code> is read by the shader and by the stop list alike</p>
+      <ul class="demo__specimens">
+      <li class="demo__specimen">
+        <p class="demo__specimen-name"><span data-specimen-name>Dunes &middot; --form: 0</span><button class="demo__specimen-open" type="button" data-open-specimen data-i18n-aria="a11y.expand" aria-label="Show this specimen larger"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4" stroke-linecap="round" stroke-linejoin="round" /></svg></button></p>
+        <section class="shader-token-field">
+          <div class="shader-token-field__surface shader-token-field__surface--plate" data-shader-token-field-surface>
+            <canvas class="shader-token-field__canvas" data-shader-token-field-canvas aria-hidden="true"></canvas>
+          </div>
+        </section>
+        <p class="demo__specimen-note" data-i18n="frm.dunes">fbm warped by a second fbm. Octaves pile up, so the field drifts in broad soft masses.</p>
+      </li>
+      <li class="demo__specimen">
+        <p class="demo__specimen-name"><span data-specimen-name>Veins &middot; --form: 1</span><button class="demo__specimen-open" type="button" data-open-specimen data-i18n-aria="a11y.expand" aria-label="Show this specimen larger"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4" stroke-linecap="round" stroke-linejoin="round" /></svg></button></p>
+        <section class="shader-token-field shader-token-field--veins">
+          <div class="shader-token-field__surface shader-token-field__surface--plate" data-shader-token-field-surface>
+            <canvas class="shader-token-field__canvas" data-shader-token-field-canvas aria-hidden="true"></canvas>
+          </div>
+        </section>
+        <p class="demo__specimen-note" data-i18n="frm.veins">Every octave folded about its midpoint and squared before it is summed, so the creases branch into filaments.</p>
+      </li>
+      <li class="demo__specimen">
+        <p class="demo__specimen-name"><span data-specimen-name>Terraces &middot; --form: 2</span><button class="demo__specimen-open" type="button" data-open-specimen data-i18n-aria="a11y.expand" aria-label="Show this specimen larger"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4" stroke-linecap="round" stroke-linejoin="round" /></svg></button></p>
+        <section class="shader-token-field shader-token-field--terraces">
+          <div class="shader-token-field__surface shader-token-field__surface--plate" data-shader-token-field-surface>
+            <canvas class="shader-token-field__canvas" data-shader-token-field-canvas aria-hidden="true"></canvas>
+          </div>
+        </section>
+        <p class="demo__specimen-note" data-i18n="frm.terraces">The warped field quantised into treads before anything reads it, so colour, sheen and shadow land on the same steps.</p>
+      </li>
+      </ul>
+    </section>
+
+    <!-- How the field is made. Prose rather than a diagram: the steps are
+         five lines of shader and each one is a sentence. -->
+    <section class="demo__state">
+      <p class="demo__caption" data-i18n="state.howto">How the field is generated</p>
+      <div class="demo__prose">
+        <p data-i18n="how.p1">
+          Nothing here is an image. Every pixel is worked out from its own
+          coordinate, five steps deep, and the same five steps run for the
+          plate, the band and every specimen above.
+        </p>
+        <p data-i18n="how.p2">
+          <strong>One.</strong> A hash turns a pair of whole numbers into a
+          repeatable random value, and <em>value noise</em> smooths it &mdash;
+          each point takes the four lattice corners around it and blends
+          between them on a curve, so the result wanders instead of jumping.
+        </p>
+        <p data-i18n="how.p3">
+          <strong>Two.</strong> <em>Fractional Brownian motion</em> sums that
+          noise at doubling frequencies and halving amplitudes. Four octaves
+          by default: one broad shape, then three progressively finer ones
+          laid over it. This is where <code>--octaves</code> and
+          <code>--scale</code> land, and where <code>--form</code> changes
+          what each octave contributes before it is added.
+        </p>
+        <p data-i18n="how.p4">
+          <strong>Three.</strong> A <em>domain warp</em>. Rather than read the
+          field at a point, the field is read at a point that has itself been
+          moved by two more fbm lookups &mdash; the material is pushed around
+          by a copy of itself, which is what gives it currents rather than
+          lumps. <code>--warp</code> is how far.
+        </p>
+        <p data-i18n="how.p5">
+          <strong>Four.</strong> Colour. The base is what is left where
+          nothing gathered; the two pools are mixed in over it on smoothsteps
+          of the warped field. Every step so far is a blend, which matters for
+          what happens next.
+        </p>
+        <p data-i18n="how.p6">
+          <strong>Five.</strong> Light, then the clamp. A narrow sheen sits on
+          the ridge and a shadow gathers in the troughs, and both
+          <em>scale</em> the colour rather than mixing white into it &mdash;
+          so the field reads as lit rather than as two colours poured
+          together. That is also the only step that can leave the luminance
+          band, because a blend of colours inside the band is provably inside
+          it and a scale is not a blend. So the clamp goes last, and it is
+          measured rather than assumed: across all four palettes and all three
+          forms, the share of rendered pixels outside the declared band is
+          0.0000%.
+        </p>
+      </div>
+    </section>
+
+    <!-- The specimen lightbox. One component instance, in the markup at load
+         so component.js's boot() picks it up like any other — a root added
+         afterwards is never set up, because boot() runs once. It costs
+         nothing while the dialog is closed: a closed <dialog> is display:none,
+         so the surface measures zero and the draw is skipped.
+
+         Which palette or form it shows is a modifier swapped on its root at
+         open time, and the component's own MutationObserver on class re-reads
+         the token block — the same channel preview.html uses for variants.
+
+         The width is handed in as an inline style on the component's own
+         element, never as a rule in this page's stylesheet: the component
+         declares --shader-token-field-width on its root, and a declaration on
+         the element beats one inherited from an ancestor, so a value set on
+         .demo__lightbox-stage would be shadowed and do nothing. -->
+    <dialog class="demo__lightbox" data-lightbox aria-labelledby="demo-lightbox-title">
+      <div class="demo__lightbox-head">
+        <h2 class="demo__lightbox-title" id="demo-lightbox-title" data-lightbox-title></h2>
+        <button class="demo__lightbox-close" type="button" data-lightbox-close
+                data-i18n-aria="a11y.close" aria-label="Close">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path d="M4 4l8 8M12 4l-8 8" stroke-linecap="round" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="demo__lightbox-stage">
+        <section class="shader-token-field" data-lightbox-field
+                 style="--shader-token-field-width: min(86vw, 40rem);">
+
+          <div class="shader-token-field__surface shader-token-field__surface--plate" data-shader-token-field-surface>
+            <canvas class="shader-token-field__canvas" data-shader-token-field-canvas aria-hidden="true"></canvas>
+            <div class="shader-token-field__inscription">
+              <p class="shader-token-field__kicker">Luminance band</p>
+              <p class="shader-token-field__line">
+                The field cannot get light enough, or dark enough, to lose
+                this text.
+              </p>
+            </div>
+          </div>
+
+          <div class="shader-token-field__surface shader-token-field__surface--band" data-shader-token-field-surface>
+            <canvas class="shader-token-field__canvas" data-shader-token-field-canvas aria-hidden="true"></canvas>
+          </div>
+
+          <dl class="shader-token-field__readout">
+            <div class="shader-token-field__row">
+              <dt>Frequency</dt>
+              <dd data-shader-token-field-value="scale">2.4 &middot; 4 oct</dd>
+            </div>
+            <div class="shader-token-field__row">
+              <dt>Warp</dt>
+              <dd data-shader-token-field-value="warp">0.42</dd>
+            </div>
+            <div class="shader-token-field__row">
+              <dt>Flow</dt>
+              <dd data-shader-token-field-value="flow">0.05 / s</dd>
+            </div>
+            <div class="shader-token-field__row">
+              <dt>Band</dt>
+              <dd data-shader-token-field-value="band">0.22 &ndash; 0.72 Y</dd>
+            </div>
+            <div class="shader-token-field__row">
+              <dt>Worst case</dt>
+              <dd data-shader-token-field-value="ratio">4.81:1</dd>
+            </div>
+            <div class="shader-token-field__row">
+              <dt>Drawn by</dt>
+              <dd data-shader-token-field-value="renderer">Stop list</dd>
+            </div>
+          </dl>
+
+        </section>
+      </div>
+
+      <p class="demo__lightbox-note" data-lightbox-note></p>
+    </dialog>
+
     <!-- notes.md, rendered. Type, source, the origin paragraphs and one <li>
          per decision bullet — the same shape the file has, so the two can be
          read side by side. Update both together. -->
@@ -809,138 +1234,241 @@
         </dl>
 
         <p class="demo__notes-lede">
-          A gradient field written as a token block. Eight numbers and three
-          colours declare what the field is &mdash; how coarse, how far it is
-          pushed around, how hard it is lit, and how light it is allowed to get
-          &mdash; and the same declaration is read twice: once by a stop list
-          that needs no script, and once by a WebGL2 fragment shader that draws
-          the same recipe on the GPU. A plate, a band and a read-out are what it
-          is shown on; the read-out prints the numbers the field is actually
-          running on, including the contrast ratio the block guarantees.
+          A shader is a very small program that runs once for every pixel on the
+          screen, all of them at the same time, on the graphics card. Nobody
+          tells it to draw a circle here and a line there; it is asked, pixel by
+          pixel, what colour are you, and it answers.
+        </p>
+
+        <p class="demo__notes-lede">
+          This study writes that program&rsquo;s settings &mdash; how coarse the
+          pattern is, how much it swirls, how hard it is lit, which of three
+          patterns it draws, what colours gather in it, and how light it is
+          allowed to get &mdash; as ordinary CSS custom properties, the same
+          place a font size or a brand colour would go. Those declarations are
+          read twice over: once by a plain CSS gradient that needs no script at
+          all, and once by the shader on the graphics card. A plate, a band and a
+          read-out are what it is shown on, and the read-out prints the numbers
+          the field is actually running on, including the contrast ratio they
+          guarantee.
         </p>
 
         <ol class="demo__notes-list">
           <li>
-            <h3 class="demo__notes-head">The uniforms are the token block.</h3>
-            <p><code>--shader-token-field-scale</code>, <code>-warp</code>,
+            <h3 class="demo__notes-head">The shader&rsquo;s settings are CSS custom properties, not numbers buried in JavaScript.</h3>
+            <p>A shader is normally handed its settings &mdash; its
+              <em>uniforms</em> &mdash; from JavaScript, where they sit as
+              literals nothing outside that file can reach. Here they are written
+              on the component&rsquo;s root class as
+              <code>--shader-token-field-scale</code>, <code>-warp</code>,
               <code>-relief</code>, <code>-octaves</code>, <code>-grain</code>,
-              <code>-flow</code> and the three colours are custom properties on
-              the root class, and <code>component.js</code> reads every one of
-              them with <code>getComputedStyle</code> before it touches a
-              uniform. Override <code>--shader-token-field-pool-a</code> from a
-              parent and both renderings change together, because both read that
-              one declaration. The colours need a probe element to get out: an
-              unregistered custom property comes back from
-              <code>getComputedStyle</code> as the string it was authored as, so
-              <code>oklch(60% .1 150)</code> arrives as text and
-              <code>parseFloat</code> gets nothing &mdash; writing it to an
-              element&rsquo;s <code>color</code> and reading the computed value
-              back hands the parsing to the engine.
-              <code>--octaves</code> is the one value clamped rather than
-              trusted: GLSL wants a compile-time loop bound, so the fbm loop runs
-              to a constant 8 and breaks on the token. A block editable from
-              outside by design is a block someone can put 500 in, and an
-              unbounded loop count is a hung GPU rather than a muddy field.</p>
+              <code>-flow</code>, <code>-form</code> and three colours, and
+              <code>component.js</code> reads each one with
+              <code>getComputedStyle</code> before it touches the shader. Change
+              <code>--shader-token-field-pool-a</code> from a parent stylesheet
+              and both renderings move together, because both read that single
+              declaration.</p>
+            <p>Colours need one extra step to get out. CSS hands a custom
+              property back as the text it was written as, so
+              <code>oklch(60% .1 150)</code> arrives as those characters rather
+              than as a colour. Writing it onto a throwaway element&rsquo;s
+              <code>color</code> and reading the computed value back makes the
+              browser do the translating, which works for hex, named colours,
+              <code>hsl()</code> and <code>oklch()</code> alike.</p>
+            <p>Two of the settings are checked rather than trusted, and they are
+              the two that are not really quantities. <code>--octaves</code> is a
+              count of layers: the field is built by stacking the same noise
+              pattern at half the size each time, each layer adding finer detail,
+              four by default. That stack has to be a fixed length when the
+              shader is compiled, so the loop runs to a constant 8 and stops
+              early at whatever the token says &mdash; and the token is clamped
+              to 1&ndash;8 on the way in, because a value anyone can set from
+              outside is a value someone can set to 500, and an unbounded loop on
+              a graphics card is a frozen tab rather than a muddier picture.</p>
+            <p><code>--form</code> is the other, and it picks rather than dials:
+              0 dunes, 1 veins, 2 terraces. The distinction matters at the moment
+              the settings change. Every quantity in the block glides toward its
+              new value across <code>--settle</code>, which is what makes a
+              palette change a transition rather than a cut &mdash; but there is
+              no halfway between two patterns to draw, so <code>--form</code> and
+              <code>--octaves</code> jump while the rest glide. Leaving
+              <code>--form</code> out of that jump list was the one bug this
+              cost: it kept whatever value it loaded with, everything else
+              switched, and the field went on drawing dunes under a new palette.
+              It took a measurement to catch, because the picture looked
+              different either way &mdash; the amount of fine detail in all three
+              patterns came back identical to three decimal places, and two
+              palettes of the same pattern look exactly as different as two
+              palettes of different ones.</p>
+            <p>Patterns and palettes are separate choices and combine freely,
+              which is what a token block buys that a folder of finished pictures
+              does not: four palettes and three patterns are twelve states, and
+              nobody drew any of them. A palette restates all twelve declarations
+              rather than patching only the ones it wants changed &mdash; a
+              version that inherited half its values would leave the other half
+              answering to whichever palette ran last, and the brightness range
+              in particular has to move with the colours, or the clamp holds the
+              field to a range the new colours do not live in.</p>
           </li>
           <li>
-            <h3 class="demo__notes-head">The clamp is what makes the light affordable, and the light is what makes the clamp real.</h3>
-            <p>Every fragment&rsquo;s WCAG relative luminance is clamped into
-              <code>--lum-floor</code>/<code>--lum-ceil</code> before it is
-              encoded, so the worst-case ratio against the ink is a property of
-              the two tokens and not of where the noise landed: 0.22 against
-              <code>#14120f</code> is 4.81:1, and the read-out computes it rather
-              than asserting it. A clamp over the colour mixing alone would never
-              fire &mdash; those are convex blends, relative luminance is linear,
-              so a blend of colours inside the band is provably inside it, which
-              is also why the no-script stop list needs no clamp of its own. What
-              leaves the band is <code>--relief</code>, the sheen on the
-              field&rsquo;s ridges and the shadow in its troughs. Measured over
-              the default plate: 25.7% of pixels sit outside the band before the
-              clamp and 0.00% after; on the night version, 8.7% and 0.00% &mdash;
-              the light version overshooting the ceiling and the night one
-              bottoming out under the floor, which is the sheen and the shadow
-              respectively. The
-              relief <em>scales</em> the colour rather than adding to it, which
-              was a correction &mdash; added light is added white, and at this
-              strength it swamped the chroma of anything dark, turning the night
-              field into grey plateaus with its palette gone. The clamp&rsquo;s
-              two halves are asymmetric for a related reason: lifting a fragment
-              to the floor is a mix toward white by
-              <code>(floor &minus; Y) / (1 &minus; Y)</code>, which lands exactly
-              on the floor and cannot leave the gamut, where the obvious scale-up
-              clips a channel at 1.0 and drops the fragment back under the floor
-              &mdash; the guarantee failing precisely on the pixels that needed
-              it.</p>
+            <h3 class="demo__notes-head">The contrast floor is enforced while the picture is drawn, not checked afterwards.</h3>
+            <p>Text has to be enough lighter or darker than whatever sits behind
+              it, and the usual way to know is to finish the design and measure
+              it. A generated, moving background makes that nearly impossible:
+              the pixel under a letter is a different colour every frame.</p>
+            <p>So the shader refuses to paint outside a range. Every
+              pixel&rsquo;s brightness &mdash; one number, 0 for black and 1 for
+              white &mdash; is pushed back inside
+              <code>--lum-floor</code>/<code>--lum-ceil</code> before the colour
+              is written out. The worst case is then arithmetic on two declared
+              numbers instead of a measurement: a floor of 0.22 under
+              <code>#14120f</code> ink is 4.81:1, and the read-out works that out
+              from the tokens rather than being told it.</p>
+            <p>Two corrections got it there, and neither was visible by looking.
+              The clamp did nothing at first. Mixing colour A into colour B can
+              only produce something between the two, and brightness follows that
+              mixing exactly, so a field made only of mixes is already inside the
+              range and the clamp could never fire &mdash; which is also why the
+              no-script CSS version needs no clamp of its own. What leaves the
+              range is <code>--relief</code>, the light: a narrow sheen along the
+              pattern&rsquo;s ridges and a shadow in its troughs. Measured on the
+              default plate, 25.7% of pixels sit outside the band before the
+              clamp and 0.00% after; on the night palette, 8.7% and 0.00%. The
+              two go out of the range at opposite ends &mdash; the light one
+              overshoots the top, 0.988 against a ceiling of 0.72, and the night
+              one bottoms out below the floor, 0.000 against 0.01, which is the
+              sheen and the shadow respectively.</p>
+            <p>Second, that light was added to the colour at first, and adding
+              light is adding white. At the strength this needs it drowned the
+              colour out of anything dark: the night field came out as flat grey
+              with its palette gone. Multiplying instead &mdash; the same colour,
+              lit harder &mdash; keeps the hue exactly.</p>
+            <p>The clamp&rsquo;s own two halves are lopsided for a related
+              reason. Brightening a too-dark pixel is done by mixing it toward
+              white by <code>(floor &minus; Y) / (1 &minus; Y)</code>, which
+              lands exactly on the floor and cannot produce a colour the screen
+              cannot show. The obvious alternative &mdash; scaling all three
+              colour channels up &mdash; runs one of them into its maximum, and
+              the pixel ends up darker than asked for, failing on exactly the
+              pixels that needed the help. Darkening a too-light one is a scale,
+              which cannot overflow.</p>
+            <p>The guarantee is checked rather than asserted, and the check is
+              worth writing down because it is cheap: read the drawn pixels back
+              out of the canvas, work out each one&rsquo;s brightness, and count
+              the ones outside the range the block declares. Across all four
+              palettes and all three patterns, at rest, that count is 0.0000%
+              &mdash; <code>field</code> 0.22&ndash;0.72, <code>verdant</code>
+              0.24&ndash;0.70, <code>night</code> 0.01&ndash;0.14,
+              <code>ember</code> 0.012&ndash;0.13. How hard the clamp is working
+              varies, and is the more interesting number: 27.5% of
+              <code>field</code>&rsquo;s pixels sit against an edge of the range,
+              against 7.3% of <code>terraces</code>&rsquo;, because stepping the
+              field into flat treads flattens the ridges the light was lifting
+              and leaves less for the clamp to catch.</p>
+            <p>One thing the check does not cover, and it is the one place the
+              ratio is briefly weaker than the read-out claims. Switching
+              palettes glides the two ends of the range along with everything
+              else, so for the length of that transition the field is held to an
+              in-between range while the text colour has already changed &mdash;
+              measured going from light to <code>night</code>, 7.3% of pixels sat
+              above the target ceiling 2.5 seconds in, and the field was clean by
+              ten. That is the glide working as designed rather than the clamp
+              failing: every frame is correctly held to the range that frame is
+              running on. It is recorded because a guarantee with a transient in
+              it should say so.</p>
           </li>
           <li>
-            <h3 class="demo__notes-head">One ink goes on the field, and that is the clamp&rsquo;s bill rather than a style.</h3>
-            <p>A second, muted tier needs a lighter ink, and against a floor of
-              0.22 anything lighter than about <code>#2a2622</code> is already
-              under 4.5:1. So the hierarchy on the field is size and tracking
-              &mdash; an 11px kicker at 0.18em over an 18px line at 500 &mdash;
-              and not colour. Muting into a clamped field is the one thing the
-              clamp cannot give you, and it is worth knowing before the palette
-              is chosen rather than after the type goes on. The line is 18px
-              rather than the 15px it was first set at because size is carrying
-              the whole of that hierarchy: at 15px over three lines the
-              statement was a paragraph competing with the field behind it, and
-              on the index, where the card is drawn at 0.7, it was 10.5px of
-              body copy and read as texture. One sentence at 18px leads the
-              plate at both sizes, and it costs nothing &mdash; the plate is
-              aspect-locked, so the inscription floats inside a box that does
-              not grow. It also stopped saying <code>ceiling</code> and
-              <code>floor</code>. Those are the names of two tokens &mdash;
-              <code>--lum-ceil</code> and <code>--lum-floor</code> &mdash; and
-              the sentence was borrowing them to describe the thing they
-              configure, which reads as precision to whoever wrote them and as
-              nothing at all to a reader meeting the component cold. Sample
-              copy is read by someone who does not have the token block open;
-              it says what the component does in the words anyone would use
-              for it, and the read-out beside it is where the numbers live.
-              Off the field, on the
-              component&rsquo;s own surface, the read-out has ordinary tiers at
-              15.9:1 and 6.8:1, because nothing is clamping anything there
-              &mdash; and that surface carries a 1px edge in
-              <code>--shader-token-field-line</code>, because
+            <h3 class="demo__notes-head">Only one text colour can sit on the field, and the clamp is why.</h3>
+            <p>If the background is never allowed below a certain brightness, the
+              text on it is never allowed above a matching one. With the floor at
+              0.22, anything lighter than about <code>#2a2622</code> is already
+              under 4.5:1 &mdash; so there is no room for a second, quieter grey
+              the way there would be on a flat surface. The hierarchy on the
+              field is size and letter-spacing instead: an 11px kicker tracked at
+              0.18em over an 18px line at weight 500. Muting into a clamped field
+              is the one thing the clamp cannot give you, and it is worth knowing
+              before the palette is picked rather than after the type goes on.</p>
+            <p>The line is 18px rather than the 15px it was first set at because
+              size is carrying the whole of that hierarchy. At 15px over three
+              lines the statement was a paragraph competing with the field behind
+              it, and on the index, where the card is drawn at 0.7, it was 10.5px
+              of body copy and read as texture. One sentence at 18px leads the
+              plate at both sizes, and it costs nothing &mdash; the plate has a
+              fixed shape, so the text floats inside a box that does not grow.</p>
+            <p>It also stopped saying <code>ceiling</code> and <code>floor</code>.
+              Those are the names of two tokens &mdash; <code>--lum-ceil</code>
+              and <code>--lum-floor</code> &mdash; and the sentence was borrowing
+              them to describe the thing they configure, which reads as precision
+              to whoever wrote them and as nothing at all to a reader meeting the
+              component cold. Sample copy is read by someone who does not have
+              the token block open: it says what the component does in the words
+              anyone would use for it, and the read-out beside it is where the
+              numbers live.</p>
+            <p>Off the field, on the component&rsquo;s own plain surface, the
+              read-out has ordinary tiers at 15.9:1 and 6.8:1, because nothing is
+              being held in a range there &mdash; and that surface carries a 1px
+              edge in <code>--shader-token-field-line</code>, because
               <code>#f0ece2</code> on the index&rsquo;s <code>#f3f2ef</code>
-              ground is 2.00 OK &Delta;E and a plate that size needs to be a
-              plate.</p>
+              ground is 2.00 OK &Delta;E and a plate that size needs to look like
+              a plate.</p>
           </li>
           <li>
-            <h3 class="demo__notes-head">One WebGL context for the whole document, blitted.</h3>
-            <p>A browser caps live contexts &mdash; Chromium at sixteen &mdash;
-              and drops the oldest with no warning, which on the index would be a
-              card going blank for no visible reason: the rail is eight previews
-              and growing, quick look opens a ninth, and this page alone holds
-              six surfaces. So one <code>OffscreenCanvas</code> draws every
-              surface and hands each one an <code>ImageBitmap</code>, and the
-              draw list is sorted by buffer size so the shared buffer is
-              reallocated once per distinct size rather than once per surface
-              &mdash; two a frame on this page instead of six. Where
-              <code>OffscreenCanvas</code>, <code>bitmaprenderer</code> or WebGL2
-              is missing, nothing happens at all and the stop list stands, which
-              is not a fallback so much as the other half of the study: the two
-              are one recipe rendered twice, and the read-out&rsquo;s last row
-              says which of them you are looking at.</p>
+            <h3 class="demo__notes-head">One connection to the graphics card, shared by every panel on the page.</h3>
+            <p>Talking to the graphics card needs what is called a context, and a
+              browser keeps only about sixteen alive at once &mdash;
+              Chromium&rsquo;s limit &mdash; closing the oldest without telling
+              anyone. On the index that would be a card going blank for no
+              visible reason: the rail is eight previews and growing, quick look
+              opens a ninth, and this page alone shows fifteen panels across
+              eleven copies of the component &mdash; three states, seven
+              specimens and the one in the lightbox.</p>
+            <p>So one off-screen canvas draws every panel in turn and copies the
+              finished image into place. The list is sorted by size first, so that
+              shared canvas is resized once per distinct size rather than once per
+              panel. That is what makes the specimen rows affordable at all: a
+              context each and they would be past Chromium&rsquo;s cap on this
+              page by themselves.</p>
+            <p>The lightbox is the case that shows the sizing is doing real work
+              rather than being a formality. Its copy of the component is in the
+              markup from the start, because the setup routine runs once and
+              anything added afterwards is never picked up &mdash; and it costs
+              nothing while the dialog is shut, since a closed
+              <code>&lt;dialog&gt;</code> is not displayed at all, so measuring it
+              returns nothing and the draw is skipped. Opening it gives the panel
+              a size and it starts.</p>
+            <p>Where <code>OffscreenCanvas</code>, <code>bitmaprenderer</code> or
+              WebGL2 is missing, nothing happens at all and the CSS version stays
+              on screen. That is less a fallback than the other half of the study:
+              the two are one recipe drawn two ways, and the read-out&rsquo;s last
+              row says which one you are looking at.</p>
           </li>
           <li>
-            <h3 class="demo__notes-head">The pause is a token, because no CSS rule can stop a render loop.</h3>
-            <p>Every other study on the index answers <code>preview:pause</code>
-              with one global rule &mdash;
+            <h3 class="demo__notes-head">The index&rsquo;s pause arrives as a CSS value, because CSS cannot stop a render loop.</h3>
+            <p>The index tells a card to stop animating while the row is being
+              dragged, so nothing competes with the drag for the browser. Every
+              other study answers that with one global rule &mdash;
               <code>animation-play-state: paused !important</code> &mdash; and
-              that rule does exactly nothing to
-              <code>requestAnimationFrame</code>. So the loop answers
-              <code>--shader-token-field-run</code> instead, and
-              <code>preview:scale</code> arrives the same way as
-              <code>--shader-token-field-buffer-scale</code>, which sizes the
-              drawing buffer for the pixels that will actually be shown rather
-              than the ones this document is laid out in. Both are written as
+              that rule does exactly nothing here, because what is moving is not a
+              CSS animation. It is JavaScript redrawing the picture sixty times a
+              second, and no CSS rule reaches into that.</p>
+            <p>So the stop arrives the way everything else does: as a token.
+              <code>--shader-token-field-run</code> set to 0 and the loop is not
+              scheduled again. The same channel carries
+              <code>--shader-token-field-buffer-scale</code>, which says how much
+              the card is being shrunk on screen so the picture is drawn at the
+              size it will actually be shown at &mdash; a card lays its preview
+              out at 480 and shows it at 336, and the grain, which is one random
+              number per pixel, is the part that notices. Both are written as
               inline custom properties from outside, <code>--live</code> arrives
-              as a class, and one <code>MutationObserver</code> on
-              <code>style</code> and <code>class</code> catches all three:
-              nothing is read per frame. What is advected is a phase the loop
-              accumulates, not the clock, so raising <code>--flow</code> speeds
-              the field up from where it is instead of jumping it.</p>
+              as a class, and one <code>MutationObserver</code> watching
+              <code>style</code> and <code>class</code> catches all three: nothing
+              is re-read per frame.</p>
+            <p>Two smaller things follow the same rule. The loop counts up its own
+              position in the animation rather than reading the clock, so raising
+              <code>--flow</code> speeds the field up from where it is instead of
+              jumping it. And reduced motion draws one frame and never schedules
+              another &mdash; the same answer as the pause, for the same
+              reason.</p>
           </li>
         </ol>
 
@@ -1035,6 +1563,8 @@
 
       var DA = {
         'a11y.theme': 'M\u00f8rk tilstand',
+        'a11y.expand': 'Vis dette eksemplar st\u00f8rre',
+        'a11y.close': 'Luk',
         'back': 'Alle studier',
         'notes.title': 'Beslutninger',
         'notes.type': 'Type',
@@ -1066,11 +1596,70 @@
           + 'kontrastforholdet under teksten f\u00f8lger af de angivne '
           + 'v\u00e6rdier frem for af, hvor st\u00f8jen landede \u2014 og '
           + 'afl\u00e6sningen oplyser det.',
+        'state.palettes': 'Paletterne \u2014 de samme elleve angivelser '
+          + 'gentaget, hver med sit eget lysstyrkeb\u00e5nd',
+        'state.forms': 'Formerne \u2014 samme palet, tre generatorer; '
+          + '<code>--form</code> l\u00e6ses b\u00e5de af shaderen og af '
+          + 'stoplisten',
+        'state.howto': 'S\u00e5dan bliver feltet til',
+        'pal.field': 'Okker og salvie p\u00e5 ben. B\u00e5ndet studiet blev '
+          + 'skrevet op imod, og det bredeste af de fire.',
+        'pal.verdant': 'Gr\u00f8n, med en t\u00f8r okker som modpulje: to '
+          + 'gr\u00f8nne samler sig til \u00e9n gr\u00f8n.',
+        'pal.night': 'Klampen vendt om \u2014 her er det loftet, der '
+          + 'b\u00e6rer forholdet, fordi bl\u00e6kket er det lyse.',
+        'pal.ember': 'Br\u00e6ndt r\u00f8d og forsl\u00e5et violet p\u00e5 '
+          + 'aske. Endnu en m\u00f8rk, der viser, at Nat er en palet og ikke '
+          + 'bare \u201ede m\u00f8rke\u201c.',
+        'frm.dunes': 'fbm forvr\u00e6nget af endnu en fbm. Oktaverne hober '
+          + 'sig op, s\u00e5 feltet driver i brede, bl\u00f8de masser.',
+        'frm.veins': 'Hver oktav foldes om sit midtpunkt og kvadreres, '
+          + 'f\u00f8r den l\u00e6gges til, s\u00e5 folderne forgrener sig '
+          + 'til tr\u00e5de.',
+        'frm.terraces': 'Det forvr\u00e6ngede felt kvantiseres til trin, '
+          + 'f\u00f8r noget som helst afl\u00e6ser det, s\u00e5 farve, '
+          + 'skinnet og skyggen lander p\u00e5 de samme trin.',
+        'how.p1': 'Intet her er et billede. Hver pixel regnes ud fra sin egen '
+          + 'koordinat, fem trin dybt, og de samme fem trin k\u00f8rer for '
+          + 'pladen, b\u00e5ndet og hvert eksemplar ovenfor.',
+        'how.p2': '<strong>Et.</strong> En hash g\u00f8r et par hele tal til '
+          + 'en gentagelig tilf\u00e6ldig v\u00e6rdi, og <em>value '
+          + 'noise</em> udglatter den \u2014 hvert punkt tager de fire '
+          + 'grid-hj\u00f8rner omkring sig og blander mellem dem p\u00e5 en '
+          + 'kurve, s\u00e5 resultatet vandrer i stedet for at springe.',
+        'how.p3': '<strong>To.</strong> <em>Fraktal brownsk bev\u00e6gelse</em> '
+          + 'l\u00e6gger den st\u00f8j sammen ved fordoblede frekvenser og '
+          + 'halverede amplituder. Fire oktaver som standard: \u00e9n bred '
+          + 'form og derefter tre stadig finere oven p\u00e5. Det er her '
+          + '<code>--octaves</code> og <code>--scale</code> lander, og her '
+          + '<code>--form</code> \u00e6ndrer, hvad hver oktav bidrager med, '
+          + 'f\u00f8r den l\u00e6gges til.',
+        'how.p4': '<strong>Tre.</strong> En <em>domain warp</em>. I stedet for '
+          + 'at afl\u00e6se feltet i et punkt afl\u00e6ses det i et punkt, '
+          + 'der selv er flyttet af to yderligere fbm-opslag \u2014 '
+          + 'materialet skubbes rundt af en kopi af sig selv, og det er dét, '
+          + 'der giver str\u00f8mninger frem for klumper. <code>--warp</code> '
+          + 'er hvor langt.',
+        'how.p5': '<strong>Fire.</strong> Farve. Basen er det, der er tilbage, '
+          + 'hvor intet samlede sig; de to puljer blandes ind over den p\u00e5 '
+          + 'smoothsteps af det forvr\u00e6ngede felt. Hvert trin indtil nu er '
+          + 'en blanding, og det betyder noget for det, der sker nu.',
+        'how.p6': '<strong>Fem.</strong> Lys, og s\u00e5 klampen. Et smalt '
+          + 'skin ligger p\u00e5 ryggen og en skygge samler sig i '
+          + 'lavningerne, og begge <em>skalerer</em> farven frem for at blande '
+          + 'hvidt i den \u2014 s\u00e5 feltet l\u00e6ses som belyst frem '
+          + 'for som to farver h\u00e6ldt sammen. Det er ogs\u00e5 det eneste '
+          + 'trin, der kan forlade lysstyrkeb\u00e5ndet, for en blanding af '
+          + 'farver inde i b\u00e5ndet ligger beviseligt inde i b\u00e5ndet, '
+          + 'og en skalering er ikke en blanding. Derfor kommer klampen sidst, '
+          + 'og den er m\u00e5lt frem for antaget: p\u00e5 tv\u00e6rs af '
+          + 'alle fire paletter og alle tre former er andelen af gengivne '
+          + 'pixels uden for det angivne b\u00e5nd 0,0000\u00a0%.',
         'state.default': 'Standard \u2014 blokken som angivet',
         'state.live': 'Aktiv \u2014 den tilstand, l\u00e6sem\u00e6rket p\u00e5 '
           + 'forsiden s\u00e6tter et kort i: bredere forvr\u00e6ngning og '
           + 'tre gange s\u00e5 hurtigt fl\u00f8w, d\u00e6mpet ind over '
-          + '--settle',
+          + '<code>--settle</code>',
         'state.night': 'Nat \u2014 en anden udgave af komponenten, hvor '
           + 'afgr\u00e6nsningen er vendt om: her er det loftet, der '
           + 'garanterer forholdet, fordi det er teksten, der er lys'
@@ -1082,14 +1671,27 @@
       // toggle's is the only one so far. Same table, different setter.
       var labelled = Array.prototype.slice.call(document.querySelectorAll('[data-i18n-aria]'));
       var englishLabels = labelled.map(function (el) { return el.getAttribute('aria-label'); });
-      var english = nodes.map(function (el) { return el.textContent; });
+      /* innerHTML rather than textContent, on the capture and on the set
+         alike, because several of these strings carry markup the sentence
+         needs: a <code> around a token name, the <strong> that numbers a
+         step. Read with textContent the English fallback is captured already
+         flattened, so the first apply() on load strips markup that was in the
+         markup — which it did, silently, to this page's own
+         <code>--settle</code> before anything was translated.
+
+         Safe here in the way innerHTML usually is not: every string it sets
+         is a literal in this file or in the table below it. Nothing from a
+         URL, a field or a fetch reaches this line, and a translation table
+         that took input from any of those would be the problem rather than
+         this assignment. */
+      var english = nodes.map(function (el) { return el.innerHTML; });
 
       function apply(lang) {
         var table = lang === 'da' ? DA : null;
 
         nodes.forEach(function (el, i) {
           var key = el.getAttribute('data-i18n');
-          el.textContent = table && table[key] ? table[key] : english[i];
+          el.innerHTML = table && table[key] ? table[key] : english[i];
         });
 
         labelled.forEach(function (el, i) {
@@ -1187,6 +1789,68 @@
       }
 
       paint();
+    })();
+
+    /* --- the specimen lightbox ----------------------------------------
+       Page chrome, like the language and theme controls above it.
+
+       <dialog>.showModal() rather than a scripted panel, for the reason the
+       notes block is a <details>: modal is what the element already is —
+       focus trap, Escape, the top layer, an inert page behind it, and focus
+       returned to the trigger on close. None of that is worth reimplementing,
+       and all of it is wrong when it is reimplemented.
+
+       It reads the modifiers off whichever specimen was clicked rather than
+       holding a table of them, so the palettes and the forms both work and a
+       new specimen needs nothing added here. */
+    (function () {
+      var dialog = document.querySelector('[data-lightbox]');
+      var field = document.querySelector('[data-lightbox-field]');
+      var title = document.querySelector('[data-lightbox-title]');
+      var note = document.querySelector('[data-lightbox-note]');
+      if (!dialog || !field || !dialog.showModal) return;
+
+      var BASE = 'shader-token-field';
+
+      /* The trigger is hidden until this line runs, so the button never
+         exists for a reader whose script did not. */
+      document.documentElement.classList.add('demo-js');
+
+      function modifiersOf(el) {
+        return Array.prototype.filter.call(el.classList, function (c) {
+          return c.indexOf(BASE + '--') === 0;
+        });
+      }
+
+      function open(button) {
+        var item = button.closest('.demo__specimen');
+        if (!item) return;
+        var source = item.querySelector('.' + BASE);
+        if (!source) return;
+
+        /* Swap the modifier set. component.js observes `class` on its own
+           root, so re-reading the token block is its business, not this
+           page's — nothing here touches a uniform or a colour. */
+        modifiersOf(field).forEach(function (c) { field.classList.remove(c); });
+        modifiersOf(source).forEach(function (c) { field.classList.add(c); });
+
+        var name = item.querySelector('[data-specimen-name]');
+        var body = item.querySelector('.demo__specimen-note');
+        title.textContent = name ? name.textContent.trim() : '';
+        note.textContent = body ? body.textContent.trim() : '';
+
+        dialog.showModal();
+      }
+
+      document.addEventListener('click', function (event) {
+        var button = event.target.closest('[data-open-specimen]');
+        if (button) { open(button); return; }
+        if (event.target.closest('[data-lightbox-close]')) { dialog.close(); return; }
+        /* A click that lands on the dialog element itself is a click on the
+           backdrop: the panel's own padding box is covered by its children,
+           so anything reaching this node came from outside it. */
+        if (event.target === dialog) dialog.close();
+      });
     })();
 
   })();

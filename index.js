@@ -17,6 +17,8 @@
 //                         scale: n }
 //   parent -> preview   { source: 'interface-studies', type: 'preview:theme',
 //                         theme: 'light' | 'dark' }
+//   parent -> preview   { source: 'interface-studies', type: 'preview:pause',
+//                         paused: bool, reason: 'gesture'|'offscreen'|'drift'|'' }
 //   preview -> parent   { source: 'interface-studies', type: 'preview:ready',
 //                         variants?: [{ id, label }] }
 //
@@ -64,17 +66,18 @@
         + 'bladre gennem dets varianter, eller åbn studiet for '
         + 'beslutningerne og teknikkerne bag.',
       'meta.latest': 'Seneste',
+      'meta.figma': 'Community-fil',
       'rail.study': 'Studie',
       'type.card': 'Kort',
       'type.aesthetic': 'Æstetik',
       'type.navigation': 'Navigation',
       'type.layout': 'Layout',
       'filter.all': 'Alle',
-      'piece.liquidGlassToolbar.title': 'Værktøjslinje i flydende glas',
+      'piece.liquidGlassToolbar.title': 'Liquid glass toolbar',
       'piece.liquidGlassToolbar.note': 'Én glasflade der skifter form — det '
         + 'valgte punkt folder sig ud til en pille med etiket, søgning til et '
         + 'felt, loggen til et panel — i seks materialer fra én opskrift.',
-      'cta.quickLookToolbar': 'Hurtigt kig: Værktøjslinje i flydende glas',
+      'cta.quickLookToolbar': 'Hurtigt kig: Liquid glass toolbar',
       'piece.shaderTokenField.title': 'Afgr\u00e6nsede shaders',
       'piece.shaderTokenField.note': 'Et gradientfelt tegnet to gange ud fra '
         + '\u00e9n angivelse \u2014 \u00e9n gang af en CSS-stopliste, \u00e9n '
@@ -90,54 +93,55 @@
         + 'afspillet fra filer. Den er tavs som udgangspunkt og tegner alt, '
         + 'hvad den siger.',
       'cta.quickLookStruck': 'Hurtigt kig: Anslagstoner',
-      'piece.bentoGrid.title': 'Interaktivt bento-gitter',
+      'piece.bentoGrid.title': 'Interaktivt bento-grid',
       'piece.bentoGrid.note': 'Syv fliser, der hver angiver den plads, de '
-        + 'ønsker, på et gitter der afkorter hvert spænd efter sit eget '
+        + 'ønsker, på et grid, der afkorter hvert spænd efter sit eget '
         + 'antal kolonner. Hver flise svarer på den plads, den lander i, '
         + 'frem for på den modifikator, den fik — og åbner man én, pakkes '
         + 'tavlen om omkring den.',
-      'cta.quickLookBento': 'Hurtigt kig: Interaktivt bento-gitter',
+      'cta.quickLookBento': 'Hurtigt kig: Interaktivt bento-grid',
       'piece.inkedPlate.title': 'Kort med tegnede plader',
       'piece.inkedPlate.note': 'En billedplade og en tekstplade med afskårne '
-        + 'hjørner mod hinanden, over et punktgitter med snitmærker. '
+        + 'hjørner mod hinanden, over et grid af punkter med snitmærker. '
         + 'Stregtegningen tegner sig selv ved indlæsning i ren CSS — hver '
         + 'streg angiver en længde på 1, så ét sæt keyframes tegner dem alle '
         + 'uden at måle nogen af dem.',
       'cta.quickLookInked': 'Hurtigt kig: Kort med tegnede plader',
       'piece.rasterPulse.title': 'Rasterpuls',
       'piece.rasterPulse.note': 'Et plakatkort, hvis punktfelt selv regner '
-        + 'sin form ud. Hvert punkt bærer intet andet end sin koordinat i '
-        + 'gitteret; CSS udleder, om det hører til mønsteret, hvilken af to '
+        + 'sin form ud. Hvert punkt bærer intet andet end sin gridkoordinat; '
+        + 'CSS udleder, om det hører til mønsteret, hvilken af to '
         + 'toner det får, og hvor det ligger i den puls, der vandrer gennem '
         + 'feltet.',
       'cta.quickLookRaster': 'Hurtigt kig: Rasterpuls',
-      'piece.drawnGradients.title': 'Tegnede gradienter',
+      'piece.drawnGradients.title': 'Tegnede gradients',
       'piece.drawnGradients.note': 'Gradientflader lavet ved at tegne nogle få '
         + 'overlappende SVG-former i flad farve og sløre dem til ukendelighed. '
         + 'En trappeformet silhuet lægger derefter fladen ind i en tekstblok, '
         + 'med trinnene på de samme linjer.',
-      'cta.quickLookGradients': 'Hurtigt kig: Tegnede gradienter',
-      'piece.detailReveal.title': 'Kort med detaljeafsløring',
+      'cta.quickLookGradients': 'Hurtigt kig: Tegnede gradients',
+      'piece.detailReveal.title': 'Kort med detaljepanel',
       'piece.detailReveal.note': 'Et detaljepanel der stiger op fra bundkanten '
         + 'ved hover og skubber den hvilende etiket op foran sig. Rummer ethvert '
         + 'indhold; en kortvariant tilføjer højdekurver og en pulserende nål.',
       'cta.openDemo': 'Åbn demo',
+      'cta.openFigma': 'Åbn i Figma',
       'cta.quickLook': 'Hurtigt kig',
-      'cta.quickLookOf': 'Hurtigt kig: Kort med detaljeafsløring',
+      'cta.quickLookOf': 'Hurtigt kig: Kort med detaljepanel',
       'ghost.title': 'Kommende studie',
       'ghost.month.oct': 'oktober',
       'ghost.month.nov': 'november',
       'ghost.month.dec': 'december',
       'foot.blurb': 'Hvert studie er en mappe, der står for sig selv: sin egen '
-        + 'markup, sit eget stylesheet, sine egne tokens. Kopiér en ud, og '
-        + 'den virker videre.',
+        + 'markup, sit eget stylesheet, sine egne tokens og, hvor der er brug '
+        + 'for det, sit eget script. Kopiér en ud, og den virker videre.',
       'foot.inspiration': 'Nogle studier tager udgangspunkt i en grænseflade '
         + 'set andre steder. Når de gør, står linket på Inspiration-linjen '
         + 'sidst i mappens notes.md; er designet originalt, står det der i '
         + 'stedet.',
       'foot.typefaces': 'Skrifttyper',
       'foot.stack': 'Stack',
-      'foot.stackVal': 'HTML og CSS, intet byggetrin',
+      'foot.stackVal': 'HTML, CSS og vanilla JS, intet byggetrin',
       'foot.types': 'Typer',
       'foot.studies': 'Studier',
       'foot.builtBy': 'Bygget af',
@@ -539,11 +543,24 @@
   // the animations pick up where they were.
   let pausedAll = false;
 
-  function pausePreview(piece, paused) {
+  // `reason` is why, and a preview may use it to tell the three apart. They are
+  // not the same thing to a preview that does work of its own on a timer: a
+  // gesture must not hitch and an off-screen card is work for nobody, but the
+  // drift is the steady state with the card on screen and being looked at.
+  // Measured at 13 times the rate any preview actually swaps at — 100 swap
+  // events in 25 seconds against none — a variant swap moves no part of the
+  // drift's frame distribution at 1x or at 4x. What it does not license is
+  // animating through the drift, which is a per-frame cost and is what the
+  // numbers above this function rule out.
+  //
+  // Additive: a preview that reads `paused` and ignores `reason` behaves
+  // exactly as it did before this existed, which is what every other folder
+  // does.
+  function pausePreview(piece, reason) {
     const frame = piece.querySelector('[data-preview]');
     if (!frame || !frame.contentWindow) return;
     frame.contentWindow.postMessage(
-      { source: CHANNEL, type: 'preview:pause', paused: paused },
+      { source: CHANNEL, type: 'preview:pause', paused: !!reason, reason: reason || '' },
       '*'
     );
   }
@@ -604,18 +621,21 @@
     });
   }
 
+  // Returns the reason a card is held, or '' for running. It always tested
+  // three separate causes and threw the answer away at the boundary; naming
+  // them costs nothing here and is the whole of what the preview needs.
   function wantPaused(piece) {
-    if (pausedAll) return true;                        // the rail is moving
-    if (piece.dataset.active === 'true') return false; // hovered, focused, handed off
+    if (pausedAll) return 'gesture';                   // the rail is moving
+    if (piece.dataset.active === 'true') return '';    // hovered, focused, handed off
     // A component that draws itself on load has nothing on screen until it has
     // done so, and paused at its first frame that is an empty card. Loading
     // happens a scrollport out, so this runs itself off screen and what arrives
     // is the finished drawing rather than the drawing being made.
-    if (piece.dataset.arriving === 'true') return false;
+    if (piece.dataset.arriving === 'true') return '';
     // Nothing to see. A loaded card a scrollport away would otherwise go on
     // running its field forever for nobody, which is the whole of what this
     // saves once the rail is still.
-    if (offScreen(piece)) return true;
+    if (offScreen(piece)) return 'offscreen';
     // While the rail drifts, the card at the mark runs and the rest do not.
     // The drift writes scrollLeft from a frame callback, so a field animating
     // under it is animating on the thread it needs, and five of them at once
@@ -643,21 +663,26 @@
       // advance stays even: 0 stalled frames in 599 and sub-pixel variance,
       // measured. And a finger landing mid-drift still hushes in 14ms against
       // 13, so nothing is waiting on the thread this spends.
-      if (piece.dataset.next === 'true') return false;
-      return !(onMark && piece.classList.contains('is-active'));
+      if (piece.dataset.next === 'true') return '';
+      return (onMark && piece.classList.contains('is-active')) ? '' : 'drift';
     }
     // On screen and the rail is still: it rests, and a resting state is still
     // a state.
-    return false;
+    return '';
   }
 
+  // Keyed on the reason rather than on the boolean, which matters and is easy
+  // to get wrong: a card held for the drift that a finger then grabs stays
+  // `paused: true` throughout, so a cache keyed on the boolean would never
+  // post the change — and a preview that swaps through the drift would go on
+  // swapping through the gesture, which is the one thing the pause is for.
   function syncPause(piece) {
     const frame = piece.querySelector('[data-preview]');
     if (!frame || frame.dataset.loaded !== 'true') return;
-    const want = wantPaused(piece) ? 'true' : 'false';
-    if (frame.dataset.paused === want) return;
-    frame.dataset.paused = want;
-    pausePreview(piece, want === 'true');
+    const want = wantPaused(piece);
+    if (frame.dataset.pausedWhy === want) return;
+    frame.dataset.pausedWhy = want;
+    pausePreview(piece, want);
   }
 
   function pauseAll(paused) {
@@ -693,7 +718,7 @@
     // reach it, which left a fresh preview animating through a gesture that
     // every other card had stopped for.
     const held = piece.querySelector('[data-preview]');
-    if (held) delete held.dataset.paused;
+    if (held) delete held.dataset.pausedWhy;
     syncPause(piece);
     markReady(piece);
   });
@@ -922,7 +947,7 @@
     }
 
     delete frame.dataset.loaded;
-    delete frame.dataset.paused;
+    delete frame.dataset.pausedWhy;
     delete piece.dataset.seen;
     endGrace(piece);
     clearTimeout(readyTimers.get(piece));
@@ -2677,6 +2702,7 @@
     const titleOut = box.querySelector('[data-lightbox-title], #lightbox-title');
     const noteOut = box.querySelector('[data-lightbox-note]');
     const demoOut = box.querySelector('[data-lightbox-demo]');
+    const figmaOut = box.querySelector('[data-lightbox-figma]');
     const closers = box.querySelectorAll('[data-lightbox-close]');
 
     const stage = box.querySelector('.lightbox__stage');
@@ -2904,6 +2930,15 @@
       noteOut.textContent = text(piece.querySelector('[data-note]'));
       // Already carries ?lang= when the card links do.
       demoOut.href = link.getAttribute('href');
+      // The board this study was drawn in, where the card names one. It is a
+      // Figma URL rather than a path on this site, so it takes neither ?lang=
+      // nor ?theme= — the other end resolves neither.
+      const figma = piece.getAttribute('data-figma');
+      if (figmaOut) {
+        if (figma) figmaOut.href = figma;
+        else figmaOut.removeAttribute('href');
+        figmaOut.hidden = !figma;
+      }
     }
 
     document.addEventListener('lang:change', () => {

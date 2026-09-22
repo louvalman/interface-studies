@@ -180,18 +180,56 @@
         </span>
       </p>
 
-      <!-- Both halves are facts the page can count, and neither is in the
-         lede. "Scope — a few decisions" and "Each study — stands alone" used
-         to sit here: the lede says the first in its own first sentence and the
-         footer says the second in full, so the row spent ninety pixels
-         repeating what was already on the page twice. A count and a date say
-         how much is here and whether it is still moving, which is what a
-         masthead is for and what nothing else on the page states. Both are
-         written by index.js from the cards. -->
+      <!-- One item, and the rule it is the last survivor of: a fact the page
+         can count, not in the lede, and said nowhere else. "Scope — a few
+         decisions" and "Each study — stands alone" used to sit here — the
+         lede says the first in its own first sentence and the footer says the
+         second in full, so the row spent ninety pixels repeating what was
+         already on the page twice. The count went the same way: the rail
+         states its own total below, which is where a reader takes it from.
+
+         The date is one of them: whether the set is still moving, written by
+         index.js from the cards. The companion Figma file is the other, and
+         it is the one item here that is neither counted nor derived — which
+         is a departure from the rule above and a deliberate one. It is here
+         because the alternatives are worse: the footer is below the fold on
+         every viewport, and the rail's count line put a link in a bar that
+         is otherwise all controls. The row had the room, measured: 31px with
+         one item and 31px with two, at 1440, 390 and 320, with the first
+         card keeping every pixel it had above the fold.
+
+         No Figma mark beside it. The values in this row are plain facts in
+         mono, and a brand glyph would make one of them a different kind of
+         object; the mark does that job in the footer, where it is a handle.
+         The arrow is the page's own, and it is there because the link leaves
+         the site. -->
       <dl class="head__meta">
         <div class="head__meta-item">
           <dt class="head__meta-key" data-i18n="meta.latest">Latest</dt>
           <dd class="head__meta-val" id="meta-latest">&mdash;</dd>
+        </div>
+        <div class="head__meta-item">
+          <dt class="head__meta-key">Figma</dt>
+          <dd class="head__meta-val">
+            <a
+              class="head__meta-link"
+              href="https://www.figma.com/community/file/1683607518896928224"
+              target="_blank"
+              rel="noopener noreferrer">
+              <span data-i18n="meta.figma">Community file</span>
+              <svg
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+                aria-hidden="true">
+                <path
+                  d="M4 12 12 4M6 4h6v6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+            </a>
+          </dd>
         </div>
       </dl>
     </header>
@@ -305,7 +343,11 @@
          — set the date and let it land. And the number is written from the
          card's position afterwards, so leave the em dash alone. Both were a
          second source of truth for something already stated once, and a card
-         added at the front used to invalidate every number below it. -->
+         added at the front used to invalidate every number below it.
+         data-figma is optional, and it is the board in the companion Figma
+         file the study was drawn in. Quick look draws the link where a card
+         names one and nothing where it does not, so a study without a board
+         needs no entry. -->
       <div
         class="rail__track"
         data-rail-track
@@ -978,8 +1020,8 @@
           </p>
           <p class="foot__blurb" data-i18n="foot.blurb">
             Every study is a folder that stands on its own: its own markup,
-            its own stylesheet, its own tokens. Copy one out and it keeps
-            working.
+            its own stylesheet, its own tokens, and its own script where it
+            needs one. Copy one out and it keeps working.
           </p>
 
           <!-- Where the studies came from. It sits down here rather than
@@ -1027,6 +1069,22 @@
                   d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
               </svg>
             </a>
+            <a
+              class="foot__icon"
+              href="https://www.figma.com/@louval"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Figma">
+              <!-- The mark drawn solid rather than in its five colours, the
+                 way the other two are: at 0.95rem a gap between the shapes
+                 is half a pixel and mushes, so the silhouette is what
+                 survives the size. -->
+              <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                <path
+                  d="M8 .5H5.5a2.5 2.5 0 0 0 0 5H8zM8 5.5H5.5a2.5 2.5 0 0 0 0 5H8zM8 10.5H5.5a2.5 2.5 0 0 0 0 5H8zM8 .5h2.5a2.5 2.5 0 0 1 0 5H8z" />
+                <circle cx="10.5" cy="8" r="2.5" />
+              </svg>
+            </a>
           </nav>
         </div>
 
@@ -1038,7 +1096,7 @@
           <div class="foot__row">
             <dt class="foot__key" data-i18n="foot.stack">Stack</dt>
             <dd class="foot__val" data-i18n="foot.stackVal">
-              HTML and CSS, no build step
+              HTML, CSS and vanilla JS, no build step
             </dd>
           </div>
           <!-- What the set covers, not just how much of it there is. The
@@ -1165,22 +1223,48 @@
             aria-live="polite"></p>
         </nav>
 
+        <!-- Two links, and the second is drawn only where the card names a
+           board. Both carry the same arrow rather than one of them a Figma
+           mark: they are the same kind of control — this page, left — and
+           the label is what says where to. -->
         <footer class="lightbox__foot">
           <p class="lightbox__note" data-lightbox-note></p>
-          <a class="lightbox__link" href="#" data-lightbox-demo>
-            <span data-i18n="cta.openDemo">Open demo</span>
-            <svg
-              viewBox="0 0 16 16"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.4"
-              aria-hidden="true">
-              <path
-                d="M4 12 12 4M6 4h6v6"
-                stroke-linecap="round"
-                stroke-linejoin="round" />
-            </svg>
-          </a>
+          <div class="lightbox__links">
+            <a class="lightbox__link" href="#" data-lightbox-demo>
+              <span data-i18n="cta.openDemo">Open demo</span>
+              <svg
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+                aria-hidden="true">
+                <path
+                  d="M4 12 12 4M6 4h6v6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+            </a>
+            <a
+              class="lightbox__link"
+              href="#"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-lightbox-figma
+              hidden>
+              <span data-i18n="cta.openFigma">Open in Figma</span>
+              <svg
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+                aria-hidden="true">
+                <path
+                  d="M4 12 12 4M6 4h6v6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+            </a>
+          </div>
         </footer>
       </div>
     </div>

@@ -175,13 +175,25 @@
       var root = document.querySelector('.shader-token-field');
       if (!root) return;
 
-      /* Three states worth stepping through, and the third is the argument:
-         the same recipe with the GPU handed back, so the stop list is what is
-         on screen. It is asked for the way everything else is asked for here
-         — a token — because that is what the study is about. */
+      /* Four palettes, two further forms, and the stop list last — which is
+         the argument rather than a footnote: the same recipe with the GPU
+         handed back, so what is on screen is the declaration read by CSS
+         alone. It is asked for the way everything else here is asked for —
+         a token — because that is what the study is about.
+
+         Palettes and forms are separate axes and compose freely, so the
+         product is twelve states. This list is a path through them rather
+         than the whole grid: the four palettes on the default form, then two
+         forms on one palette each, which shows both axes moving without
+         asking anyone to step through a dozen dots. */
       var VARIANTS = [
         { id: 'field', label: 'Field', classes: [], props: {} },
         { id: 'night', label: 'Night', classes: ['shader-token-field--night'], props: {} },
+        { id: 'verdant', label: 'Verdant', classes: ['shader-token-field--verdant'], props: {} },
+        { id: 'ember', label: 'Ember', classes: ['shader-token-field--ember'], props: {} },
+        { id: 'veins', label: 'Veins', classes: ['shader-token-field--veins'], props: {} },
+        { id: 'terraces', label: 'Terraces',
+          classes: ['shader-token-field--verdant', 'shader-token-field--terraces'], props: {} },
         { id: 'stopped', label: 'Stop list only', classes: [], props: { 'gpu': '0' } }
       ];
 
