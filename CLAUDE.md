@@ -1693,6 +1693,80 @@ edge is not something CSS can ask. The rail counts what it is showing and the fo
 counts what exists — the masthead states neither, because the rail's own
 "Study 01 / 05" is where a reader takes the total from.
 
+### The rail has a list view, made of the same cards
+
+A switch in the rail head lays the cards out as rows instead — a small live
+thumbnail, the title and note, the type, what the study is available in, and
+its month. The rail is the default and stays the argument the index makes; the
+list is where a returning reader looks one up.
+
+**It is a second layout, not a second list.** Re-inserting an iframe reloads
+the component inside it, so nothing moves in the DOM: the view is
+`data-view="list"` on `<html>` and `index.css` re-lays out the same
+`<article>`s. Two wrappers trade `display: contents` to make that work — in the
+rail `.piece__frame` is the box and `.piece__thumb` takes no part in layout; in
+the list it is the other way round, so the chips that sat on the thumbnail
+become cells of the row and the thumb holds only the preview. Every thumbnail
+in the list is the document the card was already running.
+
+`--list-thumb` and `--list-scale` are the list's own pair, with the invariant
+the rail's has: the scale is the thumbnail's width over `--preview-w`. A pair of
+its own rather than a new value for `--preview-scale`, because `index.js` reads
+that off `:root` as the rail's factor; `cardScale()` asks for whichever the view
+is using, and the switch re-sends `preview:scale` to every loaded card.
+
+The column heads are the rail head's last row rather than the track's first,
+because everything in the track is a card to `index.js`. They are not one grid
+with the rows, so every column in `--list-cols` is a fixed length or a share of
+what is left — a track sized by content would line up in the rows and not in
+the heads. Measured equal to the pixel at 1440 and 1100. Below 64rem there are
+no columns to head: each row is a thumbnail with the rest stacked beside it.
+
+The attribute is on `<html>` for the reason the theme's is: the head script
+puts a stored `list` there before the first paint, and a view that arrived with
+the script would paint a frame of the rail and then jump every card. Stored in
+`localStorage` only — nothing outside the index has a view, so unlike the theme
+and the language it does not travel in the demo links.
+
+**What the list switches off, and how.** Everything that exists because the
+rail is a rail, each at the one place it is asked:
+
+- The drift is *parked*, `driftStop(false, false)` — stopped without counting
+  as the reader having taken it, so going back to the rail sets it off again
+  unless someone had stopped it. For the same reason a filter chip pressed in
+  the list does not stop it, and neither does tabbing down the rows.
+- `loopable()` answers no, which is also what gives the list its order: with
+  no rotation, `rebuildRing` numbers the cards in the DOM order `order()` has
+  already sorted. The `!important` on `order` that stood in for this is gone.
+- No read mark, so no `is-active` card, no `handoff` on touch, and `sync()`
+  returns once the count is written. No demo wave: a list is where a reader
+  looks something up, and nothing in it performs unasked. Hover still performs,
+  as it does on a card.
+- The rail's gestures return early — `pointerdown`, `touchstart`, a sideways
+  wheel, the arrow keys. `touchstart` is the one that matters: taken as the
+  rail's gesture, a finger scrolling the list paused every preview. Measured:
+  all eight held for `gesture` with the gate removed, none with it.
+- `offScreen` asks the viewport, vertically, because every row sits across the
+  whole track and the sideways test would call all of them on screen. The
+  page's own scroll runs `syncVisibility`, coalesced onto the frame.
+
+The count reads "Studies 08" rather than "Study 01 / 08" — the list has no read
+position, and both labels are in the markup with `index.css` showing one. The
+track loses its tab stop, since a list is read with the page's keys, and is
+labelled "Study list"; `renderNav` owns that label and runs after the language
+module, so a switch of language keeps it.
+
+**Available in is a fact kept by hand, like the type.** Each card carries a
+`.piece__stack` list — HTML and CSS always, JS where the study has a
+`component.js`, React where it has a generated adapter — and `index.css` draws
+each entry as a mask from Simple Icons, keyed on `data-code`, with the name left
+in the markup for a screen reader and the tooltip. It is what a study comes
+*in*, not what it is made of, which is why the shader's WebGL is not on it: that
+is inside its JS. A study that gains a `component.js` or an adapter gains the
+mark on its card in the same change, the way a change of type is made in two
+places. The index cannot list a folder's files over `file://`, so there is no
+way to derive it — the same wall the type runs into.
+
 ### The page arrives once, and what is below the fold waits for you
 
 The masthead, the rail and the footer rise into place in reading order as the
