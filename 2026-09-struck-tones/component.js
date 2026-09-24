@@ -128,6 +128,13 @@
 
   var TIMBRES = ['sine', 'triangle', 'square', 'sawtooth'];
 
+  /* What the Voice module prints, in the width it has. */
+  var SHORT_TIMBRE = { sine: 'sine', triangle: 'tri', square: 'sqr', sawtooth: 'saw' };
+
+  function ratio(v) {
+    return String(Math.round(v * 100) / 100);
+  }
+
   function palette(root) {
     var s = getComputedStyle(root);
 
@@ -258,24 +265,41 @@
      repeats, so no two petals match and the line misses its own start — the
      same argument the voice's comment makes in words, drawn. The markup
      carries the default set's path; this redraws it from whatever the
-     partial tokens say. */
+     partial tokens say.
+
+     Every layer is sounded in the --timbre shape, so every layer is drawn
+     in it too: a square set grows square petals. The shapes are the ideal
+     ones; the oscillators are band-limited, so what is heard has the edges
+     rounded off, but the picture a square wave makes is a square. The
+     screen's shader draws with the same four shapes. */
   var ROSETTE_CYCLES = 6;
   var ROSETTE_POINTS = 144;
+  var TAU = Math.PI * 2;
 
-  function wave(phase, partials) {
-    var v = Math.sin(phase);
+  function shape(timbre, phase) {
+    if (timbre === 'triangle') return Math.asin(Math.sin(phase)) * 2 / Math.PI;
+    if (timbre === 'square') return Math.max(-1, Math.min(1, Math.sin(phase) * 6));
+    if (timbre === 'sawtooth') {
+      var f = phase / TAU + 0.5;
+      return 2 * (f - Math.floor(f)) - 1;
+    }
+    return Math.sin(phase);
+  }
+
+  function wave(phase, partials, timbre) {
+    var v = shape(timbre, phase);
     for (var i = 0; i < partials.length; i++) {
-      v += partials[i][1] * Math.sin(partials[i][0] * phase);
+      v += partials[i][1] * shape(timbre, partials[i][0] * phase);
     }
     return v;
   }
 
-  function rosette(partials) {
+  function rosette(partials, timbre) {
     var peak = 0;
     var samples = [];
     for (var i = 0; i <= ROSETTE_POINTS; i++) {
-      var a = (i / ROSETTE_POINTS) * Math.PI * 2;
-      var v = wave(a * ROSETTE_CYCLES, partials);
+      var a = (i / ROSETTE_POINTS) * TAU;
+      var v = wave(a * ROSETTE_CYCLES, partials, timbre);
       samples.push([a, v]);
       peak = Math.max(peak, Math.abs(v));
     }
@@ -355,6 +379,7 @@
     'uniform float u_win, u_att, u_dec, u_lag, u_two;\n' +
     'uniform float u_cyc1, u_cyc2;\n' +    /* waveform cycles per ms, slowed */
     'uniform vec4 u_parts;\n' +            /* partial, level, shimmer, level */
+    'uniform int u_timbre;\n' +            /* 0 sine, 1 triangle, 2 square, 3 sawtooth */
     'uniform float u_air, u_room;\n' +
     'uniform float u_now, u_scan, u_persist, u_calm;\n' +
     'uniform vec3 u_glass, u_phos;\n' +
@@ -384,9 +409,18 @@
     '  return exp(-4.4 * u) - exp(-4.4) * u;\n' +
     '}\n' +
 
-    /* The voice: the fundamental and its two partials, normalised. */
+    /* The voice: the fundamental and its two partials, each in the --timbre
+       shape the oscillators are set to, normalised. The same four shapes
+       the rosette draws with. */
+    'float shape(float ph) {\n' +
+    '  if (u_timbre == 1) return asin(sin(ph)) * 0.63662;\n' +
+    '  if (u_timbre == 2) return clamp(sin(ph) * 6.0, -1.0, 1.0);\n' +
+    '  if (u_timbre == 3) return 2.0 * fract(ph / TAU + 0.5) - 1.0;\n' +
+    '  return sin(ph);\n' +
+    '}\n' +
+
     'float wave(float ph) {\n' +
-    '  float v = sin(ph) + u_parts.y * sin(u_parts.x * ph) + u_parts.w * sin(u_parts.z * ph);\n' +
+    '  float v = shape(ph) + u_parts.y * shape(u_parts.x * ph) + u_parts.w * shape(u_parts.z * ph);\n' +
     '  return v / (1.0 + u_parts.y + u_parts.w);\n' +
     '}\n' +
 
@@ -500,7 +534,7 @@
     '}\n';
 
   var UNIFORMS = ['u_res', 'u_box', 'u_px', 'u_win', 'u_att', 'u_dec', 'u_lag',
-    'u_two', 'u_cyc1', 'u_cyc2', 'u_parts', 'u_air', 'u_room', 'u_now',
+    'u_two', 'u_cyc1', 'u_cyc2', 'u_parts', 'u_timbre', 'u_air', 'u_room', 'u_now',
     'u_scan', 'u_persist', 'u_calm', 'u_glass', 'u_phos'];
 
   function compile(gl, type, src) {
@@ -777,7 +811,8 @@
     function label(pal) {
       var cells = {
         root: Math.round(pal.root) + ' Hz',
-        voice: pal.timbre + ' ' + pal.partial + '× ' + pal.shimmer + '×',
+        voice: (SHORT_TIMBRE[pal.timbre] || pal.timbre) + ' ' +
+          ratio(pal.partial) + '× ' + ratio(pal.shimmer) + '×',
         envelope: Math.round(pal.attack) + '/' + Math.round(pal.decay) + ' ms',
         air: pal.airSize.toFixed(1) + ' s · ' + Math.round(pal.air * 100) + '%'
       };
@@ -794,7 +829,7 @@
         cell.textContent = step > 0 ? '+' + step : (step < 0 ? '−' + Math.abs(step) : '0');
       });
 
-      if (voiceLine) voiceLine.setAttribute('d', rosette(partialsOf(pal)));
+      if (voiceLine) voiceLine.setAttribute('d', rosette(partialsOf(pal), pal.timbre));
     }
 
     /* --- the screen --------------------------------------------------------
@@ -915,6 +950,7 @@
       gl.uniform1f(u.u_cyc1, hz(pal, pal.steps.tap) / 1000 / pal.timebase);
       gl.uniform1f(u.u_cyc2, hz(pal, pal.steps[last.step]) / 1000 / pal.timebase);
       gl.uniform4f(u.u_parts, pal.partial, pal.partialLevel, pal.shimmer, pal.shimmerLevel);
+      gl.uniform1i(u.u_timbre, Math.max(0, TIMBRES.indexOf(pal.timbre)));
       gl.uniform1f(u.u_air, Math.min(Math.max(pal.air, 0), 1));
       gl.uniform1f(u.u_room, Math.max(pal.airSize, 0) * 1000);
       gl.uniform1f(u.u_now, now);
