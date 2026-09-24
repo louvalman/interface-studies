@@ -31,15 +31,20 @@ Every study lives in its own folder, named `YYYY-MM-slug`:
 it is generated from the three component files and is the one place in a
 study a framework may appear. See **A React adapter, generated** below.
 
-`ref.png` is the one that may be missing, and two studies have no use for
-one. Where a reference exists it is a working record rather than part of the
-study, so a folder can also go without it deliberately:
+`ref.png` is the one that may be missing, and three folders go without it.
+Two are original designs with nothing to reference, and the detail reveal was
+inspired by a post that was never captured, so its `Inspiration:` link is the
+record. Where a reference exists it is a working record rather than part of
+the study, so a folder can also go without it deliberately:
 `2026-09-raster-pulse`'s carried a whole brand and is gitignored and purged,
 leaving five files. The `Inspiration:` line at the bottom of a `notes.md` is
 where provenance lives either way.
 
-`_template/` holds a stubbed, commented copy of these files. Copy it when
-starting a new study.
+`_template/` holds a stubbed, commented copy of these files — all but
+`ref.png`, which a study adds only when there is a reference to keep. The
+template used to carry a grey placeholder, and copying it is how two studies
+ended up holding a crossed-out box that looked like a record of something.
+Copy the template when starting a new study.
 
 ## notes.md
 
