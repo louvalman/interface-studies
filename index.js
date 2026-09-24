@@ -141,7 +141,7 @@
         + 'stedet.',
       'foot.typefaces': 'Skrifttyper',
       'foot.stack': 'Stack',
-      'foot.stackVal': 'HTML, CSS og vanilla JS, intet byggetrin',
+      'foot.stackVal': 'HTML, CSS og JS, ingen afhængigheder',
       'foot.types': 'Typer',
       'foot.studies': 'Studier',
       'foot.builtBy': 'Bygget af',

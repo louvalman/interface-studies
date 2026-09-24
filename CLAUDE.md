@@ -1676,9 +1676,18 @@ the facts about the set.
 **The blurb states the self-containment positively and once.** It was three
 negations for a while — "no shared stylesheet, no build step, no dependency on
 this page" — and the middle one was repeated verbatim one column to the right,
-where the `Stack` row says it as a fact. A claim stated as what it is not, next
+where the `Stack` row said it as a fact. A claim stated as what it is not, next
 to the same claim stated as what it is, is the page arguing with itself in two
 registers.
+
+The `Stack` row says `HTML, CSS and JS, no dependencies`. It used to say
+`vanilla JS, no build step`, which was true and spoke to someone who already
+knew why those mattered; "no dependencies" is the same fact as a reader meets
+it, and it is what "lightweight" means when it has to be checkable. It stays
+true as the React adapters arrive, because an adapter is a wrapper for an app
+that already has React and the component inside it still depends on nothing.
+It does not name React: one study of eight has an adapter so far, and a row
+of facts is not the place for one that is only true of a few.
 
 **The disclaimer rule binds here too.** It is written above for `notes.md` and
 it is the same rule: this paragraph ended "none is a copy of one", which argues
