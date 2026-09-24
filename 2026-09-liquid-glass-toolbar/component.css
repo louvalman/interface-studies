@@ -8,11 +8,12 @@
   State is read straight off the ARIA the component already needs — the CSS never
   waits for a class to be added. `component.js` only writes `aria-current` and
   `aria-expanded`; the search field is `:focus-within` and needs no script at all.
-  Two modifiers exist as outside handles, for callers that cannot synthesise the
-  event: `--open` pins the panel, `--searching` pins the search field. The index
-  thumbnail needs both — an iframe with pointer events off can neither click a
-  button nor put a caret in an input, and a preview that reaches in to call
-  focus() steals it from the page around it.
+  Three modifiers exist as outside handles, for callers that cannot synthesise
+  the event: `--open` pins the panel, `--searching` pins the search field, and
+  `__row--hover` pins one log row under a pointer that is not there. The index
+  thumbnail needs all three — an iframe with pointer events off can neither
+  click a button, nor put a caret in an input, nor hover a row, and a preview
+  that reaches in to call focus() steals it from the page around it.
 */
 
 .liquid-glass-toolbar {
@@ -706,7 +707,9 @@
     box-shadow var(--liquid-glass-toolbar-fade);
 }
 
-.liquid-glass-toolbar__row:hover {
+/* `--hover` is the outside handle for this one — see the note at the top. */
+.liquid-glass-toolbar__row:hover,
+.liquid-glass-toolbar__row--hover {
   background: var(--liquid-glass-toolbar-warm);
   box-shadow: inset 0 0 0 var(--liquid-glass-toolbar-hairline) var(--liquid-glass-toolbar-warm-rim);
 }
@@ -876,8 +879,15 @@
   --liquid-glass-toolbar-lit-rim: rgba(255, 253, 248, 0.95);
   --liquid-glass-toolbar-lit-sheen: rgba(255, 255, 255, 0.75);
 
-  --liquid-glass-toolbar-warm: rgba(250, 246, 238, 0.38);
-  --liquid-glass-toolbar-warm-rim: rgba(255, 253, 248, 0.8);
+  /* The pointer's lozenge goes the other way from moss's, because a lighter
+     tint has nowhere to go on the lightest thing in the component. It was an
+     off-white at 0.38 and a row under the pointer moved the pixels 0.9 OK ΔE,
+     which is no change at all, on the log and on the chips that share it.
+     The ink's own greige at 7% is a recess with the lit edge kept, 3.4 ΔE,
+     and the faintest line on a lit row still reads 4.63:1 on the demo's lit
+     stage and 4.83:1 on the rail's paper. */
+  --liquid-glass-toolbar-warm: rgba(85, 77, 69, 0.07);
+  --liquid-glass-toolbar-warm-rim: rgba(255, 253, 248, 0.9);
 
   /* Not a near-black. This is the only material with dark ink, and ink that
      dark on a surface this soft reads as printed on top of the glass rather

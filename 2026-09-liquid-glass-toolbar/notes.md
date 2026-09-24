@@ -600,13 +600,16 @@ device: the morph runs on taps and on focus. The two things that are hover —
 the icon that brightens before you commit to it, and the row under the pointer —
 repeat on `:active` under `(hover: none)`, for as long as the finger is down.
 
-Two modifiers exist only as outside handles: `--open` pins the panel and
-`--searching` pins the search field, for a caller that cannot synthesise the
-event. The index thumbnail needs both — an iframe with pointer events off can
-neither click a button nor put a caret in an input, and a preview that reached
-in to call `focus()` would take focus off the page around it. `component.js`
-drops both the moment somebody actually touches the toolbar, so the class and
-the attribute can never disagree about what is lit.
+Three modifiers exist only as outside handles: `--open` pins the panel,
+`--searching` pins the search field and `__row--hover` pins a log row under a
+pointer, for a caller that cannot synthesise the event. The index thumbnail
+needs all three — an iframe with pointer events off can neither click a button,
+nor put a caret in an input, nor hover a row, and a preview that reached in to
+call `focus()` would take focus off the page around it. `component.js` drops
+the first two the moment somebody actually touches the toolbar, so the class
+and the attribute can never disagree about what is lit. The third has no
+attribute to disagree with: it is the same rule as `:hover`, and nothing but a
+caller ever sets it.
 
 The demo page is six sections rather than three, and each one is a single claim
 with the state that proves it: the anatomy of the bar, the reveal, the extended
@@ -807,11 +810,39 @@ rather than read.
 
 So hover opens one thing inside one bar instead. The top sheet is shut on
 Versions and its search field opens; nothing changes position, and the panel
-below is left alone — it is the slower, larger state, and it has nothing to gain
-from reshuffling under a passing pointer. The rest state is where the card says
-these are two shapes of one surface. Hover is where it shows one of them
+below keeps its shape — it is the slower, larger state, and it has nothing to
+gain from reshuffling under a passing pointer. The rest state is where the card
+says these are two shapes of one surface. Hover is where it shows one of them
 happening, which is a smaller claim than a shuffle and the one a thumbnail can
 actually make.
+
+What the panel does get is its rows, a beat later. 800ms after the field opens,
+a pointer that is not there walks the log top to bottom — each row lit for
+320ms through `__row--hover`, which is the row's own hover tint rather than a
+highlight the thumbnail invented — and leaves. That puts the fourth row's
+release at 2080ms, inside the 2200ms the rail's demo wave holds a card for, so
+the wave ends on the bar closing rather than cutting the walk off halfway. Once
+per performance: a pointer resting on the card, or a phone's read mark, gets
+the same single pass and then a panel at rest. A tint moves nothing, so the
+card still holds 394px throughout. A gesture or the card leaving the screen
+stops the walk, the drift does not, and reduced motion never starts it — a
+list lighting row by row on its own is content moving unasked.
+
+The walk is what showed alabaster had no hover. Measured along a lit row's top
+band, moss's row under the pointer moves the pixels 9.7 OK ΔE and alabaster's
+moved them 0.9 — an off-white tint on the lightest thing in the component, which
+is no change at all, and it was as absent under a real pointer on the demo page
+as on the rail. The fix is in the material, not the thumbnail: alabaster's
+`--warm` goes the other way from moss's, the ink's own greige at 7% under the
+same lit rim, a recess where the dark materials have a raised lozenge. 3.4 ΔE.
+The chips share the token, so they are plates at rest now as moss's always
+were, rather than outlines.
+
+It costs contrast, and only on the one row being pointed at: the faintest line
+on a lit row reads 4.83:1 on the rail's paper and 4.63:1 on the demo's lit
+stage, down from 5.18 there. Six percent would have kept 0.09 more and
+dropped the change to 2.8 ΔE, which is the neighbourhood the inked plate's
+porcelain was found to have no edge in; seven is the one that reads.
 
 It costs the frame nothing, which is the part that had to be measured rather than
 hoped for, and this version costs it less than the swap did: a bar at rest and a
