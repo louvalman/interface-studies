@@ -56,7 +56,10 @@ because a sound nobody hears still has to deliver what it was carrying.
   A click is a layer. An attack is a shape. Sharpening the second to get the
   first is what makes a set brittle. The Voice module draws the second reason:
   one cycle of the wave wrapped six times around a circle closes on itself only
-  when every partial is a whole number, and at 2.76 no two petals match.
+  when every partial is a whole number, and at 2.76 no two petals match. It
+  draws in whichever of the four oscillator shapes `--timbre` names, and so
+  does the screen, so a square set grows square petals and the picture cannot
+  go on showing a sine the oscillators have stopped playing.
 
 - **Direction carries the message, and nothing in the set beats.** Up a fifth
   for a commit, down a fourth for a revert, a single note at the root for a
@@ -130,9 +133,7 @@ because a sound nobody hears still has to deliver what it was carrying.
   `disabled` in `component.html` and the script enables it, rather than
   offering a control that does nothing.
 
-Inspiration: none — original design. The tuning is the one borrowed thing and
-it is borrowed from music rather than from an interface: a fifth and a fourth
-against a 528Hz tonic, with the overtones at whole-number ratios above it. The
-faceplate borrows a material rather than a panel — the walnut end cheeks
-analogue synthesisers have had since the seventies — and no instrument's
-layout, lettering or name.
+Inspiration: Moog and Korg synthesisers, given a green skin — the deep walnut
+cheeks, and a panel lettered in modules with a screen let into it. The tuning
+is borrowed from music rather than from an interface: a fifth and a fourth
+against a 528Hz tonic, with the overtones at whole-number ratios above it.
