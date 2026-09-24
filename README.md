@@ -1,11 +1,15 @@
 # Interface studies
 
-Exploring interaction and aesthetics. Each study is one component, built in
-code and kept small enough to stay legible.
+Exploring interaction and aesthetics. One component per study, built in Figma
+and code, small enough to stay legible.
 
-The purpose is the isolation. Every study stands alone and no code is shared
-between them by design, so a folder can be copied out and go on working
-wherever it lands.
+Browse it at [interface-studies.pages.dev](https://interface-studies.pages.dev),
+or open `index.html` locally; each card opens that folder's `demo.html`. The
+Figma half is a [Community file](https://www.figma.com/community/file/1683607518896928224).
+
+The purpose is the isolation. Every study stands alone: no code is shared
+between them by design and none of them depends on a library, so a folder can
+be copied out and go on working wherever it lands.
 
 ## Structure
 
@@ -21,21 +25,20 @@ Each study is a folder named `YYYY-MM-slug`:
 └── preview.html     one instance, no chrome — the landing page's thumbnail
 ```
 
-Where a study is inspired by something seen elsewhere, `ref.png` is the
-reference it was built from and the credit is the `Inspiration:` line at the
-bottom of that folder's `notes.md`. A study built from an original design has
-nothing to reference and keeps the template's placeholder.
+`ref.png` is a working record of what a build started from rather than part
+of the study, so it may be missing. The credit lives in the `Inspiration:` line
+at the bottom of each folder's `notes.md` — a link where a study took something
+from an interface seen elsewhere, and a line saying so where the design is
+original.
 
 A seventh file, `component.js`, is allowed where the study depends on the
-interaction or where CSS genuinely cannot do the job — three studies have one.
+interaction or where CSS genuinely cannot do the job — four studies have one.
 The component still works without it: script enhances, it does not constitute.
 
 A study may also carry `component.react.jsx`, the component as a standalone
 React component for an app or a Figma code layer. It is generated from the
 three component files by `tools/react/` and never edited by hand — one study
 has one so far.
-
-Open `index.html` to browse. Each card opens that folder's `demo.html`.
 
 ## License
 
