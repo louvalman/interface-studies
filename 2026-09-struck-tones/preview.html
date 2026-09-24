@@ -25,6 +25,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Struck tones &mdash; preview</title>
 
+  <!-- Font loading is this file's job as it is the demo page's: the
+       component names its families and falls back without them, but the
+       thumbnail is where most people see it. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600&family=JetBrains+Mono:wght@400&display=swap">
+
   <link rel="stylesheet" href="component.css">
 
   <!-- The ground, before the first paint. -->
@@ -63,7 +70,7 @@
 </head>
 <body>
 
-  <section class="struck-tones" aria-label="Sound palette">
+  <section class="struck-tones" aria-label="Sound palette" data-shown="tap">
     <header class="struck-tones__head">
       <p class="struck-tones__label">Struck tones</p>
       <button class="struck-tones__arm" type="button" data-arm aria-pressed="false" disabled>
@@ -71,16 +78,29 @@
         <span class="struck-tones__arm-text" data-arm-text>Sound off</span>
       </button>
     </header>
-
     <div class="struck-tones__trace">
-      <p class="struck-tones__trace-name" data-trace-name>Tap</p>
+      <canvas class="struck-tones__screen" data-screen aria-hidden="true"></canvas>
+      <div class="struck-tones__trace-top">
+        <p class="struck-tones__trace-name" data-trace-name>Tap</p>
+        <p class="struck-tones__trace-lag" data-trace-lag>one note</p>
+      </div>
       <p class="struck-tones__trace-freq">
+        <span class="struck-tones__trace-from" data-trace-from></span>
         <span data-trace-freq>528</span>
         <span class="struck-tones__trace-unit">Hz</span>
       </p>
       <div class="struck-tones__envelope" aria-hidden="true">
-        <span class="struck-tones__env-rise"></span>
-        <span class="struck-tones__env-fall"></span>
+        <span class="struck-tones__env-note">
+          <span class="struck-tones__env-rise"></span>
+          <span class="struck-tones__env-fall"></span>
+          <span class="struck-tones__env-rest"></span>
+        </span>
+        <span class="struck-tones__env-note struck-tones__env-note--second">
+          <span class="struck-tones__env-lead"></span>
+          <span class="struck-tones__env-rise"></span>
+          <span class="struck-tones__env-fall"></span>
+          <span class="struck-tones__env-rest"></span>
+        </span>
       </div>
       <p class="struck-tones__trace-shape">
         <span data-trace-attack>16</span> ms rise &middot;
@@ -88,7 +108,6 @@
       </p>
       <p class="struck-tones__sr" data-trace-live role="status" aria-live="polite"></p>
     </div>
-
     <div class="struck-tones__rack">
       <button class="struck-tones__pad" type="button" data-tone="tap">
         <span class="struck-tones__contour" aria-hidden="true">
@@ -122,23 +141,43 @@
         <span class="struck-tones__pad-step" data-step aria-hidden="true">&minus;1</span>
       </button>
     </div>
-
-    <dl class="struck-tones__tuning">
-      <div class="struck-tones__row">
-        <dt>Root</dt>
-        <dd data-token="root">528 Hz</dd>
+    <dl class="struck-tones__sheet">
+      <div class="struck-tones__module">
+        <dt class="struck-tones__module-name">Tuning</dt>
+        <dd class="struck-tones__glyph struck-tones__glyph--tuning" aria-hidden="true">
+          <span class="struck-tones__keys"></span>
+          <span class="struck-tones__led" data-led="tap"></span>
+          <span class="struck-tones__led" data-led="commit"></span>
+          <span class="struck-tones__led" data-led="revert"></span>
+          <span class="struck-tones__led" data-led="alert"></span>
+        </dd>
+        <dd class="struck-tones__value" data-token="root">528 Hz</dd>
       </div>
-      <div class="struck-tones__row">
-        <dt>Voice</dt>
-        <dd data-token="voice">sine + 2&times; + 3&times;</dd>
+      <div class="struck-tones__module">
+        <dt class="struck-tones__module-name">Voice</dt>
+        <dd class="struck-tones__glyph struck-tones__glyph--voice" aria-hidden="true">
+          <svg class="struck-tones__rosette" viewBox="-1 -1 2 2" focusable="false">
+            <path class="struck-tones__rosette-ghost" d="M0.00 -0.62L0.03 -0.70L0.07 -0.77L0.11 -0.83L0.15 -0.87L0.20 -0.89L0.24 -0.89L0.27 -0.87L0.30 -0.83L0.32 -0.77L0.33 -0.70L0.32 -0.62L0.31 -0.54L0.29 -0.46L0.27 -0.39L0.25 -0.32L0.23 -0.28L0.22 -0.24L0.23 -0.23L0.24 -0.22L0.28 -0.23L0.32 -0.25L0.39 -0.27L0.46 -0.29L0.54 -0.31L0.62 -0.32L0.70 -0.33L0.77 -0.32L0.83 -0.30L0.87 -0.27L0.89 -0.24L0.89 -0.20L0.87 -0.15L0.83 -0.11L0.77 -0.07L0.70 -0.03L0.62 -0.00L0.54 0.02L0.47 0.04L0.40 0.05L0.35 0.06L0.32 0.07L0.31 0.08L0.31 0.10L0.34 0.12L0.38 0.16L0.43 0.20L0.48 0.25L0.54 0.31L0.59 0.37L0.63 0.44L0.66 0.51L0.67 0.57L0.67 0.61L0.65 0.65L0.61 0.67L0.57 0.67L0.51 0.66L0.44 0.63L0.37 0.59L0.31 0.54L0.25 0.48L0.20 0.43L0.16 0.38L0.12 0.34L0.10 0.31L0.08 0.31L0.07 0.32L0.06 0.35L0.05 0.40L0.04 0.47L0.02 0.54L0.00 0.62L-0.03 0.70L-0.07 0.77L-0.11 0.83L-0.15 0.87L-0.20 0.89L-0.24 0.89L-0.27 0.87L-0.30 0.83L-0.32 0.77L-0.33 0.70L-0.32 0.62L-0.31 0.54L-0.29 0.46L-0.27 0.39L-0.25 0.32L-0.23 0.28L-0.22 0.24L-0.23 0.23L-0.24 0.22L-0.28 0.23L-0.32 0.25L-0.39 0.27L-0.46 0.29L-0.54 0.31L-0.62 0.32L-0.70 0.33L-0.77 0.32L-0.83 0.30L-0.87 0.27L-0.89 0.24L-0.89 0.20L-0.87 0.15L-0.83 0.11L-0.77 0.07L-0.70 0.03L-0.62 0.00L-0.54 -0.02L-0.47 -0.04L-0.40 -0.05L-0.35 -0.06L-0.32 -0.07L-0.31 -0.08L-0.31 -0.10L-0.34 -0.12L-0.38 -0.16L-0.43 -0.20L-0.48 -0.25L-0.54 -0.31L-0.59 -0.37L-0.63 -0.44L-0.66 -0.51L-0.67 -0.57L-0.67 -0.61L-0.65 -0.65L-0.61 -0.67L-0.57 -0.67L-0.51 -0.66L-0.44 -0.63L-0.37 -0.59L-0.31 -0.54L-0.25 -0.48L-0.20 -0.43L-0.16 -0.38L-0.12 -0.34L-0.10 -0.31L-0.08 -0.31L-0.07 -0.32L-0.06 -0.35L-0.05 -0.40L-0.04 -0.47L-0.02 -0.54L-0.00 -0.62"/>
+            <path class="struck-tones__rosette-line" data-rosette d="M0.00 -0.62L0.03 -0.74L0.07 -0.83L0.12 -0.89L0.16 -0.91L0.20 -0.89L0.23 -0.86L0.26 -0.81L0.28 -0.76L0.29 -0.71L0.31 -0.66L0.31 -0.60L0.31 -0.54L0.30 -0.48L0.30 -0.42L0.29 -0.37L0.28 -0.33L0.26 -0.29L0.25 -0.25L0.24 -0.22L0.25 -0.21L0.27 -0.21L0.33 -0.23L0.42 -0.27L0.54 -0.31L0.65 -0.34L0.76 -0.35L0.83 -0.34L0.86 -0.31L0.87 -0.27L0.86 -0.23L0.83 -0.18L0.80 -0.14L0.76 -0.10L0.72 -0.06L0.67 -0.03L0.62 -0.00L0.57 0.02L0.51 0.04L0.47 0.06L0.42 0.07L0.38 0.08L0.34 0.09L0.31 0.10L0.30 0.11L0.32 0.13L0.37 0.17L0.45 0.23L0.54 0.31L0.62 0.40L0.68 0.48L0.71 0.55L0.70 0.59L0.67 0.62L0.63 0.63L0.57 0.63L0.52 0.62L0.47 0.61L0.42 0.59L0.36 0.57L0.31 0.54L0.26 0.50L0.22 0.47L0.18 0.43L0.15 0.40L0.12 0.37L0.09 0.34L0.07 0.32L0.06 0.32L0.04 0.34L0.04 0.41L0.02 0.50L0.00 0.62L-0.03 0.74L-0.07 0.83L-0.12 0.89L-0.16 0.91L-0.20 0.89L-0.23 0.86L-0.26 0.81L-0.28 0.76L-0.29 0.71L-0.31 0.66L-0.31 0.60L-0.31 0.54L-0.30 0.48L-0.30 0.42L-0.29 0.37L-0.28 0.33L-0.26 0.29L-0.25 0.25L-0.24 0.22L-0.25 0.21L-0.27 0.21L-0.33 0.23L-0.42 0.27L-0.54 0.31L-0.65 0.34L-0.76 0.35L-0.83 0.34L-0.86 0.31L-0.87 0.27L-0.86 0.23L-0.83 0.18L-0.80 0.14L-0.76 0.10L-0.72 0.06L-0.67 0.03L-0.62 0.00L-0.57 -0.02L-0.51 -0.04L-0.47 -0.06L-0.42 -0.07L-0.38 -0.08L-0.34 -0.09L-0.31 -0.10L-0.30 -0.11L-0.32 -0.13L-0.37 -0.17L-0.45 -0.23L-0.54 -0.31L-0.62 -0.40L-0.68 -0.48L-0.71 -0.55L-0.70 -0.59L-0.67 -0.62L-0.63 -0.63L-0.57 -0.63L-0.52 -0.62L-0.47 -0.61L-0.42 -0.59L-0.36 -0.57L-0.31 -0.54L-0.26 -0.50L-0.22 -0.47L-0.18 -0.43L-0.15 -0.40L-0.12 -0.37L-0.09 -0.34L-0.07 -0.32L-0.06 -0.32L-0.04 -0.34L-0.04 -0.41L-0.02 -0.50L-0.00 -0.62"/>
+          </svg>
+        </dd>
+        <dd class="struck-tones__value" data-token="voice">sine 2&times; 3&times;</dd>
       </div>
-      <div class="struck-tones__row">
-        <dt>Envelope</dt>
-        <dd data-token="envelope">16 / 820 ms</dd>
+      <div class="struck-tones__module">
+        <dt class="struck-tones__module-name">Strike</dt>
+        <dd class="struck-tones__glyph struck-tones__glyph--strike" aria-hidden="true">
+          <span class="struck-tones__env-rise"></span>
+          <span class="struck-tones__env-fall"></span>
+        </dd>
+        <dd class="struck-tones__value" data-token="envelope">16/820 ms</dd>
       </div>
-      <div class="struck-tones__row">
-        <dt>Air</dt>
-        <dd data-token="air">1.7 s &middot; 18%</dd>
+      <div class="struck-tones__module">
+        <dt class="struck-tones__module-name">Room</dt>
+        <dd class="struck-tones__glyph struck-tones__glyph--room" aria-hidden="true">
+          <span class="struck-tones__room-dry"></span>
+          <span class="struck-tones__room-tail"></span>
+        </dd>
+        <dd class="struck-tones__value" data-token="air">1.2 s &middot; 10%</dd>
       </div>
     </dl>
   </section>
@@ -183,17 +222,33 @@
           if (variant) apply(variant);
         }
 
+        /* The pause reaches the CSS through the one global rule in the style
+           block above, and the screen's shader through --run, handed in on
+           the component's own element: the shader already takes its time
+           from a CSS animation, so it holds with that animation, and --run is
+           what stops its frame loop asking. */
         if (data.type === 'preview:pause') {
           if (data.paused === true) {
             document.documentElement.setAttribute('data-preview-paused', '');
+            root.style.setProperty('--struck-tones-run', '0');
           } else {
             document.documentElement.removeAttribute('data-preview-paused');
+            root.style.setProperty('--struck-tones-run', '1');
           }
         }
 
+        /* How much this document's pixels are being shrunk on screen. The
+           shader sizes its buffer for the pixels actually shown rather than
+           the ones laid out, so a card drawing at 0.7 is not rendering half
+           again as many as it can show. */
+        if (data.type === 'preview:scale') {
+          var n = Number(data.scale);
+          if (isFinite(n) && n > 0) root.style.setProperty('--struck-tones-buffer-scale', String(n));
+        }
+
         /* The ground is the rail's and follows the index into dark. The
-           component is a lit plate and is not touched by it — which is what
-           it already does on a dark demo page. */
+           component is a dark plate between wooden cheeks and is not touched
+           by it — which is what it already does on a light demo page. */
         if (data.type === 'preview:theme') {
           if (data.theme === 'dark') {
             document.documentElement.setAttribute('data-theme', 'dark');

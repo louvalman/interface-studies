@@ -1,7 +1,7 @@
 /*
   Struck tones — the half of this component CSS genuinely cannot reach.
 
-  It does three things and nothing else:
+  It does four things and nothing else:
 
     1. Reads the palette out of the custom properties. Every number handed to a
        node below comes from getComputedStyle on the component's own root —
@@ -18,6 +18,13 @@
        own values rather than a copy of them; the strike is an attribute that
        starts CSS animations timed from those properties, so how long a pad
        stays lit is the sound's business and not this file's.
+
+    4. Draws the screen and the voice. The screen is a shader painting the
+       struck sound as a phosphor would — the waveform inside its envelope,
+       the second note over it, the room as a haze after it — from the same
+       tokens, on the same clock as the CSS; the voice is a path computed from
+       the partials. Both have a CSS or markup version already on the page,
+       which is what shows when this file, or WebGL, is missing.
 
   A note is four layers, and the layering is the whole difference between an
   instrument and a beep. A sine fundamental sounded twice a few cents apart so
@@ -153,8 +160,16 @@
       clickFall: num('click-fall', 26),
 
       tone: num('tone', 3400),
-      air: num('air', 0.18),
-      airSize: num('air-size', 1.7),
+      air: num('air', 0.1),
+      airSize: num('air-size', 1.2),
+      persist: Math.max(1, num('persist', 260)),
+      timebase: Math.max(0.01, num('timebase', 20)),
+
+      /* Not design values: the pause and the device-pixel factor, both handed
+         in on this element from outside — by the index, through the preview
+         file — the way every other study's thumbnail takes them. */
+      run: num('run', 1) !== 0,
+      bufferScale: Math.min(Math.max(num('buffer-scale', 1), 0.1), 4),
 
       steps: {
         tap: num('i-tap', 0),
@@ -193,28 +208,344 @@
   var TONES = {
     tap: {
       label: 'Tap',
-      says: 'Tap, at the root',
       notes: [{ step: 'tap' }]
     },
     commit: {
       label: 'Commit',
-      says: 'Commit, rising to a fifth above the root',
       notes: [{ step: 'tap' }, { step: 'commit', after: 'commit' }]
     },
     revert: {
       label: 'Revert',
-      says: 'Revert, falling to a fourth below the root',
       notes: [{ step: 'tap' }, { step: 'revert', after: 'revert' }]
     },
     alert: {
       label: 'Alert',
-      says: 'Alert, stepping down a semitone from the root',
       notes: [{ step: 'tap' }, { step: 'alert', after: 'alert' }]
     }
   };
 
+  /* What a sound says to a screen reader, composed from its step rather than
+     written beside it. It used to be written, and --close retuned the commit
+     to a minor third while the sentence went on announcing a fifth: the one
+     channel a reader who cannot hear has was the one that stopped following
+     the tokens. */
+  var INTERVALS = ['unison', 'semitone', 'whole tone', 'minor third',
+    'major third', 'fourth', 'tritone', 'fifth', 'minor sixth', 'major sixth',
+    'minor seventh', 'major seventh', 'octave'];
+
+  function says(tone, pal) {
+    var spec = TONES[tone];
+    var last = spec.notes[spec.notes.length - 1];
+    var step = pal.steps[last.step] - pal.steps.tap;
+    if (spec.notes.length < 2 || step === 0) return spec.label + ', at the root';
+
+    var n = Math.abs(Math.round(step));
+    var name = n <= 12 ? INTERVALS[n] : n + ' semitones';
+    var article = n > 12 ? '' : (name === 'octave' ? 'an ' : 'a ');
+    return spec.label + ', ' + (step > 0 ? 'up ' : 'down ') + article + name +
+      ' from the root';
+  }
+
   function hz(pal, step) {
     return pal.root * Math.pow(2, step / 12);
+  }
+
+  /* --- the voice, drawn --------------------------------------------------
+     The waveform of one note laid around a circle ROSETTE_CYCLES times: the
+     radius at each angle is the wave at that phase. With whole-number
+     partials the wave repeats exactly once a cycle, so the ring closes and
+     every petal is the same petal. With the 2.76 of a struck bar it never
+     repeats, so no two petals match and the line misses its own start — the
+     same argument the voice's comment makes in words, drawn. The markup
+     carries the default set's path; this redraws it from whatever the
+     partial tokens say. */
+  var ROSETTE_CYCLES = 6;
+  var ROSETTE_POINTS = 144;
+
+  function wave(phase, partials) {
+    var v = Math.sin(phase);
+    for (var i = 0; i < partials.length; i++) {
+      v += partials[i][1] * Math.sin(partials[i][0] * phase);
+    }
+    return v;
+  }
+
+  function rosette(partials) {
+    var peak = 0;
+    var samples = [];
+    for (var i = 0; i <= ROSETTE_POINTS; i++) {
+      var a = (i / ROSETTE_POINTS) * Math.PI * 2;
+      var v = wave(a * ROSETTE_CYCLES, partials);
+      samples.push([a, v]);
+      peak = Math.max(peak, Math.abs(v));
+    }
+    return samples.map(function (s, i) {
+      var r = 0.62 + 0.3 * (s[1] / (peak || 1));
+      var x = r * Math.sin(s[0]);
+      var y = -r * Math.cos(s[0]);
+      return (i ? 'L' : 'M') + x.toFixed(2) + ' ' + y.toFixed(2);
+    }).join('');
+  }
+
+  function partialsOf(pal) {
+    var list = [];
+    if (pal.partialLevel > 0) list.push([pal.partial, pal.partialLevel]);
+    if (pal.shimmerLevel > 0) list.push([pal.shimmer, pal.shimmerLevel]);
+    return list;
+  }
+
+  /* --- the screen: colour -------------------------------------------------
+     The shader wants linear-light numbers and the tokens are whatever CSS
+     colour someone wrote. Writing a token to a probe's `color` and reading
+     the computed value back hands the parsing to the engine, which returns a
+     resolved rgb() whatever went in. One probe, reused, and only touched when
+     a token changes. */
+  var probe = null;
+
+  function readColour(value, fallback) {
+    if (!probe) {
+      probe = document.createElement('span');
+      probe.setAttribute('aria-hidden', 'true');
+      probe.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden;' +
+        'clip-path:inset(50%);pointer-events:none';
+      document.body.appendChild(probe);
+    }
+    probe.style.color = '';
+    probe.style.color = value;
+    var resolved = getComputedStyle(probe).color;
+    var parts = resolved.match(/[-\d.]+(?:e[-+]?\d+)?/gi);
+    if (!value || !parts || parts.length < 3) return fallback;
+
+    var srgb = resolved.indexOf('color(') === 0
+      ? [+parts[0], +parts[1], +parts[2]]
+      : [parts[0] / 255, parts[1] / 255, parts[2] / 255];
+
+    return srgb.map(function (c) {
+      c = c < 0 ? 0 : c > 1 ? 1 : c;
+      return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+    });
+  }
+
+  /* --- the screen: the GPU ------------------------------------------------
+     One WebGL2 context for the whole document, drawn off screen and handed to
+     each screen as an ImageBitmap. A browser caps live contexts and drops the
+     oldest without saying so, and on the index every card is its own framed
+     document — so a study that took a context per instance would be the
+     reason some other card went blank.
+
+     If any piece of it is missing this returns null and nothing else
+     happens: the CSS envelope is already on the screen and is already the
+     drawing. */
+  var gpu;
+  var MAX_BUFFER_PX = 600000;
+
+  var VERT =
+    '#version 300 es\n' +
+    'void main() {\n' +
+    '  vec2 p = vec2(float((gl_VertexID << 1) & 2), float(gl_VertexID & 2));\n' +
+    '  gl_Position = vec4(p * 2.0 - 1.0, 0.0, 1.0);\n' +
+    '}\n';
+
+  var FRAG =
+    '#version 300 es\n' +
+    'precision highp float;\n' +
+    'uniform vec2 u_res;\n' +
+    'uniform vec4 u_box;\n' +              /* the envelope's box, in buffer px */
+    'uniform float u_px;\n' +              /* buffer px per CSS px */
+    'uniform float u_win, u_att, u_dec, u_lag, u_two;\n' +
+    'uniform float u_cyc1, u_cyc2;\n' +    /* waveform cycles per ms, slowed */
+    'uniform vec4 u_parts;\n' +            /* partial, level, shimmer, level */
+    'uniform float u_air, u_room;\n' +
+    'uniform float u_now, u_scan, u_persist, u_calm;\n' +
+    'uniform vec3 u_glass, u_phos;\n' +
+    'out vec4 fragColor;\n' +
+    'const float TAU = 6.28318530718;\n' +
+
+    'float hash(vec2 p) {\n' +
+    '  p = fract(p * vec2(123.34, 456.21));\n' +
+    '  p += dot(p, p + 45.32);\n' +
+    '  return fract(p.x * p.y);\n' +
+    '}\n' +
+
+    'float vnoise(vec2 p) {\n' +
+    '  vec2 i = floor(p), f = fract(p);\n' +
+    '  vec2 u = f * f * (3.0 - 2.0 * f);\n' +
+    '  return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), u.x),\n' +
+    '             mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x), u.y);\n' +
+    '}\n' +
+
+    /* The envelope the CSS draws and the gain node plays: a straight rise,
+       then an exponential fall, pulled down to land on zero at --decay. */
+    'float env(float t) {\n' +
+    '  if (t < 0.0) return 0.0;\n' +
+    '  if (t < u_att) return t / max(u_att, 1.0);\n' +
+    '  float u = (t - u_att) / max(u_dec, 1.0);\n' +
+    '  if (u >= 1.0) return 0.0;\n' +
+    '  return exp(-4.4 * u) - exp(-4.4) * u;\n' +
+    '}\n' +
+
+    /* The voice: the fundamental and its two partials, normalised. */
+    'float wave(float ph) {\n' +
+    '  float v = sin(ph) + u_parts.y * sin(u_parts.x * ph) + u_parts.w * sin(u_parts.z * ph);\n' +
+    '  return v / (1.0 + u_parts.y + u_parts.w);\n' +
+    '}\n' +
+
+    'float sig(float t) { return env(t) * wave(TAU * u_cyc1 * t); }\n' +
+
+    'void main() {\n' +
+    '  vec2 fc = gl_FragCoord.xy;\n' +
+    '  vec2 uv = fc / u_res;\n' +
+
+    /* The glass: darker towards its edges, a faint lift across the top where
+       a pane catches the room, and a scanline every other CSS pixel. */
+    '  vec3 col = u_glass;\n' +
+    '  float r = length((uv - vec2(0.5, 0.55)) * vec2(1.0, 1.7));\n' +
+    '  col *= 1.0 - 0.5 * smoothstep(0.35, 1.0, r);\n' +
+    '  col += vec3(0.010, 0.014, 0.012) * smoothstep(0.6, 1.0, uv.y);\n' +
+    '  col *= 0.9 + 0.1 * step(0.5, fract(fc.y / (2.0 * u_px)));\n' +
+
+    '  vec2 p = (fc - u_box.xy) / u_box.zw;\n' +
+    '  float inX = step(0.0, p.x) * step(p.x, 1.0);\n' +
+    '  float t = p.x * u_win;\n' +
+    '  float yc = u_box.y + u_box.w * 0.5;\n' +
+    '  float amp = u_box.w * 0.46;\n' +
+    '  float dy = fc.y - yc;\n' +
+    '  float inY = step(abs(dy), u_box.w * 0.5);\n' +
+    '  float light = 0.0;\n' +
+    '  float light2 = 0.0;\n' +
+
+    /* A graticule: the zero line and eighths of the window. */
+    '  float gx = abs(fract(p.x * 8.0 + 0.5) - 0.5) * u_box.z / 8.0;\n' +
+    '  light += (1.0 - smoothstep(0.0, u_px, gx)) * inY * inX * 0.045;\n' +
+    '  light += (1.0 - smoothstep(0.0, u_px, abs(dy))) * inX * 0.06;\n' +
+
+    /* How recently the playhead passed this column, which is how brightly it
+       is still lit: the glass holds a line for --persist and lets it go.
+       Under reduced motion there is no sweep, so the whole trace lights at
+       once and cools together. */
+    '  float heat = 0.0;\n' +
+    '  if (u_calm > 0.5) heat = exp(-u_now / u_persist);\n' +
+    '  else if (t <= u_scan) heat = exp(-max(u_now - t, 0.0) / u_persist);\n' +
+    '  float bright = mix(0.4, 1.0, heat);\n' +
+
+    /* The room: a haze from each note\'s onset out to --decay plus the
+       room\'s length, as dense as there is --air in it, grained like the
+       noise the impulse response is made from. It runs past the right-hand
+       edge, because the room rings past the end of the note. */
+    '  float haze = 0.0;\n' +
+    '  float band = exp(-pow(dy / (amp * 0.75), 2.0)) * inY;\n' +
+    '  float grain = 0.7 * vnoise(vec2(t / 16.0, dy / (u_px * 3.5)))\n' +
+    '              + 0.3 * hash(floor(fc / max(u_px, 1.0)));\n' +
+    '  for (int n = 0; n < 2; n++) {\n' +
+    '    float o = n == 0 ? 0.0 : u_lag;\n' +
+    '    if (n == 1 && u_two < 0.5) break;\n' +
+    '    float k = t - o;\n' +
+    '    if (k <= 0.0) continue;\n' +
+    '    float tail = pow(max(1.0 - k / (u_dec + u_room), 0.0), 2.6);\n' +
+    '    haze += u_air * 1.7 * tail * smoothstep(0.0, u_att + 40.0, k);\n' +
+    '  }\n' +
+    '  light += haze * band * (0.25 + 0.75 * grain) * inX * bright;\n' +
+
+    /* The first note: the waveform itself, slowed until each cycle is a
+       stroke you can see, so how tightly it is packed is its pitch. A line
+       of phosphor with a body of glow inside its envelope.
+
+       The distance to the line is the nearest of nine samples either side,
+       not the vertical distance divided through by the slope: that shortcut
+       is only true close to the line, and on a steep stroke it lit the whole
+       column above and below it. */
+    '  float dt = u_win / u_box.z;\n' +
+    '  float d = 1e4;\n' +
+    '  for (int k = -4; k <= 4; k++) {\n' +
+    '    float kx = float(k) * 0.75 * u_px;\n' +
+    '    d = min(d, length(vec2(kx, dy - amp * sig(t + kx * dt))));\n' +
+    '  }\n' +
+    '  float line = exp(-pow(d / (0.7 * u_px), 2.0)) + 0.3 * exp(-d / (2.2 * u_px));\n' +
+    '  float body = step(abs(dy), amp * env(t)) * 0.09;\n' +
+    '  light += (line + body) * inX * bright;\n' +
+
+    /* The second note, distinct rather than summed into the first: its
+       envelope as a dashed outline, and a tick at every cycle of it, so its
+       pitch is how close the ticks stand. */
+    '  if (u_two > 0.5) {\n' +
+    '    float t2 = t - u_lag;\n' +
+    '    float e2 = env(t2);\n' +
+    '    float live = step(0.0, t2) * step(0.004, e2);\n' +
+    '    float edge = abs(abs(dy) - amp * e2);\n' +
+    '    float dash = step(0.45, fract(fc.x / (5.0 * u_px)));\n' +
+    '    float outline = exp(-pow(edge / (0.65 * u_px), 2.0)) * dash;\n' +
+    '    float ms = abs(fract(u_cyc2 * t2 + 0.5) - 0.5) / max(u_cyc2, 1e-5);\n' +
+    '    float tick = (1.0 - smoothstep(0.3 * u_px, 1.1 * u_px, ms / dt)) * step(abs(dy), amp * e2);\n' +
+    '    light2 += (outline * 1.15 + tick * 0.4) * live * inX * bright;\n' +
+    '  }\n' +
+
+    /* The playhead, while it is crossing. */
+    '  if (u_calm < 0.5 && u_now < u_win) {\n' +
+    '    float xs = u_box.x + u_scan / u_win * u_box.z;\n' +
+    '    light += exp(-pow((fc.x - xs) / (0.8 * u_px), 2.0)) * inY * 0.85;\n' +
+    '  }\n' +
+
+    /* Phosphor adds light; where it is brightest it burns towards white,
+       which is what reads as glow rather than as a coloured line. The second
+       note is drawn a step whiter than the first, so the two stay apart. */
+    '  vec3 phos = u_phos * light + mix(u_phos, vec3(1.0), 0.45) * light2;\n' +
+    '  phos += vec3(1.0) * pow(max(light + light2 - 0.85, 0.0), 2.0) * 0.35;\n' +
+    '  col += phos;\n' +
+    '  col += (hash(fc) - 0.5) * 0.01;\n' +
+    '  col = clamp(col, 0.0, 1.0);\n' +
+    '  vec3 srgb = mix(col * 12.92,\n' +
+    '                  1.055 * pow(max(col, 1e-5), vec3(1.0 / 2.4)) - 0.055,\n' +
+    '                  step(vec3(0.0031308), col));\n' +
+    '  fragColor = vec4(srgb, 1.0);\n' +
+    '}\n';
+
+  var UNIFORMS = ['u_res', 'u_box', 'u_px', 'u_win', 'u_att', 'u_dec', 'u_lag',
+    'u_two', 'u_cyc1', 'u_cyc2', 'u_parts', 'u_air', 'u_room', 'u_now',
+    'u_scan', 'u_persist', 'u_calm', 'u_glass', 'u_phos'];
+
+  function compile(gl, type, src) {
+    var sh = gl.createShader(type);
+    gl.shaderSource(sh, src);
+    gl.compileShader(sh);
+    if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) {
+      gl.deleteShader(sh);
+      return null;
+    }
+    return sh;
+  }
+
+  function getGpu() {
+    if (gpu !== undefined) return gpu;
+    gpu = null;
+
+    if (typeof OffscreenCanvas !== 'function') return gpu;
+
+    var off;
+    try { off = new OffscreenCanvas(2, 2); } catch (err) { return gpu; }
+    if (typeof off.transferToImageBitmap !== 'function') return gpu;
+
+    var gl = off.getContext('webgl2', {
+      alpha: false, antialias: false, depth: false, stencil: false,
+      preserveDrawingBuffer: false, powerPreference: 'low-power'
+    });
+    if (!gl) return gpu;
+
+    var vs = compile(gl, gl.VERTEX_SHADER, VERT);
+    var fs = compile(gl, gl.FRAGMENT_SHADER, FRAG);
+    if (!vs || !fs) return gpu;
+
+    var prog = gl.createProgram();
+    gl.attachShader(prog, vs);
+    gl.attachShader(prog, fs);
+    gl.linkProgram(prog);
+    if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return gpu;
+
+    gl.useProgram(prog);
+    var u = {};
+    UNIFORMS.forEach(function (name) { u[name] = gl.getUniformLocation(prog, name); });
+
+    gpu = { canvas: off, gl: gl, u: u, w: 0, h: 0 };
+    return gpu;
   }
 
   /* --- one layer ---------------------------------------------------------
@@ -359,6 +690,9 @@
     var traceAttack = root.querySelector('[data-trace-attack]');
     var traceDecay = root.querySelector('[data-trace-decay]');
     var traceLive = root.querySelector('[data-trace-live]');
+    var traceFrom = root.querySelector('[data-trace-from]');
+    var traceLag = root.querySelector('[data-trace-lag]');
+    var voiceLine = root.querySelector('[data-rosette]');
 
     var armed = false;
     var shown = 'tap';
@@ -415,13 +749,25 @@
       shown = tone;
       var spec = TONES[tone];
       var last = spec.notes[spec.notes.length - 1];
+      var gesture = spec.notes.length > 1;
+
+      /* The stylesheet draws the envelope and lights the LED from this, so
+         the CSS picture follows the strike with no second copy of the
+         mapping here. */
+      root.setAttribute('data-shown', tone);
 
       if (traceName) traceName.textContent = spec.label;
+      if (traceFrom) traceFrom.textContent = gesture ? Math.round(hz(pal, pal.steps.tap)) + ' \u2192' : '';
       if (traceFreq) traceFreq.textContent = Math.round(hz(pal, pal.steps[last.step]));
+      if (traceLag) {
+        traceLag.textContent = gesture
+          ? '+' + Math.round(pal.times[tone] * pal.spread) + ' ms'
+          : 'one note';
+      }
       if (traceAttack) traceAttack.textContent = Math.round(pal.attack);
       if (traceDecay) traceDecay.textContent = Math.round(pal.decay);
 
-      if (spoke && traceLive) traceLive.textContent = spec.says;
+      if (spoke && traceLive) traceLive.textContent = says(tone, pal);
     }
 
     /* The palette list and the pad steps, printed from the properties rather
@@ -431,8 +777,8 @@
     function label(pal) {
       var cells = {
         root: Math.round(pal.root) + ' Hz',
-        voice: pal.timbre + ' + ' + pal.partial + '× + ' + pal.shimmer + '×',
-        envelope: Math.round(pal.attack) + ' / ' + Math.round(pal.decay) + ' ms',
+        voice: pal.timbre + ' ' + pal.partial + '× ' + pal.shimmer + '×',
+        envelope: Math.round(pal.attack) + '/' + Math.round(pal.decay) + ' ms',
         air: pal.airSize.toFixed(1) + ' s · ' + Math.round(pal.air * 100) + '%'
       };
 
@@ -447,12 +793,184 @@
         var step = pal.steps[pad.dataset.tone];
         cell.textContent = step > 0 ? '+' + step : (step < 0 ? '−' + Math.abs(step) : '0');
       });
+
+      if (voiceLine) voiceLine.setAttribute('d', rosette(partialsOf(pal)));
+    }
+
+    /* --- the screen --------------------------------------------------------
+       The shader draws the struck sound on the glass. It keeps no clock of its
+       own: the trace's `struck-tones-cool` animation starts with the strike,
+       and each frame reads that animation's currentTime — so the sweep is in
+       step with the CSS playhead, and when the index pauses every animation
+       in a preview this pauses with them. The loop runs only while a strike
+       is in flight; the rest of the time the screen is one still frame,
+       redrawn when a token, the size or the struck sound changes. */
+    var trace = root.querySelector('.' + ROOT + '__trace');
+    var canvas = root.querySelector('[data-screen]');
+    var envelope = root.querySelector('.' + ROOT + '__envelope');
+    var calm = window.matchMedia
+      ? window.matchMedia('(prefers-reduced-motion: reduce)')
+      : null;
+    var screen = { ctx: null, w: 0, h: 0, scale: 1, box: null, frame: 0,
+      pal: null, glass: null, phos: null };
+
+    function readScreenColours() {
+      var s = getComputedStyle(root);
+      screen.glass = readColour(s.getPropertyValue(CHANNEL + 'screen').trim(), [0.0033, 0.0075, 0.0048]);
+      screen.phos = readColour(s.getPropertyValue(CHANNEL + 'phosphor').trim(), [0.38, 0.91, 0.21]);
+    }
+
+    /* The buffer is sized for the pixels that will actually be shown. A card
+       lays its preview out at 480 and shows it at 0.7, and --buffer-scale
+       carries that factor in from the index; anywhere else it is 1 and this
+       is the device ratio. The envelope's box is measured in the same pixels,
+       because that is where the drawing goes. */
+    function measure() {
+      var rect = canvas.getBoundingClientRect();
+      var env = envelope.getBoundingClientRect();
+      if (!rect.width || !rect.height) return false;
+
+      var k = (window.devicePixelRatio || 1) * screen.pal.bufferScale;
+      var w = Math.max(1, Math.round(rect.width * k));
+      var h = Math.max(1, Math.round(rect.height * k));
+      if (w * h > MAX_BUFFER_PX) {
+        var f = Math.sqrt(MAX_BUFFER_PX / (w * h));
+        w = Math.max(1, Math.round(w * f));
+        h = Math.max(1, Math.round(h * f));
+      }
+
+      if (w !== screen.w || h !== screen.h) {
+        screen.w = w;
+        screen.h = h;
+        canvas.width = w;
+        canvas.height = h;
+      }
+
+      var sx = w / rect.width;
+      var sy = h / rect.height;
+      screen.scale = sx;
+      screen.box = [
+        (env.left - rect.left) * sx,
+        (rect.bottom - env.bottom) * sy,
+        env.width * sx,
+        env.height * sy
+      ];
+      return true;
+    }
+
+    function clock() {
+      if (!trace || !trace.getAnimations) return null;
+      var list = trace.getAnimations();
+      for (var i = 0; i < list.length; i++) {
+        if (list[i].animationName === 'struck-tones-cool') return list[i];
+      }
+      return null;
+    }
+
+    function draw() {
+      var g = getGpu();
+      if (!g || !canvas || !envelope || !screen.pal) return;
+      if (!measure()) return;
+
+      if (!screen.ctx) {
+        try { screen.ctx = canvas.getContext('bitmaprenderer'); } catch (err) { screen.ctx = null; }
+        if (!screen.ctx) return;
+      }
+
+      var gl = g.gl;
+      if (g.w !== screen.w || g.h !== screen.h) {
+        g.canvas.width = screen.w;
+        g.canvas.height = screen.h;
+        g.w = screen.w;
+        g.h = screen.h;
+        gl.viewport(0, 0, screen.w, screen.h);
+      }
+
+      var pal = screen.pal;
+      var spec = TONES[shown];
+      var last = spec.notes[spec.notes.length - 1];
+      var two = spec.notes.length > 1;
+      var tmax = Math.max(pal.times.commit, pal.times.revert, pal.times.alert);
+      var win = tmax * pal.spread + pal.attack + pal.decay;
+      var still = calm && calm.matches;
+
+      /* No strike in flight is a strike long ago: everything at rest. */
+      var now = 1e7;
+      var scan = win;
+      var anim = clock();
+      if (anim && anim.currentTime !== null) {
+        now = Number(anim.currentTime);
+        scan = still ? win : Math.min(now, win);
+      }
+
+      var u = g.u;
+      gl.uniform2f(u.u_res, screen.w, screen.h);
+      gl.uniform4f(u.u_box, screen.box[0], screen.box[1], screen.box[2], screen.box[3]);
+      gl.uniform1f(u.u_px, screen.scale);
+      gl.uniform1f(u.u_win, win);
+      gl.uniform1f(u.u_att, Math.max(pal.attack, 1));
+      gl.uniform1f(u.u_dec, Math.max(pal.decay, 1));
+      gl.uniform1f(u.u_lag, two ? pal.times[shown] * pal.spread : 0);
+      gl.uniform1f(u.u_two, two ? 1 : 0);
+      gl.uniform1f(u.u_cyc1, hz(pal, pal.steps.tap) / 1000 / pal.timebase);
+      gl.uniform1f(u.u_cyc2, hz(pal, pal.steps[last.step]) / 1000 / pal.timebase);
+      gl.uniform4f(u.u_parts, pal.partial, pal.partialLevel, pal.shimmer, pal.shimmerLevel);
+      gl.uniform1f(u.u_air, Math.min(Math.max(pal.air, 0), 1));
+      gl.uniform1f(u.u_room, Math.max(pal.airSize, 0) * 1000);
+      gl.uniform1f(u.u_now, now);
+      gl.uniform1f(u.u_scan, scan);
+      gl.uniform1f(u.u_persist, pal.persist);
+      gl.uniform1f(u.u_calm, still ? 1 : 0);
+      gl.uniform3fv(u.u_glass, screen.glass);
+      gl.uniform3fv(u.u_phos, screen.phos);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+      screen.ctx.transferFromImageBitmap(g.canvas.transferToImageBitmap());
+      if (!trace.hasAttribute('data-drawn')) trace.setAttribute('data-drawn', '');
+    }
+
+    /* A root that has left the document stops for good. getComputedStyle on
+       a detached element returns empty strings, every token falls back to its
+       default and --run reads as 1 again, so a loop left to check would undo
+       any pause written on the way out. */
+    function tick() {
+      screen.frame = 0;
+      if (!root.isConnected) return;
+      draw();
+      var anim = clock();
+      if (anim && anim.playState === 'running' && screen.pal.run && !document.hidden) {
+        screen.frame = requestAnimationFrame(tick);
+      }
+    }
+
+    function kick() {
+      if (screen.frame || !getGpu() || !root.isConnected) return;
+      if (!screen.pal.run || document.hidden) { draw(); return; }
+      screen.frame = requestAnimationFrame(tick);
+    }
+
+    function halt() {
+      if (screen.frame) cancelAnimationFrame(screen.frame);
+      screen.frame = 0;
+    }
+
+    function redraw() {
+      if (!screen.frame && root.isConnected) draw();
     }
 
     function refresh() {
       var pal = palette(root);
+      screen.pal = pal;
+      readScreenColours();
       label(pal);
       show(shown, pal, false);
+
+      /* --run is the index's pause arriving as a token. A strike held
+         mid-flight picks up where it was when it comes back. */
+      if (!pal.run) { halt(); redraw(); return; }
+      var anim = clock();
+      if (anim && anim.playState === 'running') kick();
+      else redraw();
     }
 
     /* --- striking ---------------------------------------------------------
@@ -460,8 +978,6 @@
        The read-out and the drawing follow either way. Only a press can sound
        and only a press speaks to a screen reader, because the clock is the
        component demonstrating itself and nobody asked it anything. */
-    var trace = root.querySelector('.' + ROOT + '__trace');
-
     function strike(pad, pressed) {
       var pal = palette(root);
       var tone = pad.dataset.tone;
@@ -479,6 +995,10 @@
       void root.offsetWidth;
       pad.setAttribute('data-hit', '');
       if (trace) trace.setAttribute('data-hit', '');
+
+      screen.pal = pal;
+      halt();
+      kick();
     }
 
     pads.forEach(function (pad) {
@@ -499,9 +1019,15 @@
       });
     });
 
+    /* The trace's strike ends when the glass has cooled, which is the clock
+       animation finishing — the playhead is over sooner. One still frame
+       after it, so the screen settles exactly at rest. */
     if (trace) {
       trace.addEventListener('animationend', function (event) {
-        if (event.animationName === 'struck-tones-playhead') trace.removeAttribute('data-hit');
+        if (event.target !== trace || event.animationName !== 'struck-tones-cool') return;
+        trace.removeAttribute('data-hit');
+        halt();
+        redraw();
       });
     }
 
@@ -561,6 +1087,25 @@
       new MutationObserver(function () { refresh(); })
         .observe(root, { attributes: true, attributeFilter: ['class', 'style'] });
     }
+
+    /* A still frame still has to be a correct one: the envelope's box moves
+       when fonts land or the column narrows, so the screen is redrawn with
+       it. */
+    if (window.ResizeObserver && trace) {
+      new ResizeObserver(redraw).observe(trace);
+    }
+
+    if (calm) {
+      var follow = function () { redraw(); };
+      if (calm.addEventListener) calm.addEventListener('change', follow);
+      else if (calm.addListener) calm.addListener(follow);
+    }
+
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) { halt(); return; }
+      var anim = clock();
+      if (anim && anim.playState === 'running') kick();
+    });
 
     refresh();
   }
