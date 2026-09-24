@@ -67,6 +67,20 @@ in the same gesture.
   the ladder's clock — comes back with it. `--scripted` is the switch, and it
   is only set where the browser can actually morph.
 
+  The page stays live while the tiles move. A transition paints over the whole
+  viewport and takes every click for as long as it runs, and the ladder runs
+  one for 460ms of every 1200ms — so the back link, the theme switch and the
+  other three boards were dead more than a third of the time. For the length of
+  this component's own transitions the root carries `data-bento-grid-morph`,
+  and the stylesheet uses it twice: the page is left out of the capture, and
+  the overlay passes hits through to it. Both are needed, measured — with the
+  page captured, nothing under the overlay can be hit at all — and the first
+  costs nothing, since only the tiles were ever meant to move and the page was
+  being cross-faded on every rung for no reason. A tile in flight still takes
+  its hit and swallows it: the live board under a moving tile is already in its
+  new arrangement, and a click passed through would open whichever tile had
+  arrived there.
+
 - **One plate, one accent, and the accent is always the same thing.** Flat and
   unlit — no gradient, no tint — and the lift is a 5px offset block of the
   same ink rather than a blur, because a soft shadow would put light into a

@@ -1649,7 +1649,12 @@
               transition on the page. Everything the script does is enhancement:
               deleted, the tiles are still <code>&lt;details&gt;</code>, the
               ladder falls back to its keyframes, and the softening it replaced
-              comes back with it.</p>
+              comes back with it. And the page stays live while the tiles move:
+              for the length of the component&rsquo;s own transitions the page
+              is left out of the capture and the overlay passes clicks through
+              to it, where before a click anywhere landed on nothing for 460ms
+              of every 1200ms rung. A tile in flight still swallows its click,
+              rather than opening whichever tile has arrived under it.</p>
           </li>
           <li>
             <h3 class="demo__notes-head">One plate, one accent, and the accent is always the same thing.</h3>

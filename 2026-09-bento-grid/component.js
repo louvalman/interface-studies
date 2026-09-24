@@ -76,8 +76,13 @@
         return;
       }
 
+      /* The attribute is what lets component.css hand the page's clicks back
+         while this component's transition is running, and only then — see
+         "the page stays live" there. It goes on and comes off with the
+         duration, on the same element and for the same reason. */
       label(true);
       document.documentElement.style.setProperty('--bento-grid-morph', MORPH_MS + 'ms');
+      document.documentElement.setAttribute('data-bento-grid-morph', '');
 
       var transition;
       try {
@@ -95,6 +100,7 @@
       function done() {
         label(false);
         document.documentElement.style.removeProperty('--bento-grid-morph');
+        document.documentElement.removeAttribute('data-bento-grid-morph');
       }
     }
 
