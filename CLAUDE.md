@@ -288,6 +288,8 @@ All page-level context lives here, and only here:
   decisions offering it — see **A React adapter, generated**
 - the arrival: `data-reveal` on the page's own blocks, the motion in its
   `<style>` and a script of its own — see **The demo page arrives** below
+- the study's page in the Figma file, as the last item in the kicker — see
+  **A card may name the board it was drawn in**
 
 demo.html links `component.css`; it never redefines it. If the demo needs a
 style, that style belongs in a `<style>` block scoped to the demo page's own
@@ -1005,8 +1007,8 @@ single exception below.
 Two things legitimately sweep every folder, and both are the same shape. One is
 an identity change — the site was renamed, and each `demo.html` carries its own
 copy of the back link's strings. The other is a page contract every demo has to
-meet, which is how the language switch arrived, how the theme switch did and
-how the page arrival did:
+meet, which is how the language switch arrived, how the theme switch did, how
+the page arrival did and how the Figma link did:
 each folder gets its own copy, written into its own file, in its own palette.
 
 Neither is a refactor. The test is what the folder owns afterwards: a sweep
@@ -1330,15 +1332,38 @@ pointing at the folder's `demo.html`, so the two ends name each other — and li
 the type they are a pair kept by hand. A slug that changes, or a page that is
 remade rather than renamed, takes both with it.
 
-It sits on the card rather than in the folder's `notes.md`, which is the
-opposite of where the `Inspiration:` line sits, and the reason is the wall the
-type already runs into: the index cannot read a `notes.md` over `file://`. A
-declaration in the folder would have to be copied onto the card anyway, and one
-hand-kept pair is one more than this repo wants. What that costs is a folder
-copied out: it carries its inspiration and not its board. If the Figma file
-ever becomes part of what a study *is* rather than a companion to it, the line
-belongs in `notes.md` and the card becomes the second copy, the way `type:`
-already works.
+**The demo page names it too**, as the last item in its kicker:
+`2026-09 · Card · Figma ↗`. The kicker is that page's meta line, the job the
+masthead's meta row does on the index, where the Community file link already
+sits; it is above the fold and costs no height. The Decisions block was the other
+candidate — beside the `notes.md` link, where the page already sends a reader
+for the rest of the record — and lost on being below the fold inside a closed
+`<details>`, the reason the index kept its own link out of the footer. The top
+bar lost because it is otherwise switches, and a link among switches reads as
+one.
+
+It is a link, so it is set the way the page sets links rather than the way the
+kicker sets its values: the lede's tone, underlined in the accent. The kicker's
+own grey is muted text and a link is a control, which the contrast rule does not
+let muted text be — on the inked plate's light page that grey is 4.45:1, and on
+most of the others its dark theme clears the floor by a third of a point. The
+lede's tone measures 5.72 to 9.60 across every page in both themes. The accent
+is the underline and not the text because as text it does not clear 4.5:1 at
+11px on every ground.
+An `::after` stretches the hit area to 24px tall without moving the line —
+measured at 1440, 390 and 320 on every page, and the kicker stays one line at
+320 with `NAVIGATION` in it.
+
+The URL is written on the card and in the kicker rather than in the folder's
+`notes.md`, which is the opposite of where the `Inspiration:` line sits, and the
+reason is the wall the type already runs into: the index cannot read a
+`notes.md` over `file://`, so a declaration in the folder would have to be
+copied onto the card anyway. So it is written twice and kept in step by hand,
+the way the kicker's type already is, and a folder copied out carries its board
+in its demo page the way it carries its canonical URL. If the Figma file ever
+becomes part of what a study *is* rather than a companion to it, the line
+belongs in `notes.md` and the card and the kicker become its copies, the way
+`type:` already works.
 
 The preview iframe carries its path in `data-src`, not `src`. Every card on the
 page is a live component — which is the point, and also what it costs: one
