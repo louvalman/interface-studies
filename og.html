@@ -19,6 +19,13 @@
        system-ui. --window-size must stay 1200x630, which is the card size the
        og:image:width and og:image:height tags in index.html declare.
 
+       Look at the PNG before shipping it. A Chromium 141 build rendered this
+       with a white band across the bottom 87px and the foot row cut through:
+       its --headless counts a window frame inside --window-size, so the page
+       is laid out shorter than the image it is saved into. chrome-headless-shell
+       takes the same flags and sizes the viewport to the window, which is what
+       rendered the current card.
+
        This existed twice as a throwaway before it was a file — once when the
        card was first made and once when the masthead copy changed — and both
        times it was rebuilt from scratch off index.css by eye. It is checked in
@@ -218,8 +225,8 @@
            sentence after it on the page is not here: it tells a reader how to
            work the rail, and there is no rail in a PNG. -->
         <p class="lede">
-          Each study is one component, built in code and kept small enough to
-          stay legible.
+          One component per study, built in Figma and&nbsp;code, small enough
+          to stay legible.
         </p>
 
         <!-- Not the masthead's meta row any more, and it cannot be. The page
