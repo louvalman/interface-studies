@@ -3158,3 +3158,113 @@
   // five loading skeletons advertises the wait rather than the work.
   setTimeout(() => { if (driftsUnasked()) driftRun(); }, DRIFT_DELAY);
 })();
+
+
+// --- arrival -------------------------------------------------------------
+//
+// The page arrives once, in reading order, and index.css does all of the
+// moving — see its arrival section. What this adds is the one thing CSS cannot
+// ask: whether a block is on screen. Anything below the fold when the page
+// boots is held at its first frame and let go as it is scrolled to, so the
+// footer rises when a reader reaches it rather than while nobody is looking.
+//
+// Last in the file, so it measures the layout the rail has already settled —
+// the filter row appearing moves everything under it — and so that anything
+// failing above it leaves every block to play at load, which is the page
+// without this module rather than a page with a footer held for good.
+//
+// Held is decided once, here. A block already on screen is left alone: its
+// animation has been running since the first paint, and holding it now would
+// blink it out and back.
+
+(function () {
+  const blocks = Array.from(document.querySelectorAll('[data-reveal]'));
+  if (!blocks.length || !('IntersectionObserver' in window)) return;
+
+  // The held state lives in the same media query, so where that query does
+  // not match there is nothing to hold and nothing to let go of.
+  const motion = window.matchMedia(
+    'screen and (prefers-reduced-motion: no-preference)'
+  );
+  if (!motion.matches) return;
+
+  // How far up the viewport a block has to come before it counts as reached,
+  // as a fraction of the height. The observer's bottom margin is the same line.
+  const REVEAL_LINE = 0.9;
+
+  const slot = (block) =>
+    parseFloat(getComputedStyle(block).getPropertyValue('--arrive-at')) || 0;
+
+  // How many steps a block's entrance takes: one, or one per child for a
+  // data-reveal="each" row — read off its last child's --arrive-i, so the cap
+  // on that stagger is stated once, in index.css.
+  function span(block) {
+    const last = block.dataset.reveal === 'each' && block.lastElementChild;
+    if (!last) return 1;
+    return (parseFloat(getComputedStyle(last).getPropertyValue('--arrive-i')) || 0) + 1;
+  }
+
+  // Marks a block .has-arrived once its entrance is over, which takes the
+  // animation off it — see the note on replay in index.css. Cancelled counts as
+  // over: a card the filter hides mid-entrance should not replay it either.
+  function settle(block) {
+    if (!block.getAnimations) return;
+    const own = block
+      .getAnimations({ subtree: true })
+      .filter((a) => /^arrive/.test(a.animationName || ''));
+    Promise.allSettled(own.map((a) => a.finished)).then(() => {
+      block.classList.add('has-arrived');
+    });
+  }
+
+  // Everything that lands in one callback is one batch, and it runs from zero
+  // in the order index.css authors, with the gaps closed up: blocks sharing a
+  // slot start together, and each slot starts once the one before it has had
+  // its steps. The authored slots leave the footer room for a whole row of
+  // cards to land first, which is right at load and a pause for nothing when
+  // the rule and the footer are reached in the same scroll.
+  //
+  // So the footer reached on a desktop arrives as brand, rows and bar, a beat
+  // apart from the moment it is seen; on a phone each arrives as it is reached.
+  const seen = new IntersectionObserver(
+    (entries) => {
+      const landed = entries.filter((e) => e.isIntersecting).map((e) => e.target);
+      if (!landed.length) return;
+
+      const bySlot = new Map();
+      landed.forEach((block) => {
+        const at = slot(block);
+        bySlot.set(at, (bySlot.get(at) || []).concat(block));
+      });
+
+      let cursor = 0;
+      Array.from(bySlot.keys())
+        .sort((a, b) => a - b)
+        .forEach((at) => {
+          const group = bySlot.get(at);
+          const steps = Math.max(...group.map(span));
+          group.forEach((block) => {
+            seen.unobserve(block);
+            block.style.setProperty('--arrive-lead', '0ms');
+            block.style.setProperty('--arrive-at', String(cursor));
+            block.classList.remove('is-held');
+            settle(block);
+          });
+          cursor += steps;
+        });
+    },
+    { rootMargin: '0px 0px ' + -Math.round((1 - REVEAL_LINE) * 100) + '% 0px' }
+  );
+
+  const line = window.innerHeight * REVEAL_LINE;
+
+  blocks.forEach((block) => {
+    const box = block.getBoundingClientRect();
+    if (box.top < line && box.bottom > 0) {
+      settle(block);
+      return;
+    }
+    block.classList.add('is-held');
+    seen.observe(block);
+  });
+})();

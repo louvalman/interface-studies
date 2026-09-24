@@ -139,7 +139,11 @@
         </svg>
         Interface Studies
       </p>
-      <h1 class="head__title" data-i18n="head.title">
+      <!-- data-reveal marks a block that arrives: once, in reading order, as
+         the page opens, or when it is scrolled to if it starts below the
+         fold. "each" arrives child by child. The order and the motion are in
+         index.css's arrival section; index.js only decides what is held. -->
+      <h1 class="head__title" data-i18n="head.title" data-reveal>
         Exploring interaction and aesthetics.
       </h1>
       <!-- The closing sentence tells you how to work the rail, and that is
@@ -169,7 +173,7 @@
          four lines. So the sentence is as full as it can afford to be
          instead, which is where "and techniques" comes from: at 129
          characters it still stops on the fourth line. -->
-      <p class="head__lede">
+      <p class="head__lede" data-reveal>
         <span data-i18n="head.lede">
           Each study is one component, built in code and kept small enough to
           stay legible.
@@ -203,7 +207,7 @@
          object; the mark does that job in the footer, where it is a handle.
          The arrow is the page's own, and it is there because the link leaves
          the site. -->
-      <dl class="head__meta">
+      <dl class="head__meta" data-reveal>
         <div class="head__meta-item">
           <dt class="head__meta-key" data-i18n="meta.latest">Latest</dt>
           <dd class="head__meta-val" id="meta-latest">&mdash;</dd>
@@ -240,7 +244,7 @@
          controls span both and land on the filter chips' own bottom edge. On a
          narrow viewport the chips need the full width, so the areas restack
          and the controls go back up beside the count - see index.css. -->
-      <div class="rail__head">
+      <div class="rail__head" data-reveal>
         <p class="rail__count">
           <span data-i18n="rail.study">Study</span>
           <span id="rail-index">01</span>
@@ -351,6 +355,7 @@
       <div
         class="rail__track"
         data-rail-track
+        data-reveal="each"
         tabindex="0"
         role="region"
         data-i18n-aria="a11y.railRegion"
@@ -995,12 +1000,12 @@
         </div>
       </div>
 
-      <div class="rail__progress" data-rail-progress></div>
+      <div class="rail__progress" data-rail-progress data-reveal></div>
     </section>
 
     <footer class="foot">
       <div class="foot__main">
-        <div class="foot__brand">
+        <div class="foot__brand" data-reveal>
           <p class="foot__mark">
             <!-- The site mark: the field favicon.svg draws, minus the tile — the page
                is already that ground. A dot's size falls with its distance from the
@@ -1088,7 +1093,7 @@
           </nav>
         </div>
 
-        <dl class="foot__meta">
+        <dl class="foot__meta" data-reveal="each">
           <div class="foot__row">
             <dt class="foot__key" data-i18n="foot.typefaces">Typefaces</dt>
             <dd class="foot__val">Plus Jakarta Sans &middot; JetBrains Mono</dd>
@@ -1114,7 +1119,7 @@
         </dl>
       </div>
 
-      <div class="foot__bar">
+      <div class="foot__bar" data-reveal>
         <!-- The byline and the tip jar are one group, so the bar keeps its two
            ends: credits on the left, the control on the right. The coffee link
            is not in foot__social above — that row is handles, and a tip jar is
