@@ -16,7 +16,7 @@
        names both families and falls back on its own if they never arrive. -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600&family=JetBrains+Mono:wght@400&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap">
 
   <!-- Page chrome, like the back link: goes stale if this folder is copied
        out on its own, and nothing else breaks when it does. -->
@@ -545,6 +545,170 @@
       color: var(--demo-dim);
     }
 
+    /* --- how the set is built ---------------------------------------------
+       The token block walked through a group at a time, each with the rules
+       and the script that read it. Open rather than a <details> like the
+       decisions: the states show what the set does, and this is the page's
+       answer to how, which is most of what a reader arriving here wants.
+
+       Code is set in the page's own tokens. Comments are the one thing
+       marked in it, in the soft tier rather than the dim one: dim on the
+       code block's fill is 4.2:1 in dark, and a comment in a snippet is
+       text a reader has to read. Lines wrap rather than scroll, so a phone
+       at 320px gets a narrow snippet and no sideways scroller. */
+    .demo__how {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: clamp(2.75rem, 7vw, 4rem);
+      max-width: 100%;
+      margin-top: clamp(1.5rem, 4vw, 2.5rem);
+      padding-top: clamp(2rem, 4vw, 3rem);
+      border-top: 1px solid var(--demo-line);
+    }
+
+    .demo__how-title {
+      margin: 0;
+      font-size: 1.375rem;
+      font-weight: 600;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+    }
+
+    .demo__how-lede {
+      margin: 0.9rem 0 0;
+      font-size: 0.9375rem;
+      line-height: 1.7;
+      color: var(--demo-soft);
+    }
+
+    .demo__how-step {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.9rem;
+    }
+
+    .demo__how-no {
+      margin: 0;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.6875rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--demo-dim);
+    }
+
+    .demo__how-heading {
+      margin: -0.35rem 0 0;
+      font-size: 1.0625rem;
+      font-weight: 600;
+      line-height: 1.35;
+      letter-spacing: -0.01em;
+    }
+
+    .demo__how-text {
+      margin: 0;
+      font-size: 0.9375rem;
+      line-height: 1.7;
+      color: var(--demo-soft);
+    }
+
+    .demo__how-lede code,
+    .demo__how-text code {
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.85em;
+      padding: 0.12em 0.32em;
+      border-radius: 0.25rem;
+      background: var(--demo-fill);
+      color: var(--demo-fg);
+      overflow-wrap: anywhere;
+    }
+
+    .demo__code {
+      margin: 0.2rem 0;
+      max-width: 100%;
+      border: 1px solid var(--demo-line);
+      border-radius: 0.6rem;
+      background: var(--demo-fill);
+      overflow: hidden;
+    }
+
+    .demo__code-file {
+      padding: 0.55rem 0.95rem;
+      border-bottom: 1px solid var(--demo-line);
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.625rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--demo-soft);
+    }
+
+    .demo__code-body {
+      margin: 0;
+      padding: 0.95rem;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      /* 11px, and no snippet line past 59 characters, so nothing wraps in
+         the page's 30rem column; on a phone they wrap rather than scroll. */
+      font-size: 0.6875rem;
+      line-height: 1.7;
+      color: var(--demo-fg);
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      tab-size: 2;
+    }
+
+    .demo__code-note { color: var(--demo-soft); }
+
+    /* The two rosettes in the Voice step: the same drawing as the module's,
+       three turns round, in the page's own ink. */
+    .demo__voices {
+      margin: 0.2rem 0;
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .demo__voices-row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.75rem;
+    }
+
+    .demo__voice {
+      display: grid;
+      justify-items: center;
+      gap: 0.6rem;
+      padding: 1rem 0.75rem 0.85rem;
+      border: 1px solid var(--demo-line);
+      border-radius: 0.6rem;
+      background: var(--demo-fill);
+    }
+
+    .demo__voice svg {
+      display: block;
+      width: min(100%, 8rem);
+      height: auto;
+      aspect-ratio: 1;
+      overflow: visible;
+    }
+
+    .demo__voice path {
+      fill: none;
+      stroke: var(--demo-fg);
+      stroke-width: 1px;
+      stroke-linejoin: round;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .demo__voice-label,
+    .demo__voices-caption {
+      margin: 0;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 0.625rem;
+      letter-spacing: 0.08em;
+      text-align: center;
+      color: var(--demo-soft);
+    }
+
+    .demo__voices-caption { text-align: left; }
+
     /* --- arrival ----------------------------------------------------------
        The page arrives once, in reading order, the way the index does: the
        kicker, the heading and the lede a beat apart, then each block as it is
@@ -722,14 +886,14 @@
         A UI sound palette written as a token block. Four sounds declared as a
         tuning, a voice, a strike and a room, synthesised from those numbers
         rather than played from files &mdash; the reverb included, whose impulse
-        response is generated when you arm it. Each rack below is silent until
-        you do.
+        response is generated when you arm it. Each faceplate below is silent
+        until you do.
       </p>
     </header>
 
     <section class="demo__state" data-reveal>
       <p class="demo__caption" data-i18n="state.struck">Struck &mdash; the set as declared</p>
-      <section class="struck-tones" aria-label="Sound palette">
+      <section class="struck-tones" aria-label="Sound palette" data-shown="tap">
         <header class="struck-tones__head">
           <p class="struck-tones__label">Struck tones</p>
           <button class="struck-tones__arm" type="button" data-arm aria-pressed="false" disabled>
@@ -737,16 +901,29 @@
             <span class="struck-tones__arm-text" data-arm-text>Sound off</span>
           </button>
         </header>
-
         <div class="struck-tones__trace">
-          <p class="struck-tones__trace-name" data-trace-name>Tap</p>
+          <canvas class="struck-tones__screen" data-screen aria-hidden="true"></canvas>
+          <div class="struck-tones__trace-top">
+            <p class="struck-tones__trace-name" data-trace-name>Tap</p>
+            <p class="struck-tones__trace-lag" data-trace-lag>one note</p>
+          </div>
           <p class="struck-tones__trace-freq">
+            <span class="struck-tones__trace-from" data-trace-from></span>
             <span data-trace-freq>528</span>
             <span class="struck-tones__trace-unit">Hz</span>
           </p>
           <div class="struck-tones__envelope" aria-hidden="true">
-            <span class="struck-tones__env-rise"></span>
-            <span class="struck-tones__env-fall"></span>
+            <span class="struck-tones__env-note">
+              <span class="struck-tones__env-rise"></span>
+              <span class="struck-tones__env-fall"></span>
+              <span class="struck-tones__env-rest"></span>
+            </span>
+            <span class="struck-tones__env-note struck-tones__env-note--second">
+              <span class="struck-tones__env-lead"></span>
+              <span class="struck-tones__env-rise"></span>
+              <span class="struck-tones__env-fall"></span>
+              <span class="struck-tones__env-rest"></span>
+            </span>
           </div>
           <p class="struck-tones__trace-shape">
             <span data-trace-attack>16</span> ms rise &middot;
@@ -754,46 +931,76 @@
           </p>
           <p class="struck-tones__sr" data-trace-live role="status" aria-live="polite"></p>
         </div>
-
         <div class="struck-tones__rack">
           <button class="struck-tones__pad" type="button" data-tone="tap">
-            <span class="struck-tones__pitch" aria-hidden="true"></span>
+            <span class="struck-tones__contour" aria-hidden="true">
+              <span class="struck-tones__note"></span>
+            </span>
             <span class="struck-tones__pad-name">Tap</span>
             <span class="struck-tones__pad-step" data-step aria-hidden="true">0</span>
           </button>
           <button class="struck-tones__pad" type="button" data-tone="commit">
-            <span class="struck-tones__pitch" aria-hidden="true"></span>
+            <span class="struck-tones__contour" aria-hidden="true">
+              <span class="struck-tones__note"></span>
+              <span class="struck-tones__note"></span>
+            </span>
             <span class="struck-tones__pad-name">Commit</span>
             <span class="struck-tones__pad-step" data-step aria-hidden="true">+7</span>
           </button>
           <button class="struck-tones__pad" type="button" data-tone="revert">
-            <span class="struck-tones__pitch" aria-hidden="true"></span>
+            <span class="struck-tones__contour" aria-hidden="true">
+              <span class="struck-tones__note"></span>
+              <span class="struck-tones__note"></span>
+            </span>
             <span class="struck-tones__pad-name">Revert</span>
             <span class="struck-tones__pad-step" data-step aria-hidden="true">&minus;5</span>
           </button>
           <button class="struck-tones__pad" type="button" data-tone="alert">
-            <span class="struck-tones__pitch" aria-hidden="true"></span>
+            <span class="struck-tones__contour" aria-hidden="true">
+              <span class="struck-tones__note"></span>
+              <span class="struck-tones__note"></span>
+            </span>
             <span class="struck-tones__pad-name">Alert</span>
             <span class="struck-tones__pad-step" data-step aria-hidden="true">&minus;1</span>
           </button>
         </div>
-
-        <dl class="struck-tones__tuning">
-          <div class="struck-tones__row">
-            <dt>Root</dt>
-            <dd data-token="root">528 Hz</dd>
+        <dl class="struck-tones__sheet">
+          <div class="struck-tones__module">
+            <dt class="struck-tones__module-name">Tuning</dt>
+            <dd class="struck-tones__glyph struck-tones__glyph--tuning" aria-hidden="true">
+              <span class="struck-tones__keys"></span>
+              <span class="struck-tones__led" data-led="tap"></span>
+              <span class="struck-tones__led" data-led="commit"></span>
+              <span class="struck-tones__led" data-led="revert"></span>
+              <span class="struck-tones__led" data-led="alert"></span>
+            </dd>
+            <dd class="struck-tones__value" data-token="root">528 Hz</dd>
           </div>
-          <div class="struck-tones__row">
-            <dt>Voice</dt>
-            <dd data-token="voice">sine + 2&times; + 3&times;</dd>
+          <div class="struck-tones__module">
+            <dt class="struck-tones__module-name">Voice</dt>
+            <dd class="struck-tones__glyph struck-tones__glyph--voice" aria-hidden="true">
+              <svg class="struck-tones__rosette" viewBox="-1 -1 2 2" focusable="false">
+                <path class="struck-tones__rosette-ghost" d="M0.00 -0.62L0.03 -0.70L0.07 -0.77L0.11 -0.83L0.15 -0.87L0.20 -0.89L0.24 -0.89L0.27 -0.87L0.30 -0.83L0.32 -0.77L0.33 -0.70L0.32 -0.62L0.31 -0.54L0.29 -0.46L0.27 -0.39L0.25 -0.32L0.23 -0.28L0.22 -0.24L0.23 -0.23L0.24 -0.22L0.28 -0.23L0.32 -0.25L0.39 -0.27L0.46 -0.29L0.54 -0.31L0.62 -0.32L0.70 -0.33L0.77 -0.32L0.83 -0.30L0.87 -0.27L0.89 -0.24L0.89 -0.20L0.87 -0.15L0.83 -0.11L0.77 -0.07L0.70 -0.03L0.62 -0.00L0.54 0.02L0.47 0.04L0.40 0.05L0.35 0.06L0.32 0.07L0.31 0.08L0.31 0.10L0.34 0.12L0.38 0.16L0.43 0.20L0.48 0.25L0.54 0.31L0.59 0.37L0.63 0.44L0.66 0.51L0.67 0.57L0.67 0.61L0.65 0.65L0.61 0.67L0.57 0.67L0.51 0.66L0.44 0.63L0.37 0.59L0.31 0.54L0.25 0.48L0.20 0.43L0.16 0.38L0.12 0.34L0.10 0.31L0.08 0.31L0.07 0.32L0.06 0.35L0.05 0.40L0.04 0.47L0.02 0.54L0.00 0.62L-0.03 0.70L-0.07 0.77L-0.11 0.83L-0.15 0.87L-0.20 0.89L-0.24 0.89L-0.27 0.87L-0.30 0.83L-0.32 0.77L-0.33 0.70L-0.32 0.62L-0.31 0.54L-0.29 0.46L-0.27 0.39L-0.25 0.32L-0.23 0.28L-0.22 0.24L-0.23 0.23L-0.24 0.22L-0.28 0.23L-0.32 0.25L-0.39 0.27L-0.46 0.29L-0.54 0.31L-0.62 0.32L-0.70 0.33L-0.77 0.32L-0.83 0.30L-0.87 0.27L-0.89 0.24L-0.89 0.20L-0.87 0.15L-0.83 0.11L-0.77 0.07L-0.70 0.03L-0.62 0.00L-0.54 -0.02L-0.47 -0.04L-0.40 -0.05L-0.35 -0.06L-0.32 -0.07L-0.31 -0.08L-0.31 -0.10L-0.34 -0.12L-0.38 -0.16L-0.43 -0.20L-0.48 -0.25L-0.54 -0.31L-0.59 -0.37L-0.63 -0.44L-0.66 -0.51L-0.67 -0.57L-0.67 -0.61L-0.65 -0.65L-0.61 -0.67L-0.57 -0.67L-0.51 -0.66L-0.44 -0.63L-0.37 -0.59L-0.31 -0.54L-0.25 -0.48L-0.20 -0.43L-0.16 -0.38L-0.12 -0.34L-0.10 -0.31L-0.08 -0.31L-0.07 -0.32L-0.06 -0.35L-0.05 -0.40L-0.04 -0.47L-0.02 -0.54L-0.00 -0.62"/>
+                <path class="struck-tones__rosette-line" data-rosette d="M0.00 -0.62L0.03 -0.74L0.07 -0.83L0.12 -0.89L0.16 -0.91L0.20 -0.89L0.23 -0.86L0.26 -0.81L0.28 -0.76L0.29 -0.71L0.31 -0.66L0.31 -0.60L0.31 -0.54L0.30 -0.48L0.30 -0.42L0.29 -0.37L0.28 -0.33L0.26 -0.29L0.25 -0.25L0.24 -0.22L0.25 -0.21L0.27 -0.21L0.33 -0.23L0.42 -0.27L0.54 -0.31L0.65 -0.34L0.76 -0.35L0.83 -0.34L0.86 -0.31L0.87 -0.27L0.86 -0.23L0.83 -0.18L0.80 -0.14L0.76 -0.10L0.72 -0.06L0.67 -0.03L0.62 -0.00L0.57 0.02L0.51 0.04L0.47 0.06L0.42 0.07L0.38 0.08L0.34 0.09L0.31 0.10L0.30 0.11L0.32 0.13L0.37 0.17L0.45 0.23L0.54 0.31L0.62 0.40L0.68 0.48L0.71 0.55L0.70 0.59L0.67 0.62L0.63 0.63L0.57 0.63L0.52 0.62L0.47 0.61L0.42 0.59L0.36 0.57L0.31 0.54L0.26 0.50L0.22 0.47L0.18 0.43L0.15 0.40L0.12 0.37L0.09 0.34L0.07 0.32L0.06 0.32L0.04 0.34L0.04 0.41L0.02 0.50L0.00 0.62L-0.03 0.74L-0.07 0.83L-0.12 0.89L-0.16 0.91L-0.20 0.89L-0.23 0.86L-0.26 0.81L-0.28 0.76L-0.29 0.71L-0.31 0.66L-0.31 0.60L-0.31 0.54L-0.30 0.48L-0.30 0.42L-0.29 0.37L-0.28 0.33L-0.26 0.29L-0.25 0.25L-0.24 0.22L-0.25 0.21L-0.27 0.21L-0.33 0.23L-0.42 0.27L-0.54 0.31L-0.65 0.34L-0.76 0.35L-0.83 0.34L-0.86 0.31L-0.87 0.27L-0.86 0.23L-0.83 0.18L-0.80 0.14L-0.76 0.10L-0.72 0.06L-0.67 0.03L-0.62 0.00L-0.57 -0.02L-0.51 -0.04L-0.47 -0.06L-0.42 -0.07L-0.38 -0.08L-0.34 -0.09L-0.31 -0.10L-0.30 -0.11L-0.32 -0.13L-0.37 -0.17L-0.45 -0.23L-0.54 -0.31L-0.62 -0.40L-0.68 -0.48L-0.71 -0.55L-0.70 -0.59L-0.67 -0.62L-0.63 -0.63L-0.57 -0.63L-0.52 -0.62L-0.47 -0.61L-0.42 -0.59L-0.36 -0.57L-0.31 -0.54L-0.26 -0.50L-0.22 -0.47L-0.18 -0.43L-0.15 -0.40L-0.12 -0.37L-0.09 -0.34L-0.07 -0.32L-0.06 -0.32L-0.04 -0.34L-0.04 -0.41L-0.02 -0.50L-0.00 -0.62"/>
+              </svg>
+            </dd>
+            <dd class="struck-tones__value" data-token="voice">sine 2&times; 3&times;</dd>
           </div>
-          <div class="struck-tones__row">
-            <dt>Envelope</dt>
-            <dd data-token="envelope">16 / 820 ms</dd>
+          <div class="struck-tones__module">
+            <dt class="struck-tones__module-name">Strike</dt>
+            <dd class="struck-tones__glyph struck-tones__glyph--strike" aria-hidden="true">
+              <span class="struck-tones__env-rise"></span>
+              <span class="struck-tones__env-fall"></span>
+            </dd>
+            <dd class="struck-tones__value" data-token="envelope">16/820 ms</dd>
           </div>
-          <div class="struck-tones__row">
-            <dt>Air</dt>
-            <dd data-token="air">1.7 s &middot; 26%</dd>
+          <div class="struck-tones__module">
+            <dt class="struck-tones__module-name">Room</dt>
+            <dd class="struck-tones__glyph struck-tones__glyph--room" aria-hidden="true">
+              <span class="struck-tones__room-dry"></span>
+              <span class="struck-tones__room-tail"></span>
+            </dd>
+            <dd class="struck-tones__value" data-token="air">1.2 s &middot; 10%</dd>
           </div>
         </dl>
       </section>
@@ -801,7 +1008,7 @@
 
     <section class="demo__state" data-reveal>
       <p class="demo__caption" data-i18n="state.hushed">Hushed &mdash; only the strike and the room moved: 210&thinsp;ms rise, no click, a longer tail</p>
-      <section class="struck-tones struck-tones--hushed" aria-label="Sound palette, hushed envelope">
+      <section class="struck-tones struck-tones--hushed" aria-label="Sound palette, hushed envelope" data-shown="tap">
         <header class="struck-tones__head">
           <p class="struck-tones__label">Struck tones</p>
           <button class="struck-tones__arm" type="button" data-arm aria-pressed="false" disabled>
@@ -809,16 +1016,29 @@
             <span class="struck-tones__arm-text" data-arm-text>Sound off</span>
           </button>
         </header>
-
         <div class="struck-tones__trace">
-          <p class="struck-tones__trace-name" data-trace-name>Tap</p>
+          <canvas class="struck-tones__screen" data-screen aria-hidden="true"></canvas>
+          <div class="struck-tones__trace-top">
+            <p class="struck-tones__trace-name" data-trace-name>Tap</p>
+            <p class="struck-tones__trace-lag" data-trace-lag>one note</p>
+          </div>
           <p class="struck-tones__trace-freq">
+            <span class="struck-tones__trace-from" data-trace-from></span>
             <span data-trace-freq>528</span>
             <span class="struck-tones__trace-unit">Hz</span>
           </p>
           <div class="struck-tones__envelope" aria-hidden="true">
-            <span class="struck-tones__env-rise"></span>
-            <span class="struck-tones__env-fall"></span>
+            <span class="struck-tones__env-note">
+              <span class="struck-tones__env-rise"></span>
+              <span class="struck-tones__env-fall"></span>
+              <span class="struck-tones__env-rest"></span>
+            </span>
+            <span class="struck-tones__env-note struck-tones__env-note--second">
+              <span class="struck-tones__env-lead"></span>
+              <span class="struck-tones__env-rise"></span>
+              <span class="struck-tones__env-fall"></span>
+              <span class="struck-tones__env-rest"></span>
+            </span>
           </div>
           <p class="struck-tones__trace-shape">
             <span data-trace-attack>16</span> ms rise &middot;
@@ -826,46 +1046,76 @@
           </p>
           <p class="struck-tones__sr" data-trace-live role="status" aria-live="polite"></p>
         </div>
-
         <div class="struck-tones__rack">
           <button class="struck-tones__pad" type="button" data-tone="tap">
-            <span class="struck-tones__pitch" aria-hidden="true"></span>
+            <span class="struck-tones__contour" aria-hidden="true">
+              <span class="struck-tones__note"></span>
+            </span>
             <span class="struck-tones__pad-name">Tap</span>
             <span class="struck-tones__pad-step" data-step aria-hidden="true">0</span>
           </button>
           <button class="struck-tones__pad" type="button" data-tone="commit">
-            <span class="struck-tones__pitch" aria-hidden="true"></span>
+            <span class="struck-tones__contour" aria-hidden="true">
+              <span class="struck-tones__note"></span>
+              <span class="struck-tones__note"></span>
+            </span>
             <span class="struck-tones__pad-name">Commit</span>
             <span class="struck-tones__pad-step" data-step aria-hidden="true">+7</span>
           </button>
           <button class="struck-tones__pad" type="button" data-tone="revert">
-            <span class="struck-tones__pitch" aria-hidden="true"></span>
+            <span class="struck-tones__contour" aria-hidden="true">
+              <span class="struck-tones__note"></span>
+              <span class="struck-tones__note"></span>
+            </span>
             <span class="struck-tones__pad-name">Revert</span>
             <span class="struck-tones__pad-step" data-step aria-hidden="true">&minus;5</span>
           </button>
           <button class="struck-tones__pad" type="button" data-tone="alert">
-            <span class="struck-tones__pitch" aria-hidden="true"></span>
+            <span class="struck-tones__contour" aria-hidden="true">
+              <span class="struck-tones__note"></span>
+              <span class="struck-tones__note"></span>
+            </span>
             <span class="struck-tones__pad-name">Alert</span>
             <span class="struck-tones__pad-step" data-step aria-hidden="true">&minus;1</span>
           </button>
         </div>
-
-        <dl class="struck-tones__tuning">
-          <div class="struck-tones__row">
-            <dt>Root</dt>
-            <dd data-token="root">528 Hz</dd>
+        <dl class="struck-tones__sheet">
+          <div class="struck-tones__module">
+            <dt class="struck-tones__module-name">Tuning</dt>
+            <dd class="struck-tones__glyph struck-tones__glyph--tuning" aria-hidden="true">
+              <span class="struck-tones__keys"></span>
+              <span class="struck-tones__led" data-led="tap"></span>
+              <span class="struck-tones__led" data-led="commit"></span>
+              <span class="struck-tones__led" data-led="revert"></span>
+              <span class="struck-tones__led" data-led="alert"></span>
+            </dd>
+            <dd class="struck-tones__value" data-token="root">528 Hz</dd>
           </div>
-          <div class="struck-tones__row">
-            <dt>Voice</dt>
-            <dd data-token="voice">sine + 2&times; + 3&times;</dd>
+          <div class="struck-tones__module">
+            <dt class="struck-tones__module-name">Voice</dt>
+            <dd class="struck-tones__glyph struck-tones__glyph--voice" aria-hidden="true">
+              <svg class="struck-tones__rosette" viewBox="-1 -1 2 2" focusable="false">
+                <path class="struck-tones__rosette-ghost" d="M0.00 -0.62L0.03 -0.70L0.07 -0.77L0.11 -0.83L0.15 -0.87L0.20 -0.89L0.24 -0.89L0.27 -0.87L0.30 -0.83L0.32 -0.77L0.33 -0.70L0.32 -0.62L0.31 -0.54L0.29 -0.46L0.27 -0.39L0.25 -0.32L0.23 -0.28L0.22 -0.24L0.23 -0.23L0.24 -0.22L0.28 -0.23L0.32 -0.25L0.39 -0.27L0.46 -0.29L0.54 -0.31L0.62 -0.32L0.70 -0.33L0.77 -0.32L0.83 -0.30L0.87 -0.27L0.89 -0.24L0.89 -0.20L0.87 -0.15L0.83 -0.11L0.77 -0.07L0.70 -0.03L0.62 -0.00L0.54 0.02L0.47 0.04L0.40 0.05L0.35 0.06L0.32 0.07L0.31 0.08L0.31 0.10L0.34 0.12L0.38 0.16L0.43 0.20L0.48 0.25L0.54 0.31L0.59 0.37L0.63 0.44L0.66 0.51L0.67 0.57L0.67 0.61L0.65 0.65L0.61 0.67L0.57 0.67L0.51 0.66L0.44 0.63L0.37 0.59L0.31 0.54L0.25 0.48L0.20 0.43L0.16 0.38L0.12 0.34L0.10 0.31L0.08 0.31L0.07 0.32L0.06 0.35L0.05 0.40L0.04 0.47L0.02 0.54L0.00 0.62L-0.03 0.70L-0.07 0.77L-0.11 0.83L-0.15 0.87L-0.20 0.89L-0.24 0.89L-0.27 0.87L-0.30 0.83L-0.32 0.77L-0.33 0.70L-0.32 0.62L-0.31 0.54L-0.29 0.46L-0.27 0.39L-0.25 0.32L-0.23 0.28L-0.22 0.24L-0.23 0.23L-0.24 0.22L-0.28 0.23L-0.32 0.25L-0.39 0.27L-0.46 0.29L-0.54 0.31L-0.62 0.32L-0.70 0.33L-0.77 0.32L-0.83 0.30L-0.87 0.27L-0.89 0.24L-0.89 0.20L-0.87 0.15L-0.83 0.11L-0.77 0.07L-0.70 0.03L-0.62 0.00L-0.54 -0.02L-0.47 -0.04L-0.40 -0.05L-0.35 -0.06L-0.32 -0.07L-0.31 -0.08L-0.31 -0.10L-0.34 -0.12L-0.38 -0.16L-0.43 -0.20L-0.48 -0.25L-0.54 -0.31L-0.59 -0.37L-0.63 -0.44L-0.66 -0.51L-0.67 -0.57L-0.67 -0.61L-0.65 -0.65L-0.61 -0.67L-0.57 -0.67L-0.51 -0.66L-0.44 -0.63L-0.37 -0.59L-0.31 -0.54L-0.25 -0.48L-0.20 -0.43L-0.16 -0.38L-0.12 -0.34L-0.10 -0.31L-0.08 -0.31L-0.07 -0.32L-0.06 -0.35L-0.05 -0.40L-0.04 -0.47L-0.02 -0.54L-0.00 -0.62"/>
+                <path class="struck-tones__rosette-line" data-rosette d="M0.00 -0.62L0.03 -0.74L0.07 -0.83L0.12 -0.89L0.16 -0.91L0.20 -0.89L0.23 -0.86L0.26 -0.81L0.28 -0.76L0.29 -0.71L0.31 -0.66L0.31 -0.60L0.31 -0.54L0.30 -0.48L0.30 -0.42L0.29 -0.37L0.28 -0.33L0.26 -0.29L0.25 -0.25L0.24 -0.22L0.25 -0.21L0.27 -0.21L0.33 -0.23L0.42 -0.27L0.54 -0.31L0.65 -0.34L0.76 -0.35L0.83 -0.34L0.86 -0.31L0.87 -0.27L0.86 -0.23L0.83 -0.18L0.80 -0.14L0.76 -0.10L0.72 -0.06L0.67 -0.03L0.62 -0.00L0.57 0.02L0.51 0.04L0.47 0.06L0.42 0.07L0.38 0.08L0.34 0.09L0.31 0.10L0.30 0.11L0.32 0.13L0.37 0.17L0.45 0.23L0.54 0.31L0.62 0.40L0.68 0.48L0.71 0.55L0.70 0.59L0.67 0.62L0.63 0.63L0.57 0.63L0.52 0.62L0.47 0.61L0.42 0.59L0.36 0.57L0.31 0.54L0.26 0.50L0.22 0.47L0.18 0.43L0.15 0.40L0.12 0.37L0.09 0.34L0.07 0.32L0.06 0.32L0.04 0.34L0.04 0.41L0.02 0.50L0.00 0.62L-0.03 0.74L-0.07 0.83L-0.12 0.89L-0.16 0.91L-0.20 0.89L-0.23 0.86L-0.26 0.81L-0.28 0.76L-0.29 0.71L-0.31 0.66L-0.31 0.60L-0.31 0.54L-0.30 0.48L-0.30 0.42L-0.29 0.37L-0.28 0.33L-0.26 0.29L-0.25 0.25L-0.24 0.22L-0.25 0.21L-0.27 0.21L-0.33 0.23L-0.42 0.27L-0.54 0.31L-0.65 0.34L-0.76 0.35L-0.83 0.34L-0.86 0.31L-0.87 0.27L-0.86 0.23L-0.83 0.18L-0.80 0.14L-0.76 0.10L-0.72 0.06L-0.67 0.03L-0.62 0.00L-0.57 -0.02L-0.51 -0.04L-0.47 -0.06L-0.42 -0.07L-0.38 -0.08L-0.34 -0.09L-0.31 -0.10L-0.30 -0.11L-0.32 -0.13L-0.37 -0.17L-0.45 -0.23L-0.54 -0.31L-0.62 -0.40L-0.68 -0.48L-0.71 -0.55L-0.70 -0.59L-0.67 -0.62L-0.63 -0.63L-0.57 -0.63L-0.52 -0.62L-0.47 -0.61L-0.42 -0.59L-0.36 -0.57L-0.31 -0.54L-0.26 -0.50L-0.22 -0.47L-0.18 -0.43L-0.15 -0.40L-0.12 -0.37L-0.09 -0.34L-0.07 -0.32L-0.06 -0.32L-0.04 -0.34L-0.04 -0.41L-0.02 -0.50L-0.00 -0.62"/>
+              </svg>
+            </dd>
+            <dd class="struck-tones__value" data-token="voice">sine 2&times; 3&times;</dd>
           </div>
-          <div class="struck-tones__row">
-            <dt>Envelope</dt>
-            <dd data-token="envelope">16 / 820 ms</dd>
+          <div class="struck-tones__module">
+            <dt class="struck-tones__module-name">Strike</dt>
+            <dd class="struck-tones__glyph struck-tones__glyph--strike" aria-hidden="true">
+              <span class="struck-tones__env-rise"></span>
+              <span class="struck-tones__env-fall"></span>
+            </dd>
+            <dd class="struck-tones__value" data-token="envelope">16/820 ms</dd>
           </div>
-          <div class="struck-tones__row">
-            <dt>Air</dt>
-            <dd data-token="air">1.7 s &middot; 26%</dd>
+          <div class="struck-tones__module">
+            <dt class="struck-tones__module-name">Room</dt>
+            <dd class="struck-tones__glyph struck-tones__glyph--room" aria-hidden="true">
+              <span class="struck-tones__room-dry"></span>
+              <span class="struck-tones__room-tail"></span>
+            </dd>
+            <dd class="struck-tones__value" data-token="air">1.2 s &middot; 10%</dd>
           </div>
         </dl>
       </section>
@@ -873,7 +1123,7 @@
 
     <section class="demo__state" data-reveal>
       <p class="demo__caption" data-i18n="state.close">Close &mdash; only the tuning moved: a 396&thinsp;Hz root and narrower steps, the same voice</p>
-      <section class="struck-tones struck-tones--close" aria-label="Sound palette, close tuning">
+      <section class="struck-tones struck-tones--close" aria-label="Sound palette, close tuning" data-shown="tap">
         <header class="struck-tones__head">
           <p class="struck-tones__label">Struck tones</p>
           <button class="struck-tones__arm" type="button" data-arm aria-pressed="false" disabled>
@@ -881,16 +1131,29 @@
             <span class="struck-tones__arm-text" data-arm-text>Sound off</span>
           </button>
         </header>
-
         <div class="struck-tones__trace">
-          <p class="struck-tones__trace-name" data-trace-name>Tap</p>
+          <canvas class="struck-tones__screen" data-screen aria-hidden="true"></canvas>
+          <div class="struck-tones__trace-top">
+            <p class="struck-tones__trace-name" data-trace-name>Tap</p>
+            <p class="struck-tones__trace-lag" data-trace-lag>one note</p>
+          </div>
           <p class="struck-tones__trace-freq">
+            <span class="struck-tones__trace-from" data-trace-from></span>
             <span data-trace-freq>528</span>
             <span class="struck-tones__trace-unit">Hz</span>
           </p>
           <div class="struck-tones__envelope" aria-hidden="true">
-            <span class="struck-tones__env-rise"></span>
-            <span class="struck-tones__env-fall"></span>
+            <span class="struck-tones__env-note">
+              <span class="struck-tones__env-rise"></span>
+              <span class="struck-tones__env-fall"></span>
+              <span class="struck-tones__env-rest"></span>
+            </span>
+            <span class="struck-tones__env-note struck-tones__env-note--second">
+              <span class="struck-tones__env-lead"></span>
+              <span class="struck-tones__env-rise"></span>
+              <span class="struck-tones__env-fall"></span>
+              <span class="struck-tones__env-rest"></span>
+            </span>
           </div>
           <p class="struck-tones__trace-shape">
             <span data-trace-attack>16</span> ms rise &middot;
@@ -898,49 +1161,411 @@
           </p>
           <p class="struck-tones__sr" data-trace-live role="status" aria-live="polite"></p>
         </div>
-
         <div class="struck-tones__rack">
           <button class="struck-tones__pad" type="button" data-tone="tap">
-            <span class="struck-tones__pitch" aria-hidden="true"></span>
+            <span class="struck-tones__contour" aria-hidden="true">
+              <span class="struck-tones__note"></span>
+            </span>
             <span class="struck-tones__pad-name">Tap</span>
             <span class="struck-tones__pad-step" data-step aria-hidden="true">0</span>
           </button>
           <button class="struck-tones__pad" type="button" data-tone="commit">
-            <span class="struck-tones__pitch" aria-hidden="true"></span>
+            <span class="struck-tones__contour" aria-hidden="true">
+              <span class="struck-tones__note"></span>
+              <span class="struck-tones__note"></span>
+            </span>
             <span class="struck-tones__pad-name">Commit</span>
             <span class="struck-tones__pad-step" data-step aria-hidden="true">+7</span>
           </button>
           <button class="struck-tones__pad" type="button" data-tone="revert">
-            <span class="struck-tones__pitch" aria-hidden="true"></span>
+            <span class="struck-tones__contour" aria-hidden="true">
+              <span class="struck-tones__note"></span>
+              <span class="struck-tones__note"></span>
+            </span>
             <span class="struck-tones__pad-name">Revert</span>
             <span class="struck-tones__pad-step" data-step aria-hidden="true">&minus;5</span>
           </button>
           <button class="struck-tones__pad" type="button" data-tone="alert">
-            <span class="struck-tones__pitch" aria-hidden="true"></span>
+            <span class="struck-tones__contour" aria-hidden="true">
+              <span class="struck-tones__note"></span>
+              <span class="struck-tones__note"></span>
+            </span>
             <span class="struck-tones__pad-name">Alert</span>
             <span class="struck-tones__pad-step" data-step aria-hidden="true">&minus;1</span>
           </button>
         </div>
-
-        <dl class="struck-tones__tuning">
-          <div class="struck-tones__row">
-            <dt>Root</dt>
-            <dd data-token="root">528 Hz</dd>
+        <dl class="struck-tones__sheet">
+          <div class="struck-tones__module">
+            <dt class="struck-tones__module-name">Tuning</dt>
+            <dd class="struck-tones__glyph struck-tones__glyph--tuning" aria-hidden="true">
+              <span class="struck-tones__keys"></span>
+              <span class="struck-tones__led" data-led="tap"></span>
+              <span class="struck-tones__led" data-led="commit"></span>
+              <span class="struck-tones__led" data-led="revert"></span>
+              <span class="struck-tones__led" data-led="alert"></span>
+            </dd>
+            <dd class="struck-tones__value" data-token="root">528 Hz</dd>
           </div>
-          <div class="struck-tones__row">
-            <dt>Voice</dt>
-            <dd data-token="voice">sine + 2&times; + 3&times;</dd>
+          <div class="struck-tones__module">
+            <dt class="struck-tones__module-name">Voice</dt>
+            <dd class="struck-tones__glyph struck-tones__glyph--voice" aria-hidden="true">
+              <svg class="struck-tones__rosette" viewBox="-1 -1 2 2" focusable="false">
+                <path class="struck-tones__rosette-ghost" d="M0.00 -0.62L0.03 -0.70L0.07 -0.77L0.11 -0.83L0.15 -0.87L0.20 -0.89L0.24 -0.89L0.27 -0.87L0.30 -0.83L0.32 -0.77L0.33 -0.70L0.32 -0.62L0.31 -0.54L0.29 -0.46L0.27 -0.39L0.25 -0.32L0.23 -0.28L0.22 -0.24L0.23 -0.23L0.24 -0.22L0.28 -0.23L0.32 -0.25L0.39 -0.27L0.46 -0.29L0.54 -0.31L0.62 -0.32L0.70 -0.33L0.77 -0.32L0.83 -0.30L0.87 -0.27L0.89 -0.24L0.89 -0.20L0.87 -0.15L0.83 -0.11L0.77 -0.07L0.70 -0.03L0.62 -0.00L0.54 0.02L0.47 0.04L0.40 0.05L0.35 0.06L0.32 0.07L0.31 0.08L0.31 0.10L0.34 0.12L0.38 0.16L0.43 0.20L0.48 0.25L0.54 0.31L0.59 0.37L0.63 0.44L0.66 0.51L0.67 0.57L0.67 0.61L0.65 0.65L0.61 0.67L0.57 0.67L0.51 0.66L0.44 0.63L0.37 0.59L0.31 0.54L0.25 0.48L0.20 0.43L0.16 0.38L0.12 0.34L0.10 0.31L0.08 0.31L0.07 0.32L0.06 0.35L0.05 0.40L0.04 0.47L0.02 0.54L0.00 0.62L-0.03 0.70L-0.07 0.77L-0.11 0.83L-0.15 0.87L-0.20 0.89L-0.24 0.89L-0.27 0.87L-0.30 0.83L-0.32 0.77L-0.33 0.70L-0.32 0.62L-0.31 0.54L-0.29 0.46L-0.27 0.39L-0.25 0.32L-0.23 0.28L-0.22 0.24L-0.23 0.23L-0.24 0.22L-0.28 0.23L-0.32 0.25L-0.39 0.27L-0.46 0.29L-0.54 0.31L-0.62 0.32L-0.70 0.33L-0.77 0.32L-0.83 0.30L-0.87 0.27L-0.89 0.24L-0.89 0.20L-0.87 0.15L-0.83 0.11L-0.77 0.07L-0.70 0.03L-0.62 0.00L-0.54 -0.02L-0.47 -0.04L-0.40 -0.05L-0.35 -0.06L-0.32 -0.07L-0.31 -0.08L-0.31 -0.10L-0.34 -0.12L-0.38 -0.16L-0.43 -0.20L-0.48 -0.25L-0.54 -0.31L-0.59 -0.37L-0.63 -0.44L-0.66 -0.51L-0.67 -0.57L-0.67 -0.61L-0.65 -0.65L-0.61 -0.67L-0.57 -0.67L-0.51 -0.66L-0.44 -0.63L-0.37 -0.59L-0.31 -0.54L-0.25 -0.48L-0.20 -0.43L-0.16 -0.38L-0.12 -0.34L-0.10 -0.31L-0.08 -0.31L-0.07 -0.32L-0.06 -0.35L-0.05 -0.40L-0.04 -0.47L-0.02 -0.54L-0.00 -0.62"/>
+                <path class="struck-tones__rosette-line" data-rosette d="M0.00 -0.62L0.03 -0.74L0.07 -0.83L0.12 -0.89L0.16 -0.91L0.20 -0.89L0.23 -0.86L0.26 -0.81L0.28 -0.76L0.29 -0.71L0.31 -0.66L0.31 -0.60L0.31 -0.54L0.30 -0.48L0.30 -0.42L0.29 -0.37L0.28 -0.33L0.26 -0.29L0.25 -0.25L0.24 -0.22L0.25 -0.21L0.27 -0.21L0.33 -0.23L0.42 -0.27L0.54 -0.31L0.65 -0.34L0.76 -0.35L0.83 -0.34L0.86 -0.31L0.87 -0.27L0.86 -0.23L0.83 -0.18L0.80 -0.14L0.76 -0.10L0.72 -0.06L0.67 -0.03L0.62 -0.00L0.57 0.02L0.51 0.04L0.47 0.06L0.42 0.07L0.38 0.08L0.34 0.09L0.31 0.10L0.30 0.11L0.32 0.13L0.37 0.17L0.45 0.23L0.54 0.31L0.62 0.40L0.68 0.48L0.71 0.55L0.70 0.59L0.67 0.62L0.63 0.63L0.57 0.63L0.52 0.62L0.47 0.61L0.42 0.59L0.36 0.57L0.31 0.54L0.26 0.50L0.22 0.47L0.18 0.43L0.15 0.40L0.12 0.37L0.09 0.34L0.07 0.32L0.06 0.32L0.04 0.34L0.04 0.41L0.02 0.50L0.00 0.62L-0.03 0.74L-0.07 0.83L-0.12 0.89L-0.16 0.91L-0.20 0.89L-0.23 0.86L-0.26 0.81L-0.28 0.76L-0.29 0.71L-0.31 0.66L-0.31 0.60L-0.31 0.54L-0.30 0.48L-0.30 0.42L-0.29 0.37L-0.28 0.33L-0.26 0.29L-0.25 0.25L-0.24 0.22L-0.25 0.21L-0.27 0.21L-0.33 0.23L-0.42 0.27L-0.54 0.31L-0.65 0.34L-0.76 0.35L-0.83 0.34L-0.86 0.31L-0.87 0.27L-0.86 0.23L-0.83 0.18L-0.80 0.14L-0.76 0.10L-0.72 0.06L-0.67 0.03L-0.62 0.00L-0.57 -0.02L-0.51 -0.04L-0.47 -0.06L-0.42 -0.07L-0.38 -0.08L-0.34 -0.09L-0.31 -0.10L-0.30 -0.11L-0.32 -0.13L-0.37 -0.17L-0.45 -0.23L-0.54 -0.31L-0.62 -0.40L-0.68 -0.48L-0.71 -0.55L-0.70 -0.59L-0.67 -0.62L-0.63 -0.63L-0.57 -0.63L-0.52 -0.62L-0.47 -0.61L-0.42 -0.59L-0.36 -0.57L-0.31 -0.54L-0.26 -0.50L-0.22 -0.47L-0.18 -0.43L-0.15 -0.40L-0.12 -0.37L-0.09 -0.34L-0.07 -0.32L-0.06 -0.32L-0.04 -0.34L-0.04 -0.41L-0.02 -0.50L-0.00 -0.62"/>
+              </svg>
+            </dd>
+            <dd class="struck-tones__value" data-token="voice">sine 2&times; 3&times;</dd>
           </div>
-          <div class="struck-tones__row">
-            <dt>Envelope</dt>
-            <dd data-token="envelope">16 / 820 ms</dd>
+          <div class="struck-tones__module">
+            <dt class="struck-tones__module-name">Strike</dt>
+            <dd class="struck-tones__glyph struck-tones__glyph--strike" aria-hidden="true">
+              <span class="struck-tones__env-rise"></span>
+              <span class="struck-tones__env-fall"></span>
+            </dd>
+            <dd class="struck-tones__value" data-token="envelope">16/820 ms</dd>
           </div>
-          <div class="struck-tones__row">
-            <dt>Air</dt>
-            <dd data-token="air">1.7 s &middot; 26%</dd>
+          <div class="struck-tones__module">
+            <dt class="struck-tones__module-name">Room</dt>
+            <dd class="struck-tones__glyph struck-tones__glyph--room" aria-hidden="true">
+              <span class="struck-tones__room-dry"></span>
+              <span class="struck-tones__room-tail"></span>
+            </dd>
+            <dd class="struck-tones__value" data-token="air">1.2 s &middot; 10%</dd>
           </div>
         </dl>
       </section>
+    </section>
+
+    <!-- How the set is built: the token block walked through group by group,
+         with the rules and the script that read each one. The snippets are copies
+         of component.css and component.js, some abridged, kept in step by hand
+         like the Decisions block below — there is no build step to pull them in.
+         Edit the component, edit these. The prose carries data-i18n; the code
+         does not, for the same reason component sample copy does not. The two
+         rosettes in step 02 are computed with the same function as the Voice
+         module's, taken three turns round, and written in by hand. -->
+    <section class="demo__how" aria-labelledby="demo-how-title">
+      <header class="demo__how-head" data-reveal>
+        <h2 class="demo__how-title" id="demo-how-title" data-i18n="how.title">How the set is built</h2>
+        <p class="demo__how-lede" data-i18n="how.lede">
+          Everything on the faceplate &mdash; every sound, every drawing,
+          every strike &mdash; is read from one block of custom properties at
+          the top of <code>component.css</code>. The script reads it with
+          <code>getComputedStyle</code> and hands the numbers to Web Audio and
+          to the screen&rsquo;s shader; the stylesheet reads the same numbers
+          with <code>calc()</code>. So there is one place to change anything,
+          and a change moves the sound and the picture together.
+        </p>
+      </header>
+
+      <article class="demo__how-step" data-reveal>
+        <p class="demo__how-no">01 &middot; <span data-i18n="how.1.kicker">Tuning</span></p>
+        <h3 class="demo__how-heading" data-i18n="how.1.head">What the set is pitched at</h3>
+        <p class="demo__how-text" data-i18n="how.1.p1">
+          A sound here is a gesture: the root, then a step up or down a moment
+          later. Steps are semitones rather than hertz, so moving
+          <code>--root</code> transposes the whole set and every interval
+          keeps its meaning. The <code>-t-</code> tokens say how soon the
+          second note falls, in multiples of <code>--spread</code>.
+        </p>
+        <figure class="demo__code">
+          <figcaption class="demo__code-file">component.css</figcaption>
+          <pre class="demo__code-body"><code>.struck-tones {
+  --struck-tones-root: 528;     <span class="demo__code-note">/* Hz, the tonic */</span>
+  --struck-tones-spread: 104;   <span class="demo__code-note">/* ms, a gesture's step */</span>
+
+  --struck-tones-i-commit: 7;   <span class="demo__code-note">/* up a fifth */</span>
+  --struck-tones-t-commit: 1;   <span class="demo__code-note">/* a spread later */</span>
+  --struck-tones-i-alert: -1;   <span class="demo__code-note">/* down a semitone */</span>
+  --struck-tones-t-alert: 0.55; <span class="demo__code-note">/* sooner than any */</span>
+}</code></pre>
+        </figure>
+        <p class="demo__how-text" data-i18n="how.1.p2">
+          The script reads each number off the element and turns a step into a
+          frequency the way a keyboard does: every semitone multiplies the
+          pitch by the twelfth root of two. The keyboard on the Tuning module
+          is that same axis, a fifth either side of the root, with an LED
+          under the key each sound lands on.
+        </p>
+        <figure class="demo__code">
+          <figcaption class="demo__code-file">component.js <span data-i18n="how.abridged">&middot; abridged</span></figcaption>
+          <pre class="demo__code-body"><code>var s = getComputedStyle(root);
+
+function num(name, fallback) {
+  var v = parseFloat(
+    s.getPropertyValue('--struck-tones-' + name));
+  return isFinite(v) ? v : fallback;
+}
+
+function hz(pal, step) {
+  return pal.root * Math.pow(2, step / 12);
+}
+<span class="demo__code-note">// 528 × 2^(7/12) ≈ 791 Hz: the commit's top note</span></code></pre>
+        </figure>
+      </article>
+
+      <article class="demo__how-step" data-reveal>
+        <p class="demo__how-no">02 &middot; <span data-i18n="how.2.kicker">Voice</span></p>
+        <h3 class="demo__how-heading" data-i18n="how.2.head">What one note is made of</h3>
+        <p class="demo__how-text" data-i18n="how.2.p1">
+          Every note is several oscillators at once. The fundamental sounds
+          twice, a few cents apart and panned left and right, so it drifts
+          rather than sitting still; an octave above adds body and a twelfth
+          adds shimmer. The overtones are whole-number multiples of the note,
+          which is what lets them fuse into one warm tone instead of a bleep.
+        </p>
+        <figure class="demo__code">
+          <figcaption class="demo__code-file">component.css</figcaption>
+          <pre class="demo__code-body"><code>--struck-tones-timbre: sine;
+--struck-tones-partial: 2;          <span class="demo__code-note">/* the octave */</span>
+--struck-tones-partial-level: 0.22;
+--struck-tones-shimmer: 3;          <span class="demo__code-note">/* the twelfth */</span>
+--struck-tones-shimmer-level: 0.06;
+--struck-tones-chorus: 7;           <span class="demo__code-note">/* cents apart */</span></code></pre>
+        </figure>
+        <p class="demo__how-text" data-i18n="how.2.p2">
+          The Voice module draws the argument. One cycle of the waveform is
+          wrapped six times around a circle, so the radius at each angle is
+          the wave at that phase. A whole-number partial repeats exactly once
+          a cycle, so the ring closes on itself: taken three times round, it
+          is still one line. The 2.76 of a struck metal bar never repeats, and
+          three times round is three different lines.
+        </p>
+        <figure class="demo__voices">
+          <div class="demo__voices-row">
+            <div class="demo__voice">
+              <svg viewBox="-1 -1 2 2" aria-hidden="true" focusable="false"><path d="M0.00 -0.62L0.03 -0.74L0.07 -0.83L0.12 -0.89L0.16 -0.91L0.20 -0.89L0.23 -0.86L0.26 -0.81L0.28 -0.76L0.29 -0.71L0.31 -0.66L0.31 -0.60L0.31 -0.54L0.30 -0.48L0.30 -0.42L0.29 -0.37L0.28 -0.33L0.26 -0.29L0.25 -0.25L0.24 -0.22L0.25 -0.21L0.27 -0.21L0.33 -0.23L0.42 -0.27L0.54 -0.31L0.65 -0.34L0.76 -0.35L0.83 -0.34L0.86 -0.31L0.87 -0.27L0.86 -0.23L0.83 -0.18L0.80 -0.14L0.76 -0.10L0.72 -0.06L0.67 -0.03L0.62 -0.00L0.57 0.02L0.51 0.04L0.47 0.06L0.42 0.07L0.38 0.08L0.34 0.09L0.31 0.10L0.30 0.11L0.32 0.13L0.37 0.17L0.45 0.23L0.54 0.31L0.62 0.40L0.68 0.48L0.71 0.55L0.70 0.59L0.67 0.62L0.63 0.63L0.57 0.63L0.52 0.62L0.47 0.61L0.42 0.59L0.36 0.57L0.31 0.54L0.26 0.50L0.22 0.47L0.18 0.43L0.15 0.40L0.12 0.37L0.09 0.34L0.07 0.32L0.06 0.32L0.04 0.34L0.04 0.41L0.02 0.50L0.00 0.62L-0.03 0.74L-0.07 0.83L-0.12 0.89L-0.16 0.91L-0.20 0.89L-0.23 0.86L-0.26 0.81L-0.28 0.76L-0.29 0.71L-0.31 0.66L-0.31 0.60L-0.31 0.54L-0.30 0.48L-0.30 0.42L-0.29 0.37L-0.28 0.33L-0.26 0.29L-0.25 0.25L-0.24 0.22L-0.25 0.21L-0.27 0.21L-0.33 0.23L-0.42 0.27L-0.54 0.31L-0.65 0.34L-0.76 0.35L-0.83 0.34L-0.86 0.31L-0.87 0.27L-0.86 0.23L-0.83 0.18L-0.80 0.14L-0.76 0.10L-0.72 0.06L-0.67 0.03L-0.62 0.00L-0.57 -0.02L-0.51 -0.04L-0.47 -0.06L-0.42 -0.07L-0.38 -0.08L-0.34 -0.09L-0.31 -0.10L-0.30 -0.11L-0.32 -0.13L-0.37 -0.17L-0.45 -0.23L-0.54 -0.31L-0.62 -0.40L-0.68 -0.48L-0.71 -0.55L-0.70 -0.59L-0.67 -0.62L-0.63 -0.63L-0.57 -0.63L-0.52 -0.62L-0.47 -0.61L-0.42 -0.59L-0.36 -0.57L-0.31 -0.54L-0.26 -0.50L-0.22 -0.47L-0.18 -0.43L-0.15 -0.40L-0.12 -0.37L-0.09 -0.34L-0.07 -0.32L-0.06 -0.32L-0.04 -0.34L-0.04 -0.41L-0.02 -0.50L-0.00 -0.62L0.03 -0.74L0.07 -0.83L0.12 -0.89L0.16 -0.91L0.20 -0.89L0.23 -0.86L0.26 -0.81L0.28 -0.76L0.29 -0.71L0.31 -0.66L0.31 -0.60L0.31 -0.54L0.30 -0.48L0.30 -0.42L0.29 -0.37L0.28 -0.33L0.26 -0.29L0.25 -0.25L0.24 -0.22L0.25 -0.21L0.27 -0.21L0.33 -0.23L0.42 -0.27L0.54 -0.31L0.65 -0.34L0.76 -0.35L0.83 -0.34L0.86 -0.31L0.87 -0.27L0.86 -0.23L0.83 -0.18L0.80 -0.14L0.76 -0.10L0.72 -0.06L0.67 -0.03L0.62 -0.00L0.57 0.02L0.51 0.04L0.47 0.06L0.42 0.07L0.38 0.08L0.34 0.09L0.31 0.10L0.30 0.11L0.32 0.13L0.37 0.17L0.45 0.23L0.54 0.31L0.62 0.40L0.68 0.48L0.71 0.55L0.70 0.59L0.67 0.62L0.63 0.63L0.57 0.63L0.52 0.62L0.47 0.61L0.42 0.59L0.36 0.57L0.31 0.54L0.26 0.50L0.22 0.47L0.18 0.43L0.15 0.40L0.12 0.37L0.09 0.34L0.07 0.32L0.06 0.32L0.04 0.34L0.04 0.41L0.02 0.50L0.00 0.62L-0.03 0.74L-0.07 0.83L-0.12 0.89L-0.16 0.91L-0.20 0.89L-0.23 0.86L-0.26 0.81L-0.28 0.76L-0.29 0.71L-0.31 0.66L-0.31 0.60L-0.31 0.54L-0.30 0.48L-0.30 0.42L-0.29 0.37L-0.28 0.33L-0.26 0.29L-0.25 0.25L-0.24 0.22L-0.25 0.21L-0.27 0.21L-0.33 0.23L-0.42 0.27L-0.54 0.31L-0.65 0.34L-0.76 0.35L-0.83 0.34L-0.86 0.31L-0.87 0.27L-0.86 0.23L-0.83 0.18L-0.80 0.14L-0.76 0.10L-0.72 0.06L-0.67 0.03L-0.62 0.00L-0.57 -0.02L-0.51 -0.04L-0.47 -0.06L-0.42 -0.07L-0.38 -0.08L-0.34 -0.09L-0.31 -0.10L-0.30 -0.11L-0.32 -0.13L-0.37 -0.17L-0.45 -0.23L-0.54 -0.31L-0.62 -0.40L-0.68 -0.48L-0.71 -0.55L-0.70 -0.59L-0.67 -0.62L-0.63 -0.63L-0.57 -0.63L-0.52 -0.62L-0.47 -0.61L-0.42 -0.59L-0.36 -0.57L-0.31 -0.54L-0.26 -0.50L-0.22 -0.47L-0.18 -0.43L-0.15 -0.40L-0.12 -0.37L-0.09 -0.34L-0.07 -0.32L-0.06 -0.32L-0.04 -0.34L-0.04 -0.41L-0.02 -0.50L-0.00 -0.62L0.03 -0.74L0.07 -0.83L0.12 -0.89L0.16 -0.91L0.20 -0.89L0.23 -0.86L0.26 -0.81L0.28 -0.76L0.29 -0.71L0.31 -0.66L0.31 -0.60L0.31 -0.54L0.30 -0.48L0.30 -0.42L0.29 -0.37L0.28 -0.33L0.26 -0.29L0.25 -0.25L0.24 -0.22L0.25 -0.21L0.27 -0.21L0.33 -0.23L0.42 -0.27L0.54 -0.31L0.65 -0.34L0.76 -0.35L0.83 -0.34L0.86 -0.31L0.87 -0.27L0.86 -0.23L0.83 -0.18L0.80 -0.14L0.76 -0.10L0.72 -0.06L0.67 -0.03L0.62 -0.00L0.57 0.02L0.51 0.04L0.47 0.06L0.42 0.07L0.38 0.08L0.34 0.09L0.31 0.10L0.30 0.11L0.32 0.13L0.37 0.17L0.45 0.23L0.54 0.31L0.62 0.40L0.68 0.48L0.71 0.55L0.70 0.59L0.67 0.62L0.63 0.63L0.57 0.63L0.52 0.62L0.47 0.61L0.42 0.59L0.36 0.57L0.31 0.54L0.26 0.50L0.22 0.47L0.18 0.43L0.15 0.40L0.12 0.37L0.09 0.34L0.07 0.32L0.06 0.32L0.04 0.34L0.04 0.41L0.02 0.50L0.00 0.62L-0.03 0.74L-0.07 0.83L-0.12 0.89L-0.16 0.91L-0.20 0.89L-0.23 0.86L-0.26 0.81L-0.28 0.76L-0.29 0.71L-0.31 0.66L-0.31 0.60L-0.31 0.54L-0.30 0.48L-0.30 0.42L-0.29 0.37L-0.28 0.33L-0.26 0.29L-0.25 0.25L-0.24 0.22L-0.25 0.21L-0.27 0.21L-0.33 0.23L-0.42 0.27L-0.54 0.31L-0.65 0.34L-0.76 0.35L-0.83 0.34L-0.86 0.31L-0.87 0.27L-0.86 0.23L-0.83 0.18L-0.80 0.14L-0.76 0.10L-0.72 0.06L-0.67 0.03L-0.62 0.00L-0.57 -0.02L-0.51 -0.04L-0.47 -0.06L-0.42 -0.07L-0.38 -0.08L-0.34 -0.09L-0.31 -0.10L-0.30 -0.11L-0.32 -0.13L-0.37 -0.17L-0.45 -0.23L-0.54 -0.31L-0.62 -0.40L-0.68 -0.48L-0.71 -0.55L-0.70 -0.59L-0.67 -0.62L-0.63 -0.63L-0.57 -0.63L-0.52 -0.62L-0.47 -0.61L-0.42 -0.59L-0.36 -0.57L-0.31 -0.54L-0.26 -0.50L-0.22 -0.47L-0.18 -0.43L-0.15 -0.40L-0.12 -0.37L-0.09 -0.34L-0.07 -0.32L-0.06 -0.32L-0.04 -0.34L-0.04 -0.41L-0.02 -0.50L-0.00 -0.62"/></svg>
+              <p class="demo__voice-label" data-i18n="how.2.fig.a">2&times; and 3&times; &middot; three turns, one line</p>
+            </div>
+            <div class="demo__voice">
+              <svg viewBox="-1 -1 2 2" aria-hidden="true" focusable="false"><path d="M0.00 -0.62L0.03 -0.72L0.07 -0.79L0.11 -0.83L0.15 -0.83L0.18 -0.81L0.21 -0.79L0.24 -0.77L0.28 -0.76L0.31 -0.74L0.33 -0.71L0.34 -0.65L0.33 -0.57L0.30 -0.47L0.27 -0.38L0.24 -0.31L0.23 -0.28L0.25 -0.27L0.28 -0.28L0.32 -0.29L0.35 -0.29L0.38 -0.29L0.40 -0.28L0.43 -0.28L0.49 -0.28L0.57 -0.30L0.67 -0.31L0.76 -0.32L0.83 -0.30L0.86 -0.27L0.85 -0.23L0.82 -0.18L0.77 -0.14L0.74 -0.10L0.71 -0.06L0.69 -0.03L0.66 -0.00L0.61 0.03L0.53 0.05L0.45 0.06L0.37 0.07L0.32 0.07L0.32 0.08L0.35 0.11L0.40 0.15L0.46 0.19L0.50 0.23L0.52 0.27L0.53 0.31L0.54 0.35L0.56 0.40L0.60 0.46L0.63 0.53L0.65 0.60L0.65 0.65L0.61 0.67L0.55 0.65L0.47 0.62L0.40 0.57L0.34 0.53L0.29 0.51L0.26 0.50L0.23 0.49L0.19 0.46L0.15 0.42L0.12 0.37L0.09 0.33L0.07 0.32L0.06 0.35L0.06 0.42L0.04 0.51L0.03 0.60L0.00 0.67L-0.03 0.72L-0.06 0.74L-0.10 0.75L-0.14 0.77L-0.18 0.80L-0.22 0.83L-0.27 0.84L-0.30 0.83L-0.32 0.78L-0.32 0.69L-0.31 0.59L-0.29 0.50L-0.27 0.42L-0.27 0.38L-0.27 0.36L-0.29 0.34L-0.29 0.32L-0.30 0.30L-0.29 0.27L-0.29 0.24L-0.31 0.24L-0.37 0.26L-0.45 0.29L-0.55 0.32L-0.65 0.34L-0.72 0.34L-0.77 0.32L-0.78 0.28L-0.78 0.25L-0.78 0.21L-0.79 0.18L-0.81 0.14L-0.81 0.11L-0.79 0.07L-0.73 0.03L-0.65 0.00L-0.54 -0.02L-0.45 -0.04L-0.39 -0.05L-0.36 -0.06L-0.37 -0.08L-0.39 -0.11L-0.42 -0.13L-0.43 -0.15L-0.43 -0.18L-0.43 -0.20L-0.45 -0.23L-0.49 -0.28L-0.55 -0.35L-0.62 -0.43L-0.66 -0.51L-0.68 -0.57L-0.66 -0.61L-0.61 -0.61L-0.56 -0.61L-0.50 -0.60L-0.45 -0.59L-0.42 -0.59L-0.38 -0.59L-0.33 -0.58L-0.28 -0.54L-0.22 -0.48L-0.17 -0.40L-0.12 -0.34L-0.10 -0.31L-0.09 -0.32L-0.08 -0.37L-0.08 -0.43L-0.07 -0.49L-0.05 -0.54L-0.03 -0.57L-0.00 -0.60L0.03 -0.63L0.06 -0.69L0.10 -0.76L0.15 -0.83L0.19 -0.88L0.24 -0.89L0.27 -0.86L0.29 -0.79L0.29 -0.71L0.29 -0.63L0.29 -0.56L0.30 -0.52L0.31 -0.48L0.31 -0.45L0.30 -0.40L0.28 -0.34L0.25 -0.28L0.24 -0.24L0.24 -0.22L0.28 -0.23L0.35 -0.27L0.43 -0.30L0.51 -0.33L0.58 -0.33L0.63 -0.33L0.66 -0.31L0.69 -0.29L0.73 -0.27L0.79 -0.25L0.84 -0.22L0.87 -0.19L0.87 -0.15L0.83 -0.11L0.75 -0.07L0.66 -0.03L0.57 -0.00L0.51 0.02L0.47 0.04L0.46 0.06L0.45 0.08L0.43 0.09L0.39 0.11L0.36 0.11L0.35 0.13L0.36 0.15L0.41 0.19L0.48 0.25L0.56 0.32L0.62 0.39L0.65 0.45L0.65 0.50L0.63 0.53L0.60 0.55L0.57 0.57L0.56 0.61L0.54 0.64L0.51 0.66L0.46 0.65L0.39 0.61L0.32 0.55L0.25 0.47L0.19 0.40L0.15 0.37L0.13 0.36L0.12 0.38L0.11 0.40L0.09 0.43L0.08 0.44L0.06 0.44L0.04 0.46L0.02 0.50L0.00 0.57L-0.03 0.67L-0.07 0.76L-0.11 0.84L-0.15 0.87L-0.19 0.86L-0.22 0.83L-0.25 0.78L-0.27 0.73L-0.29 0.70L-0.31 0.67L-0.33 0.64L-0.34 0.58L-0.32 0.51L-0.29 0.42L-0.26 0.34L-0.23 0.27L-0.22 0.24L-0.24 0.24L-0.29 0.26L-0.34 0.29L-0.40 0.30L-0.44 0.31L-0.47 0.30L-0.51 0.29L-0.56 0.29L-0.63 0.29L-0.72 0.30L-0.80 0.29L-0.86 0.27L-0.89 0.24L-0.87 0.19L-0.81 0.14L-0.75 0.10L-0.69 0.06L-0.64 0.03L-0.61 0.00L-0.59 -0.03L-0.55 -0.05L-0.49 -0.06L-0.42 -0.07L-0.36 -0.08L-0.32 -0.08L-0.31 -0.10L-0.35 -0.13L-0.42 -0.17L-0.49 -0.23L-0.54 -0.28L-0.57 -0.33L-0.58 -0.37L-0.58 -0.41L-0.59 -0.45L-0.60 -0.50L-0.62 -0.56L-0.62 -0.62L-0.61 -0.67L-0.57 -0.68L-0.50 -0.66L-0.42 -0.61L-0.35 -0.54L-0.28 -0.49L-0.24 -0.46L-0.21 -0.44L-0.18 -0.44L-0.16 -0.43L-0.13 -0.41L-0.10 -0.38L-0.08 -0.36L-0.06 -0.36L-0.05 -0.39L-0.04 -0.46L-0.02 -0.56L-0.00 -0.66L0.03 -0.74L0.07 -0.78L0.11 -0.80L0.14 -0.79L0.17 -0.79L0.21 -0.79L0.25 -0.79L0.29 -0.80L0.32 -0.77L0.34 -0.72L0.33 -0.64L0.31 -0.54L0.28 -0.44L0.25 -0.36L0.24 -0.32L0.25 -0.30L0.27 -0.30L0.30 -0.30L0.32 -0.29L0.33 -0.28L0.34 -0.26L0.37 -0.26L0.42 -0.27L0.50 -0.29L0.60 -0.31L0.70 -0.33L0.78 -0.32L0.83 -0.30L0.83 -0.26L0.81 -0.22L0.79 -0.17L0.77 -0.14L0.76 -0.10L0.75 -0.07L0.73 -0.03L0.67 -0.00L0.59 0.03L0.50 0.04L0.41 0.05L0.35 0.06L0.33 0.07L0.35 0.09L0.39 0.12L0.43 0.16L0.46 0.19L0.48 0.22L0.49 0.25L0.50 0.29L0.53 0.34L0.58 0.40L0.63 0.48L0.66 0.56L0.67 0.62L0.65 0.65L0.59 0.65L0.52 0.62L0.45 0.59L0.40 0.57L0.35 0.55L0.31 0.54L0.28 0.53L0.23 0.50L0.19 0.45L0.14 0.39L0.11 0.34L0.08 0.31L0.07 0.33L0.07 0.38L0.06 0.46L0.05 0.54L0.03 0.61L0.00 0.65L-0.03 0.68L-0.06 0.70L-0.10 0.73L-0.14 0.78L-0.18 0.83L-0.23 0.86L-0.27 0.87L-0.30 0.83L-0.31 0.75L-0.31 0.66L-0.29 0.57L-0.28 0.49L-0.28 0.44L-0.29 0.41L-0.29 0.38L-0.30 0.35L-0.29 0.31L-0.27 0.27L-0.26 0.24L-0.27 0.23L-0.31 0.24L-0.39 0.27L-0.48 0.31L-0.58 0.33L-0.65 0.34L-0.70 0.33L-0.73 0.30L-0.75 0.27L-0.77 0.24L-0.79 0.21L-0.83 0.18L-0.85 0.15L-0.84 0.11L-0.79 0.07L-0.71 0.03L-0.61 0.00L-0.51 -0.02L-0.44 -0.04L-0.41 -0.05L-0.40 -0.07L-0.41 -0.09L-0.41 -0.11L-0.41 -0.13L-0.40 -0.14L-0.39 -0.16L-0.40 -0.19L-0.45 -0.23L-0.51 -0.30L-0.59 -0.37L-0.64 -0.45L-0.67 -0.52L-0.67 -0.56L-0.63 -0.58L-0.59 -0.59L-0.54 -0.59L-0.51 -0.60L-0.47 -0.62L-0.44 -0.63L-0.39 -0.62L-0.34 -0.58L-0.27 -0.52L-0.21 -0.44L-0.15 -0.37L-0.12 -0.33L-0.10 -0.33L-0.10 -0.36L-0.09 -0.41L-0.08 -0.45L-0.06 -0.49L-0.04 -0.51L-0.02 -0.53L-0.00 -0.57"/></svg>
+              <p class="demo__voice-label" data-i18n="how.2.fig.b">2.76&times; &middot; three turns, three lines</p>
+            </div>
+          </div>
+          <figcaption class="demo__voices-caption" data-i18n="how.2.fig.cap">
+            The Voice module&rsquo;s drawing, taken three times round.
+          </figcaption>
+        </figure>
+        <figure class="demo__code">
+          <figcaption class="demo__code-file">component.js <span data-i18n="how.abridged">&middot; abridged</span></figcaption>
+          <pre class="demo__code-body"><code>for (var i = 0; i &lt;= ROSETTE_POINTS; i++) {
+  var a = (i / ROSETTE_POINTS) * Math.PI * 2;
+  var v = wave(a * ROSETTE_CYCLES, partials);
+  var r = 0.62 + 0.3 * (v / peak);
+  <span class="demo__code-note">// x = r sin a, y = -r cos a</span>
+}</code></pre>
+        </figure>
+      </article>
+
+      <article class="demo__how-step" data-reveal>
+        <p class="demo__how-no">03 &middot; <span data-i18n="how.3.kicker">Strike</span></p>
+        <h3 class="demo__how-heading" data-i18n="how.3.head">How a note arrives and leaves</h3>
+        <p class="demo__how-text" data-i18n="how.3.p1">
+          The envelope is two ramps on a gain node: straight up over
+          <code>--attack</code>, then an exponential fall over
+          <code>--decay</code>. An exponential curve never reaches zero, so it
+          lands just below hearing and stops there. The click is a layer of
+          its own, a few milliseconds of filtered noise, because a sharper
+          attack is not a click but a discontinuity.
+        </p>
+        <figure class="demo__code">
+          <figcaption class="demo__code-file">component.css</figcaption>
+          <pre class="demo__code-body"><code>--struck-tones-attack: 16;       <span class="demo__code-note">/* ms to peak */</span>
+--struck-tones-decay: 820;       <span class="demo__code-note">/* ms to silence */</span>
+--struck-tones-level: 0.15;      <span class="demo__code-note">/* peak gain, 0–1 */</span>
+--struck-tones-click: 0.11;      <span class="demo__code-note">/* the noise under it */</span>
+--struck-tones-click-tone: 2100; <span class="demo__code-note">/* Hz, where that sits */</span></code></pre>
+        </figure>
+        <figure class="demo__code">
+          <figcaption class="demo__code-file">component.js <span data-i18n="how.abridged">&middot; abridged</span></figcaption>
+          <pre class="demo__code-body"><code>var g = gain.gain;
+g.setValueAtTime(0.0001, t0);
+g.linearRampToValueAtTime(level, t0 + attack);
+g.exponentialRampToValueAtTime(0.0001, t0 + attack + fall);</code></pre>
+        </figure>
+      </article>
+
+      <article class="demo__how-step" data-reveal>
+        <p class="demo__how-no">04 &middot; <span data-i18n="how.4.kicker">Room</span></p>
+        <h3 class="demo__how-heading" data-i18n="how.4.head">What it is heard in</h3>
+        <p class="demo__how-text" data-i18n="how.4.p1">
+          A lowpass over everything keeps the set out of frequencies an
+          interface has no business in, and a small reverb puts it in a room.
+          The reverb has no file either: its impulse response is noise under a
+          decaying curve, generated from <code>--air-size</code> when the set
+          is armed, with a one-pole filter over it so it reads as air rather
+          than static.
+        </p>
+        <p class="demo__how-text" data-i18n="how.4.p2">
+          It was 0.18 through 1.7 seconds, which on sounds this short is a
+          hall. The Room module draws the note and the room&rsquo;s tail on
+          one time axis, and at those values the tail was twice the note. It
+          is a room now.
+        </p>
+        <figure class="demo__code">
+          <figcaption class="demo__code-file">component.css</figcaption>
+          <pre class="demo__code-body"><code>--struck-tones-tone: 3400;    <span class="demo__code-note">/* Hz, a lowpass on it all */</span>
+--struck-tones-air: 0.1;      <span class="demo__code-note">/* how much is the room */</span>
+--struck-tones-air-size: 1.2; <span class="demo__code-note">/* seconds of tail */</span></code></pre>
+        </figure>
+        <figure class="demo__code">
+          <figcaption class="demo__code-file">component.js <span data-i18n="how.abridged">&middot; abridged</span></figcaption>
+          <pre class="demo__code-body"><code>for (var i = 0; i &lt; n; i++) {
+  last = last * 0.72 + (Math.random() * 2 - 1) * 0.28;
+  d[i] = last * Math.pow(1 - i / n, 2.6);
+}</code></pre>
+        </figure>
+      </article>
+
+      <article class="demo__how-step" data-reveal>
+        <p class="demo__how-no">05 &middot; <span data-i18n="how.5.kicker">Drawing</span></p>
+        <h3 class="demo__how-heading" data-i18n="how.5.head">The same numbers, read by the stylesheet</h3>
+        <p class="demo__how-text" data-i18n="how.5.p1">
+          Nothing on the faceplate is measured. The envelope divides its width
+          with <code>flex-grow</code>, which takes a bare number, and
+          <code>--attack</code> and <code>--decay</code> are bare numbers, so
+          the drawing has exactly the proportions the sound has. The second
+          note is the same shape in a second row, led in by a spacer as wide
+          as its lag. Each key plots its gesture from its own two tokens, and
+          each LED sits under its key by the same arithmetic.
+        </p>
+        <figure class="demo__code">
+          <figcaption class="demo__code-file">component.css <span data-i18n="how.abridged">&middot; abridged</span></figcaption>
+          <pre class="demo__code-body"><code>.struck-tones__env-rise {
+  flex: var(--struck-tones-attack) 1 0;
+}
+.struck-tones__env-fall {
+  flex: var(--struck-tones-decay) 1 0;
+}
+
+<span class="demo__code-note">/* the second note waits its --t of a --spread */</span>
+.struck-tones__env-note--second .struck-tones__env-lead {
+  flex-grow: calc(var(--struck-tones-shown-at)
+    * var(--struck-tones-spread));
+}
+
+<span class="demo__code-note">/* a key's second head: up by its step */</span>
+--struck-tones-y2: clamp(
+  var(--struck-tones-head) / 2,
+  50% - var(--struck-tones-step)
+      * var(--struck-tones-contour-span),
+  100% - var(--struck-tones-head) / 2
+);
+
+<span class="demo__code-note">/* an LED under its key, a fifth either side */</span>
+.struck-tones__led {
+  left: calc((clamp(-7, var(--struck-tones-led-step), 7)
+    + 7.5) / 15 * 100%);
+}</code></pre>
+        </figure>
+      </article>
+
+      <article class="demo__how-step" data-reveal>
+        <p class="demo__how-no">06 &middot; <span data-i18n="how.6.kicker">Screen</span></p>
+        <h3 class="demo__how-heading" data-i18n="how.6.head">A shader on the same clock</h3>
+        <p class="demo__how-text" data-i18n="how.6.p1">
+          The screen is a fragment shader, and it keeps no clock of its own.
+          Each frame reads the <code>currentTime</code> of a CSS animation
+          that starts with the strike, so the sweep stays in step with
+          everything else, and when the index pauses every animation in a
+          thumbnail the shader holds with it. The loop runs only while a
+          strike is in flight; the rest of the time the screen is one still
+          frame.
+        </p>
+        <p class="demo__how-text" data-i18n="how.6.p2">
+          It draws the first note as its waveform, slowed twenty times so that
+          each cycle is a stroke: how tightly the strokes pack is the pitch.
+          The second note is a dashed outline with a tick for every cycle, so
+          the two stay apart where they overlap. Behind both, the room is a
+          haze of grain that runs past the right-hand edge, because the room
+          rings past the end of the note. With no WebGL the CSS envelope
+          underneath is what shows, and it is the same drawing.
+        </p>
+        <figure class="demo__code">
+          <figcaption class="demo__code-file">component.js <span data-i18n="how.abridged">&middot; abridged</span></figcaption>
+          <pre class="demo__code-body"><code>var anim = clock();   <span class="demo__code-note">// the trace's struck-tones-cool</span>
+if (anim &amp;&amp; anim.currentTime !== null) {
+  now = Number(anim.currentTime);  <span class="demo__code-note">// ms since the strike</span>
+}
+gl.uniform1f(u.u_now, now);
+gl.uniform1f(u.u_cyc1,
+  hz(pal, pal.steps.tap) / 1000 / pal.timebase);</code></pre>
+        </figure>
+        <figure class="demo__code">
+          <figcaption class="demo__code-file">component.js · GLSL <span data-i18n="how.abridged">&middot; abridged</span></figcaption>
+          <pre class="demo__code-body"><code>float env(float t) {
+  if (t &lt; u_att) return t / u_att;
+  float u = (t - u_att) / u_dec;
+  return exp(-4.4 * u) - exp(-4.4) * u;
+}
+
+float sig(float t) {
+  return env(t) * wave(TAU * u_cyc1 * t);
+}</code></pre>
+        </figure>
+      </article>
+
+      <article class="demo__how-step" data-reveal>
+        <p class="demo__how-no">07 &middot; <span data-i18n="how.7.kicker">Motion</span></p>
+        <h3 class="demo__how-heading" data-i18n="how.7.head">A strike lasts as long as its sound</h3>
+        <p class="demo__how-text" data-i18n="how.7.p1">
+          A strike animates one registered number from 0 to 1 and back: up
+          over <code>--attack</code>, down over <code>--decay</code>, the same
+          two ramps the gain node makes. Multiplying by <code>1ms</code> is
+          all it takes to turn the audio&rsquo;s bare numbers into times. The
+          fall is eased along the four points the envelope is drawn with, and
+          the key, the heads and the line all read that one number, so
+          <code>--hushed</code> swells and lingers on screen the way it does
+          in the ear.
+        </p>
+        <figure class="demo__code">
+          <figcaption class="demo__code-file">component.css <span data-i18n="how.abridged">&middot; abridged</span></figcaption>
+          <pre class="demo__code-body"><code>@property --struck-tones-glow {
+  syntax: "&lt;number&gt;";
+  inherits: false;
+  initial-value: 0;
+}
+
+--struck-tones-rise-time:
+  calc(var(--struck-tones-attack) * 1ms);
+--struck-tones-fall-time:
+  calc(var(--struck-tones-decay) * 1ms);
+
+.struck-tones__pad[data-hit] {
+  animation-name: struck-tones-rise, struck-tones-fall;
+  animation-duration: var(--struck-tones-rise-time),
+    var(--struck-tones-fall-time);
+  animation-delay: 0ms, var(--struck-tones-rise-time);
+  animation-timing-function: linear,
+    linear(0, 0.46 14%, 0.74 34%, 0.91 62%, 1);
+}</code></pre>
+        </figure>
+      </article>
+
+      <article class="demo__how-step" data-reveal>
+        <p class="demo__how-no">08 &middot; <span data-i18n="how.8.kicker">Retuning</span></p>
+        <h3 class="demo__how-heading" data-i18n="how.8.head">Change it without opening the file</h3>
+        <p class="demo__how-text" data-i18n="how.8.p1">
+          Which is the point of writing a sound set this way. Override a token
+          on the component&rsquo;s own element, from anywhere, and the sound,
+          the read-out, the drawings, the screen and the timing all follow.
+          <code>--hushed</code> and <code>--close</code> above are built
+          exactly like this: token overrides and nothing else, down to the
+          colour of the phosphor.
+        </p>
+        <figure class="demo__code">
+          <figcaption class="demo__code-file"><span data-i18n="how.yours">your stylesheet</span></figcaption>
+          <pre class="demo__code-body"><code><span class="demo__code-note">/* A softer set for a settings panel: down to A,
+   a rounder strike, a third where the fifth was. */</span>
+.settings .struck-tones {
+  --struck-tones-root: 440;
+  --struck-tones-attack: 60;
+  --struck-tones-decay: 1100;
+  --struck-tones-i-commit: 4;
+  --struck-tones-phosphor: #ffc56e;
+}</code></pre>
+        </figure>
+      </article>
     </section>
 
     <!-- notes.md, rendered. Type, source, the origin paragraphs and one <li>
@@ -969,113 +1594,179 @@
         </dl>
 
         <p class="demo__notes-lede">
-          A sound palette for an interface, written as a token block. Four
-          sounds &mdash; a tap, a commit, a revert and an alert &mdash; are
-          declared as a tuning, a voice, a strike and a room, and
-          <code>component.js</code> reads those custom properties and builds the
-          sounds out of oscillators at the moment a pad is struck. There are no
-          audio files in the folder and no request to make, the reverb included:
-          its impulse response is generated from two numbers when the set is
-          armed. Beside the pads is a read-out of the last strike: its name, its
-          pitch, and its envelope drawn from the same two numbers the gain node
-          is using.
+          A sound palette for an interface, written as a token block and set as an
+          instrument&rsquo;s faceplate. Four sounds &mdash; a tap, a commit, a
+          revert and an alert &mdash; are declared as a tuning, a voice, a
+          strike and a room, and <code>component.js</code> reads those custom
+          properties and builds the sounds out of oscillators at the moment a
+          key is struck. There are no audio files in the folder and no request
+          to make, the reverb included: its impulse response is generated from
+          two numbers when the set is armed. Each key draws its sound as the
+          gesture it is, the screen draws whichever was struck last, and a sheet
+          along the bottom draws the four token groups the set is made from.
         </p>
-
         <p class="demo__notes-lede">
-          It ships silent. The arm switch in the corner is both the mute and the
-          user gesture an <code>AudioContext</code> needs, so the component
-          cannot be the reason a page makes a noise nobody asked for &mdash; and
+          It ships silent. The arm switch in the corner is both the mute and the user
+          gesture an <code>AudioContext</code> needs, so the component cannot be
+          the reason a page makes a noise nobody asked for &mdash; and
           everything it says, it says visually too, because a sound nobody hears
           still has to deliver what it was carrying.
         </p>
-
         <ol class="demo__notes-list">
           <li>
-            <h3 class="demo__notes-head">A sound set is a palette, not a library.</h3>
-            <p>Twenty-odd numbers in four groups &mdash; what it is tuned to, what
-              one note is made of, how a note arrives and leaves, and what room it
-              is heard in. <code>component.js</code> reads every one of them with
-              <code>getComputedStyle</code> and hands them to the nodes, so nothing
-              is written twice and the whole set moves when one value is overridden
-              from outside. That is the test this repo sets for a property block
-              &mdash; re-theme it without opening the file &mdash; applied to
-              something that is not a colour, and a <code>.wav</code> would fail it:
-              a recorded sound is a decision you can replace but not edit.</p>
+            <h3 class="demo__notes-head">A sound set is a palette, and a faceplate is its swatch sheet.</h3>
+            <p>Twenty-odd numbers in four groups &mdash; what it is tuned to, what one note is
+              made of, how a note arrives and leaves, and what room it is heard
+              in. <code>component.js</code> reads every one of them with
+              <code>getComputedStyle</code> and hands them to the nodes, so
+              nothing is written twice and the whole set moves when one value is
+              overridden from outside. That is the test CLAUDE.md sets for a
+              property block &mdash; re-theme it without opening the file
+              &mdash; applied to something that is not a colour, and a
+              <code>.wav</code> would fail it: a recorded sound is a decision
+              you can replace but not edit.</p>
+            <p>The sheet along the bottom draws the four groups the way an instrument&rsquo;s
+              panel letters its modules: a keyboard with an LED under each
+              sound&rsquo;s key, the voice wrapped around a circle, one
+              note&rsquo;s envelope, and the note against the room&rsquo;s tail
+              &mdash; each from its own tokens, with its values printed under
+              it. It replaced a list of four figures that said the same things
+              and showed none of them. The panel is a deep green between walnut
+              cheeks, and deep because it has to be: a vivid mid green like
+              #2e7d4f carries bone print at 4.04:1 and near-black at 3.74:1, so
+              no text can go on it at all. At #1a3024 the print is 11.28:1 and
+              the soft print 6.46:1, and the vivid green is spent where it can
+              be afforded &mdash; the phosphor, the LEDs, the lit keys.</p>
           </li>
           <li>
             <h3 class="demo__notes-head">A note is four layers, not a waveform.</h3>
-            <p>A sine fundamental sounded twice seven cents apart and panned against
-              itself, so it drifts instead of sitting still; an octave above it at
-              0.22 for body; a twelfth above that at 0.06 for shimmer, decaying at
-              0.3 of the fundamental&rsquo;s rate because every acoustic overtone
-              dies before its note does; and 26&thinsp;ms of band-passed noise at
-              2.1&thinsp;kHz under the attack, which is the click. All of it through
-              one 3.4&thinsp;kHz lowpass and then split between the dry signal and a
-              small generated room.</p>
-            <p>The first version was one oscillator with a sharp envelope and it
-              sounded like a 1980s sound chip, for three separable reasons each
-              worth knowing on its own: a raw geometric wave with nothing rolled
-              off; an <em>inharmonic</em> partial at 2.76&times; the fundamental,
-              which is the ratio a struck metal bar has and an overtone belonging to
-              no key, so it reads as a bleep however carefully it is enveloped; and
-              a 4&thinsp;ms attack, which is not a click but a discontinuity. A
-              click is a layer. An attack is a shape. Sharpening the second to get
-              the first is what makes a set brittle.</p>
+            <p>A sine fundamental sounded twice seven cents apart and panned against itself, so
+              it drifts instead of sitting still; an octave above it at 0.22 for
+              body; a twelfth above that at 0.06 for shimmer, decaying at 0.3 of
+              the fundamental&rsquo;s rate because every acoustic overtone dies
+              before its note does; and 26ms of band-passed noise at 2.1kHz
+              under the attack, which is the click. All of it through one 3.4kHz
+              lowpass and then split between the dry signal and a small
+              generated room, 0.1 of it through 1.2 seconds. The room was 0.18
+              through 1.7, which on sounds this short is a hall: drawn against
+              the note on the Room module, the tail was twice the note&rsquo;s
+              length.</p>
+            <p>The first version was one oscillator with a sharp envelope and it sounded like a
+              1980s sound chip for three separable reasons, each worth knowing
+              on its own: a raw geometric wave with nothing rolled off; an
+              <em>inharmonic</em> partial at 2.76&times; the fundamental, which
+              is the ratio a struck metal bar has and an overtone belonging to
+              no key, so it reads as a bleep however carefully it is enveloped;
+              and a 4ms attack, which is not a click but a discontinuity. A
+              click is a layer. An attack is a shape. Sharpening the second to
+              get the first is what makes a set brittle. The Voice module draws
+              the second reason: one cycle of the wave wrapped six times around
+              a circle closes on itself only when every partial is a whole
+              number, and at 2.76 no two petals match.</p>
           </li>
           <li>
             <h3 class="demo__notes-head">Direction carries the message, and nothing in the set beats.</h3>
-            <p>Up a fifth for a commit, down a fourth for a revert, a single note at
-              the root for a plain acknowledgement, and a semitone <em>down</em> for
-              the alert, played quickly. That last one used to sound its semitone
-              against the root &mdash; two pitches 31&thinsp;Hz apart, which is not
-              slow beating but roughness, and genuinely unpleasant rather than merely
-              urgent. Same interval, sounded after rather than with: nothing overlaps,
-              so nothing beats, and what is left is the unease of stepping down onto a
-              note that is nearly the tonic and is not. The urgency moved into the
-              timing instead &mdash; it is the quickest gesture in the set, at 0.55 of
-              a <code>--spread</code> where the others take a full one.</p>
+            <p>Up a fifth for a commit, down a fourth for a revert, a single note at the root
+              for a plain acknowledgement, and a semitone <em>down</em> for the
+              alert, played quickly. That last one used to sound its semitone
+              against the root &mdash; two pitches 31 Hz apart, which is not
+              slow beating but roughness, and genuinely unpleasant rather than
+              merely urgent. Same interval, sounded after rather than with:
+              nothing overlaps, so nothing beats, and what is left is the unease
+              of stepping down onto a note that is nearly the tonic and is not.
+              The urgency moved into the timing instead &mdash; it is the
+              quickest gesture in the set, at 0.55 of a <code>--spread</code>
+              where the others take a full one &mdash; and the timing is a
+              token, <code>--t-alert</code>, rather than a constant in the
+              script, so the keys and the screen can draw it. What a screen
+              reader hears is composed from the steps too: it used to be written
+              beside them, and <code>--close</code> went on announcing a fifth
+              while it played a minor third.</p>
           </li>
           <li>
-            <h3 class="demo__notes-head">The picture is drawn from the audio&rsquo;s own numbers.</h3>
+            <h3 class="demo__notes-head">The picture is drawn from the audio&rsquo;s own numbers, and so is the motion.</h3>
             <p><code>flex-grow</code> takes a bare number and
-              <code>--attack</code>/<code>--decay</code> are bare numbers, so the
-              rise and the fall of the drawn envelope divide the width in exactly
-              the ratio the sound is made at &mdash; nothing measures anything.
-              The pitch bar on each pad takes its height from <code>calc()</code>
-              on that pad&rsquo;s semitone token. So the drawing cannot fall out
-              of step with the sound, and retuning the set redraws it for free.</p>
+              <code>--attack</code>/<code>--decay</code> are bare numbers, so
+              the rise and the fall of the drawn envelope divide the width in
+              exactly the ratio the sound is made at &mdash; nothing measures
+              anything. Each key draws its sound as a contour: a head per note,
+              across by its <code>--t</code>, up or down by its step at a
+              <code>--contour-span</code> per semitone from a dotted line at the
+              root. It replaced a bar sized by the last note&rsquo;s pitch,
+              which could say how high but not which way or how soon: the
+              alert&rsquo;s semitone came out 1.4px shorter than the tap&rsquo;s
+              bar, and under <code>--close</code> all four bars matched. The
+              screen draws the struck gesture on one axis for every sound
+              &mdash; the slowest gesture in the set &mdash; with the second
+              note the same shape as the first, drawn distinct over it, so the
+              alert&rsquo;s lands visibly sooner than the commit&rsquo;s.</p>
+            <p>A strike is one registered number, <code>--glow</code>, animated up over
+              <code>--attack</code> and down over <code>--decay</code> &mdash;
+              the gain node&rsquo;s two ramps, the fall eased along the envelope
+              drawing&rsquo;s own four points &mdash; and the key, the heads and
+              the line all read it. Multiplying the bare numbers by
+              <code>1ms</code> is the whole of the conversion, so
+              <code>component.css</code> names no motion duration at all. The
+              flash used to be a fixed 420ms and the playhead a fixed 800ms,
+              which drew <code>--hushed</code>&rsquo;s 1.7s note in under half
+              its length. Reduced motion keeps the light and drops what travels:
+              a strike still fades over its own timing, but the heads do not
+              swell and the playhead does not cross.</p>
+            <p>The screen&rsquo;s shader keeps the same time rather than a time of its own:
+              each frame reads the <code>currentTime</code> of a CSS animation
+              that starts with the strike, so its sweep is in step with the CSS
+              playhead and a paused preview holds it with everything else. It
+              draws the first note as its waveform slowed twenty times &mdash;
+              <code>--timebase</code> &mdash; so how tightly the strokes pack is
+              the pitch; the second as a dashed outline with a tick per cycle;
+              and the room as grain that runs past the edge, because the room
+              rings past the note. The CSS envelope underneath is the same
+              drawing and is what shows with no WebGL; the canvas fades in only
+              once it has drawn.</p>
           </li>
           <li>
             <h3 class="demo__notes-head">Silence is the default, and the thumbnail is built for it.</h3>
-            <p>The one place this study can never play is the landing page: a
-              card&rsquo;s iframe has pointer events off, so there is no gesture
-              to arm audio with, and a rail that made a noise on approach would be
-              indefensible even where there is one. So the card&rsquo;s active
-              state is <code>--live</code> &mdash; the set striking its own four
-              pads in silence, on a CSS stagger, with a playhead crossing the
-              envelope. Keyframes rather than a timer, so the index&rsquo;s one
-              <code>animation-play-state</code> rule stops all of it while the
-              rail is being dragged.</p>
-            <p>Without <code>component.js</code> the component is still the
-              component: the palette list, the pad steps and the envelope are all
-              CSS reading the same tokens, so the card states its set correctly
-              with no script at all. What the script adds is the sound, which CSS
-              cannot reach &mdash; so the arm switch ships <code>disabled</code>
-              in <code>component.html</code> and the script enables it, rather
-              than offering a control that does nothing.</p>
+            <p>The one place this study can never play is the landing page: a card&rsquo;s
+              iframe has pointer events off, so there is no gesture to arm audio
+              with, and a rail that made a noise on approach would be
+              indefensible even where there is one. So the card&rsquo;s
+              <code>active</code> state is <code>--live</code> &mdash; the set
+              striking its own four keys in silence, one gesture rung out at a
+              time, on the screen&rsquo;s own window, so <code>--hushed</code>
+              plays itself through at its own slower tempo. The tempo is a
+              keyframe on the rack and each beat is an ordinary strike, the one
+              a click makes, so the thumbnail cannot show something the
+              component does not do. A keyframe rather than a timer, because a
+              paused animation fires no iterations: the index&rsquo;s one
+              <code>animation-play-state</code> rule stops the clock while the
+              rail is being dragged and holds a strike in flight where it
+              stands. The shader&rsquo;s frame loop takes the pause as
+              <code>--run</code>, handed in on the component&rsquo;s own
+              element, and its buffer takes the rail&rsquo;s scale as
+              <code>--buffer-scale</code>.</p>
+            <p>Without <code>component.js</code> the component is still the component: the
+              sheet, the key steps, the contours and the envelope are all CSS or
+              markup reading the same tokens, so the card states its set
+              correctly with no script at all. What the script adds is the
+              sound, which CSS cannot reach, the strike, which is an event
+              rather than a state, and the shader &mdash; so the arm switch
+              ships <code>disabled</code> in <code>component.html</code> and the
+              script enables it, rather than offering a control that does
+              nothing.</p>
           </li>
         </ol>
-
         <dl class="demo__notes-meta demo__notes-meta--foot">
           <div class="demo__notes-row">
             <dt data-i18n="notes.inspiration">Inspiration</dt>
-            <dd>none &mdash; original design. The tuning is the one borrowed
-              thing and it is borrowed from music rather than from an interface:
-              a fifth and a fourth against a 528&thinsp;Hz tonic, with the
-              overtones at whole-number ratios above it.</dd>
+            <dd>none &mdash; original design. The tuning is the one borrowed thing and it is
+              borrowed from music rather than from an interface: a fifth and a
+              fourth against a 528Hz tonic, with the overtones at whole-number
+              ratios above it. The faceplate borrows a material rather than a
+              panel &mdash; the walnut end cheeks analogue synthesisers have had
+              since the seventies &mdash; and no instrument&rsquo;s layout,
+              lettering or name.</dd>
           </div>
         </dl>
-
         <p class="demo__notes-foot">
           <a href="notes.md">notes.md</a>
           <span data-i18n="notes.full">&mdash; the full record, including what was tried and dropped</span>
@@ -1133,13 +1824,136 @@
           + 'token-blok. Fire lyde angivet som en stemning, en klang, et '
           + 'anslag og et rum, syntetiseret ud fra de tal frem for afspillet '
           + 'fra filer \u2014 ogs\u00e5 rumklangen, hvis impulsrespons '
-          + 'genereres, n\u00e5r du sl\u00e5r lyden til. Hvert stativ '
+          + 'genereres, n\u00e5r du sl\u00e5r lyden til. Hvert frontpanel '
           + 'herunder er tavst, indtil du g\u00f8r det.',
         'state.struck': 'Anslag \u2014 s\u00e6ttet som angivet',
         'state.hushed': 'D\u00e6mpet \u2014 kun anslaget og rummet er '
           + '\u00e6ndret: 210\u2009ms opbygning, intet klik, l\u00e6ngere udklang',
         'state.close': 'T\u00e6t \u2014 kun stemningen er \u00e6ndret: en '
-          + 'grundtone p\u00e5 396\u2009Hz og smallere trin, samme klang'
+          + 'grundtone p\u00e5 396\u2009Hz og smallere trin, samme klang',
+        'how.title': 'S\u00e5dan er s\u00e6ttet bygget',
+        'how.lede': 'Alt p\u00e5 frontpanelet \u2014 hver lyd, hver tegning, '
+          + 'hvert anslag \u2014 l\u00e6ses fra \u00e9n blok af custom '
+          + 'properties \u00f8verst i <code>component.css</code>. '
+          + 'Scriptet l\u00e6ser den med <code>getComputedStyle</code> '
+          + 'og giver tallene videre til Web Audio og til sk\u00e6rmens '
+          + 'shader; stylesheetet l\u00e6ser de samme tal med '
+          + '<code>calc()</code>. S\u00e5 der er \u00e9t sted at '
+          + '\u00e6ndre noget, og en \u00e6ndring flytter lyden og '
+          + 'billedet sammen.',
+        'how.abridged': '\u00b7 forkortet',
+        'how.yours': 'dit stylesheet',
+        'how.2.fig.a': '2\u00d7 og 3\u00d7 \u00b7 tre omgange, \u00e9n linje',
+        'how.2.fig.b': '2,76\u00d7 \u00b7 tre omgange, tre linjer',
+        'how.2.fig.cap': 'Klang-modulets tegning, taget tre gange rundt.',
+        'how.1.kicker': 'Stemning',
+        'how.1.head': 'Hvad s\u00e6ttet er stemt i',
+        'how.1.p1': 'En lyd er her en gestus: grundtonen og et \u00f8jeblik '
+          + 'efter et trin op eller ned. Trinene er halvtoner frem for '
+          + 'hertz, s\u00e5 flytter du <code>--root</code>, transponeres '
+          + 'hele s\u00e6ttet, og hvert interval beholder sin betydning. '
+          + '<code>-t-</code>-tokens angiver, hvor hurtigt den anden '
+          + 'tone falder, i multipla af <code>--spread</code>.',
+        'how.1.p2': 'Scriptet l\u00e6ser hvert tal af elementet og oms\u00e6tter '
+          + 'et trin til en frekvens, s\u00e5dan som et klaviatur '
+          + 'g\u00f8r: hver halvtone ganger toneh\u00f8jden med den '
+          + 'tolvte rod af to. Klaviaturet p\u00e5 Stemning-modulet er '
+          + 'den samme akse, en kvint til hver side af grundtonen, med '
+          + 'en lysdiode under den tangent, hver lyd lander p\u00e5.',
+        'how.2.kicker': 'Klang',
+        'how.2.head': 'Hvad \u00e9n tone er lavet af',
+        'how.2.p1': 'Hver tone er flere oscillatorer p\u00e5 \u00e9n gang. '
+          + 'Grundtonen klinger to gange, nogle f\u00e5 cent fra '
+          + 'hinanden og panoreret til venstre og h\u00f8jre, s\u00e5 '
+          + 'den driver i stedet for at st\u00e5 stille; en oktav over '
+          + 'giver fylde, og en duodecim giver glans. Overtonerne er '
+          + 'hele multipla af tonen, og det er det, der lader dem smelte '
+          + 'sammen til \u00e9n varm tone i stedet for et bip.',
+        'how.2.p2': 'Klang-modulet tegner argumentet. \u00c9n periode af '
+          + 'b\u00f8lgeformen er viklet seks gange rundt om en cirkel, '
+          + 's\u00e5 radius ved hver vinkel er b\u00f8lgen i den fase. '
+          + 'En overtone med et helt forhold gentager sig pr\u00e6cis '
+          + '\u00e9n gang pr. periode, s\u00e5 ringen lukker sig om sig '
+          + 'selv: tre gange rundt er den stadig \u00e9n linje. De 2,76 '
+          + 'fra en ansl\u00e5et metalstang gentager sig aldrig, og tre '
+          + 'gange rundt bliver til tre forskellige linjer.',
+        'how.3.kicker': 'Anslag',
+        'how.3.head': 'Hvordan en tone kommer og g\u00e5r',
+        'how.3.p1': 'Envelopen er to ramper p\u00e5 en gain-node: lige op over '
+          + '<code>--attack</code>, derefter et eksponentielt fald over '
+          + '<code>--decay</code>. En eksponentiel kurve n\u00e5r aldrig '
+          + 'nul, s\u00e5 den lander lige under h\u00f8regr\u00e6nsen og '
+          + 'stopper der. Klikket er et lag for sig, nogle f\u00e5 '
+          + 'millisekunder filtreret st\u00f8j, for et skarpere anslag '
+          + 'er ikke et klik, men et brud i signalet.',
+        'how.4.kicker': 'Rum',
+        'how.4.head': 'Hvad den h\u00f8res i',
+        'how.4.p1': 'Et lavpasfilter over det hele holder s\u00e6ttet ude af '
+          + 'frekvenser, en gr\u00e6nseflade ikke har noget at g\u00f8re '
+          + 'i, og en lille rumklang placerer det i et rum. Heller ikke '
+          + 'rumklangen kommer fra en fil: dens impulsrespons er '
+          + 'st\u00f8j under en aftagende kurve, genereret ud fra '
+          + '<code>--air-size</code>, n\u00e5r lyden sl\u00e5s til, med '
+          + 'et enkelt filter over, s\u00e5 den lyder som luft og ikke '
+          + 'som sus.',
+        'how.4.p2': 'Den var 0,18 gennem 1,7 sekunder, og p\u00e5 s\u00e5 korte '
+          + 'lyde er det en koncertsal. Rum-modulet tegner tonen og '
+          + 'rummets hale p\u00e5 \u00e9n tidsakse, og med de '
+          + 'v\u00e6rdier var halen dobbelt s\u00e5 lang som tonen. Nu '
+          + 'er det et rum.',
+        'how.5.kicker': 'Tegning',
+        'how.5.head': 'De samme tal, l\u00e6st af stylesheetet',
+        'how.5.p1': 'Intet p\u00e5 frontpanelet bliver m\u00e5lt. Envelopen '
+          + 'deler sin bredde med <code>flex-grow</code>, som tager et '
+          + 'rent tal, og <code>--attack</code> og <code>--decay</code> '
+          + 'er rene tal, s\u00e5 tegningen har pr\u00e6cis de '
+          + 'proportioner, lyden har. Den anden tone er den samme form i '
+          + 'en r\u00e6kke mere, f\u00f8rt ind af et mellemrum s\u00e5 '
+          + 'bredt som dens forsinkelse. Hver tangent tegner sin gestus '
+          + 'ud fra sine egne to tokens, og hver lysdiode sidder under '
+          + 'sin tangent ud fra den samme regning.',
+        'how.6.kicker': 'Sk\u00e6rm',
+        'how.6.head': 'En shader p\u00e5 det samme ur',
+        'how.6.p1': 'Sk\u00e6rmen er en fragment-shader, og den har intet ur for '
+          + 'sig selv. Hvert billede l\u00e6ser <code>currentTime</code> '
+          + 'fra en CSS-animation, der starter med anslaget, s\u00e5 '
+          + 'sveepet f\u00f8lger alt det andet, og n\u00e5r oversigten '
+          + 's\u00e6tter alle animationer i en miniature p\u00e5 pause, '
+          + 'holder shaderen med. L\u00f8kken k\u00f8rer kun, mens et '
+          + 'anslag er i gang; resten af tiden er sk\u00e6rmen \u00e9t '
+          + 'stillbillede.',
+        'how.6.p2': 'Den tegner den f\u00f8rste tone som sin b\u00f8lgeform, '
+          + 's\u00e6nket tyve gange, s\u00e5 hver periode er et '
+          + 'str\u00f8g: hvor t\u00e6t str\u00f8gene st\u00e5r, er '
+          + 'toneh\u00f8jden. Den anden tone er en stiplet kontur med et '
+          + 'm\u00e6rke for hver periode, s\u00e5 de to holdes adskilt, '
+          + 'hvor de overlapper. Bag dem begge er rummet et sl\u00f8r af '
+          + 'korn, der forts\u00e6tter ud over h\u00f8jre kant, fordi '
+          + 'rummet klinger videre efter tonen. Uden WebGL er det '
+          + 'CSS-envelopen nedenunder, der vises, og det er den samme '
+          + 'tegning.',
+        'how.7.kicker': 'Bev\u00e6gelse',
+        'how.7.head': 'Et anslag varer lige s\u00e5 l\u00e6nge som lyden',
+        'how.7.p1': 'Et anslag animerer \u00e9t registreret tal fra 0 til 1 og '
+          + 'tilbage: op over <code>--attack</code>, ned over '
+          + '<code>--decay</code>, de samme to ramper som gain-noden '
+          + 'laver. At gange med <code>1ms</code> er alt, der skal til '
+          + 'for at g\u00f8re lydens rene tal til tider. Faldet '
+          + 'f\u00f8lger de fire punkter, envelopen er tegnet med, og '
+          + 'tangenten, nodehovederne og linjen l\u00e6ser alle det ene '
+          + 'tal, s\u00e5 <code>--hushed</code> svulmer op og '
+          + 'dv\u00e6ler p\u00e5 sk\u00e6rmen, s\u00e5dan som den '
+          + 'g\u00f8r i \u00f8ret.',
+        'how.8.kicker': 'Omstemning',
+        'how.8.head': '\u00c6ndr det uden at \u00e5bne filen',
+        'how.8.p1': 'Og det er hele pointen med at skrive et lyds\u00e6t p\u00e5 '
+          + 'denne m\u00e5de. Overskriv et token p\u00e5 komponentens '
+          + 'eget element, hvorfra som helst, og lyden, '
+          + 'afl\u00e6sningen, tegningerne, sk\u00e6rmen og timingen '
+          + 'f\u00f8lger med. <code>--hushed</code> og '
+          + '<code>--close</code> ovenfor er bygget pr\u00e6cis '
+          + 's\u00e5dan: token-overskrivninger og intet andet, helt ned '
+          + 'til fosforets farve.'
         // one entry per data-i18n key on this page
       };
 
