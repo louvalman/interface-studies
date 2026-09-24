@@ -57,8 +57,8 @@
       // hyphenation dictionary, which is what `hyphens: auto` would be
       // waiting on.
       'head.title': 'Udforskning af interaktion og æstetik.',
-      'head.lede': 'Hvert studie er én komponent, bygget i kode og holdt så '
-        + 'lille, at den er til at gennemskue.',
+      'head.lede': 'Én komponent pr. studie, bygget i Figma og kode, så lille, '
+        + 'at den er til at gennemskue.',
       'head.ledeHint': 'Hold musen over et kort for at afspille det, tag et '
         + 'hurtigt kig på dets varianter, eller åbn studiet for '
         + 'beslutningerne og teknikkerne bag.',
@@ -141,7 +141,7 @@
         + 'stedet.',
       'foot.typefaces': 'Skrifttyper',
       'foot.stack': 'Stack',
-      'foot.stackVal': 'HTML, CSS og vanilla JS, intet byggetrin',
+      'foot.stackVal': 'HTML, CSS og JS, ingen afhængigheder',
       'foot.types': 'Typer',
       'foot.studies': 'Studier',
       'foot.builtBy': 'Bygget af',
