@@ -1306,13 +1306,29 @@ handle.
 
 ### A card may name the board it was drawn in
 
-`data-figma` on the `<article class="piece">` block is the board in the
-companion Figma file the study was drawn in, and quick look draws an `Open in
-Figma` link beside `Open demo` where a card carries one. It is optional and
-most cards have none: no attribute, no link, and nothing else reads it. The
-link opens in a new tab and takes neither `?lang=` nor `?theme=` — Figma
-resolves neither, and the choice is this site's rather than something to hand
-to another one.
+`data-figma` on the `<article class="piece">` block is the study's page in the
+companion Figma file, and quick look draws an `Open in Figma` link beside `Open
+demo` where a card carries one. Every study has one. It stays optional because
+a study can land before its page does: no attribute, no link, and nothing else
+reads it. The link opens in a new tab and takes neither `?lang=` nor `?theme=` —
+Figma resolves neither, and the choice is this site's rather than something to
+hand to another one.
+
+**The card links the working file; the masthead links the Community listing.**
+They are two copies of one file doing different jobs. The listing is where a
+reader duplicates the set, and it is a page about the file rather than the file:
+it has no address for a page inside it. The working file does, as `?node-id=`,
+so a card can open on its own study. It can be read because it is shared as
+anyone with the link can view — tighten that and all eight links become a
+request-access page at once, with nothing on the site to show it. The id is the
+page's rather than a board's on it, since boards get moved about and a page is
+renamed without its id changing. And it opens in design mode, not Dev Mode,
+which asks for a seat a visitor may not have.
+
+The board links back. Each Notes board carries a `DEMO` row under its type,
+pointing at the folder's `demo.html`, so the two ends name each other — and like
+the type they are a pair kept by hand. A slug that changes, or a page that is
+remade rather than renamed, takes both with it.
 
 It sits on the card rather than in the folder's `notes.md`, which is the
 opposite of where the `Inspiration:` line sits, and the reason is the wall the
