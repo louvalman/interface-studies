@@ -7,9 +7,11 @@
   iframe has pointer events off, so nothing can arm the audio — and even in
   quick look, where the pointer is live and it genuinely can be armed, a rail
   that made a noise on approach would be indefensible. So what a card shows is
-  the set striking its own pads in silence: `--live` is four CSS keyframes on a
-  stagger, which is also what lets the index pause the whole thing with one
-  animation-play-state rule while the rail is being dragged.
+  the set striking its own pads in silence: `--live` is a keyframe clock on the
+  rack whose every beat is an ordinary strike, timed from the set's own
+  --spread, --attack and --decay. A paused animation fires no iterations, which
+  is what lets the index stop the whole thing with one animation-play-state
+  rule while the rail is being dragged.
 
   The three variants are the two axes of the token block, moved one at a time:
   `--hushed` keeps every interval and changes only the envelope, `--close`
@@ -89,22 +91,33 @@
 
     <div class="struck-tones__rack">
       <button class="struck-tones__pad" type="button" data-tone="tap">
-        <span class="struck-tones__pitch" aria-hidden="true"></span>
+        <span class="struck-tones__contour" aria-hidden="true">
+          <span class="struck-tones__note"></span>
+        </span>
         <span class="struck-tones__pad-name">Tap</span>
         <span class="struck-tones__pad-step" data-step aria-hidden="true">0</span>
       </button>
       <button class="struck-tones__pad" type="button" data-tone="commit">
-        <span class="struck-tones__pitch" aria-hidden="true"></span>
+        <span class="struck-tones__contour" aria-hidden="true">
+          <span class="struck-tones__note"></span>
+          <span class="struck-tones__note"></span>
+        </span>
         <span class="struck-tones__pad-name">Commit</span>
         <span class="struck-tones__pad-step" data-step aria-hidden="true">+7</span>
       </button>
       <button class="struck-tones__pad" type="button" data-tone="revert">
-        <span class="struck-tones__pitch" aria-hidden="true"></span>
+        <span class="struck-tones__contour" aria-hidden="true">
+          <span class="struck-tones__note"></span>
+          <span class="struck-tones__note"></span>
+        </span>
         <span class="struck-tones__pad-name">Revert</span>
         <span class="struck-tones__pad-step" data-step aria-hidden="true">&minus;5</span>
       </button>
       <button class="struck-tones__pad" type="button" data-tone="alert">
-        <span class="struck-tones__pitch" aria-hidden="true"></span>
+        <span class="struck-tones__contour" aria-hidden="true">
+          <span class="struck-tones__note"></span>
+          <span class="struck-tones__note"></span>
+        </span>
         <span class="struck-tones__pad-name">Alert</span>
         <span class="struck-tones__pad-step" data-step aria-hidden="true">&minus;1</span>
       </button>
@@ -125,7 +138,7 @@
       </div>
       <div class="struck-tones__row">
         <dt>Air</dt>
-        <dd data-token="air">1.7 s &middot; 26%</dd>
+        <dd data-token="air">1.7 s &middot; 18%</dd>
       </div>
     </dl>
   </section>

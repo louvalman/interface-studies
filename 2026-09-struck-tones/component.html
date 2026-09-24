@@ -53,27 +53,41 @@
     <p class="struck-tones__sr" data-trace-live role="status" aria-live="polite"></p>
   </div>
 
+  <!-- Each pad draws its sound as a contour: one head per note, which is why
+       the tap has one. Where the heads sit is all in component.css, worked
+       out from the same tokens the oscillators are tuned with. -->
   <div class="struck-tones__rack">
     <button class="struck-tones__pad" type="button" data-tone="tap">
-      <span class="struck-tones__pitch" aria-hidden="true"></span>
+      <span class="struck-tones__contour" aria-hidden="true">
+        <span class="struck-tones__note"></span>
+      </span>
       <span class="struck-tones__pad-name">Tap</span>
       <span class="struck-tones__pad-step" data-step aria-hidden="true">0</span>
     </button>
 
     <button class="struck-tones__pad" type="button" data-tone="commit">
-      <span class="struck-tones__pitch" aria-hidden="true"></span>
+      <span class="struck-tones__contour" aria-hidden="true">
+        <span class="struck-tones__note"></span>
+        <span class="struck-tones__note"></span>
+      </span>
       <span class="struck-tones__pad-name">Commit</span>
       <span class="struck-tones__pad-step" data-step aria-hidden="true">+7</span>
     </button>
 
     <button class="struck-tones__pad" type="button" data-tone="revert">
-      <span class="struck-tones__pitch" aria-hidden="true"></span>
+      <span class="struck-tones__contour" aria-hidden="true">
+        <span class="struck-tones__note"></span>
+        <span class="struck-tones__note"></span>
+      </span>
       <span class="struck-tones__pad-name">Revert</span>
       <span class="struck-tones__pad-step" data-step aria-hidden="true">&minus;5</span>
     </button>
 
     <button class="struck-tones__pad" type="button" data-tone="alert">
-      <span class="struck-tones__pitch" aria-hidden="true"></span>
+      <span class="struck-tones__contour" aria-hidden="true">
+        <span class="struck-tones__note"></span>
+        <span class="struck-tones__note"></span>
+      </span>
       <span class="struck-tones__pad-name">Alert</span>
       <span class="struck-tones__pad-step" data-step aria-hidden="true">&minus;1</span>
     </button>
@@ -94,7 +108,7 @@
     </div>
     <div class="struck-tones__row">
       <dt>Air</dt>
-      <dd data-token="air">1.7 s &middot; 26%</dd>
+      <dd data-token="air">1.7 s &middot; 18%</dd>
     </div>
   </dl>
 </section>

@@ -15,11 +15,30 @@
   a single pitch changing.
 
   Nothing here plays anything. The visual half of the component — the envelope
-  drawing, the pitch bars, the struck flash — is CSS reading the same tokens
-  the audio does, so the picture and the sound cannot drift apart, and the
-  component stays fully legible with the sound switched off (which is how it
-  ships, and how a thumbnail in an iframe will always see it).
+  drawing, the contour on each pad, the strike and how long it lasts — is CSS
+  reading the same tokens the audio does, so the picture and the sound cannot
+  drift apart, and the component stays fully legible with the sound switched
+  off (which is how it ships, and how a thumbnail in an iframe will always see
+  it).
 */
+
+/* The strike, as one number. A pad being struck animates this from 0 to 1
+   over --attack and back over --decay, which are the two ramps the gain node
+   makes, and every part of the drawing that lights up reads it: the pad, the
+   note heads, the line between them. Registered so it interpolates — an
+   unregistered custom property can only flip — and not inherited, so a head
+   that sounds a --spread later keeps its own clock rather than taking the
+   pad's.
+
+   @property is a document-wide registration, the same as a @keyframes name,
+   and it is namespaced the same way. Where it is not supported the number
+   flips at the midpoint of each ramp instead of travelling, and the strike is
+   a hard flash of the right length rather than a fade. */
+@property --struck-tones-glow {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
 
 .struck-tones {
   /* --- the tuning ------------------------------------------------------
@@ -39,6 +58,14 @@
   --struck-tones-i-commit: 7;
   --struck-tones-i-revert: -5;
   --struck-tones-i-alert: -1;
+
+  /* And when each one's second note falls, in multiples of --spread; a tap
+     is a single note and has none. The alert is the quick one, and its
+     urgency lives in this number rather than in its interval — so it is a
+     token rather than a constant in the script, and the pads draw it. */
+  --struck-tones-t-commit: 1;
+  --struck-tones-t-revert: 1;
+  --struck-tones-t-alert: 0.55;
 
   /* --- the voice -------------------------------------------------------
      What one note is made of. A sine carries the fundamental and two
@@ -116,29 +143,48 @@
   --struck-tones-radius: 0.875rem;
   --struck-tones-pad-radius: 0.5rem;
 
-  /* The pitch bar's box, and how much of it one semitone is worth. At a
-     shallow box the four bars are a picture of nothing: the widest interval in
-     the set is twelve semitones and the difference has to survive being
-     rasterised at 0.7 on the rail. */
-  --struck-tones-pitch-h: 2.5rem;
-  --struck-tones-pitch-span: 3.6%;
-  /* The bar draws the interval, which makes it a graphic carrying meaning
-     rather than decoration — so it owes 3:1 against the pad it sits on, in
-     both themes. 0.28 measured 1.83:1 and was well under; 0.55 is 3.79:1,
+  /* The contour on each pad: a head per note, across by when it falls and up
+     or down by its step, joined by a line. One semitone is --contour-span of
+     the box, which fits a fifth either side of the root with the heads still
+     inside it; anything wider pins to the edge rather than leaving the pad.
+     The span is absolute rather than fitted to the widest interval in the
+     set, because a fitted scale would draw --close exactly as wide as the
+     default — and narrower is the whole of what --close is. */
+  --struck-tones-contour-h: 3rem;
+  --struck-tones-contour-span: 6%;
+  --struck-tones-head: 0.5rem;
+  --struck-tones-stem: 1.5px;
+  /* The dotted line at the root that the heads are up or down from.
+     Decoration rather than meaning, so it owes no ratio and can sit this
+     quiet; it follows --muted when the surface is re-themed. */
+  --struck-tones-tonic: color-mix(in oklab, var(--struck-tones-muted) 60%, transparent);
+  /* The heads and the line draw the interval, which makes them a graphic
+     carrying meaning rather than decoration — so they owe 3:1 against the pad
+     they sit on. 0.28 measured 1.83:1 and was well under; 0.55 is 3.79:1,
      which leaves the headroom the ratio's blind spots argue for. */
-  --struck-tones-pitch-rest: 0.55;
-  --struck-tones-pitch-hover: 0.72;
+  --struck-tones-contour-rest: 0.55;
+  --struck-tones-contour-hover: 0.72;
+  /* How far a head swells at the peak of a strike, as a fraction of itself. */
+  --struck-tones-swell: 0.35;
 
   --struck-tones-label-size: 0.625rem;
   --struck-tones-label-tracking: 0.16em;
   --struck-tones-freq-size: 3.25rem;
   --struck-tones-body-size: 0.75rem;
 
-  /* How long one pass of the self-demonstration takes, and how far apart the
-     four strikes fall inside it. See `--live` at the foot of the file. */
-  --struck-tones-sweep: 3.2s;
   --struck-tones-transition: 180ms cubic-bezier(0.16, 1, 0.3, 1);
   /* ---------------------------------------------------------------------- */
+
+  /* --- derived, not tunable ---------------------------------------------
+     The strike's timings as durations. They are bare numbers in the block
+     above because Web Audio wants numbers; multiplying by 1ms here turns the
+     same numbers into times an animation can use. So there is no motion
+     duration anywhere in this file: a strike lasts as long as the sound it
+     draws, and --hushed swells and lingers on screen because it does in the
+     ear. Override --attack, --decay and --spread, never these. */
+  --struck-tones-rise-time: calc(var(--struck-tones-attack) * 1ms);
+  --struck-tones-fall-time: calc(var(--struck-tones-decay) * 1ms);
+  --struck-tones-spread-time: calc(var(--struck-tones-spread) * 1ms);
 
   box-sizing: border-box;
   display: flex;
@@ -311,6 +357,7 @@
    gets the right picture for free. At 4/260 the rise is a 1.5% sliver, which
    is not a drawing error — it is what a struck bar is. */
 .struck-tones__envelope {
+  position: relative;
   display: flex;
   align-items: flex-end;
   height: 2.75rem;
@@ -330,13 +377,55 @@
 
 /* Four points approximating an exponential fall, which is what the gain node
    actually does — a straight line here would draw a different sound from the
-   one being played. */
+   one being played. The strike's fade further down is eased along the same
+   four points, so the flash dies the way this drawing says it does: change
+   one and change the other. */
 .struck-tones__env-fall {
   flex: var(--struck-tones-decay) 1 0;
   height: 100%;
   background: var(--struck-tones-accent);
   opacity: 0.55;
   clip-path: polygon(0 0, 14% 46%, 34% 74%, 62% 91%, 100% 100%, 0 100%);
+}
+
+/* The playhead: a line crossing the envelope once per strike, in exactly the
+   time the note takes — --attack plus --decay — so the drawing reads as the
+   sound being traced rather than as a static diagram, and the envelope's
+   horizontal axis is what it claims to be: time. A travelling line rather
+   than a wipe, because a wipe would have to erase the shape to move.
+
+   The line is one band in a gradient on an element twice the envelope's
+   width, so a transform can carry it the exact width of the envelope and no
+   length has to be measured: the band sits at the halfway mark of a 200%
+   box, which is the left-hand edge at translateX(-50%) and the right-hand
+   edge at translateX(0). A transform rather than an animated `left`, because
+   on the index this runs in several framed documents on one thread. */
+.struck-tones__envelope::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 200%;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0 49.7%,
+    var(--struck-tones-fg) 49.7% 50.3%,
+    transparent 50.3% 100%
+  );
+}
+
+@keyframes struck-tones-playhead {
+  0% { transform: translateX(-50%); opacity: 0.8; }
+  88% { opacity: 0.8; }
+  100% { transform: translateX(0); opacity: 0; }
+}
+
+.struck-tones__trace[data-hit] .struck-tones__envelope::after {
+  animation: struck-tones-playhead
+    calc(var(--struck-tones-rise-time) + var(--struck-tones-fall-time)) linear;
 }
 
 .struck-tones__trace-shape {
@@ -372,13 +461,58 @@
 }
 
 .struck-tones__pad {
+  /* Where the pad rests, which hover moves and a strike mixes into. Tokens
+     rather than values straight on the properties, so the two compose: a pad
+     struck under the pointer flashes from its hovered state and back to it,
+     rather than hover overruling the strike or the strike's end snapping
+     hover off. */
+  --struck-tones-pad-now: var(--struck-tones-pad);
+  --struck-tones-edge-now: var(--struck-tones-line);
+  --struck-tones-contour-now: var(--struck-tones-contour-rest);
+
+  /* The contour's geometry, worked out once here and read by the heads and
+     the line alike. Across is time: the first note at the left edge, the
+     second at its --t, as a fraction of the slowest gesture in the set, so
+     the slowest spans the pad and the alert lands at 0.55 of it. Up and down
+     is pitch, a --contour-span per semitone from the root, clamped so a head
+     never leaves the box. These are centres; the heads translate back by
+     half themselves. */
+  --struck-tones-x1: calc(var(--struck-tones-head) / 2);
+  --struck-tones-x2: calc(
+    var(--struck-tones-head) / 2
+    + var(--struck-tones-at, 0)
+      / max(var(--struck-tones-t-commit), var(--struck-tones-t-revert),
+            var(--struck-tones-t-alert), 0.01)
+      * (100% - var(--struck-tones-head))
+  );
+  --struck-tones-y1: clamp(
+    var(--struck-tones-head) / 2,
+    50% - var(--struck-tones-i-tap) * var(--struck-tones-contour-span),
+    100% - var(--struck-tones-head) / 2
+  );
+  --struck-tones-y2: clamp(
+    var(--struck-tones-head) / 2,
+    50% - var(--struck-tones-step, 0) * var(--struck-tones-contour-span),
+    100% - var(--struck-tones-head) / 2
+  );
+  /* How long the second note waits: its --t of a --spread, as a time. */
+  --struck-tones-lag: calc(var(--struck-tones-at, 0) * var(--struck-tones-spread-time));
+
   display: grid;
   gap: 0.4rem;
   justify-items: start;
   padding: 0.6rem 0.55rem 0.55rem;
-  border: 1px solid var(--struck-tones-line);
+  border: 1px solid color-mix(
+    in oklab,
+    var(--struck-tones-accent) calc(var(--struck-tones-glow) * 100%),
+    var(--struck-tones-edge-now)
+  );
   border-radius: var(--struck-tones-pad-radius);
-  background: var(--struck-tones-pad);
+  background: color-mix(
+    in oklab,
+    var(--struck-tones-pad-lit) calc(var(--struck-tones-glow) * 100%),
+    var(--struck-tones-pad-now)
+  );
   color: var(--struck-tones-fg);
   font-family: inherit;
   text-align: left;
@@ -389,16 +523,33 @@
     transform var(--struck-tones-transition);
 }
 
-/* Each pad carries its own interval, so the bar below and the audio above
-   read the same token. */
-.struck-tones__pad[data-tone="tap"] { --struck-tones-step: var(--struck-tones-i-tap); }
-.struck-tones__pad[data-tone="commit"] { --struck-tones-step: var(--struck-tones-i-commit); }
-.struck-tones__pad[data-tone="revert"] { --struck-tones-step: var(--struck-tones-i-revert); }
-.struck-tones__pad[data-tone="alert"] { --struck-tones-step: var(--struck-tones-i-alert); }
+/* Each pad names its step and its timing, so the contour below and the
+   oscillators in component.js read the same tokens. Every gesture sets off
+   from the tap's note; a tap is only that note. */
+.struck-tones__pad[data-tone="tap"] {
+  --struck-tones-step: var(--struck-tones-i-tap);
+  --struck-tones-at: 0;
+}
+
+.struck-tones__pad[data-tone="commit"] {
+  --struck-tones-step: var(--struck-tones-i-commit);
+  --struck-tones-at: var(--struck-tones-t-commit);
+}
+
+.struck-tones__pad[data-tone="revert"] {
+  --struck-tones-step: var(--struck-tones-i-revert);
+  --struck-tones-at: var(--struck-tones-t-revert);
+}
+
+.struck-tones__pad[data-tone="alert"] {
+  --struck-tones-step: var(--struck-tones-i-alert);
+  --struck-tones-at: var(--struck-tones-t-alert);
+}
 
 .struck-tones__pad:hover {
-  background: var(--struck-tones-pad-lit);
-  border-color: var(--struck-tones-fg);
+  --struck-tones-pad-now: var(--struck-tones-pad-lit);
+  --struck-tones-edge-now: var(--struck-tones-fg);
+  --struck-tones-contour-now: var(--struck-tones-contour-hover);
 }
 
 .struck-tones__pad:focus-visible {
@@ -412,37 +563,99 @@
 
 @media (hover: none) {
   .struck-tones__pad:active {
-    background: var(--struck-tones-pad-lit);
-    border-color: var(--struck-tones-fg);
+    --struck-tones-pad-now: var(--struck-tones-pad-lit);
+    --struck-tones-edge-now: var(--struck-tones-fg);
+    --struck-tones-contour-now: var(--struck-tones-contour-hover);
   }
 
   .struck-tones__pad { min-height: 3.25rem; }
 }
 
-/* The interval, drawn. Height comes off the same semitone token the
-   oscillator is tuned with, so the four bars are a picture of the tuning:
-   retune the set and they move together. */
-.struck-tones__pitch {
+/* The contour: the sound drawn as the gesture it is, rather than as where it
+   ends. A bar sized by the last note's pitch could say how high but not
+   which way or how soon — the alert's semitone came out 1.4px shorter than
+   the tap's bar, and under --close all four bars matched. Two heads and the
+   line between them say all three. */
+.struck-tones__contour {
+  position: relative;
+  display: block;
   width: 100%;
-  height: var(--struck-tones-pitch-h);
-  display: flex;
-  align-items: flex-end;
+  max-width: 100%;
+  height: var(--struck-tones-contour-h);
 }
 
-.struck-tones__pitch::after {
+/* The root, dotted across the box at the height every gesture sets off from.
+   It is what makes a one-semitone step readable at all: the alert's second
+   head sits visibly off it. */
+.struck-tones__contour::before {
   content: "";
-  width: 100%;
-  height: calc(50% + var(--struck-tones-step, 0) * var(--struck-tones-pitch-span));
-  border-radius: 1px;
-  background: var(--struck-tones-fg);
-  opacity: var(--struck-tones-pitch-rest);
-  transition:
-    height var(--struck-tones-transition),
-    opacity var(--struck-tones-transition),
-    background var(--struck-tones-transition);
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(var(--struck-tones-y1) - 0.5px);
+  height: 1px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--struck-tones-tonic) 0 1px,
+    transparent 1px 4px
+  );
 }
 
-.struck-tones__pad:hover .struck-tones__pitch::after { opacity: var(--struck-tones-pitch-hover); }
+/* The line from the first head to the second, clipped out of a box that
+   covers the contour: a thin quadrilateral between the two centres. It needs
+   no angle and no length, so nothing measures anything, and at a tap the two
+   centres are one point and there is no line. */
+.struck-tones__contour::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: color-mix(
+    in oklab,
+    var(--struck-tones-accent) calc(var(--struck-tones-glow) * 100%),
+    var(--struck-tones-fg)
+  );
+  opacity: calc(
+    var(--struck-tones-contour-now)
+    + (1 - var(--struck-tones-contour-now)) * var(--struck-tones-glow)
+  );
+  clip-path: polygon(
+    var(--struck-tones-x1) calc(var(--struck-tones-y1) - var(--struck-tones-stem) / 2),
+    var(--struck-tones-x2) calc(var(--struck-tones-y2) - var(--struck-tones-stem) / 2),
+    var(--struck-tones-x2) calc(var(--struck-tones-y2) + var(--struck-tones-stem) / 2),
+    var(--struck-tones-x1) calc(var(--struck-tones-y1) + var(--struck-tones-stem) / 2)
+  );
+  transition: opacity var(--struck-tones-transition);
+}
+
+/* A head per note. Above the line, so the line reads as running between
+   them rather than across them. */
+.struck-tones__note {
+  position: absolute;
+  z-index: 1;
+  left: var(--struck-tones-x1);
+  top: var(--struck-tones-y1);
+  width: var(--struck-tones-head);
+  max-width: 100%;
+  height: var(--struck-tones-head);
+  translate: -50% -50%;
+  scale: calc(1 + var(--struck-tones-swell) * var(--struck-tones-glow));
+  border-radius: 50%;
+  background: color-mix(
+    in oklab,
+    var(--struck-tones-accent) calc(var(--struck-tones-glow) * 100%),
+    var(--struck-tones-fg)
+  );
+  opacity: calc(
+    var(--struck-tones-contour-now)
+    + (1 - var(--struck-tones-contour-now)) * var(--struck-tones-glow)
+  );
+  transition: opacity var(--struck-tones-transition);
+}
+
+.struck-tones__note + .struck-tones__note {
+  left: var(--struck-tones-x2);
+  top: var(--struck-tones-y2);
+}
 
 .struck-tones__pad-name {
   font-size: var(--struck-tones-body-size);
@@ -456,26 +669,52 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* The strike. One keyframe, run by an attribute component.js sets and clears
-   on animationend — and run again, on a stagger, by the `--live` modifier at
-   the foot of this file. Both routes draw the same flash, so the component
-   demonstrating itself and the component being used look alike. */
-@keyframes struck-tones-hit {
-  0% { background: var(--struck-tones-pad-lit); border-color: var(--struck-tones-accent); }
-  100% { background: var(--struck-tones-pad); border-color: var(--struck-tones-line); }
+/* --- the strike ------------------------------------------------------------
+   Two animations of --struck-tones-glow, the second waiting out the first: a
+   straight rise over --attack, which is what linearRampToValueAtTime does,
+   then a fall over --decay eased along the envelope drawing's own four
+   points, which is what the drawing says exponentialRampToValueAtTime does.
+   So a strike is exactly as long as the note it draws, in every variant, and
+   nothing in this file names a duration.
+
+   component.js sets data-hit on a press and clears it when the last head has
+   faded, and the `--live` clock at the foot of the file strikes through the
+   same attribute — so the set demonstrating itself and the set being played
+   look alike, because they are the same thing.
+
+   The cubic-bezier is the fallback for an engine without linear(): there the
+   second declaration is dropped at parse time and the first one stands. */
+@keyframes struck-tones-rise {
+  from { --struck-tones-glow: 0; }
+  to { --struck-tones-glow: 1; }
 }
 
-@keyframes struck-tones-hit-bar {
-  0% { opacity: 1; background: var(--struck-tones-accent); }
-  100% { opacity: var(--struck-tones-pitch-rest); background: var(--struck-tones-fg); }
+@keyframes struck-tones-fall {
+  from { --struck-tones-glow: 1; }
+  to { --struck-tones-glow: 0; }
 }
 
-.struck-tones__pad[data-hit] {
-  animation: struck-tones-hit 420ms cubic-bezier(0.16, 1, 0.3, 1);
+.struck-tones__pad[data-hit],
+.struck-tones__pad[data-hit] .struck-tones__note:first-child {
+  animation-name: struck-tones-rise, struck-tones-fall;
+  animation-duration: var(--struck-tones-rise-time), var(--struck-tones-fall-time);
+  animation-delay: 0ms, var(--struck-tones-rise-time);
+  animation-timing-function: linear, cubic-bezier(0.15, 0.62, 0.3, 1);
+  animation-timing-function: linear, linear(0, 0.46 14%, 0.74 34%, 0.91 62%, 1);
 }
 
-.struck-tones__pad[data-hit] .struck-tones__pitch::after {
-  animation: struck-tones-hit-bar 420ms cubic-bezier(0.16, 1, 0.3, 1);
+/* The second note, and the line that goes to it, sound a --t of a --spread
+   later: the commit lights its root and then climbs, and the alert's second
+   head answers sooner than any other gesture's. */
+.struck-tones__pad[data-hit] .struck-tones__note + .struck-tones__note,
+.struck-tones__pad[data-hit] .struck-tones__contour::after {
+  animation-name: struck-tones-rise, struck-tones-fall;
+  animation-duration: var(--struck-tones-rise-time), var(--struck-tones-fall-time);
+  animation-delay:
+    var(--struck-tones-lag),
+    calc(var(--struck-tones-lag) + var(--struck-tones-rise-time));
+  animation-timing-function: linear, cubic-bezier(0.15, 0.62, 0.3, 1);
+  animation-timing-function: linear, linear(0, 0.46 14%, 0.74 34%, 0.91 62%, 1);
 }
 
 /* --- the tuning, stated ---------------------------------------------------
@@ -536,109 +775,46 @@
 /* --- --live: the set demonstrating itself ---------------------------------
    The rail's thumbnail has pointer events off and no gesture to arm audio
    with, so the only way a sound study can introduce itself there is by
-   striking its own pads in silence. Four strikes on a stagger, the envelope
-   wiping in time with them.
+   striking its own pads in silence, one after another.
 
    It is a modifier on the component rather than something the preview file
    draws, because being able to play itself through is a property of a sound
-   set — the same reason a colour set has a swatch sheet. It is also entirely
-   CSS keyframes, which is what lets the index pause the whole thing with one
-   `animation-play-state` rule while the rail is being dragged. */
+   set — the same reason a colour set has a swatch sheet.
 
-@keyframes struck-tones-sweep {
-  0%, 18% { background: var(--struck-tones-pad); border-color: var(--struck-tones-line); }
-  2% { background: var(--struck-tones-pad-lit); border-color: var(--struck-tones-accent); }
-  100% { background: var(--struck-tones-pad); border-color: var(--struck-tones-line); }
+   The clock is a keyframe on the rack, and each beat is an ordinary strike:
+   component.js hears the iteration and strikes the next pad through the same
+   data-hit a click sets, so the thumbnail cannot show a strike the component
+   does not make. A beat is one gesture rung out — --spread, then --attack
+   and --decay — so --hushed plays itself through at its own slower tempo
+   rather than at one picked for the thumbnail. It used to be a fixed 3.2s
+   sweep with an 800ms playhead, which drew the hushed set's 1.7s note in
+   under half its length.
+
+   A keyframe rather than a timer, because a paused animation fires no
+   iterations: the index's one animation-play-state rule stops the clock
+   while the rail is being dragged, and holds a strike already in flight
+   where it stands, without either knowing the other exists. */
+@keyframes struck-tones-clock {
+  to { --struck-tones-beat: 1; }
 }
 
-@keyframes struck-tones-sweep-bar {
-  0% { opacity: var(--struck-tones-pitch-rest); background: var(--struck-tones-fg); }
-  2% { opacity: 1; background: var(--struck-tones-accent); }
-  18%, 100% { opacity: var(--struck-tones-pitch-rest); background: var(--struck-tones-fg); }
+.struck-tones--live .struck-tones__rack {
+  animation: struck-tones-clock
+    calc(var(--struck-tones-spread-time) + var(--struck-tones-rise-time) + var(--struck-tones-fall-time))
+    step-end infinite;
 }
 
-/* The playhead: a line crossing the envelope once per strike, so the drawing
-   reads as the sound being traced rather than as a static diagram. A travelling
-   line rather than a wipe — a wipe would have to erase the envelope to move,
-   and the shape is the thing worth looking at.
-
-   The line is one band in a gradient on an element twice the envelope's width,
-   so a transform can carry it the exact width of the envelope and no length
-   has to be measured: the band sits at the halfway mark of a 200% box, which
-   is the right-hand edge at translateX(0) and the left-hand edge at
-   translateX(-50%). A transform rather than an animated `left`, because this
-   runs in five framed documents on the index's own thread. */
-@keyframes struck-tones-playhead {
-  0% { transform: translateX(-50%); opacity: 0; }
-  6% { opacity: 0.8; }
-  74% { opacity: 0.8; }
-  92%, 100% { transform: translateX(0); opacity: 0; }
-}
-
-.struck-tones--live .struck-tones__pad {
-  animation: struck-tones-sweep var(--struck-tones-sweep) linear infinite;
-}
-
-.struck-tones--live .struck-tones__pitch::after {
-  animation: struck-tones-sweep-bar var(--struck-tones-sweep) linear infinite;
-}
-
-.struck-tones--live .struck-tones__pad:nth-child(1),
-.struck-tones--live .struck-tones__pad:nth-child(1) .struck-tones__pitch::after {
-  animation-delay: 0s;
-}
-
-.struck-tones--live .struck-tones__pad:nth-child(2),
-.struck-tones--live .struck-tones__pad:nth-child(2) .struck-tones__pitch::after {
-  animation-delay: calc(var(--struck-tones-sweep) * 0.25);
-}
-
-.struck-tones--live .struck-tones__pad:nth-child(3),
-.struck-tones--live .struck-tones__pad:nth-child(3) .struck-tones__pitch::after {
-  animation-delay: calc(var(--struck-tones-sweep) * 0.5);
-}
-
-.struck-tones--live .struck-tones__pad:nth-child(4),
-.struck-tones--live .struck-tones__pad:nth-child(4) .struck-tones__pitch::after {
-  animation-delay: calc(var(--struck-tones-sweep) * 0.75);
-}
-
-.struck-tones--live .struck-tones__envelope { position: relative; }
-
-.struck-tones--live .struck-tones__envelope::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  /* Twice the envelope, with the band at its midpoint — see the keyframes. */
-  width: 200%;
-  pointer-events: none;
-  background: linear-gradient(
-    90deg,
-    transparent 0 49.7%,
-    var(--struck-tones-fg) 49.7% 50.3%,
-    transparent 50.3% 100%
-  );
-  animation: struck-tones-playhead calc(var(--struck-tones-sweep) / 4) linear infinite;
-}
-
-/* Content that moves unasked is the whole of the preference, so the set does
-   not play itself through. Striking a pad still draws — that is a response to
-   something the reader did, which is the half the preference does not forbid. */
 @media (prefers-reduced-motion: reduce) {
-  .struck-tones--live .struck-tones__pad,
-  .struck-tones--live .struck-tones__pitch::after,
-  .struck-tones--live .struck-tones__envelope::after {
-    animation: none;
-  }
+  /* Content that changes unasked is the whole of the preference, so the set
+     does not play itself through. */
+  .struck-tones--live .struck-tones__rack { animation: none; }
 
-  .struck-tones--live .struck-tones__envelope::after { display: none; }
-
-  .struck-tones__pad[data-hit],
-  .struck-tones__pad[data-hit] .struck-tones__pitch::after {
-    animation-duration: 1ms;
-  }
+  /* A struck pad still lights and fades over its own --attack and --decay:
+     that is the visual half of a sound the reader asked for, and a change of
+     light rather than of place. What moves is dropped — the heads do not
+     swell and the playhead does not travel. */
+  .struck-tones__note { scale: none; }
+  .struck-tones__trace[data-hit] .struck-tones__envelope::after { animation: none; }
 }
 
 /* --- --hushed / --close: the two axes of the block, moved one at a time ----

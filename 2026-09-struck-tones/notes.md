@@ -5,9 +5,10 @@ tap, a commit, a revert and an alert — are declared as a tuning, a voice, a
 strike and a room, and `component.js` reads those custom properties and builds
 the sounds out of oscillators at the moment a pad is struck. There are no audio
 files in the folder and no request to make, the reverb included: its impulse
-response is generated from two numbers when the set is armed. Beside the pads
-is a read-out of the last strike: its name, its pitch, and its envelope drawn
-from the same two numbers the gain node is using.
+response is generated from two numbers when the set is armed. Each pad draws
+its sound as the gesture it is, and beside the pads is a read-out of the last
+strike: its name, its pitch, and its envelope drawn from the same two numbers
+the gain node is using.
 
 It ships silent. The arm switch in the corner is both the mute and the user
 gesture an `AudioContext` needs, so the component cannot be the reason a page
@@ -49,30 +50,54 @@ because a sound nobody hears still has to deliver what it was carrying.
   nothing overlaps, so nothing beats, and what is left is the unease of
   stepping down onto a note that is nearly the tonic and is not. The urgency
   moved into the timing instead — it is the quickest gesture in the set, at
-  0.55 of a `--spread` where the others take a full one.
+  0.55 of a `--spread` where the others take a full one — and the timing is a
+  token, `--t-alert`, rather than a constant in the script, so the pads can
+  draw it.
 
-- **The picture is drawn from the audio's own numbers.** `flex-grow` takes a
-  bare number and `--attack`/`--decay` are bare numbers, so the rise and the
-  fall of the drawn envelope divide the width in exactly the ratio the sound is
-  made at — nothing measures anything. The pitch bar on each pad takes its
-  height from `calc()` on that pad's semitone token. So the drawing cannot fall
-  out of step with the sound, and retuning the set redraws it for free.
+- **The picture is drawn from the audio's own numbers, and so is the
+  motion.** `flex-grow` takes a bare number and `--attack`/`--decay` are bare
+  numbers, so the rise and the fall of the drawn envelope divide the width in
+  exactly the ratio the sound is made at — nothing measures anything. Each pad
+  draws its sound as a contour: a head per note, across by its `--t`, up or
+  down by its step at a `--contour-span` per semitone from a dotted line at
+  the root, and a line between the two. It replaced a bar sized by the last
+  note's pitch, which could say how high but not which way or how soon: the
+  alert's semitone came out 1.4px shorter than the tap's bar, and under
+  `--close` all four bars matched.
+
+  A strike is one registered number, `--glow`, animated up over `--attack` and
+  down over `--decay` — the gain node's two ramps, the fall eased along the
+  envelope drawing's own four points — and the pad, the heads, the line and
+  the playhead all read it. Multiplying the bare numbers by `1ms` is the whole
+  of the conversion, so `component.css` names no motion duration at all. The
+  flash used to be a fixed 420ms and the playhead a fixed 800ms, which drew
+  `--hushed`'s 1.7s note in under half its length; now it swells and lingers
+  on screen the way it does in the ear. Reduced motion keeps the light and
+  drops what travels: a strike still fades over its own timing, because that
+  is the visual half of a sound somebody asked for, but the heads do not swell
+  and the playhead does not cross.
 
 - **Silence is the default, and the thumbnail is built for it.** The one place
   this study can never play is the landing page: a card's iframe has pointer
   events off, so there is no gesture to arm audio with, and a rail that made a
   noise on approach would be indefensible even where there is one. So the
   card's `active` state is `--live` — the set striking its own four pads in
-  silence, on a CSS stagger, with a playhead crossing the envelope. Keyframes
-  rather than a timer, so the index's one `animation-play-state` rule stops all
-  of it while the rail is being dragged.
+  silence, one gesture rung out at a time: `--spread` + `--attack` + `--decay`,
+  so `--hushed` plays itself through at its own slower tempo. The tempo is a
+  keyframe on the rack and each beat is an ordinary strike, the one a click
+  makes, so the thumbnail cannot show something the component does not do. A
+  keyframe rather than a timer, because a paused animation fires no
+  iterations: the index's one `animation-play-state` rule stops the clock
+  while the rail is being dragged and holds a strike in flight where it
+  stands.
 
   Without `component.js` the component is still the component: the palette
-  list, the pad steps and the envelope are all CSS reading the same tokens, so
-  the card states its set correctly with no script at all. What the script adds
-  is the sound, which CSS cannot reach — so the arm switch ships `disabled` in
-  `component.html` and the script enables it, rather than offering a control
-  that does nothing.
+  list, the pad steps, the contours and the envelope are all CSS reading the
+  same tokens, so the card states its set correctly with no script at all.
+  What the script adds is the sound, which CSS cannot reach, and the strike,
+  which is an event rather than a state — so the arm switch ships `disabled`
+  in `component.html` and the script enables it, rather than offering a
+  control that does nothing.
 
 Inspiration: none — original design. The tuning is the one borrowed thing and
 it is borrowed from music rather than from an interface: a fifth and a fourth

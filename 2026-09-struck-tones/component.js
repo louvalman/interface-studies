@@ -13,9 +13,11 @@
        request to make — including for the room, whose impulse response is
        generated from two numbers when the first sound is armed.
 
-    3. Writes the read-out. The palette list and the pad steps are printed from
-       the same properties, so the component states its own values rather than
-       a copy of them.
+    3. Writes the read-out and marks the strike. The palette list and the pad
+       steps are printed from the same properties, so the component states its
+       own values rather than a copy of them; the strike is an attribute that
+       starts CSS animations timed from those properties, so how long a pad
+       stays lit is the sound's business and not this file's.
 
   A note is four layers, and the layering is the whole difference between an
   instrument and a beep. A sine fundamental sounded twice a few cents apart so
@@ -151,7 +153,7 @@
       clickFall: num('click-fall', 26),
 
       tone: num('tone', 3400),
-      air: num('air', 0.26),
+      air: num('air', 0.18),
       airSize: num('air-size', 1.7),
 
       steps: {
@@ -159,14 +161,24 @@
         commit: num('i-commit', 7),
         revert: num('i-revert', -5),
         alert: num('i-alert', -1)
+      },
+
+      /* When each gesture's second note falls, in multiples of --spread. The
+         pads draw the same three numbers, which is why they are tokens and
+         not constants in TONES below. */
+      times: {
+        commit: num('t-commit', 1),
+        revert: num('t-revert', 1),
+        alert: num('t-alert', 0.55)
       }
     };
   }
 
   /* The four sounds, as contours rather than as pitches. Each note names a
-     step in the block above and when it falls, in multiples of --spread, so
-     the shape of a sound survives being retuned: `commit` is the root then
-     whatever the set calls a commit, whether that is a fifth or a third.
+     step in the block above and, if it is not the first, which --t says when
+     it falls — so the shape of a sound survives being retuned: `commit` is
+     the root then whatever the set calls a commit, whether that is a fifth or
+     a third, as soon after as the set says.
 
      Direction is the message. Up is something now exists, down is something
      was undone, and a single note is a plain acknowledgement.
@@ -182,22 +194,22 @@
     tap: {
       label: 'Tap',
       says: 'Tap, at the root',
-      notes: [{ step: 'tap', at: 0 }]
+      notes: [{ step: 'tap' }]
     },
     commit: {
       label: 'Commit',
       says: 'Commit, rising to a fifth above the root',
-      notes: [{ step: 'tap', at: 0 }, { step: 'commit', at: 1 }]
+      notes: [{ step: 'tap' }, { step: 'commit', after: 'commit' }]
     },
     revert: {
       label: 'Revert',
       says: 'Revert, falling to a fourth below the root',
-      notes: [{ step: 'tap', at: 0 }, { step: 'revert', at: 1 }]
+      notes: [{ step: 'tap' }, { step: 'revert', after: 'revert' }]
     },
     alert: {
       label: 'Alert',
       says: 'Alert, stepping down a semitone from the root',
-      notes: [{ step: 'tap', at: 0 }, { step: 'alert', at: 0.55 }]
+      notes: [{ step: 'tap' }, { step: 'alert', after: 'alert' }]
     }
   };
 
@@ -387,7 +399,7 @@
       var voices = [];
 
       spec.notes.forEach(function (n) {
-        var at = t0 + (n.at * pal.spread) / 1000;
+        var at = t0 + ((n.after ? pal.times[n.after] : 0) * pal.spread) / 1000;
         voices = voices.concat(note(pal, hz(pal, pal.steps[n.step]), at));
       });
 
@@ -443,45 +455,75 @@
       show(shown, pal, false);
     }
 
-    /* --- striking --------------------------------------------------------- */
+    /* --- striking ---------------------------------------------------------
+       One strike, whoever asks for it: a press, or the `--live` clock below.
+       The read-out and the drawing follow either way. Only a press can sound
+       and only a press speaks to a screen reader, because the clock is the
+       component demonstrating itself and nobody asked it anything. */
+    var trace = root.querySelector('.' + ROOT + '__trace');
+
+    function strike(pad, pressed) {
+      var pal = palette(root);
+      var tone = pad.dataset.tone;
+
+      show(tone, pal, pressed);
+      if (pressed) play(tone, pal);
+
+      /* The strike is a keyframe, not a transition, so it has to be
+         retriggered rather than re-entered: the attribute comes off and goes
+         back on, with a forced style flush between the two so a strike during
+         the tail restarts the animation instead of being swallowed as no
+         change. The trace takes one too, which is the playhead. */
+      pad.removeAttribute('data-hit');
+      if (trace) trace.removeAttribute('data-hit');
+      void root.offsetWidth;
+      pad.setAttribute('data-hit', '');
+      if (trace) trace.setAttribute('data-hit', '');
+    }
 
     pads.forEach(function (pad) {
-      pad.addEventListener('click', function () {
-        var pal = palette(root);
-        var tone = pad.dataset.tone;
+      pad.addEventListener('click', function () { strike(pad, true); });
 
-        show(tone, pal, true);
-        play(tone, pal);
-
-        /* The flash is a keyframe, not a transition, so it has to be retriggered
-           rather than re-entered: the attribute comes off at the end of the run
-           and goes back on for the next press. Forced reflow between the two so
-           a press during the tail restarts the animation instead of being
-           swallowed as no change. */
-        pad.removeAttribute('data-hit');
-        void pad.offsetWidth;
-        pad.setAttribute('data-hit', '');
-      });
+      /* The strike is over when the last thing it lit has faded, which is the
+         second head, a --t of a --spread after the pad itself. Clearing on the
+         pad's own end would cut that head off. Clearing at all is not
+         housekeeping: a finished animation whose duration then grows — a
+         variant with a longer --decay taking over — becomes active again, so
+         an attribute left on replays the tail of an old strike. */
+      var heads = pad.querySelectorAll('.' + ROOT + '__note');
+      var last = heads.length ? heads[heads.length - 1] : pad;
 
       pad.addEventListener('animationend', function (event) {
-        if (event.target === pad) pad.removeAttribute('data-hit');
+        if (event.animationName !== 'struck-tones-fall') return;
+        if (event.target === last) pad.removeAttribute('data-hit');
       });
-
-      /* `--live` is the set playing itself through, and the read-out has to
-         name whichever pad is lit or the card shows one sound and says
-         another. The CSS sweep stays the clock — these are its own events, so
-         the label advances exactly when the flash does, and a paused animation
-         fires no iterations, which is how the index's one
-         animation-play-state rule reaches this without knowing it exists. */
-      function follow(event) {
-        if (event.animationName !== 'struck-tones-sweep') return;
-        if (event.target !== pad) return;
-        show(pad.dataset.tone, palette(root), false);
-      }
-
-      pad.addEventListener('animationstart', follow);
-      pad.addEventListener('animationiteration', follow);
     });
+
+    if (trace) {
+      trace.addEventListener('animationend', function (event) {
+        if (event.animationName === 'struck-tones-playhead') trace.removeAttribute('data-hit');
+      });
+    }
+
+    /* --- --live: the clock -------------------------------------------------
+       The rack's keyframe is the tempo and this is the hand on the pads: each
+       beat strikes the next one, starting from the tap whenever the modifier
+       goes on. A paused animation fires no iterations, which is how the
+       index's one animation-play-state rule stops this without knowing it
+       exists. */
+    var rack = root.querySelector('.' + ROOT + '__rack');
+    var beat = 0;
+
+    function onBeat(event) {
+      if (event.target !== rack || event.animationName !== 'struck-tones-clock') return;
+      beat = event.type === 'animationstart' ? 0 : (beat + 1) % pads.length;
+      strike(pads[beat], false);
+    }
+
+    if (rack && pads.length) {
+      rack.addEventListener('animationstart', onBeat);
+      rack.addEventListener('animationiteration', onBeat);
+    }
 
     /* --- arming ------------------------------------------------------------ */
 
