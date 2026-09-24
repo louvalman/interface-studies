@@ -411,6 +411,9 @@ body.is-locked {
 .logo {
   --logo-size: 1.3rem;
   --logo-pulse: 1100ms;
+  /* When the pulse starts. The masthead's plays as the page opens; the
+     footer's waits for its block to arrive — see the arrival section. */
+  --logo-at: 0ms;
 
   flex: none;
   width: var(--logo-size);
@@ -436,12 +439,12 @@ body.is-locked {
      delay is the reference's `phase * duration` with two rings to spend it
      on. */
   animation: logo-settle calc(var(--logo-pulse) * 0.55) var(--ease) both;
-  animation-delay: 190ms;
+  animation-delay: calc(var(--logo-at) + 190ms);
 }
 
 .logo__core {
   fill: var(--accent);
-  animation-delay: 0s;
+  animation-delay: var(--logo-at);
 }
 
 /* The pulse: one ring of accent leaving the centre and crossing the eight
@@ -461,6 +464,7 @@ body.is-locked {
   transform-origin: center;
   opacity: 0;
   animation: logo-wave var(--logo-pulse) var(--ease) both;
+  animation-delay: var(--logo-at);
 }
 
 @keyframes logo-settle {
@@ -1938,6 +1942,136 @@ body.is-locked {
   }
 
   .rail__filter { padding-bottom: 0.625rem; }
+}
+
+/* --- arrival ------------------------------------------------------------ */
+
+/* The page arrives once, in reading order. The mark's pulse opens it — that
+   was already here — and the headline, the lede, the meta row, the rail's
+   head, each card and the rule under them follow a beat apart, all rising the
+   same short distance. The controls are not in it: a switch that fades in is
+   a switch you wait for.
+
+   Whatever the first screen does not reach waits for the reader rather than
+   playing to nobody. index.js holds any [data-reveal] block that is below the
+   fold when the page boots and lets it go as it scrolls into view — on most
+   screens that is the footer, on a landscape phone the rail as well. The slots
+   below are the order on load. A batch that arrives later keeps that order
+   and only loses the gaps — index.js runs it from zero — so the choreography
+   is written once, here, and a footer reached a minute in runs the same
+   sequence it would have run at load.
+
+   Opacity and translate, as an animation. translate rather than transform,
+   because the cards already lift on transform, and an animation on it would
+   take the hover away for the length of the entrance. An animation rather
+   than a transition, because html.is-theming lays a transition list over
+   every element while the theme crossfades, and a transition declared here
+   would outrank it on exactly these elements and cut their colours to a snap.
+
+   Fill is backwards only: held at the first frame through the delay, handed
+   straight back to its own styles at the end. An animation that fills
+   forwards counts as will-change for as long as it holds, so every block on
+   the page would keep a compositing layer of its own for good.
+
+   Screen and no-preference, all of it. Reduced motion gets the page as it
+   was, with nothing held: the held state is inside this query too, so the
+   preference turning on mid-session lets go of it. Print is left out because
+   a held block is opacity 0, and a footer that prints blank is worse than
+   one that never rose. */
+:root {
+  --arrive-rise: 0.75rem;
+  --arrive-dur: 900ms;
+  --arrive-step: 70ms;
+  /* Where the headline starts: as the mark's core lands and its ring
+     reaches the first dots. */
+  --arrive-lead: 120ms;
+}
+
+@keyframes arrive {
+  from { opacity: 0; translate: 0 var(--arrive-rise); }
+}
+
+/* The rule draws rather than rises, out from the gutter it starts at. It is
+   a line, and a line that fades up reads as a smudge. */
+@keyframes arrive-rule {
+  from { scale: 0 1; }
+}
+
+@media screen and (prefers-reduced-motion: no-preference) {
+  /* A block rises as one piece; data-reveal="each" rises child by child,
+     for a row of things (the cards, the footer's facts) where the stagger
+     reads as the row. */
+  [data-reveal]:not([data-reveal="each"]),
+  [data-reveal="each"] > * {
+    --arrive-delay: calc(
+      var(--arrive-lead) +
+      (var(--arrive-at, 0) + var(--arrive-i, 0)) * var(--arrive-step)
+    );
+    animation: arrive var(--arrive-dur) var(--ease) var(--arrive-delay) backwards;
+  }
+
+  .head__title { --arrive-at: 0; }
+  .head__lede { --arrive-at: 1; }
+  .head__meta { --arrive-at: 2; }
+  .rail__head { --arrive-at: 3; }
+  .rail__track { --arrive-at: 4; }
+
+  /* With the first card and slower than it, so the line runs out under the
+     row as the cards land along it. */
+  .rail__progress[data-reveal] {
+    --arrive-at: 4;
+    animation-name: arrive-rule;
+    animation-duration: calc(var(--arrive-dur) * 1.6);
+    transform-origin: left center;
+  }
+
+  /* On a screen tall enough to show it at load, the footer comes last. */
+  .foot__brand { --arrive-at: 7; }
+  .foot__meta { --arrive-at: 8; }
+  .foot__bar { --arrive-at: 12; }
+
+  /* Recycling moves cards with flex order and never in the DOM, so child
+     order is the order on screen at load, and the stagger can be read off
+     it. Seven steps and no further: that is the row a 2560px screen shows,
+     and a card past it is one a flick brings in, which should not arrive
+     still fading. */
+  [data-reveal="each"] > :nth-child(2) { --arrive-i: 1; }
+  [data-reveal="each"] > :nth-child(3) { --arrive-i: 2; }
+  [data-reveal="each"] > :nth-child(4) { --arrive-i: 3; }
+  [data-reveal="each"] > :nth-child(5) { --arrive-i: 4; }
+  [data-reveal="each"] > :nth-child(6) { --arrive-i: 5; }
+  [data-reveal="each"] > :nth-child(n + 7) { --arrive-i: 6; }
+
+  /* The footer's mark performs when its block arrives, a little after it has
+     started to rise so the ring is not spent under a fade. It used to run at
+     load with every other animation on the page, below the fold, where the
+     one pass it makes was a pass nobody saw. */
+  .foot__brand .logo { --logo-at: calc(var(--arrive-delay) + 200ms); }
+
+  /* Below the fold at boot, until it is reached. animation-name rather than
+     the shorthand, so letting go restarts it from the top: the name going
+     from none back to arrive is a new animation, with the delay index.js has
+     just re-slotted. */
+  [data-reveal].is-held:not([data-reveal="each"]),
+  [data-reveal="each"].is-held > * {
+    opacity: 0;
+    animation-name: none;
+  }
+
+  .is-held .logo__dot,
+  .is-held .logo__core,
+  .is-held .logo__wave {
+    animation-name: none;
+  }
+
+  /* Once through, never again. A card the type filter hides is display:none,
+     and an element coming back from display:none starts its animations over —
+     so without this, clearing the filter would replay the entrance on every
+     card it brought back. */
+  [data-reveal].has-arrived,
+  [data-reveal="each"].has-arrived > * {
+    animation: none;
+  }
 }
 
 /* --- the switch itself -------------------------------------------------- */

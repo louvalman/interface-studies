@@ -1583,6 +1583,49 @@ edge is not something CSS can ask. The rail counts what it is showing and the fo
 counts what exists — the masthead states neither, because the rail's own
 "Study 01 / 05" is where a reader takes the total from.
 
+### The page arrives once, and what is below the fold waits for you
+
+The masthead, the rail and the footer rise into place in reading order as the
+page opens — the mark's pulse first, then the headline, the lede, the meta row,
+the rail's head, each card a beat apart and the rule drawn under them. A block
+carries `data-reveal`; `data-reveal="each"` staggers its children instead,
+which is how the cards and the footer's rows arrive as rows. The order is a
+slot per block in index.css's arrival section, and it is written there and
+nowhere else. A new study's card needs nothing: the track is the block.
+
+What the first screen does not reach is held until it is scrolled to, rather
+than played to nobody — on most screens the footer, on a landscape phone the
+rail too. That is the one thing index.js adds, because whether a block is on
+screen is not something CSS can ask. A batch that lands together runs from
+zero in the authored order with the gaps closed, so the footer reached a
+minute in plays the same sequence it would have at load. The footer's mark
+waits with it: its one pass used to run at load, below the fold, for nobody.
+
+Four details are load-bearing, and each is the obvious choice going wrong:
+
+- **`translate`, not `transform`.** The cards already lift on `transform`, and
+  an animation on it takes the hover away for the length of the entrance.
+- **An animation, not a transition.** `html.is-theming` lays a transition list
+  over every element during the crossfade, and a transition declared on these
+  blocks would outrank it and cut their colours to a snap.
+- **Fill backwards, never forwards.** A forward fill counts as `will-change`
+  for as long as it holds, which is every block keeping a compositing layer
+  for the life of the page.
+- **`.has-arrived` takes the animation off afterwards.** A card the type
+  filter hides is `display: none`, and an element coming back from that
+  starts its animations over — without it, clearing the filter replays the
+  entrance on every card it brings back.
+
+The controls are not in it, because a switch that fades in is one you wait
+for. All of it sits in `screen and (prefers-reduced-motion: no-preference)`:
+reduced motion gets the page as it was with nothing held, and print is left
+out because a held block is opacity 0.
+
+It costs nothing measurable. Over the first 2.5s of load at 1440x810, three
+runs a side with and without it: median 16.7ms and p95 33.3ms either way
+unthrottled, and at 4x the runs overlap — 30 to 33 frames rendered against 31
+to 39 — because what the load spends is the previews booting, not this.
+
 ### The footer says each thing once, and says none of it twice
 
 Two paragraphs and a meta list: what a folder is, where a study started, and
