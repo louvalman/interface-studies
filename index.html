@@ -66,6 +66,14 @@
         }
         document.documentElement.setAttribute('data-theme', t);
       } catch (err) { /* private mode, or no matchMedia: the page stays light */ }
+      // The rail or the list, for the same reason: a list that arrives with
+      // the script instead paints a frame of the rail first, and every card
+      // jumps from one layout to the other.
+      try {
+        if (localStorage.getItem('interface-studies:view') === 'list') {
+          document.documentElement.setAttribute('data-view', 'list');
+        }
+      } catch (err) { /* private mode: the rail, which is the default anyway */ }
     </script>
   </head>
   <body>
@@ -238,17 +246,20 @@
       </dl>
     </header>
 
-    <section class="rail" data-view="rail">
+    <section class="rail">
       <!-- One grid rather than a bar and a row beneath it: the count sits on
          the top line, the type filter on the one below, and the carousel
          controls span both and land on the filter chips' own bottom edge. On a
          narrow viewport the chips need the full width, so the areas restack
          and the controls go back up beside the count - see index.css. -->
       <div class="rail__head" data-reveal>
+        <!-- The rail reports a read position, "Study 01 / 08"; the list has
+           none, so it says how many it is showing, "Studies 08". Both are in
+           the markup and index.css shows one, so neither is written twice. -->
         <p class="rail__count">
-          <span data-i18n="rail.study">Study</span>
-          <span id="rail-index">01</span>
-          /
+          <span class="rail__count-one" data-i18n="rail.study">Study</span>
+          <span class="rail__count-all" data-i18n="rail.studies">Studies</span>
+          <span class="rail__count-at"><span id="rail-index">01</span> /</span>
           <span id="rail-total">01</span>
         </p>
         <nav
@@ -385,18 +396,20 @@
           </svg>
         </button>
       </div>
-      </div>
 
-      <!-- The list's column heads. Outside the track, because everything in
-         the track is a card to index.js. Hidden in the rail; in the list it
-         shares the rows' column template, so the two line up without being
-         one grid. Visual only: each row already says what its values are. -->
+      <!-- The list's column heads, as the head's last row. Outside the
+         track, because everything in the track is a card to index.js, and
+         inside the head so they arrive with it. Hidden in the rail; in the
+         list they share the rows' column template, so the two line up
+         without being one grid. Visual only: each row says what its values
+         are. -->
       <div class="rail__cols" aria-hidden="true">
         <span class="rail__col rail__col--no" data-i18n="cols.no">No.</span>
         <span class="rail__col rail__col--study" data-i18n="cols.study">Study</span>
         <span class="rail__col rail__col--type" data-i18n="cols.type">Type</span>
         <span class="rail__col rail__col--stack" data-i18n="cols.stack">Available in</span>
         <span class="rail__col rail__col--date" data-i18n="cols.date">Date</span>
+      </div>
       </div>
 
       <!-- Add a study: copy one <article class="piece"> block and point the
@@ -409,6 +422,9 @@
          card's position afterwards, so leave the em dash alone. Both were a
          second source of truth for something already stated once, and a card
          added at the front used to invalidate every number below it.
+         The .piece__stack list is what the study comes in, kept by hand: html
+         and css always, js where the folder has a component.js, react where it
+         has a generated adapter. It shows in the list view only.
          data-figma is the companion file's Community listing — the listing
          rather than the working file, because the listing is where a visitor
          duplicates it. It has no address for a page inside it, so every card

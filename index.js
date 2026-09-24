@@ -68,6 +68,7 @@
       'meta.latest': 'Seneste',
       'meta.figma': 'Community-fil',
       'rail.study': 'Studie',
+      'rail.studies': 'Studier',
       'type.card': 'Kort',
       'type.aesthetic': 'Æstetik',
       'type.navigation': 'Navigation',
@@ -154,6 +155,7 @@
       'a11y.pauseRail': 'Sæt karrusellen på pause',
       'a11y.playRail': 'Start karrusellen',
       'a11y.railRegion': 'Studiekarrusel',
+      'a11y.listRegion': 'Studieliste',
       'a11y.filter': 'Filtrér efter type',
       'a11y.variants': 'Varianter',
       'a11y.closeQuickLook': 'Luk hurtigt kig',
@@ -435,6 +437,16 @@
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
   const coarse = window.matchMedia('(hover: none)');
 
+  // Rail or list. The answer is an attribute on <html>, where the head script
+  // has already put a stored choice before the first paint, and index.css
+  // reads nothing else — the same arrangement the theme has. Asked fresh
+  // rather than cached, so there is one place the view is and nowhere for a
+  // copy of it to go stale. Up here with the other constants, because the
+  // functions that ask it run during setup.
+  const VIEW_KEY = 'interface-studies:view';
+  const viewBtns = Array.from(document.querySelectorAll('[data-view-set]'));
+  const listed = () => document.documentElement.getAttribute('data-view') === 'list';
+
   const prev = document.querySelector('[data-rail-prev]');
   const next = document.querySelector('[data-rail-next]');
   const driftBtn = document.querySelector('[data-rail-drift]');
@@ -599,9 +611,14 @@
 
   // Nothing of it within the scrollport. Costs a pair of rects, and is only
   // read when a preview announces itself.
+  //
+  // In the list the scrollport is the page: every row sits across the whole
+  // track, so the sideways test would call all of them on screen, and a row
+  // below the fold would go on running its field for nobody.
   function offScreen(piece) {
-    const tr = track.getBoundingClientRect();
     const r = piece.getBoundingClientRect();
+    if (listed()) return r.bottom <= 0 || r.top >= window.innerHeight;
+    const tr = track.getBoundingClientRect();
     return r.right <= tr.left || r.left >= tr.right;
   }
 
@@ -733,10 +750,14 @@
   });
 
   // What a card multiplies its preview by. Breakpoint-driven, so it is read
-  // fresh rather than cached.
+  // fresh rather than cached. The list's thumbnail is its own pair of tokens,
+  // --list-thumb and --list-scale, and a much smaller factor: a hairline sized
+  // in device pixels is a fifth of what it asked for there, which is exactly
+  // what the message exists to say.
   function cardScale() {
     const v = parseFloat(
-      getComputedStyle(document.documentElement).getPropertyValue('--preview-scale')
+      getComputedStyle(document.documentElement)
+        .getPropertyValue(listed() ? '--list-scale' : '--preview-scale')
     );
     return v > 0 ? v : 1;
   }
@@ -820,19 +841,22 @@
     if (piece.dataset.active === 'true') tell(piece, true);
   }
 
-  // --preview-scale changes at the breakpoint, so every card that already
-  // took a factor has to be told the new one.
+  // --preview-scale changes at the breakpoint, and the factor changes with the
+  // view, so every card that already took a factor has to be told the new one.
+  // Every card, not only the ones the filter left: a filtered card is still a
+  // loaded document, and it comes back at whatever factor it was last told.
   let scaleSent = cardScale();
-  window.addEventListener('resize', () => {
+  function rescale() {
     const now = cardScale();
     if (now === scaleSent) return;
     scaleSent = now;
-    real().forEach((piece) => {
+    allPieces().forEach((piece) => {
       if (piece.classList.contains('is-ready')) {
         tellScale(piece.querySelector('[data-preview]'), now);
       }
     });
-  });
+  }
+  window.addEventListener('resize', rescale);
 
   // --- loading a preview ------------------------------------------------
 
@@ -1187,6 +1211,10 @@
   }
 
   function demoable() {
+    // A list is not a rail, and nothing in it performs unasked: it is where a
+    // reader goes to look something up, and a wave running down it is the
+    // page moving under the thing being read.
+    if (listed()) return false;
     // Touch has handoff, which holds the mark's card performing for as long as
     // it is the mark's. Nothing to add there, and a second source of `active`
     // on the same card would fight it.
@@ -1377,8 +1405,10 @@
         if (filterType === type) return;
         filterType = type;
         // Filtering is a deliberate look at one part of the set; the rail
-        // sliding off it a second later is not what was asked for.
-        driftStop();
+        // sliding off it a second later is not what was asked for. In the
+        // list there is no rail moving to stop, and stopping it anyway would
+        // count as the reader having taken it, for good.
+        if (!listed()) driftStop();
         applyFilter();
       });
 
@@ -1450,7 +1480,9 @@
   // the control matters most.
   const NAV_EN = {
     'a11y.pauseRail': 'Pause the carousel',
-    'a11y.playRail': 'Start the carousel'
+    'a11y.playRail': 'Start the carousel',
+    'a11y.railRegion': 'Study carousel',
+    'a11y.listRegion': 'Study list'
   };
 
   let navCopy = null;    // held, so a language switch re-labels without a scroll
@@ -1460,6 +1492,13 @@
   }
 
   function renderNav() {
+    // The track names itself for what it is. It keeps its data-i18n-aria, so
+    // the language module writes the carousel label on a switch — and then
+    // fires the event that lands here, so this is the label that stays.
+    track.setAttribute(
+      'aria-label',
+      navText(listed() ? 'a11y.listRegion' : 'a11y.railRegion')
+    );
     if (driftBtn) {
       // 'held' is still the rail running as far as the reader is concerned —
       // it is deferring to their pointer, not waiting to be restarted — so the
@@ -1578,6 +1617,10 @@
   // viewport holding few studies is below that line; it is the one case the
   // rail stays finite in, and every study added raises the ceiling by a card.
   function loopable() {
+    // A list has no row to cycle. Answering no here is what gives the list its
+    // order: rebuildRing then numbers the cards in DOM order, which order()
+    // has already sorted newest first, and never rotates them.
+    if (listed()) return false;
     const m = sized();
     return m.step > 0 && (ring.length - 1) * m.step - m.client >= m.step;
   }
@@ -1730,7 +1773,7 @@
   }
 
   function handoff() {
-    if (!coarse.matches || told === currentActive) return;
+    if (!coarse.matches || listed() || told === currentActive) return;
     const list = real();
     if (list[told]) tell(list[told], false);
     if (list[currentActive]) tell(list[currentActive], true);
@@ -1822,6 +1865,11 @@
     }
 
     syncVisibility();
+
+    // No read mark in a list, and so no card at it, no progress through the
+    // set and no ends for the buttons to report — the rest of this is the
+    // rail's. The count above is all the list needs.
+    if (listed()) { renderNav(); return; }
 
     const read = activeIndex();
     const active = read.index;
@@ -2079,6 +2127,7 @@
   if (next) next.addEventListener('click', () => { driftStop(); scrollBy(1); });
 
   track.addEventListener('keydown', (event) => {
+    if (listed()) return;   // the page's own keys scroll a list
     if (event.key === 'ArrowRight') { event.preventDefault(); driftStop(); scrollBy(1); }
     if (event.key === 'ArrowLeft') { event.preventDefault(); driftStop(); scrollBy(-1); }
     if (event.key === 'Home') { event.preventDefault(); driftStop(); scrollToEdge(false); }
@@ -2353,6 +2402,9 @@
   // it is what keeps the close from settling the rail onto the card the
   // overlay was covering.
   track.addEventListener('focusin', (event) => {
+    // Tabbing down a list is not taking the rail: stopping the drift here
+    // would leave it stopped for good when the reader goes back to it.
+    if (listed()) return;
     let keyboard = true;
     try { keyboard = event.target.matches(':focus-visible'); }
     catch (err) { /* older engine: treat focus as deliberate */ }
@@ -2380,6 +2432,7 @@
   // diagonal start of a two-finger swipe and count as vertical: a gesture that
   // means the rail resolves into one within a frame or two.
   track.addEventListener('wheel', (event) => {
+    if (listed()) return;
     const sideways = event.shiftKey || Math.abs(event.deltaX) > Math.abs(event.deltaY);
     if (!sideways) return;
     driftStop(true, false);
@@ -2465,7 +2518,7 @@
   let slop = DRAG_SLOP.mouse;
 
   track.addEventListener('pointerdown', (event) => {
-    if (event.button !== 0) return;
+    if (event.button !== 0 || listed()) return;
     // A finger is not driven from here: the browser scrolls this natively on
     // the compositor, and taking that over puts every frame of the gesture on
     // the main thread behind the thumbnails. The touch path below lets it
@@ -2598,6 +2651,9 @@
   let touchMoved = false;
 
   track.addEventListener('touchstart', () => {
+    // A finger on a list is the page scrolling. Taken as the rail's gesture it
+    // would pause every preview and wait for a landing that never comes.
+    if (listed()) return;
     // A finger arriving mid-landing takes it over.
     if (landing) finishLanding();
     touching = true;
@@ -3144,6 +3200,85 @@
     });
   }
 
+  // --- rail or list ----------------------------------------------------
+
+  // The same cards in a second layout. Nothing moves in the DOM — an iframe
+  // re-inserted reloads the component inside it — so switching is an attribute
+  // on <html> and index.css does the laying out. What is left for here is
+  // everything that measured the rail, or ran because it was one.
+  //
+  // Going in, the rail is put down rather than stopped: the drift is parked
+  // without counting as the reader having taken it, the wave and a handed-off
+  // card are hushed, and the read mark comes off, since a list has none.
+  // Coming out, the ring is rebuilt from the top the way a filter change
+  // rebuilds it, and the drift sets off again only if nobody had stopped it —
+  // the rule a window narrowed back into a loopable row already follows.
+  function setView(view, remember) {
+    const list = view === 'list';
+
+    if (list !== listed()) {
+      if (list) {
+        driftStop(false, false);
+        hush();
+        real().forEach((piece) => {
+          piece.classList.remove('is-active');
+          delete piece.dataset.next;
+        });
+        currentActive = -1;
+        onMark = false;
+        document.documentElement.setAttribute('data-view', 'list');
+      } else {
+        document.documentElement.removeAttribute('data-view');
+      }
+
+      // Every measurement of the row is of the other layout now. rebuildRing
+      // drops them, and in the list it lays the cards out newest first.
+      track.scrollLeft = 0;
+      rebuildRing();
+      rescale();
+      sync();
+      refreshPause();
+      syncDriftBtn();
+
+      // Late, as it is at load: the rail should be seen before it moves.
+      if (!list && !taken && driftsUnasked()) {
+        setTimeout(() => {
+          if (!listed() && drift === 'off' && !taken) driftRun();
+        }, DRIFT_DELAY);
+      }
+    }
+
+    // The rail is a scroll region with a tab stop of its own, for the arrow
+    // keys. A list is read with the page's keys and needs no stop to hold them.
+    if (list) track.removeAttribute('tabindex');
+    else track.setAttribute('tabindex', '0');
+
+    viewBtns.forEach((btn) => {
+      const on = btn.dataset.viewSet === (list ? 'list' : 'rail');
+      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+
+    if (remember) {
+      try { localStorage.setItem(VIEW_KEY, list ? 'list' : 'rail'); } catch (err) { /* private mode */ }
+    }
+  }
+
+  viewBtns.forEach((btn) => {
+    btn.addEventListener('click', () => setView(btn.dataset.viewSet, true));
+  });
+
+  // A list scrolls with the page rather than inside the track, so it is the
+  // page's scroll that brings a row on screen or takes it off. Coalesced onto
+  // the frame the way sync is.
+  let listFrame = 0;
+  window.addEventListener('scroll', () => {
+    if (!listed() || listFrame) return;
+    listFrame = requestAnimationFrame(() => {
+      listFrame = 0;
+      syncVisibility();
+    });
+  }, { passive: true });
+
   renderLedeHint(null);
   order();
   buildFilter();   // after order(), so the chips count a settled rail
@@ -3155,6 +3290,10 @@
   // the newest study, which is where the rail rests.
   rebuildRing();
   sync();
+
+  // The head script may already have put the page in the list; this labels the
+  // switch and the track for whichever view it found, and changes nothing else.
+  setView(listed() ? 'list' : 'rail', false);
 
   window.addEventListener('resize', () => {
     // A window narrowed back into a row it can loop sets the rail going again,

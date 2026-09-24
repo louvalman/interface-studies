@@ -618,12 +618,21 @@ body.is-locked {
   grid-template-columns: minmax(0, 1fr) auto auto;
   grid-template-areas:
     "count nav view"
-    "filter nav view";
+    "filter nav view"
+    "cols cols cols";
   align-items: end;
 }
 
 .rail__count { grid-area: count; }
 .rail__filter { grid-area: filter; }
+.rail__cols { grid-area: cols; }
+
+/* One label or the other: the rail reports where it is, "Study 01 / 08",
+   and the list, which has no read position, how many it is showing. */
+.rail__count-all { display: none; }
+:root[data-view="list"] .rail__count-one,
+:root[data-view="list"] .rail__count-at { display: none; }
+:root[data-view="list"] .rail__count-all { display: inline; }
 
 .rail__nav {
   grid-area: nav;
@@ -663,7 +672,8 @@ body.is-locked {
     grid-template-columns: minmax(0, 1fr) auto;
     grid-template-areas:
       "top top"
-      "filter view";
+      "filter view"
+      "cols cols";
     align-items: center;
   }
 
@@ -729,6 +739,11 @@ body.is-locked {
   width: 1rem;
   height: 1rem;
 }
+
+/* The switch is script: without it there is no list to switch to, so it is
+   not offered, and the carousel controls take the gutter it would have held. */
+:root:not(.js) .rail__view { display: none; }
+:root:not(.js) .rail__nav { padding-right: var(--gutter); }
 
 .rail__btn {
   width: 2.75rem;
@@ -1365,7 +1380,7 @@ body.is-locked {
 
 .rail {
   /* One template for the heads and the rows. They are not one grid — the heads
-     sit outside the track, because everything in the track is a card to
+     are the rail head's last row, because everything in the track is a card to
      index.js — so every track here is a fixed length or a share of what is
      left, and never sized by content, or the two would stop lining up. */
   --list-cols:
@@ -1380,10 +1395,10 @@ body.is-locked {
   --list-gap: clamp(1rem, 2vw, 1.75rem);
 }
 
-.rail[data-view="list"] .rail__nav { visibility: hidden; }
-.rail[data-view="list"] .rail__progress { display: none; }
+:root[data-view="list"] .rail__nav { visibility: hidden; }
+:root[data-view="list"] .rail__progress { display: none; }
 
-.rail[data-view="list"] .rail__cols {
+:root[data-view="list"] .rail__cols {
   display: grid;
   grid-template-columns: var(--list-cols);
   column-gap: var(--list-gap);
@@ -1404,7 +1419,7 @@ body.is-locked {
 .rail__col--stack { grid-column: stack; }
 .rail__col--date { grid-column: date; }
 
-.rail[data-view="list"] .rail__track {
+:root[data-view="list"] .rail__track {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 0;
@@ -1416,7 +1431,7 @@ body.is-locked {
 
 /* Each row draws the rule above it, so the list closes on one of its own —
    the job the progress track does under the rail, which the list hides. */
-.rail[data-view="list"] .rail__track::after {
+:root[data-view="list"] .rail__track::after {
   content: "";
   border-top: 1px solid var(--hairline);
 }
@@ -1424,7 +1439,7 @@ body.is-locked {
 /* The row. Title and note sit in the middle two rows of four, so the pair is
    centred on the thumbnail rather than hung from its top edge; every other
    cell spans all four and centres itself. */
-.rail[data-view="list"] .piece {
+:root[data-view="list"] .piece {
   display: grid;
   grid-template-columns: var(--list-cols);
   grid-template-rows: 1fr auto auto 1fr;
@@ -1439,23 +1454,18 @@ body.is-locked {
   padding: 1rem 0;
   border-top: 1px solid var(--hairline);
   transform: none;
-  /* ROUGH: the ring's rotation is an inline `order` on every card, and the
-     list has to read newest-first whatever the rail was showing. The switch's
-     script should clear the ring on the way in and rebuild it on the way out;
-     until it does, this wins over the inline value. */
-  order: 0 !important;
 }
 
 /* .piece.is-filtered is the lower of the two, so it has to be restated here
    or the filter would stop hiding anything in the list. */
-.rail[data-view="list"] .piece.is-filtered { display: none; }
+:root[data-view="list"] .piece.is-filtered { display: none; }
 
-.rail[data-view="list"] .piece__frame,
-.rail[data-view="list"] .piece__body { display: contents; }
+:root[data-view="list"] .piece__frame,
+:root[data-view="list"] .piece__body { display: contents; }
 
-.js .rail[data-view="list"] .piece__frame::after { content: none; }
+.js[data-view="list"] .piece__frame::after { content: none; }
 
-.rail[data-view="list"] .piece__thumb {
+:root[data-view="list"] .piece__thumb {
   grid-area: thumb;
   position: relative;
   display: block;
@@ -1469,12 +1479,12 @@ body.is-locked {
   transition: border-color 320ms var(--ease);
 }
 
-.rail[data-view="list"] .piece__preview {
+:root[data-view="list"] .piece__preview {
   transform: scale(var(--list-scale));
 }
 
 /* The skeleton, on the box that now holds the preview. */
-.js .rail[data-view="list"] .piece__thumb::after {
+.js[data-view="list"] .piece__thumb::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -1487,21 +1497,21 @@ body.is-locked {
   pointer-events: none;
 }
 
-.js .rail[data-view="list"] .piece.is-ready .piece__thumb::after {
+.js[data-view="list"] .piece.is-ready .piece__thumb::after {
   opacity: 0;
   animation: none;
 }
 
 /* The chips come off the thumbnail and sit on the page, so they take the
    page's colours rather than the over-a-preview ones. */
-.rail[data-view="list"] .piece__no,
-.rail[data-view="list"] .piece__type {
+:root[data-view="list"] .piece__no,
+:root[data-view="list"] .piece__type {
   position: static;
   justify-self: start;
   backdrop-filter: none;
 }
 
-.rail[data-view="list"] .piece__no {
+:root[data-view="list"] .piece__no {
   grid-area: no;
   padding: 0;
   background: none;
@@ -1512,7 +1522,7 @@ body.is-locked {
 
 /* A hairline pill, as the filter's chips are: the column's values are the
    filter's options, and they look it. */
-.rail[data-view="list"] .piece__type {
+:root[data-view="list"] .piece__type {
   grid-area: type;
   /* Letter-spacing trails the last letter as well, so the right side gives
      that much back or the word sits left of centre. */
@@ -1526,23 +1536,23 @@ body.is-locked {
    never use. Trimmed to the cap height, equal padding is equal space; the
    padding is what keeps the pill the height it was untrimmed. */
 @supports (text-box: trim-both cap alphabetic) {
-  .rail[data-view="list"] .piece__type {
+  :root[data-view="list"] .piece__type {
     text-box: trim-both cap alphabetic;
     padding-block: 0.65em;
   }
 }
 
-.rail[data-view="list"] .piece__slug {
+:root[data-view="list"] .piece__slug {
   grid-area: date;
   font-size: 0.6875rem;
 }
 
-.rail[data-view="list"] .piece__title {
+:root[data-view="list"] .piece__title {
   grid-area: title;
   font-size: 1.125rem;
 }
 
-.rail[data-view="list"] .piece__note {
+:root[data-view="list"] .piece__note {
   grid-area: note;
   max-width: 62ch;
   font-size: 0.8125rem;
@@ -1554,7 +1564,7 @@ body.is-locked {
   overflow: hidden;
 }
 
-.rail[data-view="list"] .piece__stack {
+:root[data-view="list"] .piece__stack {
   grid-area: stack;
   display: flex;
   flex-wrap: wrap;
@@ -1568,7 +1578,7 @@ body.is-locked {
 /* Quick look loses its words and keeps its glyph: a row has a column for it,
    not a thumbnail's corner. It still arrives on hover, as it does on a card,
    and where there is no hover the (hover: none) rule above keeps it showing. */
-.rail[data-view="list"] .piece__expand {
+:root[data-view="list"] .piece__expand {
   grid-area: ql;
   position: relative;
   width: 2.25rem;
@@ -1581,32 +1591,32 @@ body.is-locked {
   backdrop-filter: none;
 }
 
-.rail[data-view="list"] .piece__expand-text { display: none; }
+:root[data-view="list"] .piece__expand-text { display: none; }
 
 /* The row is the link, so the call to action is only its arrow. */
-.rail[data-view="list"] .piece__cta {
+:root[data-view="list"] .piece__cta {
   grid-area: go;
   justify-self: end;
   margin: 0;
   padding: 0;
 }
 
-.rail[data-view="list"] .piece__cta-text { display: none; }
+:root[data-view="list"] .piece__cta-text { display: none; }
 
-.rail[data-view="list"] .piece__link::after {
+:root[data-view="list"] .piece__link::after {
   border-radius: 0.5rem;
 }
 
-.rail[data-view="list"] .piece__link:focus-visible::after {
+:root[data-view="list"] .piece__link:focus-visible::after {
   outline-offset: 2px;
 }
 
 /* No lift in a list — a row that rises out of line reads as misaligned, the
    same reason the read-position card is not painted. The thumbnail's edge and
    the title's accent rule say it instead. */
-.rail[data-view="list"] .piece:focus-within .piece__thumb { border-color: var(--hairline-strong); }
+:root[data-view="list"] .piece:focus-within .piece__thumb { border-color: var(--hairline-strong); }
 
-.rail[data-view="list"] .piece:focus-within .piece__title {
+:root[data-view="list"] .piece:focus-within .piece__title {
   text-decoration: underline;
   text-decoration-color: var(--accent);
   text-decoration-thickness: 1px;
@@ -1614,9 +1624,9 @@ body.is-locked {
 }
 
 @media (hover: hover) {
-  .rail[data-view="list"] .piece:hover .piece__thumb { border-color: var(--hairline-strong); }
+  :root[data-view="list"] .piece:hover .piece__thumb { border-color: var(--hairline-strong); }
 
-  .rail[data-view="list"] .piece:hover .piece__title {
+  :root[data-view="list"] .piece:hover .piece__title {
     text-decoration: underline;
     text-decoration-color: var(--accent);
     text-decoration-thickness: 1px;
@@ -1626,9 +1636,9 @@ body.is-locked {
 
 /* One forthcoming row, not three: in the rail the three read as a set, and
    in a list they read as the same line printed three times. */
-.rail[data-view="list"] .piece--ghost ~ .piece--ghost { display: none; }
+:root[data-view="list"] .piece--ghost ~ .piece--ghost { display: none; }
 
-.rail[data-view="list"] .piece__ghost-when {
+:root[data-view="list"] .piece__ghost-when {
   grid-area: thumb;
   width: 100%;
   aspect-ratio: 4 / 5;
@@ -1638,8 +1648,8 @@ body.is-locked {
   border-radius: 0.5rem;
 }
 
-.rail[data-view="list"] .piece__ghost-month { font-size: 0.6875rem; }
-.rail[data-view="list"] .piece__ghost-year { font-size: 0.5625rem; }
+:root[data-view="list"] .piece__ghost-month { font-size: 0.6875rem; }
+:root[data-view="list"] .piece__ghost-year { font-size: 0.5625rem; }
 
 /* The stack's marks. The text stays in the markup, which is what a screen
    reader and the tooltip read; the glyph is a mask painted in currentColor,
@@ -1673,9 +1683,9 @@ body.is-locked {
    beside it. The number and the column heads go — the order already says the
    one, and the other has no columns to name. */
 @media (max-width: 64rem) {
-  .rail[data-view="list"] .rail__cols { display: none; }
+  :root[data-view="list"] .rail__cols { display: none; }
 
-  .rail[data-view="list"] .piece {
+  :root[data-view="list"] .piece {
     grid-template-columns:
       [thumb] var(--list-thumb)
       [type] auto
@@ -1691,12 +1701,12 @@ body.is-locked {
     row-gap: 0.375rem;
   }
 
-  .rail[data-view="list"] .piece__no,
-  .rail[data-view="list"] .piece__cta { display: none; }
+  :root[data-view="list"] .piece__no,
+  :root[data-view="list"] .piece__cta { display: none; }
 
-  .rail[data-view="list"] .piece__expand { align-self: center; }
-  .rail[data-view="list"] .piece__type,
-  .rail[data-view="list"] .piece__stack { align-self: center; }
+  :root[data-view="list"] .piece__expand { align-self: center; }
+  :root[data-view="list"] .piece__type,
+  :root[data-view="list"] .piece__stack { align-self: center; }
 }
 
 @media (max-width: 30rem) {
@@ -1705,7 +1715,7 @@ body.is-locked {
     --list-scale: 0.15;      /* 72 / 480 */
   }
 
-  .rail[data-view="list"] .piece__title { font-size: 1rem; }
+  :root[data-view="list"] .piece__title { font-size: 1rem; }
 }
 
 /* --- quick look -------------------------------------------------------- */
