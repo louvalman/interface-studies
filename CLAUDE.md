@@ -1182,22 +1182,16 @@ lede — so a headline change means editing `index.html`, then `og.html`, then
 re-rendering, and skipping the last two leaves a link that pastes as one page
 and opens as another.
 
-Its `Stack` row is shorter than the footer's on purpose, and that is not a
-drift to correct. The page says `HTML, CSS and vanilla JS, no build step`,
-where `vanilla` carries the no-framework claim and there is room for it. The
-card says `HTML, CSS & JS`, because the card is 1200x630 of fixed width read
-at a glance in a link unfurl: measured, `vanilla` widens the meta block by
-120px, takes that width off the lede's column and wraps it from two lines to
-three. Naming the JS at all is the honest part, and it survives the cut.
-
-Its meta row is the exception, and deliberately not a copy: the masthead's row
-is the newest study's date, read off the cards at runtime, and baked into a PNG
-that is wrong from the next study onward. The card states three things about
-the set that do not move instead — what the studies explore, what they are made
-of, and that each one stands alone. The first of those used to be a scope
-("One component"), which framed the set by what it holds itself to rather than
-by what it is about; that is the register the masthead and the footer were both
-taken out of, and the card was the last thing left in it.
+It has no meta row, and that is deliberate. The masthead's row is the newest
+study's date, read off the cards at runtime, and baked into a PNG it is wrong
+from the next study onward — so is a count. The card carried three facts that
+do not move instead, Exploring, Stack and Each study, and not moving was all
+they had going for them: one repeated the headline, one only made sense to
+someone who had read these rules, and the stack stopped being the whole story
+once studies began getting React adapters. So below the rule is the lede and
+nothing else, broken by hand at its comma, since a fixed-size image has no
+width to reflow into. The domain is not on it either: every unfurl prints it
+under the card already.
 
 The rail ends on its own rule: `.rail__progress` is both the scroll position
 and the line under the cards, so its track is always drawn and only the fill is

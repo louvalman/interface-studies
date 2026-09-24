@@ -20,7 +20,7 @@
        og:image:width and og:image:height tags in index.html declare.
 
        Look at the PNG before shipping it. A Chromium 141 build rendered this
-       with a white band across the bottom 87px and the foot row cut through:
+       with a white band across the bottom 87px and the lede cut through:
        its --headless counts a window frame inside --window-size, so the page
        is laid out shorter than the image it is saved into. chrome-headless-shell
        takes the same flags and sizes the viewport to the window, which is what
@@ -119,10 +119,10 @@
       .logo__dot { fill: var(--ink); }
       .logo__core { fill: var(--accent); }
 
-      /* The title takes the slack, so the rule and the row beneath it sit at
+      /* The title takes the slack, so the rule and the lede beneath it sit at
          the same height whatever the headline runs to. A card is cropped by
-         whoever is showing it; the bottom row staying put matters more than
-         the title starting at a fixed y. */
+         whoever is showing it; the bottom staying put matters more than the
+         title starting at a fixed y. */
       .title {
         flex: 1;
         margin: 0;
@@ -143,56 +143,19 @@
         margin-bottom: 38px;
       }
 
-      .foot {
-        display: flex;
-        align-items: flex-end;
-        justify-content: space-between;
-        gap: 48px;
-      }
-
-      /* Measured, not set to a reading measure: this is a caption under a
-         headline at card size, and a last line carrying two words reads as an
-         accident. It broke in three even lines while the lede was the long
-         one; the current lede takes two. Re-check it when the lede changes. */
+      /* Broken by hand, at the comma, which is where the sentence pauses. The
+         card is a fixed 1200x630 image rather than a page, so there is no
+         width to reflow into and nothing a <br /> could go wrong at; left to
+         the measure it broke as "...small enough / to stay legible." and, with
+         balance, as "...built in Figma / and code", splitting the one phrase
+         the sentence turns on. Re-check it when the lede changes. */
       .lede {
         margin: 0;
-        max-width: 42ch;
         font-size: 19px;
         line-height: 1.55;
         color: var(--ink-soft);
       }
 
-      .meta {
-        margin: 0;
-        display: flex;
-        gap: 48px;
-      }
-
-      .meta__item {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-      }
-
-      .meta__key {
-        font-family: var(--mono);
-        font-size: 12px;
-        letter-spacing: 0.16em;
-        text-transform: uppercase;
-        color: var(--muted);
-      }
-
-      /* nowrap because these are labels rather than prose, and the row has
-         the width for them: "One component" is three characters longer than
-         the "One detail" it replaced, which was enough to wrap all three
-         values onto two lines each and make the row read as a paragraph. */
-      .meta__val {
-        margin: 0;
-        white-space: nowrap;
-        font-family: var(--mono);
-        font-size: 16px;
-        color: var(--ink);
-      }
     </style>
   </head>
 
@@ -217,48 +180,23 @@
 
       <div class="rule"></div>
 
-      <div class="foot">
-        <!-- Word for word the index's lede. It used to be the index's less
-           "with no framework", because the old sentence ran to three lines at
-           this size; the current one fits, so the two are the same string
-           again and there is one less difference to remember. The hint
-           sentence after it on the page is not here: it tells a reader how to
-           work the rail, and there is no rail in a PNG. -->
-        <p class="lede">
-          One component per study, built in Figma and&nbsp;code, small enough
-          to stay legible.
-        </p>
+      <!-- Word for word the index's lede. The hint sentence after it on the
+         page is not here: it tells a reader how to work the rail, and there
+         is no rail in a PNG.
 
-        <!-- Not the masthead's meta row any more, and it cannot be. The page
-           now states a count and the newest study's date, both of which it
-           reads off the cards at runtime — bake either into a PNG and it is
-           wrong from the next study onward, which is why Studies was left off
-           here to begin with. So this row states the three things about the
-           set that do not move. It is the one place og.html and index.html
-           are allowed to differ; the h1 and the lede above still have to
-           match word for word.
-
-           The first slot said "Scope — One component", which framed the set
-           by what it holds itself to, the way the old lede's "builds just
-           that" did. It states what the studies are about instead. That
-           repeats a word of the headline above it, which is the cost, and
-           cheap against a card whose only three facts were a bound, a stack
-           and a property of the folders. -->
-        <dl class="meta">
-          <div class="meta__item">
-            <dt class="meta__key">Exploring</dt>
-            <dd class="meta__val">Interaction, aesthetics</dd>
-          </div>
-          <div class="meta__item">
-            <dt class="meta__key">Stack</dt>
-            <dd class="meta__val">HTML, CSS &amp; JS</dd>
-          </div>
-          <div class="meta__item">
-            <dt class="meta__key">Each study</dt>
-            <dd class="meta__val">Stands alone</dd>
-          </div>
-        </dl>
-      </div>
+         Nothing sits beside it. There was a row of three facts here —
+         Exploring, Stack, Each study — chosen because they were the things
+         about the set that do not move: a count or a date baked into a PNG is
+         wrong from the next study onward. Not moving was all they had going
+         for them. Exploring repeated the headline, Each study said something
+         only this repo's own rules make sense of, and Stack stopped being the
+         whole story once studies began getting React adapters. A card is
+         read at a glance, and every unfurl prints the domain under it
+         already. -->
+      <p class="lede">
+        One component per study, built in Figma and code,<br />
+        small enough to stay legible.
+      </p>
     </div>
   </body>
 </html>
