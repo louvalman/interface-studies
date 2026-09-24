@@ -815,6 +815,78 @@
       color: var(--demo-dim);
     }
 
+    /* --- arrival ----------------------------------------------------------
+       The page arrives once, in reading order, the way the index does: the
+       kicker, the heading and the lede a beat apart, then each block as it is
+       reached, rising a short distance as it fades up. Whatever the first
+       screen does not reach waits to be scrolled to, and so does the
+       component inside it: its own animations are held with its block, so an
+       entrance it makes on load is made where it can be seen rather than
+       below the fold. The script at the foot of the page decides what is held
+       and in what order; the motion is all here.
+
+       data-reveal goes on the page's own blocks — the intro's three lines, a
+       group's head, a state, a stage, the decisions — and never on a
+       component's root, so nothing here names a component class or moves
+       one directly: a component rises inside the block that holds it. The
+       one rule that reaches past a block is the hold, and it names no class
+       either; it is the construction preview.html's pause already uses.
+
+       translate rather than transform, so nothing here takes a transform the
+       page or a component already has. An animation rather than a
+       transition, so html.is-theming's transition list still reaches these
+       blocks during the crossfade. Fill is backwards only, so nothing is left
+       holding a compositing layer once it has landed. And all of it is
+       screen and no-preference: reduced motion gets the page as it was, and
+       print never gets a block held at opacity 0. Copied, not shared, like
+       everything else on this page. */
+    :root {
+      --demo-arrive-rise: 0.75rem;
+      --demo-arrive-dur: 900ms;
+      --demo-arrive-step: 70ms;
+      --demo-arrive-lead: 120ms;
+      --demo-arrive-ease: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes demo-arrive {
+      from { opacity: 0; translate: 0 var(--demo-arrive-rise); }
+    }
+
+    @media screen and (prefers-reduced-motion: no-preference) {
+      /* A block's slot is its place in the order. The intro's lines are 0 to
+         2 and everything else is 3, which is the page without its script;
+         with it, the first screen is re-slotted in reading order and a batch
+         reached later runs from 0. */
+      [data-reveal] {
+        animation: demo-arrive var(--demo-arrive-dur) var(--demo-arrive-ease)
+          calc(var(--demo-arrive-lead) + var(--demo-arrive-at, 3) * var(--demo-arrive-step))
+          backwards;
+      }
+
+      .demo__kicker { --demo-arrive-at: 0; }
+      .demo__heading { --demo-arrive-at: 1; }
+      .demo__lede { --demo-arrive-at: 2; }
+
+      /* Below the fold at boot, until it is reached. animation-name rather
+         than the shorthand, so letting go starts it from the top. */
+      [data-reveal].is-held {
+        opacity: 0;
+        animation-name: none;
+      }
+
+      /* The component waits with its block, paused at wherever it had got
+         to, and picks up when the block is let go. */
+      [data-reveal].is-held *,
+      [data-reveal].is-held *::before,
+      [data-reveal].is-held *::after {
+        animation-play-state: paused !important;
+      }
+
+      /* Once through, never again: an element coming back from display:none
+         starts its animations over. */
+      [data-reveal].has-arrived { animation: none; }
+    }
+
     /* --- the switch itself ------------------------------------------------
        Flipping the token block repaints the page in one frame, which reads as
        a cut rather than as a change of light. The script hangs .is-theming on
@@ -902,21 +974,21 @@
   </a>
 
   <header class="demo__intro">
-    <p class="demo__kicker">2026-09 &middot; <span data-i18n="type">Navigation</span></p>
-    <h1 class="demo__heading" data-i18n="heading">Liquid glass toolbar</h1>
-    <p class="demo__lede" data-i18n="lede">
+    <p class="demo__kicker" data-reveal>2026-09 &middot; <span data-i18n="type">Navigation</span></p>
+    <h1 class="demo__heading" data-reveal data-i18n="heading">Liquid glass toolbar</h1>
+    <p class="demo__lede" data-reveal data-i18n="lede">
       One glass surface that changes shape: a bar that opens into a search
       field, and then into a panel. Six materials, one construction.
     </p>
   </header>
 
     <section class="demo__group">
-      <div class="demo__group-head">
+      <div class="demo__group-head" data-reveal>
         <h2 class="demo__group-title" data-i18n="rest.title">At rest</h2>
         <p class="demo__group-note" data-i18n="rest.note">Four actions cluster and the fifth is pushed to the end. The gap says the last item is a different kind of thing, before any label explains it.</p>
       </div>
 
-      <div class="demo__stage">
+      <div class="demo__stage" data-reveal>
               <nav class="liquid-glass-toolbar" aria-label="Primary">
                 <div class="liquid-glass-toolbar__shell">
 
@@ -1076,15 +1148,15 @@
             </div>
 
       <ol class="demo__steps">
-      <li class="demo__step">
+      <li class="demo__step" data-reveal>
         <strong data-i18n="rest.1t">One label, not five.</strong>
         <span data-i18n="rest.1b">It is the selection indicator, not a tooltip &mdash; exactly one item carries it.</span>
       </li>
-      <li class="demo__step">
+      <li class="demo__step" data-reveal>
         <strong data-i18n="rest.2t">ARIA is the state.</strong>
         <span data-i18n="rest.2b"><code>aria-current</code> on the destinations, <code>aria-expanded</code> on the panel button. <code>component.js</code> writes those two attributes and nothing else.</span>
       </li>
-      <li class="demo__step">
+      <li class="demo__step" data-reveal>
         <strong data-i18n="rest.3t">Nothing slides.</strong>
         <span data-i18n="rest.3b">The outgoing pill shrinks to a square as the incoming one grows; adjacent, they read as one mass travelling.</span>
       </li>
@@ -1092,12 +1164,12 @@
     </section>
 
     <section class="demo__group">
-      <div class="demo__group-head">
+      <div class="demo__group-head" data-reveal>
         <h2 class="demo__group-title" data-i18n="reveal.title">The reveal</h2>
         <p class="demo__group-note" data-i18n="reveal.note">Every morph in the bar is one grid column going <code>0fr</code> to <code>1fr</code> under <code>overflow: hidden</code>. The track holds a label on four items and an input on the fifth, and does not know which.</p>
       </div>
 
-      <div class="demo__stage">
+      <div class="demo__stage" data-reveal>
               <nav class="liquid-glass-toolbar liquid-glass-toolbar--searching" aria-label="Primary, search open">
                 <div class="liquid-glass-toolbar__shell">
 
@@ -1257,15 +1329,15 @@
             </div>
 
       <ol class="demo__steps">
-      <li class="demo__step">
+      <li class="demo__step" data-reveal>
         <strong data-i18n="reveal.1t">Indent, not padding.</strong>
         <span data-i18n="reveal.1b">A box cannot be narrower than its own padding, so padded labels left an 11px stripe beside every collapsed icon. An indent disappears with the text and still counts toward the open width.</span>
       </li>
-      <li class="demo__step">
+      <li class="demo__step" data-reveal>
         <strong data-i18n="reveal.2t">The input is measured in a length.</strong>
         <span data-i18n="reveal.2b">A text input has no meaningful max-content width, so that one track is a length rather than <code>1fr</code>.</span>
       </li>
-      <li class="demo__step">
+      <li class="demo__step" data-reveal>
         <strong data-i18n="reveal.3t">Pinned from outside.</strong>
         <span data-i18n="reveal.3b"><code>--searching</code> is a handle for callers that cannot synthesise the event. Click the bar and the pin drops &mdash; from there <code>:focus-within</code> runs it, with no script at all.</span>
       </li>
@@ -1273,12 +1345,12 @@
     </section>
 
     <section class="demo__group">
-      <div class="demo__group-head">
+      <div class="demo__group-head" data-reveal>
         <h2 class="demo__group-title" data-i18n="panel.title">Log</h2>
         <p class="demo__group-note" data-i18n="panel.note">One surface, not two sheets. The bar and the panel live in the same shell, and only that shell carries a filter, a rim and a shadow.</p>
       </div>
 
-      <div class="demo__stage">
+      <div class="demo__stage" data-reveal>
               <nav class="liquid-glass-toolbar" aria-label="Primary, panel open">
                 <div class="liquid-glass-toolbar__shell">
 
@@ -1437,7 +1509,7 @@
               </nav>
             </div>
 
-      <div class="demo__stage">
+      <div class="demo__stage" data-reveal>
               <nav class="liquid-glass-toolbar liquid-glass-toolbar--crystal" aria-label="Primary, crystal, panel open">
                 <div class="liquid-glass-toolbar__shell">
 
@@ -1597,19 +1669,19 @@
             </div>
 
       <ol class="demo__steps">
-      <li class="demo__step">
+      <li class="demo__step" data-reveal>
         <strong data-i18n="panel.1t">The shape changes, not the stack.</strong>
         <span data-i18n="panel.1b">The panel row goes <code>0fr</code> to <code>1fr</code>, its width <code>0</code> to <code>30rem</code>, and the shell re-measures around it.</span>
       </li>
-      <li class="demo__step">
+      <li class="demo__step" data-reveal>
         <strong data-i18n="panel.2t">The corner never moves.</strong>
         <span data-i18n="panel.2b"><code>--radius-open</code> is <code>pad + hit / 2</code>, concentric with the corner actions; closed, <code>999px</code> clamps to the same number. Height does all the work.</span>
       </li>
-      <li class="demo__step">
+      <li class="demo__step" data-reveal>
         <strong data-i18n="panel.3t">Log, not Notifications.</strong>
         <span data-i18n="panel.3b">Notifications is a promise about delivery. These four rows are a log of what was decided &mdash; and the name keeps the component from being read as an alert centre.</span>
       </li>
-      <li class="demo__step">
+      <li class="demo__step" data-reveal>
         <strong data-i18n="panel.4t">The extended view exposes a material.</strong>
         <span data-i18n="panel.4b">Four rows of small type over a sheet you can read the page through, each headed by a specimen of the decision it records rather than by a face. Nothing in the panel is theme-aware.</span>
       </li>
@@ -1617,7 +1689,7 @@
     </section>
 
     <section class="demo__group">
-      <div class="demo__group-head">
+      <div class="demo__group-head" data-reveal>
         <h2 class="demo__group-title" data-i18n="motion.title">Motion</h2>
         <p class="demo__group-note" data-i18n="motion.note">Everything here animates layout &mdash; a track, a width, a radius, a surface measuring itself &mdash; so the smoothness had to come from the curve rather than from moving onto a transform.</p>
       </div>
@@ -1644,7 +1716,7 @@
               </div>
             </dl>
 
-      <div class="demo__stage">
+      <div class="demo__stage" data-reveal>
               <nav class="liquid-glass-toolbar" aria-label="Primary, motion">
                 <div class="liquid-glass-toolbar__shell">
 
@@ -1804,15 +1876,15 @@
             </div>
 
       <ol class="demo__steps">
-      <li class="demo__step">
+      <li class="demo__step" data-reveal>
         <strong data-i18n="motion.1t">No overshoot.</strong>
         <span data-i18n="motion.1b">A curve that passes 1 is lovely on a transform; on a width the bar grows past its size and comes back. With the surface centred, that is a wobble, not a bounce.</span>
       </li>
-      <li class="demo__step">
+      <li class="demo__step" data-reveal>
         <strong data-i18n="motion.2t">Two clocks stage it for free.</strong>
         <span data-i18n="motion.2b">Press Log above: the label arrives first and the card follows it down.</span>
       </li>
-      <li class="demo__step">
+      <li class="demo__step" data-reveal>
         <strong data-i18n="motion.3t">Cheaper frames.</strong>
         <span data-i18n="motion.3b">The lozenge lost a nested backdrop-filter &mdash; a second snapshot, on the one element that resizes every frame &mdash; and the blur came down to 8px. Backdrop blur costs by radius.</span>
       </li>
@@ -1820,13 +1892,13 @@
     </section>
 
     <section class="demo__group">
-      <div class="demo__group-head">
+      <div class="demo__group-head" data-reveal>
         <h2 class="demo__group-title" data-i18n="materials.title">Materials</h2>
         <p class="demo__group-note" data-i18n="materials.note">Nothing below the variable block changes for any of them. All six sit on Origin deliberately: a set is only comparable as the same state six times. Each stands on the ground it was drawn for, because that is the one thing about a sheet of glass that is not in the sheet.</p>
       </div>
 
       <div class="demo__mats">
-        <div class="demo__sheet demo__sheet--ink">
+        <div class="demo__sheet demo__sheet--ink" data-reveal>
           <p class="demo__tag">.liquid-glass-toolbar &middot; moss, the default<span class="demo__on" data-i18n="materials.on.ink">on a dark ground</span></p>
             <nav class="liquid-glass-toolbar" aria-label="Primary, moss">
               <div class="liquid-glass-toolbar__shell">
@@ -1985,7 +2057,7 @@
               </div>
             </nav>
           </div>
-        <div class="demo__sheet demo__sheet--ink">
+        <div class="demo__sheet demo__sheet--ink" data-reveal>
           <p class="demo__tag">--slate<span class="demo__on" data-i18n="materials.on.ink">on a dark ground</span></p>
             <nav class="liquid-glass-toolbar liquid-glass-toolbar--slate" aria-label="Primary, slate">
               <div class="liquid-glass-toolbar__shell">
@@ -2144,7 +2216,7 @@
               </div>
             </nav>
           </div>
-        <div class="demo__sheet demo__sheet--ink">
+        <div class="demo__sheet demo__sheet--ink" data-reveal>
           <p class="demo__tag">--basalt<span class="demo__on" data-i18n="materials.on.ink">on a dark ground</span></p>
             <nav class="liquid-glass-toolbar liquid-glass-toolbar--basalt" aria-label="Primary, basalt">
               <div class="liquid-glass-toolbar__shell">
@@ -2303,7 +2375,7 @@
               </div>
             </nav>
           </div>
-        <div class="demo__sheet demo__sheet--ink">
+        <div class="demo__sheet demo__sheet--ink" data-reveal>
           <p class="demo__tag">--carnelian<span class="demo__on" data-i18n="materials.on.ink">on a dark ground</span></p>
             <nav class="liquid-glass-toolbar liquid-glass-toolbar--carnelian" aria-label="Primary, carnelian">
               <div class="liquid-glass-toolbar__shell">
@@ -2462,7 +2534,7 @@
               </div>
             </nav>
           </div>
-        <div class="demo__sheet demo__sheet--lit">
+        <div class="demo__sheet demo__sheet--lit" data-reveal>
           <p class="demo__tag">--alabaster<span class="demo__on" data-i18n="materials.on.lit">on a light ground</span></p>
             <nav class="liquid-glass-toolbar liquid-glass-toolbar--alabaster" aria-label="Primary, alabaster">
               <div class="liquid-glass-toolbar__shell">
@@ -2621,7 +2693,7 @@
               </div>
             </nav>
           </div>
-        <div class="demo__sheet demo__sheet--lit">
+        <div class="demo__sheet demo__sheet--lit" data-reveal>
           <p class="demo__tag">--crystal<span class="demo__on" data-i18n="materials.on.lit">on a light ground</span></p>
             <nav class="liquid-glass-toolbar liquid-glass-toolbar--crystal" aria-label="Primary, crystal">
               <div class="liquid-glass-toolbar__shell">
@@ -2783,23 +2855,23 @@
       </div>
 
       <ol class="demo__steps">
-      <li class="demo__step">
+      <li class="demo__step" data-reveal>
         <strong data-i18n="materials.1t">A material is a whole palette.</strong>
         <span data-i18n="materials.1b">Tint, filter, rim, sheen, edge, drop, lozenge, ink, accent. The ink has to move with the tint, so it is not a hue rotation.</span>
       </li>
-      <li class="demo__step">
+      <li class="demo__step" data-reveal>
         <strong data-i18n="materials.2t">Thin, not opaque.</strong>
         <span data-i18n="materials.2b">The tint came down to 28&ndash;44% and the work moved into the filter. Carnelian sits at the top of that range because red has the least chroma to spare: the backdrop is neutral paper, so <code>saturate</code> has nothing to amplify and the hue rides on the tint&rsquo;s alpha alone. Blur is frost: past about 10px the ground stops being a place. You should see the page&rsquo;s cross-light continue across every sheet.</span>
       </li>
-      <li class="demo__step">
+      <li class="demo__step" data-reveal>
         <strong data-i18n="materials.3t">Crystal is that argument at its end.</strong>
         <span data-i18n="materials.3b">At 7% it has almost no body, so it is carried by its edges &mdash; a rim, a white sheen, and a second hairline inside the bottom, standing in for the refraction CSS cannot do. It is also the only ink that follows the page rather than the sheet: a pane has no body to settle its ink against, so on a dark ground it was a dark sheet wearing dark ink at 1.3:1. <code>light-dark()</code> reads the page&rsquo;s own <code>color-scheme</code>, which both pages now declare.</span>
       </li>
-      <li class="demo__step">
+      <li class="demo__step" data-reveal>
         <strong data-i18n="materials.4t">Thinning costs contrast.</strong>
         <span data-i18n="materials.4b">White on moss went 2.3:1 to about 4:1 against the lit pill; crystal&rsquo;s dark ink sits near 11:1. That is the number to watch if you re-tint this.</span>
       </li>
-      <li class="demo__step">
+      <li class="demo__step" data-reveal>
         <strong data-i18n="materials.5t">A ground is half the material.</strong>
         <span data-i18n="materials.5b">Glass has no colour of its own: what it contrasts against is behind it. On this page&rsquo;s light stage moss reads 2.08:1, slate 2.05 and carnelian 2.03; on its dark one those four clear AA and alabaster falls to 1.73. No one stage carries the set, and the brightness scalar does not rescue it &mdash; moss needs 0.56 &rarr; 0.22 to clear 4.5:1 on light paper, and carnelian cannot get there at all. So each plate is the ground its material was drawn for, and neither plate follows the page theme: which ground a material wants is a fact about the material.</span>
       </li>
@@ -2807,12 +2879,12 @@
     </section>
 
     <section class="demo__group">
-      <div class="demo__group-head">
+      <div class="demo__group-head" data-reveal>
         <h2 class="demo__group-title" data-i18n="narrow.title">Narrow</h2>
         <p class="demo__group-note" data-i18n="narrow.note">Five 48px targets, the gaps between them and the surface&rsquo;s own padding need about 264px &mdash; but the resting bar also has a label open, and the longest is <em>Versions</em> at 63px, so the real floor is about 400px. The switch is at 25rem, where the split compresses rather than the label clipping.</p>
       </div>
 
-      <div class="demo__stage">
+      <div class="demo__stage" data-reveal>
               <div class="demo__narrow">
                 <nav class="liquid-glass-toolbar" aria-label="Primary, narrow">
                   <div class="liquid-glass-toolbar__shell">
@@ -2974,15 +3046,15 @@
             </div>
 
       <ol class="demo__steps">
-      <li class="demo__step">
+      <li class="demo__step" data-reveal>
         <strong data-i18n="narrow.1t">Scale, do not squeeze.</strong>
         <span data-i18n="narrow.1b">One breakpoint moves only the values the file already derives from &mdash; the same component at 40px targets, not a second small one.</span>
       </li>
-      <li class="demo__step">
+      <li class="demo__step" data-reveal>
         <strong data-i18n="narrow.2t">A container query, not a media query.</strong>
         <span data-i18n="narrow.2b">The box above is 15rem; the query reads that box, so a bar in a wider column is unaffected. Reading the viewport is wrong the moment this lands in a sidebar. On a phone every stage on this page is inside the query, which is the point.</span>
       </li>
-      <li class="demo__step">
+      <li class="demo__step" data-reveal>
         <strong data-i18n="narrow.3t">The label is what goes.</strong>
         <span data-i18n="narrow.3b">There is no room for it, so the reveal stays shut and the lit pill carries the selection alone. The search field is the exception and goes the other way: an input that is not there is not a search, so the other four actions clear out and it opens across the surface.</span>
       </li>
@@ -2996,7 +3068,7 @@
        <details> rather than a scripted panel — disclosure is the one thing the
        element already is, keyboard and screen reader included, and this page
        has no other reason to carry script. -->
-  <details class="demo__notes">
+  <details class="demo__notes" data-reveal>
     <summary class="demo__notes-summary">
       <h2 class="demo__notes-title" data-i18n="notes.title">Decisions</h2>
       <svg class="demo__notes-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
@@ -3377,6 +3449,97 @@
       paint();
     })();
 
+  })();
+  </script>
+
+  <!--
+    Arrival: which blocks wait to be scrolled to, and in what order the rest
+    arrive. The motion is the style block's; this adds the one thing CSS
+    cannot ask, which is whether a block is on screen. A script of its own,
+    last, so that anything failing above it leaves every block to play at
+    load — the page without this, rather than a page with its states held for
+    good. Delete it and the page still arrives, all at once below the intro.
+  -->
+  <script>
+  (function () {
+    var blocks = Array.prototype.slice.call(document.querySelectorAll('[data-reveal]'));
+    if (!blocks.length || !('IntersectionObserver' in window)) return;
+
+    // The held state lives in the same media query, so where it does not
+    // match there is nothing to hold and nothing to let go of.
+    if (!window.matchMedia('screen and (prefers-reduced-motion: no-preference)').matches) return;
+
+    // How far up the viewport a block has to come to count as reached, and
+    // the latest slot anything on the first screen starts at: a tall screen
+    // holding twenty blocks should not keep the last one waiting two seconds.
+    var LINE = 0.9;
+    var LAST = 8;
+
+    function arriving(a) { return /^demo-arrive/.test(a.animationName || ''); }
+
+    function own(block) {
+      return block.getAnimations ? block.getAnimations().filter(arriving) : [];
+    }
+
+    // Still in its delay, so moving its slot moves nothing a reader has seen.
+    // A block already rising keeps the slot it started with: re-slotting it
+    // would snap it back to its first frame.
+    function waiting(block) {
+      return own(block).every(function (a) {
+        return a.currentTime !== null && a.currentTime < a.effect.getTiming().delay;
+      });
+    }
+
+    // Once its entrance is over the animation comes off — see has-arrived.
+    // Cancelled counts as over. Where the browser cannot say, it stays on:
+    // marking it early would cut the entrance off where it stood.
+    function settle(block) {
+      if (!block.getAnimations) return;
+      Promise.allSettled(own(block).map(function (a) { return a.finished; }))
+        .then(function () { block.classList.add('has-arrived'); });
+    }
+
+    function inOrder(list) {
+      return list.sort(function (a, b) {
+        return a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1;
+      });
+    }
+
+    // Everything reached in one scroll is one batch, in reading order from
+    // zero, a step apart — a row of three states side by side arrives as a
+    // row, and the same three stacked on a phone arrive one at a time.
+    var seen = new IntersectionObserver(function (entries) {
+      var landed = entries
+        .filter(function (e) { return e.isIntersecting; })
+        .map(function (e) { return e.target; });
+      inOrder(landed).forEach(function (block, n) {
+        seen.unobserve(block);
+        block.style.setProperty('--demo-arrive-lead', '0ms');
+        block.style.setProperty('--demo-arrive-at', String(Math.min(n, LAST)));
+        block.classList.remove('is-held');
+        settle(block);
+      });
+    }, { rootMargin: '0px 0px -' + Math.round((1 - LINE) * 100) + '% 0px' });
+
+    var line = window.innerHeight * LINE;
+    var first = [];
+
+    blocks.forEach(function (block) {
+      var box = block.getBoundingClientRect();
+      if (box.top < line && box.bottom > 0) {
+        first.push(block);
+        return;
+      }
+      block.classList.add('is-held');
+      seen.observe(block);
+    });
+
+    // The first screen, in reading order. Its animations have been running
+    // since the first paint, which is why only a block still waiting moves.
+    inOrder(first).forEach(function (block, n) {
+      if (waiting(block)) block.style.setProperty('--demo-arrive-at', String(Math.min(n, LAST)));
+      settle(block);
+    });
   })();
   </script>
 

@@ -650,6 +650,78 @@
       color: var(--demo-dim);
     }
 
+    /* --- arrival ----------------------------------------------------------
+       The page arrives once, in reading order, the way the index does: the
+       kicker, the heading and the lede a beat apart, then each block as it is
+       reached, rising a short distance as it fades up. Whatever the first
+       screen does not reach waits to be scrolled to, and so does the
+       component inside it: its own animations are held with its block, so an
+       entrance it makes on load is made where it can be seen rather than
+       below the fold. The script at the foot of the page decides what is held
+       and in what order; the motion is all here.
+
+       data-reveal goes on the page's own blocks — the intro's three lines, a
+       group's head, a state, a stage, the decisions — and never on a
+       component's root, so nothing here names a component class or moves
+       one directly: a component rises inside the block that holds it. The
+       one rule that reaches past a block is the hold, and it names no class
+       either; it is the construction preview.html's pause already uses.
+
+       translate rather than transform, so nothing here takes a transform the
+       page or a component already has. An animation rather than a
+       transition, so html.is-theming's transition list still reaches these
+       blocks during the crossfade. Fill is backwards only, so nothing is left
+       holding a compositing layer once it has landed. And all of it is
+       screen and no-preference: reduced motion gets the page as it was, and
+       print never gets a block held at opacity 0. Copied, not shared, like
+       everything else on this page. */
+    :root {
+      --demo-arrive-rise: 0.75rem;
+      --demo-arrive-dur: 900ms;
+      --demo-arrive-step: 70ms;
+      --demo-arrive-lead: 120ms;
+      --demo-arrive-ease: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes demo-arrive {
+      from { opacity: 0; translate: 0 var(--demo-arrive-rise); }
+    }
+
+    @media screen and (prefers-reduced-motion: no-preference) {
+      /* A block's slot is its place in the order. The intro's lines are 0 to
+         2 and everything else is 3, which is the page without its script;
+         with it, the first screen is re-slotted in reading order and a batch
+         reached later runs from 0. */
+      [data-reveal] {
+        animation: demo-arrive var(--demo-arrive-dur) var(--demo-arrive-ease)
+          calc(var(--demo-arrive-lead) + var(--demo-arrive-at, 3) * var(--demo-arrive-step))
+          backwards;
+      }
+
+      .demo__kicker { --demo-arrive-at: 0; }
+      .demo__heading { --demo-arrive-at: 1; }
+      .demo__lede { --demo-arrive-at: 2; }
+
+      /* Below the fold at boot, until it is reached. animation-name rather
+         than the shorthand, so letting go starts it from the top. */
+      [data-reveal].is-held {
+        opacity: 0;
+        animation-name: none;
+      }
+
+      /* The component waits with its block, paused at wherever it had got
+         to, and picks up when the block is let go. */
+      [data-reveal].is-held *,
+      [data-reveal].is-held *::before,
+      [data-reveal].is-held *::after {
+        animation-play-state: paused !important;
+      }
+
+      /* Once through, never again: an element coming back from display:none
+         starts its animations over. */
+      [data-reveal].has-arrived { animation: none; }
+    }
+
     /* --- the switch itself ------------------------------------------------
        Flipping the token block repaints the page in one frame, which reads as
        a cut rather than as a change of light. The script hangs .is-theming on
@@ -738,9 +810,9 @@
   </a>
 
   <header class="demo__intro">
-    <p class="demo__kicker">2026-09 &middot; <span data-i18n="type">Aesthetic</span></p>
-    <h1 class="demo__heading" data-i18n="heading">Drawn gradients</h1>
-    <p class="demo__lede" data-i18n="lede">
+    <p class="demo__kicker" data-reveal>2026-09 &middot; <span data-i18n="type">Aesthetic</span></p>
+    <h1 class="demo__heading" data-reveal data-i18n="heading">Drawn gradients</h1>
+    <p class="demo__lede" data-reveal data-i18n="lede">
       How a soft gradient field gets made, and then what to do with it. Shapes
       drawn and blurred until they are one, or the same look written as a stop
       list — either way projected onto whatever geometry it is given. Shape and
@@ -750,7 +822,7 @@
 
   <!-- ------------------------------------------------------------------ -->
   <section class="demo__group">
-    <div class="demo__group-head">
+    <div class="demo__group-head" data-reveal>
       <h2 class="demo__group-title" data-i18n="group.drawn">Drawn, then blurred</h2>
       <p class="demo__group-note" data-i18n="group.drawnNote">
         Start here: this is where the colour comes from. Draw a few overlapping
@@ -763,12 +835,12 @@
     </div>
 
     <div class="demo__band">
-      <p class="demo__band-title">
+      <p class="demo__band-title" data-reveal>
         <span class="demo__swatch demo__swatch--dawn" aria-hidden="true"></span>
         <span data-i18n="band.orange">Orange</span>
       </p>
       <div class="demo__grid demo__grid--tiles">
-      <section class="demo__state">
+      <section class="demo__state" data-reveal>
         <p class="demo__caption" data-i18n="drawn.sunburst">Sunburst — radiating wedges</p>
         <p class="demo__hint">blur 0.16</p>
         <div class="drawn-gradients" style="--drawn-gradients-size: 7rem; --drawn-gradients-blur-ratio: 0.16;">
@@ -808,7 +880,7 @@
           </div>
         </div>
       </section>
-      <section class="demo__state">
+      <section class="demo__state" data-reveal>
         <p class="demo__caption" data-i18n="drawn.desert">Desert — dunes and a low sun</p>
         <p class="demo__hint">blur 0.18</p>
         <div class="drawn-gradients" style="--drawn-gradients-size: 7rem; --drawn-gradients-blur-ratio: 0.18;">
@@ -836,7 +908,7 @@
           </div>
         </div>
       </section>
-      <section class="demo__state">
+      <section class="demo__state" data-reveal>
         <p class="demo__caption" data-i18n="drawn.c">One leaf, turned three times</p>
         <p class="demo__hint">transform="rotate(...)"</p>
         <div class="drawn-gradients" style="--drawn-gradients-size: 7rem;">
@@ -874,13 +946,13 @@
     </div>
 
     <div class="demo__band">
-      <p class="demo__band-title">
+      <p class="demo__band-title" data-reveal>
         <span class="demo__swatch demo__swatch--dusk" aria-hidden="true"></span>
         <span class="demo__swatch demo__swatch--ice" aria-hidden="true"></span>
         <span data-i18n="band.blue">Blue</span>
       </p>
       <div class="demo__grid demo__grid--tiles">
-      <section class="demo__state">
+      <section class="demo__state" data-reveal>
         <p class="demo__caption" data-i18n="drawn.a">Quatrefoil, ribbon, star</p>
         <p class="demo__hint">--drawn / --raw</p>
         <div class="drawn-gradients" style="--drawn-gradients-size: 7rem;">
@@ -914,7 +986,7 @@
           </div>
         </div>
       </section>
-      <section class="demo__state">
+      <section class="demo__state" data-reveal>
         <p class="demo__caption" data-i18n="drawn.pixels">Pixels — a coarse mosaic</p>
         <p class="demo__hint">blur 0.1</p>
         <div class="drawn-gradients" style="--drawn-gradients-size: 7rem; --drawn-gradients-blur-ratio: 0.1;">
@@ -978,7 +1050,7 @@
           </div>
         </div>
       </section>
-      <section class="demo__state">
+      <section class="demo__state" data-reveal>
         <p class="demo__caption" data-i18n="drawn.prism">Prism — crossed diagonals</p>
         <p class="demo__hint">blur 0.12</p>
         <div class="drawn-gradients" style="--drawn-gradients-size: 7rem; --drawn-gradients-blur-ratio: 0.12;">
@@ -1034,12 +1106,12 @@
     </div>
 
     <div class="demo__band">
-      <p class="demo__band-title">
+      <p class="demo__band-title" data-reveal>
         <span class="demo__swatch demo__swatch--mint" aria-hidden="true"></span>
         <span data-i18n="band.mint">Mint</span>
       </p>
       <div class="demo__grid demo__grid--tiles">
-      <section class="demo__state">
+      <section class="demo__state" data-reveal>
         <p class="demo__caption" data-i18n="drawn.ocean">Ocean — stacked swells</p>
         <p class="demo__hint">blur 0.2</p>
         <div class="drawn-gradients" style="--drawn-gradients-size: 7rem; --drawn-gradients-blur-ratio: 0.2;">
@@ -1067,7 +1139,7 @@
           </div>
         </div>
       </section>
-      <section class="demo__state">
+      <section class="demo__state" data-reveal>
         <p class="demo__caption" data-i18n="drawn.b">Crescent, teardrop, wedge</p>
         <p class="demo__hint">--drawn / --raw</p>
         <div class="drawn-gradients" style="--drawn-gradients-size: 7rem;">
@@ -1099,7 +1171,7 @@
           </div>
         </div>
       </section>
-      <section class="demo__state">
+      <section class="demo__state" data-reveal>
         <p class="demo__caption" data-i18n="drawn.spots">Spots — a scattered field</p>
         <p class="demo__hint">blur 0.16</p>
         <div class="drawn-gradients" style="--drawn-gradients-size: 7rem; --drawn-gradients-blur-ratio: 0.16;">
@@ -1147,12 +1219,12 @@
     </div>
 
     <div class="demo__band">
-      <p class="demo__band-title">
+      <p class="demo__band-title" data-reveal>
         <span class="demo__swatch demo__swatch--night" aria-hidden="true"></span>
         <span data-i18n="band.night">Night</span>
       </p>
       <div class="demo__grid demo__grid--tiles">
-      <section class="demo__state">
+      <section class="demo__state" data-reveal>
         <p class="demo__caption" data-i18n="drawn.scanlines">Scanlines — analogue bands</p>
         <p class="demo__hint">blur 0.09</p>
         <div class="drawn-gradients" style="--drawn-gradients-size: 7rem; --drawn-gradients-blur-ratio: 0.09;">
@@ -1196,7 +1268,7 @@
           </div>
         </div>
       </section>
-      <section class="demo__state">
+      <section class="demo__state" data-reveal>
         <p class="demo__caption" data-i18n="drawn.ripples">Ripples — concentric rings</p>
         <p class="demo__hint">blur 0.14</p>
         <div class="drawn-gradients" style="--drawn-gradients-size: 7rem; --drawn-gradients-blur-ratio: 0.14;">
@@ -1236,7 +1308,7 @@
           </div>
         </div>
       </section>
-      <section class="demo__state">
+      <section class="demo__state" data-reveal>
         <p class="demo__caption" data-i18n="drawn.nebula">Nebula — drifting clouds</p>
         <p class="demo__hint">blur 0.24</p>
         <div class="drawn-gradients" style="--drawn-gradients-size: 7rem; --drawn-gradients-blur-ratio: 0.24;">
@@ -1274,7 +1346,7 @@
     </div>
 
     <ol class="demo__steps">
-      <li class="demo__step">
+      <li class="demo__step" data-reveal>
         <strong data-i18n="tech.1t">Draw big, blur hard.</strong>
         <span data-i18n="tech.1b">The blur is a ratio of the surface, not a
         fixed length, so a drawing dissolves by the same amount at any size. How
@@ -1282,26 +1354,26 @@
         mosaic, a scatter or stacked bands average to one flat colour at that
         setting and want 0.1 or less. Every pair above names its own.</span>
       </li>
-      <li class="demo__step">
+      <li class="demo__step" data-reveal>
         <strong data-i18n="tech.2t">Bleed past the frame.</strong>
         <span data-i18n="tech.2b">Blur samples transparency beyond the artwork,
         so the drawing runs 22% outside the box and is clipped back. Fit it to
         the frame instead and every edge fades out — a vignette, not a fill.</span>
       </li>
-      <li class="demo__step">
+      <li class="demo__step" data-reveal>
         <strong data-i18n="tech.3t">Overlap on purpose.</strong>
         <span data-i18n="tech.3b">Colour mixes where shapes cross, so nothing is
         fully opaque. Three shapes at 85% give more distinct mid-tones than a
         hand-written stop list usually carries.</span>
       </li>
-      <li class="demo__step">
+      <li class="demo__step" data-reveal>
         <strong data-i18n="tech.4t">Reuse one path.</strong>
         <span data-i18n="tech.4b">The leaf pair in the orange band is a single
         curve rotated twice, and the prism in the blue band is one band angled
         two ways. Repeating one shape reads as a deliberate set, and the parts
         stay in proportion to each other for free.</span>
       </li>
-      <li class="demo__step">
+      <li class="demo__step" data-reveal>
         <strong data-i18n="tech.5t">Know which one to ship.</strong>
         <span data-i18n="tech.5b">A large blur is a real compositing cost and it
         repaints on resize. For a static surface, match the look with the stop
@@ -1313,7 +1385,7 @@
 
   <!-- ------------------------------------------------------------------ -->
   <section class="demo__group">
-    <div class="demo__group-head">
+    <div class="demo__group-head" data-reveal>
       <h2 class="demo__group-title" data-i18n="group.shapes">Shapes</h2>
       <p class="demo__group-note" data-i18n="group.shapesNote">
         With a field in hand, it gets projected onto geometry. One drawing and
@@ -1324,7 +1396,7 @@
     </div>
 
     <div class="demo__grid demo__grid--tiles">
-      <section class="demo__state">
+      <section class="demo__state" data-reveal>
         <p class="demo__caption" data-i18n="state.tile">Tile</p>
         <p class="demo__hint">--tile</p>
         <div class="drawn-gradients">
@@ -1344,7 +1416,7 @@
         </div>
       </section>
 
-      <section class="demo__state">
+      <section class="demo__state" data-reveal>
         <p class="demo__caption" data-i18n="state.circle">Circle</p>
         <p class="demo__hint">--circle</p>
         <div class="drawn-gradients">
@@ -1364,7 +1436,7 @@
         </div>
       </section>
 
-      <section class="demo__state">
+      <section class="demo__state" data-reveal>
         <p class="demo__caption" data-i18n="state.arch">Arch</p>
         <p class="demo__hint">--arch</p>
         <div class="drawn-gradients">
@@ -1384,7 +1456,7 @@
         </div>
       </section>
 
-      <section class="demo__state">
+      <section class="demo__state" data-reveal>
         <p class="demo__caption" data-i18n="state.pill">Pill</p>
         <p class="demo__hint">--pill</p>
         <div class="drawn-gradients">
@@ -1408,7 +1480,7 @@
 
   <!-- ------------------------------------------------------------------ -->
   <section class="demo__group">
-    <div class="demo__group-head">
+    <div class="demo__group-head" data-reveal>
       <h2 class="demo__group-title" data-i18n="group.themes">Themes</h2>
       <p class="demo__group-note" data-i18n="group.themesNote">
         A theme sets three colour stops and nothing else, so it composes with
@@ -1418,7 +1490,7 @@
     </div>
 
     <div class="demo__grid">
-      <section class="demo__state">
+      <section class="demo__state" data-reveal>
         <p class="demo__caption" data-i18n="state.five">Five themes</p>
         <p class="demo__hint">--dawn --dusk --mint --ice --arc</p>
         <div class="drawn-gradients" style="--drawn-gradients-width: 36rem; --drawn-gradients-size: 7.5rem;">
@@ -1430,7 +1502,7 @@
         </div>
       </section>
 
-      <section class="demo__state">
+      <section class="demo__state" data-reveal>
         <p class="demo__caption" data-i18n="state.night">Settling to ink</p>
         <p class="demo__hint">--night</p>
         <div class="drawn-gradients">
@@ -1445,7 +1517,7 @@
         </div>
       </section>
 
-      <section class="demo__state">
+      <section class="demo__state" data-reveal>
         <p class="demo__caption" data-i18n="state.retuned">Pools moved</p>
         <p class="demo__hint">--…-pool-x/y, --…-settle</p>
         <div class="drawn-gradients">
@@ -1459,7 +1531,7 @@
         </div>
       </section>
 
-      <section class="demo__state">
+      <section class="demo__state" data-reveal>
         <p class="demo__caption" data-i18n="state.settle">Settle direction</p>
         <p class="demo__hint">default / --rise</p>
         <!-- The axis on its own, both ways round and on both recipes. The
@@ -1497,7 +1569,7 @@
         </div>
       </section>
 
-      <section class="demo__state">
+      <section class="demo__state" data-reveal>
         <p class="demo__caption" data-i18n="state.mix">Both recipes at once</p>
         <p class="demo__hint">--mix, --…-mix: 1 / 0.5 / 0</p>
         <!-- --drawn puts the drawing in place of the stop list; --mix puts it
@@ -1553,7 +1625,7 @@
 
   <!-- ------------------------------------------------------------------ -->
   <section class="demo__group">
-    <div class="demo__group-head">
+    <div class="demo__group-head" data-reveal>
       <h2 class="demo__group-title" data-i18n="group.inUse">In use</h2>
       <p class="demo__group-note" data-i18n="group.inUseNote">
         Content sits in the lower half, where the recipe has settled to the base
@@ -1564,7 +1636,7 @@
     </div>
 
     <div class="demo__grid">
-      <section class="demo__state">
+      <section class="demo__state" data-reveal>
         <p class="demo__caption" data-i18n="state.card">Card ground</p>
         <p class="demo__hint">--card</p>
         <div class="drawn-gradients">
@@ -1579,7 +1651,7 @@
         </div>
       </section>
 
-      <section class="demo__state">
+      <section class="demo__state" data-reveal>
         <p class="demo__caption" data-i18n="state.stepDown">Long to short &mdash; the step walks left</p>
         <p class="demo__hint">--step --ice --night</p>
         <!-- The source's case. The labels shorten down the block, so each
@@ -1611,7 +1683,7 @@
         </div>
       </section>
 
-      <section class="demo__state">
+      <section class="demo__state" data-reveal>
         <p class="demo__caption" data-i18n="state.stepUp">Short to long &mdash; the step walks right</p>
         <p class="demo__hint">--step --arc --drawn</p>
         <!-- The same construction with the copy the other way round. The
@@ -1675,7 +1747,7 @@
         </div>
       </section>
 
-      <section class="demo__state">
+      <section class="demo__state" data-reveal>
         <p class="demo__caption" data-i18n="state.stepDrawn">Long to short, drawn rather than stopped</p>
         <p class="demo__hint">--step --arc --drawn --down</p>
         <!-- The same direction as the first state and the other recipe: the
@@ -1743,7 +1815,7 @@
         </div>
       </section>
 
-      <section class="demo__state">
+      <section class="demo__state" data-reveal>
         <p class="demo__caption" data-i18n="state.stepMirror">Two blocks, one field &mdash; the upper settle flipped</p>
         <p class="demo__hint">--step --rise / --step</p>
         <!-- The composition the card shows. Both rags walk out from the middle,
@@ -1808,7 +1880,7 @@
         </div>
       </section>
 
-      <section class="demo__state">
+      <section class="demo__state" data-reveal>
         <p class="demo__caption" data-i18n="state.band">Section band</p>
         <p class="demo__hint">--band</p>
         <div class="drawn-gradients" style="width: 26rem; max-width: 100%; --drawn-gradients-size: 8rem;">
@@ -1828,7 +1900,7 @@
        <details> rather than a scripted panel — disclosure is the one thing the
        element already is, keyboard and screen reader included, and this page
        has no other reason to carry script. -->
-  <details class="demo__notes">
+  <details class="demo__notes" data-reveal>
     <summary class="demo__notes-summary">
       <h2 class="demo__notes-title" data-i18n="notes.title">Decisions</h2>
       <svg class="demo__notes-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
@@ -2145,6 +2217,97 @@
       paint();
     })();
 
+  })();
+  </script>
+
+  <!--
+    Arrival: which blocks wait to be scrolled to, and in what order the rest
+    arrive. The motion is the style block's; this adds the one thing CSS
+    cannot ask, which is whether a block is on screen. A script of its own,
+    last, so that anything failing above it leaves every block to play at
+    load — the page without this, rather than a page with its states held for
+    good. Delete it and the page still arrives, all at once below the intro.
+  -->
+  <script>
+  (function () {
+    var blocks = Array.prototype.slice.call(document.querySelectorAll('[data-reveal]'));
+    if (!blocks.length || !('IntersectionObserver' in window)) return;
+
+    // The held state lives in the same media query, so where it does not
+    // match there is nothing to hold and nothing to let go of.
+    if (!window.matchMedia('screen and (prefers-reduced-motion: no-preference)').matches) return;
+
+    // How far up the viewport a block has to come to count as reached, and
+    // the latest slot anything on the first screen starts at: a tall screen
+    // holding twenty blocks should not keep the last one waiting two seconds.
+    var LINE = 0.9;
+    var LAST = 8;
+
+    function arriving(a) { return /^demo-arrive/.test(a.animationName || ''); }
+
+    function own(block) {
+      return block.getAnimations ? block.getAnimations().filter(arriving) : [];
+    }
+
+    // Still in its delay, so moving its slot moves nothing a reader has seen.
+    // A block already rising keeps the slot it started with: re-slotting it
+    // would snap it back to its first frame.
+    function waiting(block) {
+      return own(block).every(function (a) {
+        return a.currentTime !== null && a.currentTime < a.effect.getTiming().delay;
+      });
+    }
+
+    // Once its entrance is over the animation comes off — see has-arrived.
+    // Cancelled counts as over. Where the browser cannot say, it stays on:
+    // marking it early would cut the entrance off where it stood.
+    function settle(block) {
+      if (!block.getAnimations) return;
+      Promise.allSettled(own(block).map(function (a) { return a.finished; }))
+        .then(function () { block.classList.add('has-arrived'); });
+    }
+
+    function inOrder(list) {
+      return list.sort(function (a, b) {
+        return a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1;
+      });
+    }
+
+    // Everything reached in one scroll is one batch, in reading order from
+    // zero, a step apart — a row of three states side by side arrives as a
+    // row, and the same three stacked on a phone arrive one at a time.
+    var seen = new IntersectionObserver(function (entries) {
+      var landed = entries
+        .filter(function (e) { return e.isIntersecting; })
+        .map(function (e) { return e.target; });
+      inOrder(landed).forEach(function (block, n) {
+        seen.unobserve(block);
+        block.style.setProperty('--demo-arrive-lead', '0ms');
+        block.style.setProperty('--demo-arrive-at', String(Math.min(n, LAST)));
+        block.classList.remove('is-held');
+        settle(block);
+      });
+    }, { rootMargin: '0px 0px -' + Math.round((1 - LINE) * 100) + '% 0px' });
+
+    var line = window.innerHeight * LINE;
+    var first = [];
+
+    blocks.forEach(function (block) {
+      var box = block.getBoundingClientRect();
+      if (box.top < line && box.bottom > 0) {
+        first.push(block);
+        return;
+      }
+      block.classList.add('is-held');
+      seen.observe(block);
+    });
+
+    // The first screen, in reading order. Its animations have been running
+    // since the first paint, which is why only a block still waiting moves.
+    inOrder(first).forEach(function (block, n) {
+      if (waiting(block)) block.style.setProperty('--demo-arrive-at', String(Math.min(n, LAST)));
+      settle(block);
+    });
   })();
   </script>
 
