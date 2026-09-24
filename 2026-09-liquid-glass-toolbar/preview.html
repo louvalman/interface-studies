@@ -15,8 +15,10 @@
   spent what it had to show — the bar has to be closed before opening it means
   anything. So at rest the card is a shut bar over an open panel, the component's
   own resting shape and its largest move in one frame, and on hover the shut one
-  opens its search field. Nothing changes position and the panel is not touched;
-  what moves is one item inside one bar. See the note on HOVER.
+  opens its search field. Nothing changes position and the panel keeps its
+  shape; what moves is one item inside one bar, and 800ms on, the open panel's
+  rows light one after another under a pointer that is not there. See the
+  notes on HOVER and on the walk.
 
   Two sheets rather than three, which is what the frame wanted: three ran 488px
   of the 600px frame with 56px of air and a silhouette that grew downward, two
@@ -574,9 +576,11 @@
         unguessable picture, a text field where an icon was, on the frame a
         reader is already looking at rather than on the one they are leaving.
 
-        The panel below is left alone. It is the slower, larger state, and having
-        it reshuffle under a passing pointer was what made the earlier rotation
-        feel like a card trick rather than like a toolbar.
+        The panel below keeps its shape. It is the slower, larger state, and
+        having it reshuffle under a passing pointer was what made the earlier
+        rotation feel like a card trick rather than like a toolbar. What it
+        does get, a beat later, is its rows lit one after another, which moves
+        nothing — see the walk below.
 
         The sheets keep their positions through it. An earlier version had them
         trade, which showed that the two states belong to one surface but did it
@@ -686,7 +690,8 @@
 
         Hover swaps the whole list for HOVER, which differs from STATES in one
         entry: the top sheet, shut on Versions, opens its search field. Nothing
-        changes position and the lower sheet is not touched.
+        changes position and the lower sheet is not re-dressed; the walk below
+        tints its rows and touches nothing else.
 
         It costs the frame nothing, which is the point of picking this move over
         the two earlier ones. A bar at rest and a bar with its search field open
@@ -706,12 +711,76 @@
         dress(lead, variant.state);
       }
 
+      /*
+        The log's half of performing, and it comes second. The search field
+        opens at once; WALK_DELAY later a pointer that is not there walks the
+        open panel's rows top to bottom, one at a time, and leaves. It is the
+        row's own hover, pinned through `__row--hover` — the tint is the one
+        component.css already spends on the pointer, so the card shows what the
+        panel does under a hand rather than inventing a highlight of its own.
+
+        Timed to the rail's demo wave, which holds a card for 2200ms: the fourth
+        row lets go at 800 + 4 × 320 = 2080, just before the search field shuts,
+        so the wave closes on the bar rather than cutting the walk off halfway.
+        A pointer resting on the card, or a phone's read mark, holds longer and
+        gets the same one pass; the panel then sits at rest under it.
+
+        Once per performance, and only while it is one. A gesture or the card
+        leaving the screen stops it — a class flipped every 320ms is still a
+        restyle on the thread the drag needs — and the drift does not, for the
+        reason the contract gives for variant swaps. Reduced motion never starts
+        it: a list lighting row by row on its own is content moving unasked.
+      */
+      var ROW_HOVER = 'liquid-glass-toolbar__row--hover';
+      var WALK_DELAY = 800;
+      var WALK_STEP = 320;
+      var reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+      var performing = false;
+      var walkTimer = 0;
+
+      function walkStop() {
+        clearTimeout(walkTimer);
+        walkTimer = 0;
+        sheets.forEach(function (el) {
+          Array.prototype.forEach.call(el.querySelectorAll('.' + ROW_HOVER), function (row) {
+            row.classList.remove(ROW_HOVER);
+          });
+        });
+      }
+
+      function walkStart() {
+        walkStop();
+        if (reduced.matches) return;
+        var open = sheets.filter(function (el) {
+          return el.parentNode && el.classList.contains(BASE + 'open');
+        })[0];
+        if (!open) return;
+        var rows = open.querySelectorAll('.liquid-glass-toolbar__row');
+        var i = 0;
+        function step() {
+          if (i > 0) rows[i - 1].classList.remove(ROW_HOVER);
+          if (i === rows.length) { walkTimer = 0; return; }
+          rows[i].classList.add(ROW_HOVER);
+          i += 1;
+          walkTimer = setTimeout(step, WALK_STEP);
+        }
+        walkTimer = setTimeout(step, WALK_DELAY);
+      }
+
       window.addEventListener('message', function (event) {
         var data = event.data;
         if (!data || data.source !== CHANNEL) return;
 
         if (data.type === 'preview') {
-          apply(showing, data.active === true);
+          var active = data.active === true;
+          apply(showing, active);
+          // Only on the edge: the index may say `true` again to a card that is
+          // already performing, and a repeat must not restart the walk.
+          if (active !== performing) {
+            performing = active;
+            if (active && showing.stack) walkStart();
+            else walkStop();
+          }
         }
 
         // The index was switched while this thumbnail was on screen. The
@@ -726,6 +795,8 @@
         if (data.type === 'preview:pause') {
           if (data.paused === true) {
             document.documentElement.setAttribute('data-preview-paused', '');
+            // An absent reason reads as held, the cautious way round.
+            if (data.reason !== 'drift') walkStop();
           } else {
             document.documentElement.removeAttribute('data-preview-paused');
           }
@@ -748,6 +819,8 @@
           var variant = VARIANTS[data.index];
           if (variant) {
             showing = variant;
+            performing = false;
+            walkStop();
             apply(variant, false);
           }
         }
