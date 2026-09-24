@@ -797,6 +797,42 @@
   animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* The page stays live while the tiles move. A view transition paints its
+   snapshots in a tree of pseudo-elements laid over the whole viewport, and that
+   tree takes every hit test for as long as it is there: a click anywhere lands
+   on the root and does nothing. The ladder re-packs every 1200ms for 460ms of
+   it, so the page around it was dead more than a third of the time — the back
+   link, the theme switch, every other board.
+
+   It takes two rules, and the first is not optional. `pointer-events: none` on
+   the overlay hands hits to the live page underneath — but while the root is
+   captured, nothing under the overlay can be hit either, so on its own it
+   changed nothing, measured. So the root is left out of the capture as well.
+   That costs nothing: only the tiles were ever meant to move, and the page was
+   being cross-faded on every rung for no reason.
+
+   Neither the root nor `::view-transition` has a class form, so neither can be
+   scoped the way the groups above are. They are scoped by time instead:
+   component.js puts `data-bento-grid-morph` on the root for the length of this
+   component's own transitions and takes it off after, so the rules match
+   nothing while anything else on the page is transitioning.
+
+   The tiles in flight keep taking hits, and swallow them. The live board under
+   them is already in its new arrangement, so a click passed through a moving
+   tile would open whichever tile has arrived at that spot — a different one,
+   by surprise. Losing that one click is the smaller surprise. */
+:root[data-bento-grid-morph] {
+  view-transition-name: none;
+}
+
+:root[data-bento-grid-morph]::view-transition {
+  pointer-events: none;
+}
+
+::view-transition-group(.bento-grid-tile) {
+  pointer-events: auto;
+}
+
 /* A tile that changes size has an old snapshot and a new one at two different
    shapes, and the default is to stretch both across the group's box as it
    travels — which turns a 1x1 becoming a 2x2 into its own type being pulled

@@ -926,6 +926,26 @@ tunable publishes the value onto `:root` from its own script for the length of
 the transition, and the rule carries a literal fallback for when no script
 ran.
 
+**A transition takes the page's clicks unless it is told not to.** The
+pseudo-element tree is laid over the whole viewport and takes every hit test
+for as long as it runs, so a click anywhere lands on the root and does nothing.
+`2026-09-bento-grid`'s ladder re-packs for 460ms of every 1200ms, which left its
+demo page's back link, theme switch and other boards dead more than a third of
+the time. `pointer-events: none` on `::view-transition` is the obvious answer,
+and on its own it changed nothing, measured: while the root is captured,
+nothing under the overlay can be hit either. It takes both — the overlay
+passing hits through, and the root left out of the capture with
+`view-transition-name: none` — and a study that animates only its own elements
+loses nothing by the second: the page stops being cross-faded on every
+transition, which it never had a reason to be.
+
+Neither `::view-transition` nor the root has a class form, so neither can be
+scoped the way the groups are. They are scoped by time instead: the study's
+script marks the root with a `data-<slug>-…` attribute for the length of its
+own transitions — the window it already publishes its duration in — and both
+rules key off it, so they match nothing while anything else on the page is
+transitioning.
+
 ## A React adapter, generated
 
 A study may carry `component.react.jsx`: the component as a standalone React
