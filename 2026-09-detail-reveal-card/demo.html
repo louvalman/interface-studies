@@ -613,6 +613,78 @@
       color: var(--demo-dim);
     }
 
+    /* --- arrival ----------------------------------------------------------
+       The page arrives once, in reading order, the way the index does: the
+       kicker, the heading and the lede a beat apart, then each block as it is
+       reached, rising a short distance as it fades up. Whatever the first
+       screen does not reach waits to be scrolled to, and so does the
+       component inside it: its own animations are held with its block, so an
+       entrance it makes on load is made where it can be seen rather than
+       below the fold. The script at the foot of the page decides what is held
+       and in what order; the motion is all here.
+
+       data-reveal goes on the page's own blocks — the intro's three lines, a
+       group's head, a state, a stage, the decisions — and never on a
+       component's root, so nothing here names a component class or moves
+       one directly: a component rises inside the block that holds it. The
+       one rule that reaches past a block is the hold, and it names no class
+       either; it is the construction preview.html's pause already uses.
+
+       translate rather than transform, so nothing here takes a transform the
+       page or a component already has. An animation rather than a
+       transition, so html.is-theming's transition list still reaches these
+       blocks during the crossfade. Fill is backwards only, so nothing is left
+       holding a compositing layer once it has landed. And all of it is
+       screen and no-preference: reduced motion gets the page as it was, and
+       print never gets a block held at opacity 0. Copied, not shared, like
+       everything else on this page. */
+    :root {
+      --demo-arrive-rise: 0.75rem;
+      --demo-arrive-dur: 900ms;
+      --demo-arrive-step: 70ms;
+      --demo-arrive-lead: 120ms;
+      --demo-arrive-ease: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes demo-arrive {
+      from { opacity: 0; translate: 0 var(--demo-arrive-rise); }
+    }
+
+    @media screen and (prefers-reduced-motion: no-preference) {
+      /* A block's slot is its place in the order. The intro's lines are 0 to
+         2 and everything else is 3, which is the page without its script;
+         with it, the first screen is re-slotted in reading order and a batch
+         reached later runs from 0. */
+      [data-reveal] {
+        animation: demo-arrive var(--demo-arrive-dur) var(--demo-arrive-ease)
+          calc(var(--demo-arrive-lead) + var(--demo-arrive-at, 3) * var(--demo-arrive-step))
+          backwards;
+      }
+
+      .demo__kicker { --demo-arrive-at: 0; }
+      .demo__heading { --demo-arrive-at: 1; }
+      .demo__lede { --demo-arrive-at: 2; }
+
+      /* Below the fold at boot, until it is reached. animation-name rather
+         than the shorthand, so letting go starts it from the top. */
+      [data-reveal].is-held {
+        opacity: 0;
+        animation-name: none;
+      }
+
+      /* The component waits with its block, paused at wherever it had got
+         to, and picks up when the block is let go. */
+      [data-reveal].is-held *,
+      [data-reveal].is-held *::before,
+      [data-reveal].is-held *::after {
+        animation-play-state: paused !important;
+      }
+
+      /* Once through, never again: an element coming back from display:none
+         starts its animations over. */
+      [data-reveal].has-arrived { animation: none; }
+    }
+
     /* --- the switch itself ------------------------------------------------
        Flipping the token block repaints the page in one frame, which reads as
        a cut rather than as a change of light. The script hangs .is-theming on
@@ -709,9 +781,9 @@
     </a>
 
     <header class="demo__intro">
-      <p class="demo__kicker">2026-09 &middot; <span data-i18n="type">Card</span></p>
-      <h1 class="demo__heading" data-i18n="heading">Detail reveal card</h1>
-      <p class="demo__lede" data-i18n="lede">
+      <p class="demo__kicker" data-reveal>2026-09 &middot; <span data-i18n="type">Card</span></p>
+      <h1 class="demo__heading" data-reveal data-i18n="heading">Detail reveal card</h1>
+      <p class="demo__lede" data-reveal data-i18n="lede">
         A bottom panel that grows upward on hover, pushing the resting label up
         ahead of it. The base card is content-agnostic; everything below is the
         same component, differing only by custom properties and modifiers.
@@ -720,14 +792,14 @@
 
     <!-- ------------------------------------------------------------------ -->
     <section class="demo__group">
-      <div class="demo__group-head">
+      <div class="demo__group-head" data-reveal>
         <h2 class="demo__group-title" data-i18n="group.behaviour">Behaviour</h2>
         <p class="demo__group-note" data-i18n="group.behaviourNote">The base card at rest, and the same card pinned open.</p>
       </div>
 
       <div class="demo__grid demo__grid--two">
 
-        <section class="demo__state">
+        <section class="demo__state" data-reveal>
           <p class="demo__caption" data-i18n="state.default">Default</p>
           <p class="demo__hint" data-i18n="state.defaultHint">hover, focus or press it</p>
           <a class="detail-reveal-card" href="#">
@@ -763,7 +835,7 @@
           </a>
         </section>
 
-        <section class="demo__state">
+        <section class="demo__state" data-reveal>
           <p class="demo__caption" data-i18n="state.revealed">Revealed</p>
           <p class="demo__hint">.detail-reveal-card--open</p>
           <a class="detail-reveal-card detail-reveal-card--open" href="#">
@@ -804,7 +876,7 @@
 
     <!-- ------------------------------------------------------------------ -->
     <section class="demo__group">
-      <div class="demo__group-head">
+      <div class="demo__group-head" data-reveal>
         <h2 class="demo__group-title" data-i18n="group.themes">Themes</h2>
         <p class="demo__group-note" data-i18n="group.themesNote">
           One baked modifier, and one re-theme done from outside by overriding
@@ -814,7 +886,7 @@
 
       <div class="demo__grid demo__grid--two">
 
-        <section class="demo__state">
+        <section class="demo__state" data-reveal>
           <p class="demo__caption" data-i18n="state.dark">Dark</p>
           <p class="demo__hint">.detail-reveal-card--dark</p>
           <a class="detail-reveal-card detail-reveal-card--dark" href="#">
@@ -850,7 +922,7 @@
           </a>
         </section>
 
-        <section class="demo__state">
+        <section class="demo__state" data-reveal>
           <p class="demo__caption" data-i18n="state.amber">Amber &mdash; longer content</p>
           <p class="demo__hint">--…-bg, --…-accent, --…-art</p>
           <a class="detail-reveal-card" href="#" style="
@@ -898,7 +970,7 @@
 
     <!-- ------------------------------------------------------------------ -->
     <section class="demo__group">
-      <div class="demo__group-head">
+      <div class="demo__group-head" data-reveal>
         <h2 class="demo__group-title" data-i18n="group.map">Map variant</h2>
         <p class="demo__group-note" data-i18n="group.mapNote">
           The same card with an abstract map behind it — a duotone mesh, contour
@@ -910,7 +982,7 @@
 
       <div class="demo__grid demo__grid--three">
 
-        <section class="demo__state">
+        <section class="demo__state" data-reveal>
           <p class="demo__caption" data-i18n="state.map">Map</p>
           <p class="demo__hint">.detail-reveal-card--map</p>
           <a class="detail-reveal-card detail-reveal-card--map" href="#">
@@ -949,7 +1021,7 @@
           </a>
         </section>
 
-        <section class="demo__state">
+        <section class="demo__state" data-reveal>
           <p class="demo__caption" data-i18n="state.mapRethemed">Map, re-themed</p>
           <p class="demo__hint">--map + --…-accent, --…-art, --…-pin-x/y</p>
           <a class="detail-reveal-card detail-reveal-card--map" href="#" style="
@@ -998,7 +1070,7 @@
           </a>
         </section>
 
-        <section class="demo__state">
+        <section class="demo__state" data-reveal>
           <p class="demo__caption" data-i18n="state.mapDark">Map + dark</p>
           <p class="demo__hint">.detail-reveal-card--map.detail-reveal-card--dark</p>
           <a class="detail-reveal-card detail-reveal-card--map detail-reveal-card--dark" href="#">
@@ -1046,7 +1118,7 @@
        <details> rather than a scripted panel — disclosure is the one thing the
        element already is, keyboard and screen reader included, and this page
        has no other reason to carry script. -->
-  <details class="demo__notes">
+  <details class="demo__notes" data-reveal>
     <summary class="demo__notes-summary">
       <h2 class="demo__notes-title" data-i18n="notes.title">Decisions</h2>
       <svg class="demo__notes-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
@@ -1294,6 +1366,97 @@
       paint();
     })();
 
+  })();
+  </script>
+
+  <!--
+    Arrival: which blocks wait to be scrolled to, and in what order the rest
+    arrive. The motion is the style block's; this adds the one thing CSS
+    cannot ask, which is whether a block is on screen. A script of its own,
+    last, so that anything failing above it leaves every block to play at
+    load — the page without this, rather than a page with its states held for
+    good. Delete it and the page still arrives, all at once below the intro.
+  -->
+  <script>
+  (function () {
+    var blocks = Array.prototype.slice.call(document.querySelectorAll('[data-reveal]'));
+    if (!blocks.length || !('IntersectionObserver' in window)) return;
+
+    // The held state lives in the same media query, so where it does not
+    // match there is nothing to hold and nothing to let go of.
+    if (!window.matchMedia('screen and (prefers-reduced-motion: no-preference)').matches) return;
+
+    // How far up the viewport a block has to come to count as reached, and
+    // the latest slot anything on the first screen starts at: a tall screen
+    // holding twenty blocks should not keep the last one waiting two seconds.
+    var LINE = 0.9;
+    var LAST = 8;
+
+    function arriving(a) { return /^demo-arrive/.test(a.animationName || ''); }
+
+    function own(block) {
+      return block.getAnimations ? block.getAnimations().filter(arriving) : [];
+    }
+
+    // Still in its delay, so moving its slot moves nothing a reader has seen.
+    // A block already rising keeps the slot it started with: re-slotting it
+    // would snap it back to its first frame.
+    function waiting(block) {
+      return own(block).every(function (a) {
+        return a.currentTime !== null && a.currentTime < a.effect.getTiming().delay;
+      });
+    }
+
+    // Once its entrance is over the animation comes off — see has-arrived.
+    // Cancelled counts as over. Where the browser cannot say, it stays on:
+    // marking it early would cut the entrance off where it stood.
+    function settle(block) {
+      if (!block.getAnimations) return;
+      Promise.allSettled(own(block).map(function (a) { return a.finished; }))
+        .then(function () { block.classList.add('has-arrived'); });
+    }
+
+    function inOrder(list) {
+      return list.sort(function (a, b) {
+        return a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1;
+      });
+    }
+
+    // Everything reached in one scroll is one batch, in reading order from
+    // zero, a step apart — a row of three states side by side arrives as a
+    // row, and the same three stacked on a phone arrive one at a time.
+    var seen = new IntersectionObserver(function (entries) {
+      var landed = entries
+        .filter(function (e) { return e.isIntersecting; })
+        .map(function (e) { return e.target; });
+      inOrder(landed).forEach(function (block, n) {
+        seen.unobserve(block);
+        block.style.setProperty('--demo-arrive-lead', '0ms');
+        block.style.setProperty('--demo-arrive-at', String(Math.min(n, LAST)));
+        block.classList.remove('is-held');
+        settle(block);
+      });
+    }, { rootMargin: '0px 0px -' + Math.round((1 - LINE) * 100) + '% 0px' });
+
+    var line = window.innerHeight * LINE;
+    var first = [];
+
+    blocks.forEach(function (block) {
+      var box = block.getBoundingClientRect();
+      if (box.top < line && box.bottom > 0) {
+        first.push(block);
+        return;
+      }
+      block.classList.add('is-held');
+      seen.observe(block);
+    });
+
+    // The first screen, in reading order. Its animations have been running
+    // since the first paint, which is why only a block still waiting moves.
+    inOrder(first).forEach(function (block, n) {
+      if (waiting(block)) block.style.setProperty('--demo-arrive-at', String(Math.min(n, LAST)));
+      settle(block);
+    });
   })();
   </script>
 

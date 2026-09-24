@@ -281,6 +281,8 @@ All page-level context lives here, and only here:
 - `notes.md`, rendered — see below
 - where the study has a React adapter, a second closed `<details>` under the
   decisions offering it — see **A React adapter, generated**
+- the arrival: `data-reveal` on the page's own blocks, the motion in its
+  `<style>` and a script of its own — see **The demo page arrives** below
 
 demo.html links `component.css`; it never redefines it. If the demo needs a
 style, that style belongs in a `<style>` block scoped to the demo page's own
@@ -337,6 +339,51 @@ The inspiration row sits below the decisions, beside that link, and not in the
 meta list at the top. The block opens on what the component is; where it came
 from is the last thing in it, for the same reason it is the last line of
 `notes.md`.
+
+### The demo page arrives, and what is below the fold waits
+
+Every demo arrives the way the index does, from its own copy: the kicker,
+the heading and the lede a beat apart, then each block rising into place,
+and whatever the first screen does not reach held until it is scrolled to.
+`data-reveal` marks the page's own blocks — the intro's three lines, a
+group's head, a state, a stage, the decisions — the motion is a block in the
+page's `<style>`, and a script of its own at the foot of the page decides
+what is held. `_template/` carries all three. The mechanics are the index's,
+and so are the reasons for them; see **The page arrives once** below.
+
+Three things differ, and each is about the component being inside the block:
+
+- **`data-reveal` never goes on a component's root.** A component rises
+  inside the block that holds it, so no rule names a component class or
+  moves one directly.
+- **The component waits with its block.** `[data-reveal].is-held *` pauses
+  every animation under a held block, `!important` and naming no class,
+  which is the construction `preview.html`'s pause already uses. An entrance
+  a component makes on load is therefore made where it is seen: measured, the
+  inked plate's sixth state sits at 0ms of its draw for as long as it is
+  below the fold and starts from 0 when it is reached. Transitions are not
+  held, as in the preview.
+- **Blocks, not rows.** There is no `"each"` here: a grid that reflows to one
+  column on a phone is a tall block whose lower half would arrive unseen. So
+  every state is its own block, and a batch reached together steps in
+  document order — a row of three side by side arrives as a row, the same
+  three stacked arrive one at a time. A state holding a list of specimens
+  marks its caption and each specimen instead, as the shader's does.
+
+Slots are reading order, and the script writes them. The first screen is
+re-slotted only where a block is still in its delay, since moving one that
+has started would snap it back to its first frame; without the script the
+intro runs 0 to 2 and everything else lands at 3. Nothing on the first
+screen starts later than slot 8, so a tall monitor does not keep its
+twentieth block waiting.
+
+Checked on all nine pages at 1440, 390 and 320: after a walk down the page
+nothing is held or left faded, nothing overflows sideways, and no block sits
+inside another. Reduced motion and no JavaScript leave every block where it
+was. The glass toolbar was the one worth looking at: an ancestor below
+opacity 1 is a backdrop root, but each stage paints its own lit ground inside
+the block that fades, so mid-fade the glass is still glass, the same rim and
+refraction at 0.68 as at 1.
 
 ## preview.html
 
@@ -953,7 +1000,8 @@ single exception below.
 Two things legitimately sweep every folder, and both are the same shape. One is
 an identity change — the site was renamed, and each `demo.html` carries its own
 copy of the back link's strings. The other is a page contract every demo has to
-meet, which is how the language switch arrived and how the theme switch did:
+meet, which is how the language switch arrived, how the theme switch did and
+how the page arrival did:
 each folder gets its own copy, written into its own file, in its own palette.
 
 Neither is a refactor. The test is what the folder owns afterwards: a sweep
