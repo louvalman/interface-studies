@@ -288,8 +288,8 @@ All page-level context lives here, and only here:
   decisions offering it — see **A React adapter, generated**
 - the arrival: `data-reveal` on the page's own blocks, the motion in its
   `<style>` and a script of its own — see **The demo page arrives** below
-- the study's page in the Figma file, as the last item in the kicker — see
-  **A card may name the board it was drawn in**
+- the companion Figma file's Community listing, as the last item in the
+  kicker — see **A card links the Figma file, and so does its demo page**
 
 demo.html links `component.css`; it never redefines it. If the demo needs a
 style, that style belongs in a `<style>` block scoped to the demo page's own
@@ -1306,41 +1306,44 @@ and a brand glyph would make one of them a different kind of object. The
 mark already does that job in the footer, where the thing it labels is a
 handle.
 
-### A card may name the board it was drawn in
+### A card links the Figma file, and so does its demo page
 
-`data-figma` on the `<article class="piece">` block is the study's page in the
-companion Figma file, and quick look draws an `Open in Figma` link beside `Open
-demo` where a card carries one. Every study has one. It stays optional because
-a study can land before its page does: no attribute, no link, and nothing else
-reads it. The link opens in a new tab and takes neither `?lang=` nor `?theme=` —
-Figma resolves neither, and the choice is this site's rather than something to
-hand to another one.
+`data-figma` on the `<article class="piece">` block is the companion Figma
+file's Community listing, and quick look draws an `Open in Figma` link beside
+`Open demo` where a card carries one. Every study has one. It stays optional
+because a study can land before it is in the file: no attribute, no link, and
+nothing else reads it. The link opens in a new tab and takes neither `?lang=`
+nor `?theme=` — Figma resolves neither, and the choice is this site's rather
+than something to hand to another one.
 
-**The card links the working file; the masthead links the Community listing.**
-They are two copies of one file doing different jobs. The listing is where a
-reader duplicates the set, and it is a page about the file rather than the file:
-it has no address for a page inside it. The working file does, as `?node-id=`,
-so a card can open on its own study. It can be read because it is shared as
-anyone with the link can view — tighten that and all eight links become a
-request-access page at once, with nothing on the site to show it. The id is the
-page's rather than a board's on it, since boards get moved about and a page is
-renamed without its id changing. And it opens in design mode, not Dev Mode,
-which asks for a seat a visitor may not have.
+**Every link goes to the Community listing, never the working file.** The
+listing is where the set is duplicated and liked, and both are counted there
+and nowhere else; a visitor sent to the working file can look through all of it
+without ever arriving at the listing. For a while the cards did link the working
+file, by `?node-id=`, which opens on the study's own page — and that is what this
+gives up. The listing is a page about the file rather than the file, with no
+address for a page inside it, so every card and every kicker carries the same
+URL the masthead does. If a listing ever gets per-page addresses, those are
+what these values become.
+
+The listing shows the file as it was last published, not as it is. A study
+drawn into the file reaches the listing when an update is published there, so
+publish before pointing a new card at it, or the link opens on a file that does
+not have that study yet.
 
 The board links back. Each Notes board carries a `DEMO` row under its type,
-pointing at the folder's `demo.html`, so the two ends name each other — and like
-the type they are a pair kept by hand. A slug that changes, or a page that is
-remade rather than renamed, takes both with it.
+pointing at the folder's `demo.html`, and like the type it is kept by hand. A
+slug that changes takes it with it.
 
-**The demo page names it too**, as the last item in its kicker:
+**The demo page links it too**, as the last item in its kicker:
 `2026-09 · Card · Figma ↗`. The kicker is that page's meta line, the job the
 masthead's meta row does on the index, where the Community file link already
-sits; it is above the fold and costs no height. The Decisions block was the other
-candidate — beside the `notes.md` link, where the page already sends a reader
-for the rest of the record — and lost on being below the fold inside a closed
-`<details>`, the reason the index kept its own link out of the footer. The top
-bar lost because it is otherwise switches, and a link among switches reads as
-one.
+sits; it is above the fold and costs no height. The Decisions block was the
+other candidate — beside the `notes.md` link, where the page already sends a
+reader for the rest of the record — and lost on being below the fold inside a
+closed `<details>`, the reason the index kept its own link out of the footer.
+The top bar lost because it is otherwise switches, and a link among switches
+reads as one.
 
 It is a link, so it is set the way the page sets links rather than the way the
 kicker sets its values: the lede's tone, underlined in the accent. The kicker's
@@ -1349,17 +1352,16 @@ let muted text be — on the inked plate's light page that grey is 4.45:1, and o
 most of the others its dark theme clears the floor by a third of a point. The
 lede's tone measures 5.72 to 9.60 across every page in both themes. The accent
 is the underline and not the text because as text it does not clear 4.5:1 at
-11px on every ground.
-An `::after` stretches the hit area to 24px tall without moving the line —
-measured at 1440, 390 and 320 on every page, and the kicker stays one line at
-320 with `NAVIGATION` in it.
+11px on every ground. An `::after` stretches the hit area to 24px tall without
+moving the line — measured at 1440, 390 and 320 on every page, and the kicker
+stays one line at 320 with `NAVIGATION` in it.
 
-The URL is written on the card and in the kicker rather than in the folder's
-`notes.md`, which is the opposite of where the `Inspiration:` line sits, and the
-reason is the wall the type already runs into: the index cannot read a
-`notes.md` over `file://`, so a declaration in the folder would have to be
-copied onto the card anyway. So it is written twice and kept in step by hand,
-the way the kicker's type already is, and a folder copied out carries its board
+The URL is written on every card and in every kicker rather than once in the
+folder's `notes.md`, which is the opposite of where the `Inspiration:` line
+sits, and the reason is the wall the type already runs into: the index cannot
+read a `notes.md` over `file://`, so a declaration in the folder would have to
+be copied onto the card anyway. So it is repeated and kept in step by hand,
+the way the kicker's type already is, and a folder copied out carries the link
 in its demo page the way it carries its canonical URL. If the Figma file ever
 becomes part of what a study *is* rather than a companion to it, the line
 belongs in `notes.md` and the card and the kicker become its copies, the way

@@ -5,7 +5,7 @@ and code, small enough to stay legible.
 
 Browse it at [interface-studies.pages.dev](https://interface-studies.pages.dev),
 or open `index.html` locally; each card opens that folder's `demo.html`. The
-Figma half is a [Community file](https://www.figma.com/community/file/1683607518896928224).
+Figma half is a [Community file](https://www.figma.com/community/file/1683607518896928224/interface-studies).
 
 The purpose is the isolation. Every study stands alone: no code is shared
 between them by design and none of them depends on a library, so a folder can
