@@ -158,7 +158,16 @@
       'a11y.variants': 'Varianter',
       'a11y.closeQuickLook': 'Luk hurtigt kig',
       'a11y.livePreview': 'Live forhåndsvisning af komponent',
-      'a11y.theme': 'Mørk tilstand'
+      'a11y.theme': 'Mørk tilstand',
+      'a11y.view': 'Visning',
+      'a11y.viewRail': 'Karrusel',
+      'a11y.viewList': 'Liste',
+      'a11y.stack': 'Findes i',
+      'cols.no': 'Nr.',
+      'cols.study': 'Studie',
+      'cols.type': 'Type',
+      'cols.stack': 'Findes i',
+      'cols.date': 'Dato'
     }
   };
 

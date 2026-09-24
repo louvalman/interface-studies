@@ -238,7 +238,7 @@
       </dl>
     </header>
 
-    <section class="rail">
+    <section class="rail" data-view="rail">
       <!-- One grid rather than a bar and a row beneath it: the count sits on
          the top line, the type filter on the one below, and the carousel
          controls span both and land on the filter chips' own bottom edge. On a
@@ -336,6 +336,67 @@
         data-i18n-aria="a11y.filter"
         aria-label="Filter by type"
         hidden></div>
+
+      <!-- Rail or list. Its own grid area, rightmost, so hiding the carousel
+         controls in the list does not move the switch out from under the
+         pointer that just pressed it. -->
+      <div
+        class="rail__view"
+        role="group"
+        data-i18n-aria="a11y.view"
+        aria-label="View">
+        <button
+          class="rail__view-btn"
+          type="button"
+          data-view-set="rail"
+          aria-pressed="true"
+          data-i18n-aria="a11y.viewRail"
+          aria-label="Rail">
+          <svg
+            viewBox="0 0 16 16"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.4"
+            aria-hidden="true">
+            <rect x="1.5" y="3" width="3.4" height="10" rx="1" />
+            <rect x="6.3" y="3" width="3.4" height="10" rx="1" />
+            <rect x="11.1" y="3" width="3.4" height="10" rx="1" />
+          </svg>
+        </button>
+        <button
+          class="rail__view-btn"
+          type="button"
+          data-view-set="list"
+          aria-pressed="false"
+          data-i18n-aria="a11y.viewList"
+          aria-label="List">
+          <svg
+            viewBox="0 0 16 16"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.4"
+            aria-hidden="true">
+            <rect x="1.5" y="2" width="3" height="3" rx="0.6" />
+            <rect x="1.5" y="6.5" width="3" height="3" rx="0.6" />
+            <rect x="1.5" y="11" width="3" height="3" rx="0.6" />
+            <path
+              d="M7 3.5h7.5M7 8h7.5M7 12.5h7.5"
+              stroke-linecap="round" />
+          </svg>
+        </button>
+      </div>
+      </div>
+
+      <!-- The list's column heads. Outside the track, because everything in
+         the track is a card to index.js. Hidden in the rail; in the list it
+         shares the rows' column template, so the two line up without being
+         one grid. Visual only: each row already says what its values are. -->
+      <div class="rail__cols" aria-hidden="true">
+        <span class="rail__col rail__col--no" data-i18n="cols.no">No.</span>
+        <span class="rail__col rail__col--study" data-i18n="cols.study">Study</span>
+        <span class="rail__col rail__col--type" data-i18n="cols.type">Type</span>
+        <span class="rail__col rail__col--stack" data-i18n="cols.stack">Available in</span>
+        <span class="rail__col rail__col--date" data-i18n="cols.date">Date</span>
       </div>
 
       <!-- Add a study: copy one <article class="piece"> block and point the
@@ -368,14 +429,16 @@
           data-date="2026-09-21T09:00"
           data-figma="https://www.figma.com/community/file/1683607518896928224/interface-studies">
           <div class="piece__frame">
-            <iframe
-              class="piece__preview"
-              data-src="2026-09-shader-token-field/preview.html"
-              loading="lazy"
-              scrolling="no"
-              tabindex="-1"
-              aria-hidden="true"
-              data-preview></iframe>
+            <div class="piece__thumb">
+              <iframe
+                class="piece__preview"
+                data-src="2026-09-shader-token-field/preview.html"
+                loading="lazy"
+                scrolling="no"
+                tabindex="-1"
+                aria-hidden="true"
+                data-preview></iframe>
+            </div>
             <span class="piece__type" data-i18n="type.aesthetic">Aesthetic</span>
             <span class="piece__no">&mdash;</span>
             <button
@@ -421,6 +484,15 @@
               declared band, which is what puts a guaranteed contrast ratio under
               the type.
             </p>
+            <ul
+              class="piece__stack"
+              data-i18n-aria="a11y.stack"
+              aria-label="Available in">
+              <li class="piece__code" data-code="html" title="HTML">HTML</li>
+              <li class="piece__code" data-code="css" title="CSS">CSS</li>
+              <li class="piece__code" data-code="js" title="JavaScript">JavaScript</li>
+              <li class="piece__code" data-code="react" title="React">React</li>
+            </ul>
             <span class="piece__cta">
               <span class="piece__cta-text" data-i18n="cta.openDemo">
                 Open demo
@@ -446,14 +518,16 @@
           data-date="2026-09-16T09:00"
           data-figma="https://www.figma.com/community/file/1683607518896928224/interface-studies">
           <div class="piece__frame">
-            <iframe
-              class="piece__preview"
-              data-src="2026-09-struck-tones/preview.html"
-              loading="lazy"
-              scrolling="no"
-              tabindex="-1"
-              aria-hidden="true"
-              data-preview></iframe>
+            <div class="piece__thumb">
+              <iframe
+                class="piece__preview"
+                data-src="2026-09-struck-tones/preview.html"
+                loading="lazy"
+                scrolling="no"
+                tabindex="-1"
+                aria-hidden="true"
+                data-preview></iframe>
+            </div>
             <span class="piece__type" data-i18n="type.aesthetic">Aesthetic</span>
             <span class="piece__no">&mdash;</span>
             <button
@@ -498,6 +572,14 @@
               those numbers rather than played from files &mdash; the reverb
               included. It ships silent, and draws everything it says.
             </p>
+            <ul
+              class="piece__stack"
+              data-i18n-aria="a11y.stack"
+              aria-label="Available in">
+              <li class="piece__code" data-code="html" title="HTML">HTML</li>
+              <li class="piece__code" data-code="css" title="CSS">CSS</li>
+              <li class="piece__code" data-code="js" title="JavaScript">JavaScript</li>
+            </ul>
             <span class="piece__cta">
               <span class="piece__cta-text" data-i18n="cta.openDemo">
                 Open demo
@@ -523,14 +605,16 @@
           data-date="2026-09-14T12:00"
           data-figma="https://www.figma.com/community/file/1683607518896928224/interface-studies">
           <div class="piece__frame">
-            <iframe
-              class="piece__preview"
-              data-src="2026-09-bento-grid/preview.html"
-              loading="lazy"
-              scrolling="no"
-              tabindex="-1"
-              aria-hidden="true"
-              data-preview></iframe>
+            <div class="piece__thumb">
+              <iframe
+                class="piece__preview"
+                data-src="2026-09-bento-grid/preview.html"
+                loading="lazy"
+                scrolling="no"
+                tabindex="-1"
+                aria-hidden="true"
+                data-preview></iframe>
+            </div>
             <span class="piece__type" data-i18n="type.layout">Layout</span>
             <span class="piece__no">&mdash;</span>
             <button
@@ -575,6 +659,14 @@
               for the slot it lands in rather than for the modifier it was
               given &mdash; and opening one re-packs the board around it.
             </p>
+            <ul
+              class="piece__stack"
+              data-i18n-aria="a11y.stack"
+              aria-label="Available in">
+              <li class="piece__code" data-code="html" title="HTML">HTML</li>
+              <li class="piece__code" data-code="css" title="CSS">CSS</li>
+              <li class="piece__code" data-code="js" title="JavaScript">JavaScript</li>
+            </ul>
             <span class="piece__cta">
               <span class="piece__cta-text" data-i18n="cta.openDemo">
                 Open demo
@@ -600,14 +692,16 @@
           data-date="2026-09-10T11:16"
           data-figma="https://www.figma.com/community/file/1683607518896928224/interface-studies">
           <div class="piece__frame">
-            <iframe
-              class="piece__preview"
-              data-src="2026-09-inked-plate-card/preview.html"
-              loading="lazy"
-              scrolling="no"
-              tabindex="-1"
-              aria-hidden="true"
-              data-preview></iframe>
+            <div class="piece__thumb">
+              <iframe
+                class="piece__preview"
+                data-src="2026-09-inked-plate-card/preview.html"
+                loading="lazy"
+                scrolling="no"
+                tabindex="-1"
+                aria-hidden="true"
+                data-preview></iframe>
+            </div>
             <span class="piece__type" data-i18n="type.card">Card</span>
             <span class="piece__no">&mdash;</span>
             <button
@@ -652,6 +746,13 @@
               load in pure CSS &mdash; every path declares a length of 1, so one
               keyframe pair draws all of them without measuring any.
             </p>
+            <ul
+              class="piece__stack"
+              data-i18n-aria="a11y.stack"
+              aria-label="Available in">
+              <li class="piece__code" data-code="html" title="HTML">HTML</li>
+              <li class="piece__code" data-code="css" title="CSS">CSS</li>
+            </ul>
             <span class="piece__cta">
               <span class="piece__cta-text" data-i18n="cta.openDemo">
                 Open demo
@@ -677,14 +778,16 @@
           data-date="2026-09-10T10:52"
           data-figma="https://www.figma.com/community/file/1683607518896928224/interface-studies">
           <div class="piece__frame">
-            <iframe
-              class="piece__preview"
-              data-src="2026-09-raster-pulse/preview.html"
-              loading="lazy"
-              scrolling="no"
-              tabindex="-1"
-              aria-hidden="true"
-              data-preview></iframe>
+            <div class="piece__thumb">
+              <iframe
+                class="piece__preview"
+                data-src="2026-09-raster-pulse/preview.html"
+                loading="lazy"
+                scrolling="no"
+                tabindex="-1"
+                aria-hidden="true"
+                data-preview></iframe>
+            </div>
             <span class="piece__type" data-i18n="type.card">Card</span>
             <span class="piece__no">&mdash;</span>
             <button
@@ -729,6 +832,13 @@
               belongs to the pattern, which of two tones it takes, and where it
               sits in the pulse travelling through the field.
             </p>
+            <ul
+              class="piece__stack"
+              data-i18n-aria="a11y.stack"
+              aria-label="Available in">
+              <li class="piece__code" data-code="html" title="HTML">HTML</li>
+              <li class="piece__code" data-code="css" title="CSS">CSS</li>
+            </ul>
             <span class="piece__cta">
               <span class="piece__cta-text" data-i18n="cta.openDemo">
                 Open demo
@@ -754,14 +864,16 @@
           data-date="2026-09-10T00:27"
           data-figma="https://www.figma.com/community/file/1683607518896928224/interface-studies">
           <div class="piece__frame">
-            <iframe
-              class="piece__preview"
-              data-src="2026-09-drawn-gradients/preview.html"
-              loading="lazy"
-              scrolling="no"
-              tabindex="-1"
-              aria-hidden="true"
-              data-preview></iframe>
+            <div class="piece__thumb">
+              <iframe
+                class="piece__preview"
+                data-src="2026-09-drawn-gradients/preview.html"
+                loading="lazy"
+                scrolling="no"
+                tabindex="-1"
+                aria-hidden="true"
+                data-preview></iframe>
+            </div>
             <span class="piece__type" data-i18n="type.aesthetic">
               Aesthetic
             </span>
@@ -808,6 +920,13 @@
               silhouette then puts the fill inside a block of type, its treads
               landing on the same lines.
             </p>
+            <ul
+              class="piece__stack"
+              data-i18n-aria="a11y.stack"
+              aria-label="Available in">
+              <li class="piece__code" data-code="html" title="HTML">HTML</li>
+              <li class="piece__code" data-code="css" title="CSS">CSS</li>
+            </ul>
             <span class="piece__cta">
               <span class="piece__cta-text" data-i18n="cta.openDemo">
                 Open demo
@@ -833,14 +952,16 @@
           data-date="2026-09-09T00:45"
           data-figma="https://www.figma.com/community/file/1683607518896928224/interface-studies">
           <div class="piece__frame">
-            <iframe
-              class="piece__preview"
-              data-src="2026-09-detail-reveal-card/preview.html"
-              loading="lazy"
-              scrolling="no"
-              tabindex="-1"
-              aria-hidden="true"
-              data-preview></iframe>
+            <div class="piece__thumb">
+              <iframe
+                class="piece__preview"
+                data-src="2026-09-detail-reveal-card/preview.html"
+                loading="lazy"
+                scrolling="no"
+                tabindex="-1"
+                aria-hidden="true"
+                data-preview></iframe>
+            </div>
             <span class="piece__type" data-i18n="type.card">Card</span>
             <span class="piece__no">&mdash;</span>
             <button
@@ -884,6 +1005,13 @@
               the resting label up ahead of it. Takes any content; a map variant
               adds contour rings and a pulsing pin.
             </p>
+            <ul
+              class="piece__stack"
+              data-i18n-aria="a11y.stack"
+              aria-label="Available in">
+              <li class="piece__code" data-code="html" title="HTML">HTML</li>
+              <li class="piece__code" data-code="css" title="CSS">CSS</li>
+            </ul>
             <span class="piece__cta">
               <span class="piece__cta-text" data-i18n="cta.openDemo">
                 Open demo
@@ -909,14 +1037,16 @@
           data-date="2026-09-08T12:00"
           data-figma="https://www.figma.com/community/file/1683607518896928224/interface-studies">
           <div class="piece__frame">
-            <iframe
-              class="piece__preview"
-              data-src="2026-09-liquid-glass-toolbar/preview.html"
-              loading="lazy"
-              scrolling="no"
-              tabindex="-1"
-              aria-hidden="true"
-              data-preview></iframe>
+            <div class="piece__thumb">
+              <iframe
+                class="piece__preview"
+                data-src="2026-09-liquid-glass-toolbar/preview.html"
+                loading="lazy"
+                scrolling="no"
+                tabindex="-1"
+                aria-hidden="true"
+                data-preview></iframe>
+            </div>
             <span class="piece__type" data-i18n="type.navigation">
               Navigation
             </span>
@@ -962,6 +1092,14 @@
               opens into a labelled pill, search into a field, the log into a
               panel &mdash; in six materials off a single recipe.
             </p>
+            <ul
+              class="piece__stack"
+              data-i18n-aria="a11y.stack"
+              aria-label="Available in">
+              <li class="piece__code" data-code="html" title="HTML">HTML</li>
+              <li class="piece__code" data-code="css" title="CSS">CSS</li>
+              <li class="piece__code" data-code="js" title="JavaScript">JavaScript</li>
+            </ul>
             <span class="piece__cta">
               <span class="piece__cta-text" data-i18n="cta.openDemo">
                 Open demo
