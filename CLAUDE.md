@@ -1326,6 +1326,39 @@ and a brand glyph would make one of them a different kind of object. The
 mark already does that job in the footer, where the thing it labels is a
 handle.
 
+### The file moves too, and its motion is a copy
+
+Each study's page in the Figma file ends on a `Motion — …` board that plays
+what the study does as keyframes: the durations, delays and curves read off its
+`component.css` and `component.js`, not judged by eye from the demo. Where a
+board departs from the code, its lede says so — the raster field rebuilt as 289
+dots, the bento narrowing a rung at a time, the shader's field left to the
+animated shader fill it already runs on. `2026-09-struck-tones` has no board
+yet.
+
+**A board holds a detached copy, so it does not follow the component.** Figma
+keys a layer, not an instance's sublayer, and nearly everything a study moves
+is a sublayer — a line in the plate, the panel in the card. So each board
+detaches its copy and animates that, and an edit to the component never reaches
+it. The bento is the one exception: it moves whole tiles, which are instance
+roots, so its seven stay linked.
+
+A board is therefore kept in step by hand, like the kicker's type: when a
+study's motion or its markup changes, its board is redone, or the file plays a
+component the repo no longer is. Two things are worth knowing before redoing
+one. A colour track writes a literal paint, so a keyed fill is no longer bound
+to its variable — key the layer that needs it and leave the rest bound. And
+path trim works only on an open path with a centre stroke and no dashes, which
+is why the inked plate's squares are opened at their start point, with round
+caps.
+
+**The canvas draws base values, not the motion.** A screenshot shows each layer
+as it stands rather than at any point on its timeline, so it checks the resting
+state and nothing else. The motion is checked by reading the tracks back with
+`get_motion_context`, which returns them as CSS to set beside the study's own.
+A video export also works, where the session's network allows `www.figma.com`,
+which is where the file is fetched from.
+
 ### A card links the Figma file, and so does its demo page
 
 `data-figma` on the `<article class="piece">` block is the companion Figma
