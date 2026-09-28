@@ -1326,15 +1326,57 @@ and a brand glyph would make one of them a different kind of object. The
 mark already does that job in the footer, where the thing it labels is a
 handle.
 
+### A study's page in the file reads as a document
+
+Each study has a page in the Figma file, and every page has the same shape, so
+someone moving between studies knows where to look before they have read
+anything. The shape belongs to the page, not to the study. What a study builds,
+which boards it needs, what they show and how they sit inside a chapter, and how
+its demo page is laid out, all stay its own decisions; this only says which
+chapter a board goes in.
+
+A page opens on a `Start here` frame: the study's name, a kicker
+(`2026-09 · CARD · STUDY`), a summary taken from the opening of `notes.md`,
+links to the demo and the Community listing, a row showing the component itself,
+and a contents list whose titles link to the chapters. The row holds instances
+where the study has a variant set, so it follows the component; where it clones
+a board instead — the colourways, the bento board — it is a copy, and is redone
+when that board is.
+
+Four chapters follow, each a Figma section, read top to bottom and each chapter
+left to right:
+
+| chapter | holds |
+|---|---|
+| `01 · The idea` | `Notes — notes.md` and `Component — component.html + .css`, side by side |
+| `02 · The design` | the boards that explain the study — its drawings, colourways, materials; the variant set, where the study has nothing else to show there |
+| `03 · In use` | the `Motion — …` board, `Preview — preview.html`, and a React or controls board where there is one |
+| `04 · The build` | the variant set, the masters or parts, and `Tokens — component.css` last |
+
+The chapter names are the same on every page, and that is the point of them:
+`What it draws` and `At work` read better on one page and worse across eight.
+What differs is the lede under each heading, written for that study, and a
+`FILES —` line naming the folder's files the chapter covers, which is how the
+page maps onto the repo. Each section carries a `↑ Contents` link back to
+`Start here`, and a variant set gets its rows and columns labelled from its own
+variant properties, so a reader can tell the axes apart without opening the
+properties panel.
+
+Sections share one width, 3264, with 160 between them and 80 between boards,
+and nothing sits on the page outside them. A new study's page is built in this
+shape from the start, and a board added later goes into the chapter it belongs
+to rather than under the last one. A board that fits no chapter is usually a
+board that wants rethinking, not a page that wants a fifth.
+
 ### The file moves too, and its motion is a copy
 
-Each study's page in the Figma file ends on a `Motion — …` board that plays
-what the study does as keyframes: the durations, delays and curves read off its
-`component.css` and `component.js`, not judged by eye from the demo. Where a
-board departs from the code, its lede says so — the raster field rebuilt as 289
-dots, the bento narrowing a rung at a time, the shader's field left to the
-animated shader fill it already runs on. `2026-09-struck-tones` has no board
-yet.
+Each study's page in the Figma file has a `Motion — …` board, in its `In use`
+chapter, that plays what the study does as keyframes: the durations, delays and
+curves read off its `component.css` and `component.js`, not judged by eye from
+the demo. Where a board departs from the code, its lede says so — the raster
+field rebuilt as 289 dots, the bento narrowing a rung at a time, the shader's
+field left to the animated shader fill it already runs on.
+`2026-09-struck-tones` has no board yet.
 
 **A board holds a detached copy, so it does not follow the component.** Figma
 keys a layer, not an instance's sublayer, and nearly everything a study moves
