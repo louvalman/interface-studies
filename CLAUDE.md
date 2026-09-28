@@ -1375,8 +1375,9 @@ chapter, that plays what the study does as keyframes: the durations, delays and
 curves read off its `component.css` and `component.js`, not judged by eye from
 the demo. Where a board departs from the code, its lede says so — the raster
 field rebuilt as 289 dots, the bento narrowing a rung at a time, the shader's
-field left to the animated shader fill it already runs on.
-`2026-09-struck-tones` has no board yet.
+field left to the animated shader fill it already runs on, the struck tones'
+screen lit by a copy of its trace under a travelling mask where the shader
+works the heat out per column.
 
 **A board holds a detached copy, so it does not follow the component.** Figma
 keys a layer, not an instance's sublayer, and nearly everything a study moves
