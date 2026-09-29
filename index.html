@@ -1417,17 +1417,56 @@
         </div>
 
         <!-- Dots are built from whatever variants the preview reports; the
-           index never knows what any of them mean. -->
+           index never knows what any of them mean.
+
+           The variants play by themselves until a reader takes one, and the
+           button in front of the dots stops or starts that — anything that
+           changes on its own for more than five seconds owes the reader a
+           pause (WCAG 2.2.2), the reason the rail's drift has one. Its label
+           is state, so index.js writes it, as it does the drift's.
+
+           The visible label is not a live region: it changes every four
+           seconds while the variants play, and a screen reader would read
+           every one of those out. The hidden line under it is, and index.js
+           writes it only when a reader has picked a variant themselves. -->
         <nav
           class="lightbox__variants"
           data-lightbox-variants
           data-i18n-aria="a11y.variants"
           aria-label="Variants"
           hidden>
+          <!-- The button and the dots are one group, so the row never parts
+             them: where there is not room for the label as well, the label
+             takes a line of its own below. -->
+          <div class="lightbox__playback">
+          <button
+            class="lightbox__play"
+            type="button"
+            data-lightbox-play
+            data-autoplay="on"
+            aria-label="Pause the variants">
+            <svg
+              class="lightbox__play-icon lightbox__play-icon--pause"
+              viewBox="0 0 16 16"
+              fill="currentColor"
+              aria-hidden="true">
+              <rect x="5" y="4" width="2" height="8" rx="0.6" />
+              <rect x="9" y="4" width="2" height="8" rx="0.6" />
+            </svg>
+            <svg
+              class="lightbox__play-icon lightbox__play-icon--play"
+              viewBox="0 0 16 16"
+              fill="currentColor"
+              aria-hidden="true">
+              <path d="M5.4 3.6a.6.6 0 0 1 .92-.5l6 4.4a.6.6 0 0 1 0 1l-6 4.4a.6.6 0 0 1-.92-.5z" />
+            </svg>
+          </button>
           <div class="lightbox__dots" data-lightbox-dots></div>
+          </div>
+          <p class="lightbox__variant-label" data-lightbox-variant-label></p>
           <p
-            class="lightbox__variant-label"
-            data-lightbox-variant-label
+            class="lightbox__announce"
+            data-lightbox-announce
             aria-live="polite"></p>
         </nav>
 

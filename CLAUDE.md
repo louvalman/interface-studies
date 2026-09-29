@@ -1242,6 +1242,37 @@ events *on*, so there the component's real `:hover` does the work and no message
 is involved. Both routes load the same file — there is no second thumbnail to
 keep in step.
 
+**Quick look plays the variants until a reader takes one, and then stops for
+good.** It steps through them every `AUTOPLAY_MS` on opening, which is how a
+pointer that never reaches the dots learns there are variants at all. It used
+to start again after every pick: `showVariant()` ended by queueing the next
+step, so the variant someone had just chosen moved on four seconds later, and
+only a pointer resting on the preview held it. A keyboard never did, and a
+finger's tap is an enter and a leave in the same moment. Now a dot, an arrow
+key, focus moved inside the panel or a click into the component turns
+`autoplay` off until the overlay closes. That is the rule a preview's own
+rotation keeps, one level up: a reader outranks it, for good. The pointer's
+hold is still there and still lets go, because it is a different thing — a
+reader looking, not a reader choosing.
+
+The focus rule looks away once. `open()` puts focus on the close button
+itself, and counted as a reader, that would stop every overlay before it had
+played a step. A click into the component is read off this window losing focus
+to the frame, since nothing inside an iframe reaches this document.
+
+The button in front of the dots is the way back, and the pause WCAG 2.2.2 asks
+of anything that moves by itself for more than five seconds. It is the drift
+button's pair: the same two glyphs, the label written from state in `index.js`,
+and under reduced motion it starts on play, so the variants wait to be asked
+rather than being unavailable. The button and the dots are one group, and where
+the panel is too narrow for the label beside them the label takes its own line,
+rather than the sixth dot wrapping under the first five.
+
+The visible label is not a live region. It follows every step, and as one it
+had a screen reader say a new variant name every four seconds for as long as
+the overlay stayed open. `.lightbox__announce` is: it sits off screen, and only
+a pick writes to it.
+
 `og.png` at the root is the social card: a 1200x630 render of the masthead,
 kept as a file because no scraper runs the page, and as a PNG because none of
 them will rasterise an SVG. Slack, Discord and iMessage resolve a relative path

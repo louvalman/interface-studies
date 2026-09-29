@@ -159,6 +159,8 @@
       'a11y.filter': 'Filtrér efter type',
       'a11y.variants': 'Varianter',
       'a11y.closeQuickLook': 'Luk hurtigt kig',
+      'a11y.pauseVariants': 'Sæt varianterne på pause',
+      'a11y.playVariants': 'Afspil varianterne',
       'a11y.livePreview': 'Live forhåndsvisning af komponent',
       'a11y.theme': 'Mørk tilstand',
       'a11y.view': 'Visning',
@@ -2774,6 +2776,17 @@
     const variantBar = box.querySelector('[data-lightbox-variants]');
     const dotsOut = box.querySelector('[data-lightbox-dots]');
     const variantLabel = box.querySelector('[data-lightbox-variant-label]');
+    const announceOut = box.querySelector('[data-lightbox-announce]');
+    const playBtn = box.querySelector('[data-lightbox-play]');
+
+    // The play control's label is state, like the drift's, so its English is
+    // here and its Danish comes off the table the language module hands over.
+    const QL_EN = {
+      'a11y.pauseVariants': 'Pause the variants',
+      'a11y.playVariants': 'Play the variants'
+    };
+    let qlCopy = null;
+    const qlText = (key) => (qlCopy && qlCopy[key]) || QL_EN[key];
 
     const AUTOPLAY_MS = 4000;   // one variant every four seconds
     const NUDGE_MS = 260;       // a manual pick moves the marker at once
@@ -2793,6 +2806,20 @@
     let dotEls = [];
     let autoplayTimer = null;
     let paused = false;
+
+    // Two different holds, and only one of them lets go. `paused` is a pointer
+    // resting on the preview, and it ends when the pointer does. `autoplay` is
+    // whether the variants are playing at all, and a reader turns it off by
+    // taking a variant — a dot, an arrow key, focus moved into the panel, a
+    // click into the component — for as long as the overlay stays open. The
+    // same rule a preview's own rotation keeps: a reader outranks it, for
+    // good, because a variant that someone chose and that then moves on four
+    // seconds later has been taken away from them. The button is the way back.
+    let autoplay = 'on';
+
+    // open() puts focus on the close button itself, and that is not a reader
+    // moving it — so the focus rule below is told to look away while it does.
+    let placingFocus = false;
 
     const text = (el) => (el ? el.textContent.trim() : '');
 
@@ -2891,7 +2918,7 @@
     // are the same number by construction, not two settings kept in step.
     function queueAutoplay() {
       stopAutoplay();
-      if (paused || reduced.matches || variants.length < 2) return;
+      if (autoplay !== 'on' || paused || variants.length < 2) return;
 
       const next = (variantIndex + 1) % variants.length;
       moveMarker(next, AUTOPLAY_MS);
@@ -2914,10 +2941,33 @@
       });
       variantLabel.textContent = variants[variantIndex].label;
 
+      // Said aloud only when a reader asked for it. The visible label above
+      // follows every step; this line follows only theirs.
+      if (settings.manual) announceOut.textContent = variants[variantIndex].label;
+
       // Autoplay has already walked the marker here; a manual pick has not.
       if (settings.marker !== false) moveMarker(variantIndex, NUDGE_MS);
 
       queueAutoplay();
+    }
+
+    function renderPlay() {
+      if (!playBtn) return;
+      playBtn.dataset.autoplay = autoplay;
+      playBtn.setAttribute(
+        'aria-label',
+        qlText(autoplay === 'on' ? 'a11y.pauseVariants' : 'a11y.playVariants')
+      );
+    }
+
+    // A reader has the variants now. The marker goes back to the dot it
+    // belongs to, since it was on its way to the next one.
+    function takeOver() {
+      if (autoplay === 'off') return;
+      autoplay = 'off';
+      stopAutoplay();
+      moveMarker(variantIndex, NUDGE_MS);
+      renderPlay();
     }
 
     // Built from what the preview reported, so the index stays ignorant of
@@ -2936,7 +2986,10 @@
         dot.className = 'lightbox__dot';
         dot.setAttribute('aria-label', variant.label);
         dot.setAttribute('aria-current', n === 0 ? 'true' : 'false');
-        dot.addEventListener('click', () => showVariant(n));
+        dot.addEventListener('click', () => {
+          takeOver();
+          showVariant(n, { manual: true });
+        });
         dotsOut.appendChild(dot);
         dotEls.push(dot);
       });
@@ -3006,7 +3059,9 @@
       }
     }
 
-    document.addEventListener('lang:change', () => {
+    document.addEventListener('lang:change', (event) => {
+      qlCopy = (event.detail && event.detail.copy) || null;
+      renderPlay();
       if (!box.hidden && currentPiece) fillFrom(currentPiece);
     });
 
@@ -3022,6 +3077,12 @@
       // :hover does the work and no message contract is involved.
       stopAutoplay();
       paused = false;
+      // Every overlay starts playing, except under reduced motion, where the
+      // variants wait to be asked — the button offers to play them, which is
+      // the rail's arrangement for its drift.
+      autoplay = reduced.matches ? 'off' : 'on';
+      renderPlay();
+      announceOut.textContent = '';
       variants = [];
       variantIndex = 0;
       marker = null;
@@ -3051,7 +3112,11 @@
       box.classList.add('is-open');
 
       const closeBtn = box.querySelector('.lightbox__close');
-      if (closeBtn) closeBtn.focus();
+      if (closeBtn) {
+        placingFocus = true;
+        closeBtn.focus();
+        placingFocus = false;
+      }
     }
 
     function close() {
@@ -3117,13 +3182,48 @@
       queueAutoplay();
     });
 
+    if (playBtn) {
+      playBtn.addEventListener('click', () => {
+        if (autoplay === 'on') {
+          takeOver();
+        } else {
+          autoplay = 'on';
+          renderPlay();
+          queueAutoplay();
+        }
+      });
+    }
+
+    // Focus moved inside the panel is a reader at the controls — tabbing to
+    // the dots, the links, the preview — and variants changing under them
+    // while they do is the thing 2.2.2 is about. The play button is left out:
+    // pressing it focuses it first, and it decides for itself.
+    panel.addEventListener('focusin', (event) => {
+      if (placingFocus || event.target === playBtn) return;
+      takeOver();
+    });
+
+    // A click into the component moves focus into its frame, which this
+    // document only sees as its own window losing focus. Read after the
+    // event, once activeElement has caught up. This is also the touch path:
+    // a finger has no hover to hold the stage with, so a tap on the preview
+    // is how it says this one.
+    window.addEventListener('blur', () => {
+      setTimeout(() => {
+        if (!box.hidden && document.activeElement === frame) takeOver();
+      }, 0);
+    });
+
     document.addEventListener('keydown', (event) => {
       if (box.hidden) return;
       if (event.key === 'Escape') { event.preventDefault(); close(); }
 
       if (variants.length > 1) {
-        if (event.key === 'ArrowRight') { event.preventDefault(); showVariant(variantIndex + 1); }
-        if (event.key === 'ArrowLeft') { event.preventDefault(); showVariant(variantIndex - 1); }
+        if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+          event.preventDefault();
+          takeOver();
+          showVariant(variantIndex + (event.key === 'ArrowRight' ? 1 : -1), { manual: true });
+        }
       }
 
       if (event.key !== 'Tab') return;
