@@ -1050,6 +1050,53 @@ component, not `ref.png`. A reference image is a record of what the build was
 based on rather than something the site shows, which is why one can be
 withheld — see the folder structure above — without any page changing.
 
+### The rail leads the first screen
+
+The page is a showcase, and for a while it opened on a statement about the
+work instead of the work: a mark on a line of its own, a 64px headline, a
+four-line lede and a meta row put the first card at y=627 of an 802px laptop
+window, with 27% of it showing. The fold was measured line by line — the
+lede's fourth line costing 28px of it — while the masthead's height was taken
+as given, and the height was the thing to question.
+
+Two moves answer it. **The site mark sits on the controls' line**, the bar the
+page always had room for, rather than above the headline as a label saying the
+site's name a second time. `--bar-top` is the cluster's inset and `--bar-h`
+its height, and the mark takes both, so the two centre on each other without
+either being positioned against the other. Below 23rem the two no longer fit
+side by side and the mark takes its own line under the cluster, which stays in
+the corner at every width for the reasons given beside that rule in
+`index.css`.
+
+**From 64rem the masthead is a column beside the rail**, one card wide, and the
+headline takes the first card's place. `.stage` is a four-row grid — the bar,
+the rail's head, the cards, the rule — and `.head` and `.rail` are both
+subgrids of it, so the headline's row is the cards' row by construction: level
+with their top edge, and still level if the rail's head changes height. The
+lede's how-to sentence, which used to be off screen by the time a reader
+reached a card, now sits beside the cards it explains. Measured with the
+arrival finished: the first card 95% on screen at 1470x802, 85% at 1024x768,
+83% at 1280x720 and whole at 1920x1080, against 27% before. On a phone, where
+the masthead still stacks, the first card starts 90px higher at 390x844: 347px
+of it showing against 257px.
+
+Every left edge in the rail hangs off `--rail-inset`: the gutter while the
+masthead stacks, a rail gap in from the column beside it, so the first card
+stands where the full-width rail's second card would. `index.js` reads the
+cards' inset back off `scroll-padding-left` and needs nothing of its own.
+Drifting cards are clipped at the column's edge rather than the page's, and the
+masthead keeps a rail gap of padding on its right so that edge has air on both
+sides of it.
+
+`.rail` cannot be the list's query container. Containment makes a box its own
+formatting context, and a grid that is one cannot be a subgrid, so the
+container is the rail's head and its track, each the rail's full width. The
+list asks those how wide it is rather than asking the window, since beside the
+column the rail is 400px narrower than the page.
+
+In the list the masthead is sticky within the cards' row, so it stays beside
+the rows as they scroll and lets go when the list ends.
+
 A touch release is the platform's, end to end — its momentum, its snap, its
 deceleration curve. Nothing in `index.js` animates the landing.
 
@@ -1170,9 +1217,11 @@ The play label lost its "again" with it. Under reduced motion the rail has never
 set off, so "Start the carousel again" was wrong in exactly the state where the
 control matters most, and the word carried nothing a reader needed in the other.
 
-The rail loops, and so drifts, while the row can cover the viewport with a card
-to spare: `client <= (ring - 2) * step`, which at eight cards and a 336px card
-is 2184px. Past that it is finite and the drift control hides itself — the one
+The rail loops, and so drifts, while the row can cover its scrollport with a
+card to spare: `client <= (ring - 2) * step`, which at eight cards and a 336px
+card is a 2184px track — a window of about 2600px, now that the masthead's
+column sits beside the rail and the track is that much narrower than the page.
+Past that it is finite and the drift control hides itself — the one
 case documented under `loopable()`, and the ceiling rises by a card with every
 study added. A wider screen than that needs a wider card, and the pair to keep
 in step is `--card-w` and `--preview-scale`.
@@ -1749,7 +1798,10 @@ the controls. Below it the areas restack to what they were — controls up besid
 the count, chips full width underneath — because the chips lose more than they
 gain: measured at 320px with the drift control showing, the scroller is left
 132px and one chip of four. The grid restacks with `grid-template-areas`, so
-nothing moves in the DOM and the nav is one element in both layouts.
+nothing moves in the DOM and the nav is one element in both layouts. It
+restacks a second time from 64rem to 80rem, where the masthead's column has
+taken 400px off the rail: at 1024 the chips beside the controls had 308px for
+five of them.
 
 The type filter above the rail is built by `index.js` from the `type.*` key on
 each card's badge, so a study of a new type needs nothing added to it. Filtering
@@ -1795,8 +1847,10 @@ The column heads are the rail head's last row rather than the track's first,
 because everything in the track is a card to `index.js`. They are not one grid
 with the rows, so every column in `--list-cols` is a fixed length or a share of
 what is left — a track sized by content would line up in the rows and not in
-the heads. Measured equal to the pixel at 1440 and 1100. Below 64rem there are
-no columns to head: each row is a thumbnail with the rest stacked beside it.
+the heads. Measured equal to the pixel at 1440 and 1100, and at 1600 beside the
+masthead's column. Below a 64rem rail — a container query, since the rail is
+narrower than the window once the masthead sits beside it — there are no
+columns to head: each row is a thumbnail with the rest stacked beside it.
 
 The attribute is on `<html>` for the reason the theme's is: the head script
 puts a stored `list` there before the first paint, and a view that arrived with

@@ -114,6 +114,14 @@
   --card-w: 21rem;
   --rail-gap: clamp(1rem, 2vw, 1.75rem);
 
+  /* The page's bar: the site mark at the left and the controls in the corner,
+     on one line. The masthead opens on the cluster's own inset and the mark is
+     as tall as the cluster, so the two centre on each other without either
+     being positioned against the other. The touch block below grows the
+     cluster, and --bar-h with it. */
+  --bar-top: clamp(1.25rem, 3vw, 2.25rem);
+  --bar-h: 1.85rem;
+
   /* The preview iframe renders at a fixed logical viewport, then scales to
      the card. Keep --preview-scale == --card-w / --preview-w exactly, or the
      thumbnail will not fill its frame. */
@@ -262,12 +270,12 @@ body.is-locked {
    next button: both are pinned to the gutter's right edge, and at the scroll
    offset that puts the rail bar near the top of the window the chip covered
    it. Positioned against the initial containing block rather than a wrapper,
-   so it still hangs off the page's top-right corner; the masthead's own top
-   padding is deeper than the cluster, which is what keeps it clear of the
-   eyebrow at every width. */
+   so it still hangs off the page's top-right corner. The site mark shares its
+   line — see --bar-top and --bar-h — and the one width too narrow for both is
+   answered at the foot of the file. */
 .controls {
   position: absolute;
-  top: clamp(1.25rem, 3vw, 2.25rem);
+  top: var(--bar-top);
   right: var(--gutter);
   z-index: 40;
   display: flex;
@@ -487,13 +495,21 @@ body.is-locked {
 
 /* --- masthead --------------------------------------------------------- */
 
+/* The masthead used to open 112px down on a laptop and spend a line on the
+   mark alone, and it put the first card at y=627 of an 802px window — 175px
+   of it showing, about a quarter. The page is a showcase, and it was leading
+   with a statement about the work instead of the work. Two things answer it:
+   the mark moves up to the controls' line, which is the bar the page always
+   had room for, and on a wide screen the rest of the masthead moves beside
+   the rail — see the stage, below. */
 .head {
-  padding: clamp(3.5rem, 9vw, 7rem) var(--gutter) clamp(2rem, 4vw, 3rem);
+  padding: var(--bar-top) var(--gutter) clamp(1.75rem, 3.5vw, 2.5rem);
   max-width: 64rem;
 }
 
 .head__eyebrow {
-  margin: 0 0 clamp(1.5rem, 4vw, 2.75rem);
+  margin: 0 0 clamp(1.5rem, 4vw, 2.5rem);
+  min-height: var(--bar-h);
   display: flex;
   align-items: center;
   gap: 0.7rem;
@@ -511,7 +527,7 @@ body.is-locked {
      It only fires where a word cannot fit a line on its own, so a title that
      hyphenates or fits is untouched. */
   overflow-wrap: break-word;
-  font-size: clamp(2.25rem, 6vw, 4rem);
+  font-size: clamp(2rem, 5vw, 3rem);
   font-weight: 600;
   line-height: 1.04;
   letter-spacing: -0.03em;
@@ -520,7 +536,7 @@ body.is-locked {
 }
 
 .head__lede {
-  margin: 1.5rem 0 0;
+  margin: 1.25rem 0 0;
   max-width: 46ch;
   font-size: clamp(1rem, 1.4vw, 1.125rem);
   line-height: 1.55;
@@ -532,7 +548,7 @@ body.is-locked {
    already carries it — so a little less air above it than a row of three
    wanted. */
 .head__meta {
-  margin: clamp(1.5rem, 3vw, 2.25rem) 0 0;
+  margin: clamp(1.25rem, 2.5vw, 1.75rem) 0 0;
   padding: 0;
   display: flex;
   flex-wrap: wrap;
@@ -589,6 +605,90 @@ body.is-locked {
   height: 0.75rem;
 }
 
+/* --- stage ------------------------------------------------------------ */
+
+/* On a wide screen the masthead is a column one card wide, and the rail runs
+   beside it: the headline takes the first card's place, and the cards start
+   at the top of the page instead of under a masthead.
+
+   The two share their rows rather than being set side by side and nudged
+   level. The stage is four rows — the bar, the rail's head, the cards, the
+   rule — and both halves are subgrids of it, so the headline's row is the
+   cards' row by construction and moves with the rail's head if that ever
+   changes height. The mark sits in the bar row; the rail's head has the row
+   below it to itself.
+
+   The rail's first card starts a rail gap in from the column, where the
+   second card would have stood in the full-width rail, so the masthead reads
+   as the rail's first slot. Cards drifting left are clipped at the column's
+   edge rather than at the page's.
+
+   64rem is where the column still leaves the rail a card and a half and the
+   rail's head its chips, nav and switch side by side, measured. Below it the
+   masthead stacks above the rail as it always did. */
+@media (min-width: 64rem) {
+  .stage {
+    display: grid;
+    grid-template-columns:
+      [head-start] calc(var(--gutter) + var(--card-w))
+      [head-end rail-start] minmax(0, 1fr) [rail-end];
+    grid-template-rows: [bar] auto [rail-head] auto [cards] auto [rule] auto;
+  }
+
+  .stage > .head {
+    grid-column: head;
+    grid-row: bar / -1;
+    display: grid;
+    grid-template-rows: subgrid;
+    max-width: none;
+    /* A rail gap on the right, so the text stops short of the line the
+       cards are clipped at: a card drifting out of the rail passes behind
+       an edge with air on both sides of it, not one the lede runs up to. */
+    padding: var(--bar-top) var(--rail-gap) 0 var(--gutter);
+  }
+
+  /* Less air under the bar than the stack wants: the rail's head starts
+     its own line straight after it, and every pixel here is one off the
+     bottom of the first card. */
+  .head__eyebrow {
+    grid-row: 1;
+    margin-bottom: clamp(1rem, 1.6vw, 1.5rem);
+  }
+
+  /* The cards' row. The track pads its cards down half a rem and the
+     headline's line box pads its caps down about as far, so the two land
+     level without an offset of their own. */
+  .head__body {
+    grid-row: 3;
+    align-self: start;
+  }
+
+  /* .stage > to outrank the rail's own block further down, which sets the
+     inset back to the gutter. */
+  .stage > .rail {
+    grid-column: rail;
+    grid-row: rail-head / -1;
+    display: grid;
+    grid-template-rows: subgrid;
+    --rail-inset: var(--rail-gap);
+  }
+
+  .rail > * { min-width: 0; }
+
+  .head__title { font-size: 2.5rem; }
+
+  .head__lede { font-size: 1rem; }
+
+  /* The list is long and the masthead is its key, so it stays in view while
+     the rows go past — inside the cards' row, which is as long as the list,
+     so it lets go when the list ends. The rail's row is shorter than the
+     column and has nothing to keep level with. */
+  :root[data-view="list"] .head__body {
+    position: sticky;
+    top: var(--bar-top);
+  }
+}
+
 /* --- rail ------------------------------------------------------------- */
 
 /* The rail closes on its own rule — the progress track below the cards — and
@@ -597,8 +697,25 @@ body.is-locked {
    one job with nothing between them, which read as the page having run out
    rather than having ended. */
 .rail {
+  /* Where the rail's own content starts: the page gutter, or a rail gap in
+     from the masthead's column where the stage sets the two side by side.
+     Every left edge in the rail — the count, the chips, the cards, the rule,
+     the list's rows and their heads — hangs off this and only this; the
+     right edges keep the gutter either way. index.js reads the cards' inset
+     back off scroll-padding-left, so it follows without being told. */
+  --rail-inset: var(--gutter);
+
   padding-bottom: clamp(1.5rem, 3vw, 2rem);
 }
+
+/* The list asks the rail how wide it is rather than the window: beside the
+   masthead's column the rail is a column narrower than the page. The query
+   container is its head and its track, each the rail's full width, rather
+   than the rail itself — containment makes a box its own formatting context,
+   and a grid that is one cannot be a subgrid, which the stage needs the rail
+   to be. Every rule the query holds is inside one or the other. */
+.rail__head,
+.rail__track { container: rail / inline-size; }
 
 /* The count, the type filter and the carousel controls, as one grid rather
    than a bar with a row under it.
@@ -642,7 +759,7 @@ body.is-locked {
 
 .rail__count {
   margin: 0;
-  padding: 0 0 1.25rem var(--gutter);
+  padding: 0 0 1.25rem var(--rail-inset);
   /* "Study 01 / 05" is one thing to read; a narrow bar may drop the buttons to
      their own line, but it may never break the label across two. */
   white-space: nowrap;
@@ -662,8 +779,13 @@ body.is-locked {
    that the chips lose more than they gain — measured at 320px with the drift
    control showing, the scroller is left 132px and one chip of four — so the
    areas restack to what they were: controls up beside the count, chips full
-   width underneath. */
-@media (max-width: 52rem) {
+   width underneath.
+
+   Twice over, because the rail is narrow twice: on a small screen, and again
+   from 64rem to 80rem, where the stage has set the masthead beside it and
+   the rail is a column 400px short of the page. Measured at 1024, the chips
+   beside the controls had 308px for the five of them. */
+@media (max-width: 52rem), (min-width: 64rem) and (max-width: 79.99rem) {
   /* The count and the carousel controls share the top row as one area, one
      held to each end, rather than taking a column each: a column the controls
      sat in would be one the switch below them had to be as wide as, and every
@@ -824,14 +946,14 @@ body.is-locked {
   display: flex;
   flex-wrap: nowrap;
   gap: 0.4rem;
-  padding: 0.375rem var(--gutter) 0.875rem;
+  padding: 0.375rem var(--gutter) 0.875rem var(--rail-inset);
   overflow-x: auto;
   /* min-width so a grid column may shrink it: an auto track takes the
      scroller's max-content width and the row stops scrolling at all. */
   min-width: 0;
   overscroll-behavior-x: contain;
   scrollbar-width: none;
-  scroll-padding-inline: var(--gutter);
+  scroll-padding-inline: var(--rail-inset) var(--gutter);
 
   /* And a fade at whichever end has more chips past it, so the row reads as
      scrollable rather than as one that happens to be cut off. The mask is on
@@ -932,10 +1054,10 @@ body.is-locked {
 .rail__track {
   display: flex;
   gap: var(--rail-gap);
-  padding: 0.5rem var(--gutter) 2rem;
+  padding: 0.5rem var(--gutter) 2rem var(--rail-inset);
   overflow-x: auto;
   scroll-snap-type: x mandatory;
-  scroll-padding-left: var(--gutter);
+  scroll-padding-left: var(--rail-inset);
   scrollbar-width: none;
   cursor: grab;
   /* A horizontal swipe that reaches either end stays in the rail. Without
@@ -989,7 +1111,7 @@ body.is-locked {
    line that ends it. The track is always drawn — it is the page's rule at this
    point — and only the fill comes and goes. */
 .rail__progress {
-  margin: 0 var(--gutter);
+  margin: 0 var(--gutter) 0 var(--rail-inset);
   height: 2px;
   border-radius: 2px;
   background: var(--hairline);
@@ -1402,7 +1524,7 @@ body.is-locked {
   display: grid;
   grid-template-columns: var(--list-cols);
   column-gap: var(--list-gap);
-  padding: 0.5rem var(--gutter) 0.75rem;
+  padding: 0.5rem var(--gutter) 0.75rem var(--rail-inset);
 }
 
 .rail__col {
@@ -1423,7 +1545,7 @@ body.is-locked {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 0;
-  padding: 0 var(--gutter);
+  padding: 0 var(--gutter) 0 var(--rail-inset);
   overflow: visible;
   scroll-snap-type: none;
   cursor: auto;
@@ -1681,8 +1803,13 @@ body.is-locked {
 /* Below the width the columns fit at, the row turns into a media object: the
    thumbnail on the left, and the date, title, note, type and stack stacked
    beside it. The number and the column heads go — the order already says the
-   one, and the other has no columns to name. */
-@media (max-width: 64rem) {
+   one, and the other has no columns to name.
+
+   Asked of the rail rather than of the window, because beside the masthead's
+   column the rail is a column narrower than the page. Where the two are the
+   same width — below 64rem, where the masthead stacks — this is the width it
+   always switched at. */
+@container rail (max-width: 64rem) {
   :root[data-view="list"] .rail__cols { display: none; }
 
   :root[data-view="list"] .piece {
@@ -2304,6 +2431,10 @@ body.is-locked {
    of the rest: a preview may report seven variants, and a row of 44px targets
    would not fit across a phone even after wrapping. */
 @media (hover: none) {
+  /* The cluster's height with the chip's own padding round the grown
+     buttons, so the mark stays centred on it. */
+  :root { --bar-h: 2.65rem; }
+
   .lang__btn {
     display: grid;
     place-items: center;
@@ -2344,40 +2475,23 @@ body.is-locked {
   }
 }
 
+/* The one width too narrow for the bar. The mark measures 178px and the
+   cluster comes to 130px at touch size by the touch block's own numbers, so
+   with the gutters and a gap they want 368px, and below that the name would
+   run under EN — measured at 320, it did. The mark takes its own line under
+   the cluster instead, with the air it had there before the two shared one.
+
+   The cluster itself stays in the corner at every width. Controls at the
+   top right is a convention strong enough that a reader who wants one looks
+   there first, and EN/DA at the top of the page says who it is for before a
+   word of it has been read — which is the whole of what a Danish reader, an
+   international one, or someone arriving to judge the work needs to know up
+   front. A setting can be moved down the page; that cannot. */
+@media (max-width: 23rem) {
+  .head { padding-top: calc(var(--bar-top) + var(--bar-h) + 1.25rem); }
+}
+
 @media (max-width: 40rem) {
-  /* The cluster keeps its own corner rather than joining the masthead's top
-     line, but it stops crowding it. At 1.25rem its bottom edge crossed the
-     site mark's cap line by six pixels — near-tangency, which reads as a
-     header that has come apart rather than as two things one above the other.
-
-     So it drops a little and the masthead opens to meet it: the mark now has
-     the same air above it as below, 1.5rem either side, which is what makes
-     the offset read as placed rather than missed. The padding is that sum —
-     the cluster's inset, its touch-sized height (2.65rem), and the eyebrow's
-     own bottom margin. It costs 42px of the fold on a phone, which is the
-     price of the corner not being shared.
-
-     Why it stays in the corner, since the corner is what costs the 42px and
-     the skew: everything else on a phone hangs off one left rail — the mark,
-     the title, the lede, the rail's own count and chips — so the cluster is
-     the only thing off it, and at 390px the page reads top-right first and
-     then jumps back down-left to start. Two arrangements answer that, and
-     both were built and looked at: the cluster on the eyebrow's own line, and
-     the cluster ending the masthead on the meta row, where there is a hole in
-     the right half waiting for it.
-
-     Neither was taken, for reasons that outrank the composition. Controls at
-     the top-right corner is a convention strong enough that a reader who
-     wants one looks there first and nowhere else. And the language switch is
-     not only a control here: EN/DA at the top of the page says who the page
-     is for before a word of it has been read, which is the whole of what a
-     Danish reader, an international one, or someone arriving to judge the
-     work needs to know about it up front. A setting can be moved down the
-     page; that cannot. */
-  .controls { top: 2rem; }
-
-  .head { padding-top: 6.125rem; }
-
   .foot__bar {
     flex-direction: column;
     align-items: flex-start;
