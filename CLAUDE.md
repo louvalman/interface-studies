@@ -1852,6 +1852,36 @@ edge is not something CSS can ask. The rail counts what it is showing and the fo
 counts what exists — the masthead states neither, because the rail's own
 "Study 01 / 05" is where a reader takes the total from.
 
+### The index's small type is one size, with headroom
+
+Every mono label on the index is 11px: the chips, the controls, the slugs,
+the meta keys, the list's column heads, quick look's slug and variant name.
+It used to be two sizes, 10px and 11px, and a 1px step is too small to carry
+two roles, so what told those roles apart was always their tone, case and
+place. Keeping it meant keeping ten labels under the 11px floor that
+functional text is held to, the chips and EN/DA among them, which are
+controls.
+
+`--muted`, the quietest text on the page, is measured against the ground it
+does worst on rather than the one it was picked on. In dark it was 4.51:1 on
+the page and 4.19 on `--surface`, the quick-look panel, so that panel's slug
+and variant name were under the floor. It is `#8d8c88` there now, 5.13 on the
+panel, and `#65645f` in light, 5.30 on `--well`. Both keep the headroom small
+mono type needs, because the ratio does not model size.
+
+A filter chip's count was a step quieter than its label by opacity, and at
+0.55 that put it at 2.2:1 in both themes, in a control. There is no quieter
+tone left under a label already in `--muted`, so the label moved up to
+`--ink-soft` and the count took `--muted`. A pressed chip's count has its own
+token, `--on-ink-muted`. The forthcoming slots' year had the same problem in
+the hairline colour, about 2:1, and is `--muted` now, with the month's size
+as the hierarchy.
+
+Measured by computed colour against computed background across the page, the
+quick-look panel and the list, in both themes: nothing is under 5:1 except the
+card chips over a thumbnail, whose ground is the preview's and can only be
+estimated from here.
+
 ### The rail has a list view, made of the same cards
 
 A switch in the rail head lays the cards out as rows instead — a small live

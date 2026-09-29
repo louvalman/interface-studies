@@ -37,7 +37,12 @@
   --well: #f3f2ef;
   --ink: #17181a;
   --ink-soft: #55565a;
-  --muted: #6c6b67;
+  /* The quietest text the page sets, so it is measured against the ground it
+     does worst on rather than the one it was picked on: 5.30:1 on --well,
+     5.39 on --paper. It was #6c6b67, which cleared 4.5 by a quarter of a
+     point on the well — the headroom CLAUDE.md asks small mono type to keep,
+     and this is all 11px mono. */
+  --muted: #65645f;
   --note: #61625f;
   --hairline: rgba(23, 24, 26, 0.1);
   --hairline-strong: rgba(23, 24, 26, 0.22);
@@ -99,6 +104,8 @@
   /* The one inverted surface on the page: the filter chip that is pressed. */
   --on-ink-bg: var(--ink);
   --on-ink-fg: var(--paper);
+  /* The quieter text on that fill — a pressed chip's count. 8.37:1. */
+  --on-ink-muted: #b2b2b0;
 
   --progress: var(--ink);
   --scrim: rgba(23, 24, 26, 0.42);
@@ -176,7 +183,10 @@
   --well: #191b1e;
   --ink: #e9e8e4;
   --ink-soft: #a4a39f;
-  --muted: #7e7d79;
+  /* 5.13:1 on --surface, the quick-look panel, and 5.52 on the page. It was
+     #7e7d79, which passed on the page at 4.51 and failed on the panel at
+     4.19 — the panel's slug and variant label were under the floor. */
+  --muted: #8d8c88;
   --note: #9a9995;
   --hairline: rgba(233, 232, 228, 0.11);
   --hairline-strong: rgba(233, 232, 228, 0.26);
@@ -213,6 +223,7 @@
      it reads as pressed, not that it is the brightest thing on the page. */
   --on-ink-bg: #dedcd6;
   --on-ink-fg: #131417;
+  --on-ink-muted: #505050;   /* 5.88:1 on the fill */
 
   --progress: rgba(233, 232, 228, 0.72);
   --scrim: rgba(6, 7, 9, 0.72);
@@ -301,7 +312,7 @@ body.is-locked {
   background: transparent;
   color: var(--muted);
   font-family: var(--mono);
-  font-size: 0.625rem;
+  font-size: 0.6875rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   cursor: pointer;
@@ -565,7 +576,7 @@ body.is-locked {
 
 .head__meta-key {
   font-family: var(--mono);
-  font-size: 0.625rem;
+  font-size: 0.6875rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--muted);
@@ -1010,9 +1021,9 @@ body.is-locked {
   border: 1px solid var(--hairline);
   border-radius: 999px;
   background: transparent;
-  color: var(--muted);
+  color: var(--ink-soft);
   font-family: var(--mono);
-  font-size: 0.625rem;
+  font-size: 0.6875rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   cursor: pointer;
@@ -1041,11 +1052,19 @@ body.is-locked {
 }
 
 /* The count in each chip: the same type, a step quieter, so the row states
-   how much is behind each option without becoming two columns of text. */
+   how much is behind each option without becoming two columns of text.
+
+   The step is a token, not an opacity. It was the label at 0.55, which put
+   it at 2.2:1 in both themes — under the 3:1 that is the floor for anything,
+   in a control, where the floor is 4.5. There is no room for a quieter tone
+   under a label already set in --muted, so the label moved up to --ink-soft
+   and the count took --muted: both clear 4.5, and the step is still there. */
 .rail__filter-count {
-  opacity: 0.55;
+  color: var(--muted);
   white-space: pre;   /* the space the label reads with, kept in the render */
 }
+
+.rail__filter-btn[aria-pressed="true"] .rail__filter-count { color: var(--on-ink-muted); }
 
 @media (hover: none) {
   .rail__filter-btn { min-height: 2.25rem; }
@@ -1251,7 +1270,7 @@ body.is-locked {
   box-shadow: inset 0 0 0 1px var(--chip-over-preview-line);
   backdrop-filter: blur(6px);
   font-family: var(--mono);
-  font-size: 0.625rem;
+  font-size: 0.6875rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--chip-over-preview-ink);
@@ -1280,7 +1299,7 @@ body.is-locked {
   backdrop-filter: blur(6px);
   color: var(--ink);
   font-family: var(--mono);
-  font-size: 0.625rem;
+  font-size: 0.6875rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   cursor: pointer;
@@ -1342,7 +1361,7 @@ body.is-locked {
 
 .piece__slug {
   font-family: var(--mono);
-  font-size: 0.625rem;
+  font-size: 0.6875rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--muted);
@@ -1467,7 +1486,10 @@ body.is-locked {
 .piece__ghost-year {
   font-size: 0.6875rem;
   letter-spacing: 0.14em;
-  color: var(--hairline-strong);
+  /* --muted, like the month. It was the hairline colour, about 2:1 — under
+     the 3:1 below which quiet text is not quiet but gone — and the year is
+     said nowhere else in the slot. The month's size is the hierarchy. */
+  color: var(--muted);
 }
 
 /* A title that is not a link and never will be: the title's size, the note's
@@ -1529,7 +1551,7 @@ body.is-locked {
 
 .rail__col {
   font-family: var(--mono);
-  font-size: 0.625rem;
+  font-size: 0.6875rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--muted);
@@ -1771,7 +1793,7 @@ body.is-locked {
 }
 
 :root[data-view="list"] .piece__ghost-month { font-size: 0.6875rem; }
-:root[data-view="list"] .piece__ghost-year { font-size: 0.5625rem; }
+:root[data-view="list"] .piece__ghost-year { font-size: 0.6875rem; }
 
 /* The stack's marks. The text stays in the markup, which is what a screen
    reader and the tooltip read; the glyph is a mask painted in currentColor,
@@ -1933,7 +1955,7 @@ body.is-locked {
 .lightbox__eyebrow {
   margin: 0;
   font-family: var(--mono);
-  font-size: 0.625rem;
+  font-size: 0.6875rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--muted);
@@ -2095,7 +2117,7 @@ body.is-locked {
 .lightbox__variant-label {
   margin: 0;
   font-family: var(--mono);
-  font-size: 0.625rem;
+  font-size: 0.6875rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--muted);
@@ -2331,7 +2353,7 @@ body.is-locked {
 
 .foot__key {
   font-family: var(--mono);
-  font-size: 0.625rem;
+  font-size: 0.6875rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--muted);
