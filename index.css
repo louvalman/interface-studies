@@ -114,8 +114,8 @@
   --shadow-lift: 0 22px 46px -20px rgba(23, 24, 26, 0.32);
   --shadow-panel: 0 40px 80px -32px rgba(23, 24, 26, 0.5);
 
-  --sans: "Plus Jakarta Sans", system-ui, sans-serif;
-  --mono: "JetBrains Mono", ui-monospace, monospace;
+  --sans: "Mona Sans", system-ui, sans-serif;
+  --mono: "Fragment Mono", ui-monospace, monospace;
 
   --gutter: clamp(1.5rem, 6vw, 6rem);
   --card-w: 21rem;
@@ -2564,10 +2564,11 @@ body.is-locked {
   }
 }
 
-/* The one width too narrow for the bar. The mark measures 178px and the
-   cluster comes to 130px at touch size by the touch block's own numbers, so
-   with the gutters and a gap they want 368px, and below that the name would
-   run under EN — measured at 320, it did. The mark takes its own line under
+/* The one width too narrow for the bar. The mark measures 181px in Fragment
+   Mono and the cluster comes to 130px at touch size by the touch block's own
+   numbers, so with the gutters and a gap they want 371px, and below that the
+   name would run under EN — measured at 320, it did. A change of face moves
+   this: re-measure the mark and set the query to match. The mark takes its own line under
    the cluster instead, with the air it had there before the two shared one.
 
    The cluster itself stays in the corner at every width. Controls at the
@@ -2576,7 +2577,7 @@ body.is-locked {
    word of it has been read — which is the whole of what a Danish reader, an
    international one, or someone arriving to judge the work needs to know up
    front. A setting can be moved down the page; that cannot. */
-@media (max-width: 23rem) {
+@media (max-width: 23.25rem) {
   .head { padding-top: calc(var(--bar-top) + var(--bar-h) + 1.25rem); }
 }
 

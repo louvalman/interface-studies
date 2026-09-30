@@ -1063,7 +1063,7 @@ Two moves answer it. **The site mark sits on the controls' line**, the bar the
 page always had room for, rather than above the headline as a label saying the
 site's name a second time. `--bar-top` is the cluster's inset and `--bar-h`
 its height, and the mark takes both, so the two centre on each other without
-either being positioned against the other. Below 23rem the two no longer fit
+either being positioned against the other. Below 23.25rem the two no longer fit
 side by side and the mark takes its own line under the cluster, which stays in
 the corner at every width for the reasons given beside that rule in
 `index.css`.
@@ -1851,6 +1851,30 @@ each end from the scroll position, because whether there is anything past an
 edge is not something CSS can ask. The rail counts what it is showing and the footer
 counts what exists — the masthead states neither, because the rail's own
 "Study 01 / 05" is where a reader takes the total from.
+
+### The index is set in Mona Sans and Fragment Mono
+
+It was Plus Jakarta Sans and JetBrains Mono, and the design checker flagged the
+sans on every run for good reason: by Google Fonts' own popularity ranking it
+is 20th of 1,946 families, and JetBrains Mono is 45th. Mona Sans is 227th and
+Fragment Mono 316th. Both were chosen by eye from a side-by-side on the index's
+real classes, and both are OFL on Google Fonts, loaded the way the old pair was.
+Only 400 and 600 are loaded, because nothing else on the index is used.
+
+Changing a face is not only a font swap here, because four things on the index
+are measured off text. Re-measure them when a face changes:
+
+- the site mark's width, which sets where it and the controls stop sharing a
+  line — 181px in Fragment Mono, so the query is 23.25rem;
+- the filter chips' width, which sets the 64rem–80rem restack of the rail's
+  head;
+- the headline's cap line against the cards' top edge, which the stage leaves
+  to the line box — within 1px in Mona Sans at 2.5rem;
+- `og.png`, re-rendered from `og.html`, which carries its own copy of the pair.
+
+The studies are not the index. Five of them set their components in the old
+pair, in their own `component.css`, and that is each study's decision rather
+than something the index's choice reaches.
 
 ### The index's small type is one size, with headroom
 
