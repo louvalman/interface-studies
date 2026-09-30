@@ -129,14 +129,6 @@
       </button>
     </div>
 
-    <!-- The masthead and the rail, as one stage. On a wide screen it is two
-       columns: the masthead takes a column one card wide and the rail runs
-       beside it, so the headline sits where the first card would and the
-       cards start at the top of the page rather than under it. The two
-       share their rows (subgrid, in index.css), which is what sets the
-       headline level with the top of the cards. Below 64rem it is the
-       stack it always was. -->
-    <div class="stage">
     <header class="head" id="top">
       <!-- The site mark, on the controls' own line: the page's bar, with the
          name at the left and the settings in the corner. It sat above the
@@ -167,6 +159,7 @@
       <h1 class="head__title" data-i18n="head.title" data-reveal>
         Exploring interaction and aesthetics.
       </h1>
+      <div class="head__aside">
       <!-- The closing sentence tells you how to work the rail, and that is
          not the same instruction on a phone as on a laptop, so it is written
          by index.js from the pointer type, the way the rail's hint is, and
@@ -187,13 +180,12 @@
          variants, five to seven per study, behind a button nobody had a
          reason to press.
 
-         From 64rem the lede sits in the masthead's column beside the cards,
-         so the sentence is on screen with the card it explains and its length
-         costs the fold nothing. On a phone the masthead still stacks and the
-         sentence still costs lines above the rail; a 92-character version
-         saying the same three things sets as many lines as this one, so it
-         is as full as it can afford to be, which is where "and techniques"
-         comes from. -->
+         From 64rem it sits in the masthead's right-hand column, beside the
+         headline rather than under it, so its length costs the fold nothing
+         there. On a phone the masthead stacks and the sentence costs lines
+         above the rail; a 92-character version saying the same three things
+         sets as many lines as this one, so it is as full as it can afford to
+         be, which is where "and techniques" comes from. -->
       <p class="head__lede" data-reveal>
         <span data-i18n="head.lede">
           One component per study, built in Figma and code, small enough to
@@ -205,67 +197,36 @@
         </span>
       </p>
 
-      <!-- One item, and the rule it is the last survivor of: a fact the page
-         can count, not in the lede, and said nowhere else. "Scope — a few
-         decisions" and "Each study — stands alone" used to sit here — the
-         lede says the first in its own first sentence and the footer says the
-         second in full, so the row spent ninety pixels repeating what was
-         already on the page twice. The count went the same way: the rail
-         states its own total below, which is where a reader takes it from.
-
-         The date is one of them: whether the set is still moving, written by
-         index.js from the cards. The companion Figma file is the other, and
-         it is the one item here that is neither counted nor derived — which
-         is a departure from the rule above and a deliberate one. It is here
-         because the alternatives are worse: the footer is below the fold on
-         every viewport, and the rail's count line put a link in a bar that
-         is otherwise all controls. The row had the room, measured: 31px with
-         one item and 31px with two, at 1440, 390 and 320, with the first
-         card keeping every pixel it had above the fold.
-
-         No Figma mark beside it. The values in this row are plain facts in
-         mono, and a brand glyph would make one of them a different kind of
-         object; the mark does that job in the footer, where it is a handle.
-         The arrow is the page's own, and it is there because the link leaves
-         the site. -->
-      <dl class="head__meta" data-reveal>
-        <div class="head__meta-item">
-          <dt class="head__meta-key" data-i18n="meta.latest">Latest</dt>
-          <dd class="head__meta-val" id="meta-latest">&mdash;</dd>
-        </div>
-        <div class="head__meta-item">
-          <dt class="head__meta-key">Figma</dt>
-          <dd class="head__meta-val">
-            <a
-              class="head__meta-link"
-              href="https://www.figma.com/community/file/1683607518896928224/interface-studies"
-              target="_blank"
-              rel="noopener noreferrer">
-              <span data-i18n="meta.figma">Community file</span>
-              <svg
-                viewBox="0 0 16 16"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.4"
-                aria-hidden="true">
-                <path
-                  d="M4 12 12 4M6 4h6v6"
-                  stroke-linecap="round"
-                  stroke-linejoin="round" />
-              </svg>
-            </a>
-          </dd>
-        </div>
-      </dl>
+      <!-- The companion Figma file, as the masthead's one call to action. It
+         was a value in a meta row of mono facts, set like a fact, and it read
+         as one; it is half of what the site counts as success, so it is a
+         button now, in the accent that on this page means "this leaves the
+         site". The mark is beside it for the reason it was kept out of the
+         row: it makes this a different kind of object from everything round
+         it, which a row of facts did not want and a button does. -->
+      <a
+        class="head__figma"
+        href="https://www.figma.com/community/file/1683607518896928224/interface-studies"
+        target="_blank"
+        rel="noopener noreferrer"
+        data-reveal>
+        <svg class="head__figma-mark" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false">
+          <path d="M8 .5H5.5a2.5 2.5 0 0 0 0 5H8zM8 5.5H5.5a2.5 2.5 0 0 0 0 5H8zM8 10.5H5.5a2.5 2.5 0 0 0 0 5H8zM8 .5h2.5a2.5 2.5 0 0 1 0 5H8z" />
+          <circle cx="10.5" cy="8" r="2.5" />
+        </svg>
+        <span data-i18n="head.figma">Open the Figma file</span>
+        <svg class="head__figma-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false">
+          <path d="M4 12 12 4M6 4h6v6" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </a>
+      </div>
       </div>
     </header>
 
     <section class="rail">
-      <!-- One grid rather than a bar and a row beneath it: the count sits on
-         the top line, the type filter on the one below, and the carousel
-         controls span both and land on the filter chips' own bottom edge. On a
-         narrow viewport the chips need the full width, so the areas restack
-         and the controls go back up beside the count - see index.css. -->
+      <!-- One line: the count and the type filter on the left, the carousel
+         controls and the view switch on the right. On a phone it is two rows
+         of the same four things - see index.css. -->
       <div class="rail__head" data-reveal>
         <!-- The rail reports a read position, "Study 01 / 08"; the list has
            none, so it says how many it is showing, "Studies 08". Both are in
@@ -349,18 +310,27 @@
           </button>
         </nav>
 
-      <!-- Type filter. The buttons are written by index.js from the types the
-         cards actually declare, so this row is empty markup until it runs and
-         a study of a new type needs nothing added here. It reads the same
-         `type.*` key the card's badge carries — the type is stated once per
-         card and this is not a second place to state it. -->
-      <div
-        class="rail__filter"
-        data-rail-filter
-        role="group"
-        data-i18n-aria="a11y.filter"
-        aria-label="Filter by type"
-        hidden></div>
+      <!-- Type filter: one small control rather than a row of chips. The
+         chips were a menu's worth of pills in the one line that introduces
+         the rail, and they read as the page's navigation. This is the icon
+         and the current choice, over a native select, so the phone's own
+         picker, the keyboard and a screen reader all come with it.
+
+         The options are written by index.js from the types the cards actually
+         declare, so a study of a new type needs nothing added here. It reads
+         the same `type.*` key the card's badge carries — the type is stated
+         once per card and this is not a second place to state it. -->
+      <label class="rail__filter" data-rail-filter hidden>
+        <svg class="rail__filter-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true" focusable="false">
+          <path d="M2 4h12M4.5 8h7M7 12h2" stroke-linecap="round" />
+        </svg>
+        <span class="rail__filter-value" data-rail-filter-value aria-hidden="true"></span>
+        <select
+          class="rail__filter-select"
+          data-rail-filter-select
+          data-i18n-aria="a11y.filter"
+          aria-label="Filter by type"></select>
+      </label>
 
       <!-- Rail or list. Its own grid area, rightmost, so hiding the carousel
          controls in the list does not move the switch out from under the
@@ -1204,7 +1174,6 @@
 
       <div class="rail__progress" data-rail-progress data-reveal></div>
     </section>
-    </div>
 
     <footer class="foot">
       <div class="foot__main">
@@ -1310,7 +1279,7 @@
           <!-- What the set covers, not just how much of it there is. The
              values are written by index.js off the cards' own type badges,
              so a study of a new type needs nothing added here — the same
-             single declaration the filter chips read. -->
+             single declaration the filter reads. -->
           <div class="foot__row">
             <dt class="foot__key" data-i18n="foot.types">Types</dt>
             <dd class="foot__val" id="foot-types">&mdash;</dd>

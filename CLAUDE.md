@@ -1068,34 +1068,32 @@ side by side and the mark takes its own line under the cluster, which stays in
 the corner at every width for the reasons given beside that rule in
 `index.css`.
 
-**From 64rem the masthead is a column beside the rail**, one card wide, and the
-headline takes the first card's place. `.stage` is a four-row grid — the bar,
-the rail's head, the cards, the rule — and `.head` and `.rail` are both
-subgrids of it, so the headline's row is the cards' row by construction: level
-with their top edge, and still level if the rail's head changes height. The
-lede's how-to sentence, which used to be off screen by the time a reader
-reached a card, now sits beside the cards it explains. Measured with the
-arrival finished: the first card 95% on screen at 1470x802, 85% at 1024x768,
-83% at 1280x720 and whole at 1920x1080, against 27% before. On a phone, where
-the masthead still stacks, the first card starts 90px higher at 390x844: 347px
-of it showing against 257px.
+**From 64rem the masthead is a band**: the headline at the left on two lines,
+and beside it the lede and the Figma button, above a full-width rail. It was a
+column one card wide beside the rail for a while, and that is worth knowing
+before trying it again. It put 95% of the first card on screen at 1470x802, and
+it cramped the masthead into 308px: the headline on three lines, the lede five,
+and the Figma file a mono value in a meta row nobody's eye went to. The band
+gives the headline two lines and the lede a readable measure, and it pays for
+the height with the rail's head, which went from two rows and a row of filter
+chips to one slim line. The headline and the aside centre on each other;
+aligned to a shared bottom line, the headline sat low under an empty band.
 
-Every left edge in the rail hangs off `--rail-inset`: the gutter while the
-masthead stacks, a rail gap in from the column beside it, so the first card
-stands where the full-width rail's second card would. `index.js` reads the
-cards' inset back off `scroll-padding-left` and needs nothing of its own.
-Drifting cards are clipped at the column's edge rather than the page's, and the
-masthead keeps a rail gap of padding on its right so that edge has air on both
-sides of it.
+**A shorter window gets a narrower card**, 288px rather than 336 below 60rem of
+height, so a card's title is on screen with its thumbnail and not a scroll
+under it: the frame is 4:5 off the card's width, and at 336px the title sat
+under the fold of a 1470x802 laptop. 288 keeps `--preview-scale` an exact 0.6.
+It answers to height because the fold does, and a tall screen keeps the wider
+card, which is also what lets a wide rail keep looping. Measured with the
+arrival finished: the first card's title clears the fold by 21px at 1470x802
+in both languages and has room to spare from 900px of height up. It does not
+at 1280x720, nor at 1024x768 in Danish, nor on a phone, where the masthead
+stacks above the rail; the original masthead showed 27% of the card at 1470,
+title nowhere.
 
-`.rail` cannot be the list's query container. Containment makes a box its own
-formatting context, and a grid that is one cannot be a subgrid, so the
-container is the rail's head and its track, each the rail's full width. The
-list asks those how wide it is rather than asking the window, since beside the
-column the rail is 400px narrower than the page.
-
-In the list the masthead is sticky within the cards' row, so it stays beside
-the rows as they scroll and lets go when the list ends.
+The masthead no longer carries a date. "Latest 2026 · 09" was written from the
+newest card, and while every study is from one month it said nothing the cards
+did not.
 
 A touch release is the platform's, end to end — its momentum, its snap, its
 deceleration curve. Nothing in `index.js` animates the landing.
@@ -1217,11 +1215,11 @@ The play label lost its "again" with it. Under reduced motion the rail has never
 set off, so "Start the carousel again" was wrong in exactly the state where the
 control matters most, and the word carried nothing a reader needed in the other.
 
-The rail loops, and so drifts, while the row can cover its scrollport with a
-card to spare: `client <= (ring - 2) * step`, which at eight cards and a 336px
-card is a 2184px track — a window of about 2600px, now that the masthead's
-column sits beside the rail and the track is that much narrower than the page.
-Past that it is finite and the drift control hides itself — the one
+The rail loops, and so drifts, while the row can cover the viewport with a card
+to spare: `client <= (ring - 2) * step`, which at eight cards and a 336px card
+is 2184px. The 288px card a short window gets lowers that ceiling, which is
+one reason it is keyed to height: the wide screens that would reach it are
+tall ones, and keep the 336px card. Past that it is finite and the drift control hides itself — the one
 case documented under `loopable()`, and the ceiling rises by a card with every
 study added. A wider screen than that needs a wider card, and the pair to keep
 in step is `--card-w` and `--preview-scale`.
@@ -1289,9 +1287,9 @@ lede — so a headline change means editing `index.html`, then `og.html`, then
 re-rendering, and skipping the last two leaves a link that pastes as one page
 and opens as another.
 
-It has no meta row, and that is deliberate. The masthead's row is the newest
-study's date, read off the cards at runtime, and baked into a PNG it is wrong
-from the next study onward — so is a count. The card carried three facts that
+It has no meta row, and that is deliberate. The masthead carried the newest
+study's date for a while, read off the cards at runtime, and baked into a PNG
+a date is wrong from the next study onward — so is a count. The card carried three facts that
 do not move instead, Exploring, Stack and Each study, and not moving was all
 they had going for them: one repeated the headline, one only made sense to
 someone who had read these rules, and the stack stopped being the whole story
@@ -1374,37 +1372,28 @@ only file outside the study folder that a new study may touch.
 
 ### Figma is on the page twice, and the two are not the same link
 
-The `Figma` item in the masthead's meta row is the companion file on Figma
-Community. The circle in the footer's handles nav is the profile. One is
-where this set is also drawn; the other is that the person has an account,
-which is what that nav is for — the same test that keeps the tip jar out of
-it.
+The button in the masthead is the companion file on Figma Community. The circle
+in the footer's handles nav is the profile. One is where this set is also
+drawn; the other is that the person has an account, which is what that nav is
+for — the same test that keeps the tip jar out of it.
 
-**The file link is a stated exception to the meta row's rule, not a fit for
-it.** That row is otherwise facts the page counts from the cards, and two
-items were evicted from it once for repeating what the page said elsewhere —
-so a link that is neither counted nor derived is a departure, and worth
-naming as one rather than quietly widening the rule. What earns it is that
-the alternatives are worse. The footer is below the fold on every viewport,
-and a link nobody scrolls to is a link nobody follows. The rail's count line
-is above the fold and was tried, but it puts a link in a bar that is
-otherwise entirely controls — the count, the type chips, the carousel
-buttons — and reads as one.
+**It is a button, and the masthead's only one.** It began as a value in a meta
+row of mono facts, set like a fact, and read as one: the file is half of what
+the site counts as success, and a mono 13px value under the lede was where the
+eye went last. So it is filled, in the accent, which on this page means "this
+leaves the site", 44px tall on every pointer, beside the lede where the band
+puts it above the fold at every width. `--on-accent` is its text, 5.07:1 on
+the light fill and 6.66 on the dark, and `--accent-hover` its hover.
 
-The row had the room, which was never the question but is worth having
-measured: 31px with one item and 31px with two, at 1440, 390 and 320, with
-the first card keeping every pixel it had above the fold in both languages.
+**The Figma mark is beside it now.** It was kept out of the meta row because a
+brand glyph would have made one fact a different kind of object from the facts
+around it. A button is a different kind of object, and the mark says where it
+goes before the words do. The footer's mark labels a handle, which is a
+different thing, so the two are not the same use twice.
 
-It is set like quick look's link rather than like the byline's — accent and
-an arrow, because it leaves the site, where the byline's hairline underline
-reads as prose. It keeps the row's own size and case, because the values
-here are mono 13px in sentence case and a link that changed either would
-stop being a value.
-
-**No Figma mark beside it.** The values in this row are plain facts in mono,
-and a brand glyph would make one of them a different kind of object. The
-mark already does that job in the footer, where the thing it labels is a
-handle.
+It says "Open the Figma file" rather than naming the listing, because that is
+the action; the Community listing is where it lands, for the reasons under **A
+card links the Figma file** below.
 
 ### A study's page in the file reads as a document
 
@@ -1512,9 +1501,9 @@ pointing at the folder's `demo.html`, and like the type it is kept by hand. A
 slug that changes takes it with it.
 
 **The demo page links it too**, as the last item in its kicker:
-`2026-09 · Card · Figma ↗`. The kicker is that page's meta line, the job the
-masthead's meta row does on the index, where the Community file link already
-sits; it is above the fold and costs no height. The Decisions block was the
+`2026-09 · Card · Figma ↗`. The kicker is that page's meta line, and the
+index's masthead is where the same file has its button; the kicker is above
+the fold and costs no height. The Decisions block was the
 other candidate — beside the `notes.md` link, where the page already sends a
 reader for the rest of the record — and lost on being below the fold inside a
 closed `<details>`, the reason the index kept its own link out of the footer.
@@ -1811,45 +1800,48 @@ to. Three rather than one because the row reads as a set and a single trailing
 placeholder reads as an accident. When a study lands, replace the slot whose
 month it is.
 
-The rail's head is one grid — `.rail__head` — holding the count, the type
-filter and the carousel controls, rather than a bar with a row beneath it. The
-controls span both rows and sit in the right column, so they land on the filter
-chips' own bottom edge instead of floating on a line that is otherwise empty for
-a thousand pixels. It takes 31px off the header, which is 31px more of the first
-card above the fold.
+The rail's head is one line — `.rail__head` — with where you are and what you
+are looking at on the left, the count and the type filter, and how to move and
+how to see it on the right, the carousel controls and the rail/list switch. It
+was two rows once, the filter chips under the count with the controls spanning
+both, and that was a menu's worth of pills in the line that introduces the rail:
+it read as the page's navigation, and it was height the masthead needed.
 
-Bottom-aligned rather than centred, because the chips and the circles are
-different heights and the chips' bottom edge is the line the eye already has;
-the nav's bottom padding matches the filter's so the circles finish on the chips
-rather than on the scroller's box. Right-aligned to the page gutter, the same
-one the masthead and the cards use.
+On a phone it is two rows again, the count and the controls, then the filter
+and the switch, because one row wants 470px of the 342 at 390. The gaps tighten
+there rather than the buttons shrinking: at 320 in Danish, "Studie 01 / 08" and
+the three 44px buttons ran the page 4px wide until the gap between them went to
+8px and the gaps inside the nav to 4px. Each control is held to its own end of
+its column, or on a phone the narrower of two sharing a column stretches to the
+other's width. The grid restacks with `grid-template-areas`, so nothing moves in
+the DOM.
 
-Side by side only above 52rem, which is where all four chips still fit beside
-the controls. Below it the areas restack to what they were — controls up beside
-the count, chips full width underneath — because the chips lose more than they
-gain: measured at 320px with the drift control showing, the scroller is left
-132px and one chip of four. The grid restacks with `grid-template-areas`, so
-nothing moves in the DOM and the nav is one element in both layouts. It
-restacks a second time from 64rem to 80rem, where the masthead's column has
-taken 400px off the rail: at 1024 the chips beside the controls had 308px for
-five of them.
+The type filter is an icon and the current choice, laid over a native
+`<select>`. The select covers the whole control and is invisible, so it is what
+is clicked, tabbed to and read out, and a phone opens its own picker; the
+visible half can be as small as an icon and a word. It fills while the rail is
+narrowed, because that is a state the whole row below is in. Its options are
+built by `index.js` from the `type.*` key on each card's badge, so a study of a
+new type needs nothing added to it, and each carries its count in its own text,
+"Card · 3", since a native list draws nothing but text. The select is 16px
+although nobody sees it, because iOS zooms the page to a smaller one on focus.
 
-The type filter above the rail is built by `index.js` from the `type.*` key on
-each card's badge, so a study of a new type needs nothing added to it. Filtering
-hides cards with a class rather than the `hidden` attribute — `.piece` sets its
-own `display`, and the warning about `[hidden]` in the preview contract applies
-here for the same reason. The chips are one row that scrolls sideways, never
-two rows that wrap: a second line pushed the first card off the fold on a
-phone, and the rail below already answers a narrow screen the same way. That
-costs the focus ring two things — `overflow-x: auto` computes overflow-y to
-`auto`, so the row carries top padding or the outline is clipped, and Chromium
-does not scroll a chip that Tab reaches back into view, so `index.js` does it
-on `focusin`. A mask fades whichever end has chips past it, so the row says it
-scrolls rather than looking cut off; the mask paints against the scroller's own
-border box and stays put while the chips move under it, and `index.js` sets
-each end from the scroll position, because whether there is anything past an
-edge is not something CSS can ask. The rail counts what it is showing and the footer
-counts what exists — the masthead states neither, because the rail's own
+Where a select can be styled (`appearance: base-select`, Chromium today), the
+select becomes the control itself and its list is part of the page: a panel in
+`--surface` with a hairline edge, the 11px mono labels, the count set apart on
+the right in `--muted`, and the chosen row ticked in the accent. The select's
+face is its first child, a `<button>` holding the icon and `<selectedcontent>`,
+which index.js adds and an engine without base-select never renders. There the
+label round the select draws the face and the platform's own list opens, which
+on a phone is the better one. Each option is three spans — name, " · ", count —
+so a styled list can place the count and a plain one still reads "Card · 3".
+One thing does not come for free: `<selectedcontent>` copies the chosen option
+when the choice changes, not when the option's text does, so a language switch
+left "Card" over a list of "Kort" until index.js started copying it itself.
+Filtering hides cards with a class rather than the `hidden` attribute — `.piece`
+sets its own `display`, and the warning about `[hidden]` in the preview contract
+applies here for the same reason. The rail counts what it is showing and the
+footer counts what exists — the masthead states neither, because the rail's own
 "Study 01 / 05" is where a reader takes the total from.
 
 ### The site is set in Mona Sans and Fragment Mono
@@ -1861,15 +1853,14 @@ Fragment Mono 316th. Both were chosen by eye from a side-by-side on the index's
 real classes, and both are OFL on Google Fonts, loaded the way the old pair was.
 Only 400 and 600 are loaded, because nothing else on the index is used.
 
-Changing a face is not only a font swap here, because four things on the index
-are measured off text. Re-measure them when a face changes:
+Changing a face is not only a font swap here, because several things on the
+index are measured off text. Re-measure them when a face changes:
 
 - the site mark's width, which sets where it and the controls stop sharing a
   line — 181px in Fragment Mono, so the query is 23.25rem;
-- the filter chips' width, which sets the 64rem–80rem restack of the rail's
-  head;
-- the headline's cap line against the cards' top edge, which the stage leaves
-  to the line box — within 1px in Mona Sans at 2.5rem;
+- the rail head's count beside the carousel buttons at 320, which fits with
+  4px to spare in Danish;
+- the headline's line count in the band, two from 360px up in both languages;
 - `og.png`, re-rendered from `og.html`, which carries its own copy of the pair.
 
 The demo pages followed, as a sweep of the identity kind: each folder's own
@@ -1896,8 +1887,8 @@ its component's own faces to the same link.
 
 ### The index's small type is one size, with headroom
 
-Every mono label on the index is 11px: the chips, the controls, the slugs,
-the meta keys, the list's column heads, quick look's slug and variant name.
+Every mono label on the index is 11px: the filter, the controls, the slugs,
+the list's column heads, quick look's slug and variant name.
 It used to be two sizes, 10px and 11px, and a 1px step is too small to carry
 two roles, so what told those roles apart was always their tone, case and
 place. Keeping it meant keeping ten labels under the 11px floor that
@@ -1911,13 +1902,12 @@ and variant name were under the floor. It is `#8d8c88` there now, 5.13 on the
 panel, and `#65645f` in light, 5.30 on `--well`. Both keep the headroom small
 mono type needs, because the ratio does not model size.
 
-A filter chip's count was a step quieter than its label by opacity, and at
-0.55 that put it at 2.2:1 in both themes, in a control. There is no quieter
-tone left under a label already in `--muted`, so the label moved up to
-`--ink-soft` and the count took `--muted`. A pressed chip's count has its own
-token, `--on-ink-muted`. The forthcoming slots' year had the same problem in
-the hairline colour, about 2:1, and is `--muted` now, with the month's size
-as the hierarchy.
+The filter chips' counts were a step quieter than their labels by opacity,
+0.55, which put them at 2.2:1 in both themes, inside a control. The chips have
+since gone, and the lesson stays: a quieter tone is a token that clears the
+floor, never an opacity on one that already sits near it. The forthcoming
+slots' year had the same problem in the hairline colour, about 2:1, and is
+`--muted` now, with the month's size as the hierarchy.
 
 Measured by computed colour against computed background across the page, the
 quick-look panel and the list, in both themes: nothing is under 5:1 except the
@@ -1950,10 +1940,8 @@ The column heads are the rail head's last row rather than the track's first,
 because everything in the track is a card to `index.js`. They are not one grid
 with the rows, so every column in `--list-cols` is a fixed length or a share of
 what is left — a track sized by content would line up in the rows and not in
-the heads. Measured equal to the pixel at 1440 and 1100, and at 1600 beside the
-masthead's column. Below a 64rem rail — a container query, since the rail is
-narrower than the window once the masthead sits beside it — there are no
-columns to head: each row is a thumbnail with the rest stacked beside it.
+the heads. Measured equal to the pixel at 1440 and 1100. Below 64rem there are
+no columns to head: each row is a thumbnail with the rest stacked beside it.
 
 The attribute is on `<html>` for the reason the theme's is: the head script
 puts a stored `list` there before the first paint, and a view that arrived with
@@ -1966,8 +1954,8 @@ rail is a rail, each at the one place it is asked:
 
 - The drift is *parked*, `driftStop(false, false)` — stopped without counting
   as the reader having taken it, so going back to the rail sets it off again
-  unless someone had stopped it. For the same reason a filter chip pressed in
-  the list does not stop it, and neither does tabbing down the rows.
+  unless someone had stopped it. For the same reason a filter picked in the
+  list does not stop it, and neither does tabbing down the rows.
 - `loopable()` answers no, which is also what gives the list its order: with
   no rotation, `rebuildRing` numbers the cards in the DOM order `order()` has
   already sorted. The `!important` on `order` that stood in for this is gone.
@@ -2003,8 +1991,8 @@ way to derive it — the same wall the type runs into.
 ### The page arrives once, and what is below the fold waits for you
 
 The masthead, the rail and the footer rise into place in reading order as the
-page opens — the mark's pulse first, then the headline, the lede, the meta row,
-the rail's head, each card a beat apart and the rule drawn under them. A block
+page opens — the mark's pulse first, then the headline, the lede, the Figma
+button, the rail's head, each card a beat apart and the rule drawn under them. A block
 carries `data-reveal`; `data-reveal="each"` staggers its children instead,
 which is how the cards and the footer's rows arrive as rows. The order is a
 slot per block in index.css's arrival section, and it is written there and
@@ -2080,9 +2068,9 @@ page is set in, what the studies are made of, what types they cover, and how
 many there are. The last two are written from the cards, so neither is a number
 anyone keeps by hand.
 
-The `Types` row reads the same badges the chips do, through the same
+The `Types` row reads the same badges the filter does, through the same
 `typeCounts`/`typeOrder`, so both list them commonest-first in the same order —
-a row ordering them differently from the chips a screen above would read as a
+a row ordering them differently from the filter's options would read as a
 different set of things. It is written once at boot and again on `lang:change`,
 never from `sync()`: the set of types is static, and `sync()` is on the scroll
 path. And like the `Studies` count beside it, it counts what exists rather than

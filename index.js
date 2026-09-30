@@ -65,8 +65,7 @@
       'head.ledeHintTouch': 'Tryk på hurtigt kig for at afspille et kort og '
         + 'bladre gennem dets varianter, eller åbn studiet for '
         + 'beslutningerne og teknikkerne bag.',
-      'meta.latest': 'Seneste',
-      'meta.figma': 'Community-fil',
+      'head.figma': 'Åbn Figma-filen',
       'rail.study': 'Studie',
       'rail.studies': 'Studier',
       'type.card': 'Kort',
@@ -455,7 +454,6 @@
   const progress = document.querySelector('[data-rail-progress]');
   const indexOut = document.getElementById('rail-index');
   const totalOut = document.getElementById('rail-total');
-  const metaLatest = document.getElementById('meta-latest');
   const footCount = document.getElementById('foot-count');
   const footTypes = document.getElementById('foot-types');
   const ledeHint = document.querySelector('[data-lede-hint]');
@@ -1270,19 +1268,20 @@
   // with the part of the set you are most likely to want and does not
   // reshuffle itself every time a study is added.
   const filterRow = document.querySelector('[data-rail-filter]');
+  const filterSelect = document.querySelector('[data-rail-filter-select]');
+  const filterValue = document.querySelector('[data-rail-filter-value]');
   const ghosts = Array.from(track.querySelectorAll('.piece--ghost'));
 
   const FILTER_ALL = '*';
 
-  // The All chip is the only label this row owns — every other chip borrows a
+  // All is the only label the filter owns — every other option borrows a
   // card's badge text — so its English lives here with the nav labels rather
   // than in markup index.js never sees again. The i18n module reads the
-  // document once at start-up; chips built afterwards are not in that list and
-  // are re-labelled on the lang:change below instead.
+  // document once at start-up; options built afterwards are not in that list
+  // and are re-labelled on the lang:change below instead.
   const FILTER_EN = { 'filter.all': 'All' };
 
   let filterType = FILTER_ALL;
-  let filterBtns = [];
   let filterCopy = null;
 
   function filterText(key) {
@@ -1295,9 +1294,9 @@
     return key.startsWith('type.') ? key.slice(5) : '';
   }
 
-  // The label a chip shows: the card's own badge text, so English comes from
-  // the markup and Danish from the table the rest of the page uses, and this
-  // row never holds a type name of its own in either language.
+  // The label an option shows: the card's own badge text, so English comes
+  // from the markup and Danish from the table the rest of the page uses, and
+  // the filter never holds a type name of its own in either language.
   function typeLabel(type) {
     const piece = allPieces().find((el) => typeOf(el) === type);
     const badge = piece && piece.querySelector('.piece__type');
@@ -1317,9 +1316,7 @@
     // slot has no type to be narrowed to.
     ghosts.forEach((el) => el.classList.toggle('is-filtered', filterType !== FILTER_ALL));
 
-    filterBtns.forEach((btn) => {
-      btn.setAttribute('aria-pressed', btn.dataset.type === filterType ? 'true' : 'false');
-    });
+    renderFilterValue();
 
     // The rail is a different length now: renumber it, put it back at the
     // start, rebuild the row the loop cycles through, and let sync() redo the
@@ -1330,7 +1327,7 @@
     track.scrollLeft = 0;
     rebuildRing();
 
-    // Not restarted here: the chip handler stops the drift on purpose, and a
+    // Not restarted here: the filter handler stops the drift on purpose, and a
     // row that becomes loopable again on the way back to "All" is not a reason
     // to override that. The control is what offers it back.
     syncDriftBtn();
@@ -1339,8 +1336,9 @@
 
   // How many cards of each type, and the order the types are listed in:
   // commonest first, alphabetical where two are level. Two places read it —
-  // the filter chips and the footer's Types row — and a row that ordered them
-  // differently from the chips above would read as a different set of things.
+  // the filter's options and the footer's Types row — and a row that ordered
+  // them differently from the filter above would read as a different set of
+  // things.
   function typeCounts() {
     const counts = new Map();
     allPieces().forEach((piece) => {
@@ -1370,103 +1368,104 @@
       : '\u2014';
   }
 
+  const labelFor = (type) =>
+    type === FILTER_ALL ? filterText('filter.all') : typeLabel(type);
+
+  // The visible half of the control: the current choice, and a filled state
+  // while the rail is narrowed, because that is a state the whole rail is in
+  // and it should read as one from across the page. The select underneath
+  // says the same thing to everything that is not looking.
+  function renderFilterValue() {
+    if (!filterValue) return;
+    filterValue.textContent = labelFor(filterType);
+    filterRow.classList.toggle('is-active', filterType !== FILTER_ALL);
+  }
+
   function buildFilter() {
-    if (!filterRow) return;
+    if (!filterRow || !filterSelect) return;
 
     const counts = typeCounts();
 
     // One type is not a choice, and no types means no keys to read.
     if (counts.size < 2) {
       filterRow.hidden = true;
-      filterBtns = [];
       return;
     }
 
-    const order = typeOrder(counts);
+    filterSelect.textContent = '';
 
-    filterRow.textContent = '';
-    filterBtns = [FILTER_ALL].concat(order).map((type) => {
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'rail__filter-btn';
-      btn.dataset.type = type;
-      btn.setAttribute('aria-pressed', type === filterType ? 'true' : 'false');
+    // The select's own face, for an engine that lets a select be styled
+    // (appearance: base-select): the icon and a live copy of the chosen
+    // option, which is what <selectedcontent> is. An engine that does not
+    // draws a select from its options alone and never renders these, and the
+    // label round the select draws the face instead — see index.css.
+    const face = document.createElement('button');
+    face.className = 'rail__filter-face';
+    const icon = filterRow.querySelector('.rail__filter-icon');
+    if (icon) face.appendChild(icon.cloneNode(true));
+    face.appendChild(document.createElement('selectedcontent'));
+    filterSelect.appendChild(face);
 
-      const label = document.createElement('span');
-      label.textContent = type === FILTER_ALL ? filterText('filter.all') : typeLabel(type);
-      btn.appendChild(label);
-
-      const n = document.createElement('span');
-      n.className = 'rail__filter-count';
-      // The space is inside the text, not only in the margin: a screen reader
-      // reads the two spans as one run, and "Card3" is not what this says.
-      n.textContent = ' ' + (type === FILTER_ALL ? allPieces().length : counts.get(type));
-      btn.appendChild(n);
-
-      btn.addEventListener('click', () => {
-        if (filterType === type) return;
-        filterType = type;
-        // Filtering is a deliberate look at one part of the set; the rail
-        // sliding off it a second later is not what was asked for. In the
-        // list there is no rail moving to stop, and stopping it anyway would
-        // count as the reader having taken it, for good.
-        if (!listed()) driftStop();
-        applyFilter();
-      });
-
-      filterRow.appendChild(btn);
-      return btn;
+    [FILTER_ALL].concat(typeOrder(counts)).forEach((type) => {
+      const n = type === FILTER_ALL ? allPieces().length : counts.get(type);
+      const option = document.createElement('option');
+      option.value = type;
+      // Three runs of text rather than one string, so a styled list can set
+      // the count apart, while a plain one — which reads only an option's
+      // text — still says "Card · 3" with the separator in it.
+      const name = document.createElement('span');
+      name.className = 'rail__filter-name';
+      name.textContent = labelFor(type);
+      const sep = document.createElement('span');
+      sep.className = 'rail__filter-sep';
+      sep.textContent = ' \u00b7 ';
+      const count = document.createElement('span');
+      count.className = 'rail__filter-n';
+      count.textContent = String(n);
+      option.append(name, sep, count);
+      filterSelect.appendChild(option);
     });
+    filterSelect.value = filterType;
 
+    renderFilterValue();
     filterRow.hidden = false;
-    syncFilterFade();
   }
 
-  // The row scrolls sideways on a narrow screen rather than wrapping, which
-  // means a chip can sit outside it — and Chromium does not bring a chip that
-  // Tab reaches back into view on its own here, so the last option is focused
-  // and invisible. One call, and a no-op at every width where the row fits.
-  if (filterRow) {
-    filterRow.addEventListener('focusin', (event) => {
-      const btn = event.target.closest('.rail__filter-btn');
-      if (btn) btn.scrollIntoView({ inline: 'nearest', block: 'nearest' });
+  if (filterSelect) {
+    filterSelect.addEventListener('change', () => {
+      filterType = filterSelect.value;
+      // Filtering is a deliberate look at one part of the set; the rail
+      // sliding off it a second later is not what was asked for. In the
+      // list there is no rail moving to stop, and stopping it anyway would
+      // count as the reader having taken it, for good.
+      if (!listed()) driftStop();
+      applyFilter();
     });
   }
 
-  // Which end of the row wears a fade. The mask is CSS; what it cannot know is
-  // whether there is anything past either edge, which is a scroll position and
-  // two widths. A whole pixel of slack, because a scrollLeft at the end is
-  // fractional on a fractional device ratio and a permanent fade at an end
-  // with nothing past it is the one thing this is meant not to say.
-  function syncFilterFade() {
-    if (!filterRow || filterRow.hidden) return;
-    const max = filterRow.scrollWidth - filterRow.clientWidth;
-    const at = filterRow.scrollLeft;
-    filterRow.classList.toggle('is-fade-start', at > 1);
-    filterRow.classList.toggle('is-fade-end', max > 1 && at < max - 1);
-  }
-
-  if (filterRow) {
-    filterRow.addEventListener('scroll', syncFilterFade, { passive: true });
-    window.addEventListener('resize', syncFilterFade);
-  }
-
-  // The chips carry card labels, so they are rewritten with everything else
-  // when the language changes. This runs after the module has re-labelled the
-  // badges, which is where every chip but All reads its text from.
+  // The options carry card labels, so they are rewritten with everything
+  // else when the language changes. This runs after the module has
+  // re-labelled the badges, which is where every option but All reads from.
   document.addEventListener('lang:change', (event) => {
     filterCopy = (event.detail && event.detail.copy) || null;
-    filterBtns.forEach((btn) => {
-      const type = btn.dataset.type;
-      btn.firstChild.textContent =
-        type === FILTER_ALL ? filterText('filter.all') : typeLabel(type);
-    });
+    if (filterSelect) {
+      Array.from(filterSelect.options).forEach((option) => {
+        const name = option.querySelector('.rail__filter-name');
+        if (name) name.textContent = labelFor(option.value);
+      });
+      // <selectedcontent> copies the chosen option when the choice changes,
+      // not when the option's own text does, so a language switch left the
+      // face in the old language — measured, "Card" over a list of "Kort".
+      const face = filterSelect.querySelector('selectedcontent');
+      const chosen = filterSelect.selectedOptions[0];
+      if (face && chosen) {
+        face.replaceChildren(...Array.from(chosen.childNodes, (n) => n.cloneNode(true)));
+      }
+    }
+    renderFilterValue();
     // Same strings, further down the page: the footer's Types row is the card
     // badges too, so it turns over with them rather than carrying its own.
     renderFootTypes();
-    // Danish labels are not the width English ones were, so the row may have
-    // gained or lost the overflow the fade is reporting.
-    syncFilterFade();
   });
 
   // --- rail -------------------------------------------------------------
@@ -1856,15 +1855,6 @@
     if (totalOut) totalOut.textContent = pad(count);
     if (footCount) footCount.textContent = pad(total);
 
-    // The newest study's month. order() has already sorted the rail newest
-    // first, so it is the first card's own date — read off the same attribute
-    // the sort uses rather than written down a second time. Numeric, so it
-    // needs no translating and no month table.
-    if (metaLatest) {
-      const newest = allPieces()[0];
-      const key = newest ? orderKey(newest) : '';
-      metaLatest.textContent = key ? key.slice(0, 7).replace('-', ' · ') : '—';
-    }
 
     syncVisibility();
 
@@ -3381,7 +3371,7 @@
 
   renderLedeHint(null);
   order();
-  buildFilter();   // after order(), so the chips count a settled rail
+  buildFilter();   // after order(), so the options count a settled rail
   renderFootTypes();
   number();
 
