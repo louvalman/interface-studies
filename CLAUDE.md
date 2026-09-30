@@ -1852,7 +1852,7 @@ edge is not something CSS can ask. The rail counts what it is showing and the fo
 counts what exists — the masthead states neither, because the rail's own
 "Study 01 / 05" is where a reader takes the total from.
 
-### The index is set in Mona Sans and Fragment Mono
+### The site is set in Mona Sans and Fragment Mono
 
 It was Plus Jakarta Sans and JetBrains Mono, and the design checker flagged the
 sans on every run for good reason: by Google Fonts' own popularity ranking it
@@ -1872,9 +1872,27 @@ are measured off text. Re-measure them when a face changes:
   to the line box — within 1px in Mona Sans at 2.5rem;
 - `og.png`, re-rendered from `og.html`, which carries its own copy of the pair.
 
-The studies are not the index. Five of them set their components in the old
-pair, in their own `component.css`, and that is each study's decision rather
-than something the index's choice reaches.
+The demo pages followed, as a sweep of the identity kind: each folder's own
+copy, in its own file. The rule it applied is the one to keep:
+
+- **A page's chrome is Fragment Mono on every page** — the back link, the
+  kicker, the language buttons, the decisions block's labels, the captions,
+  everything a `demo__` rule set in the old mono.
+- **A page's prose is Mona Sans where it was the site's face**, and on the two
+  pages that had never loaded one, `2026-09-bento-grid` and `_template`, whose
+  system-ui was the template's placeholder rather than a decision.
+  `2026-09-raster-pulse` sets its page in Space Grotesk, the face its component
+  is in, and keeps it.
+- **A component is never swept.** Five studies set their components in the old
+  pair, in their own `component.css`, and that is each study's decision, not
+  something the site's choice reaches. A page still loads whatever its
+  component names, so those pages carry both pairs, and a page drops a face
+  only when nothing on it uses that face any more. `2026-09-struck-tones`
+  keeps JetBrains Mono for its instrument staging, which mirrors its
+  component's readouts rather than being chrome.
+
+The template carries the pair, loaded, so a new study is born with it and adds
+its component's own faces to the same link.
 
 ### The index's small type is one size, with headroom
 
