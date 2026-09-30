@@ -2850,6 +2850,13 @@
     // width no longer depends on the result.
     let lightboxScale = 1;
 
+    // From 48rem, in landscape, the preview sits beside a fixed column rather than between a
+    // bar and a footer, and index.css sizes the stage from the scale. So the
+    // scale is worked out from the room the overlay has, less that column —
+    // not measured off a stage whose size would be the answer.
+    const sideBySide = window.matchMedia('(min-width: 48rem) and (orientation: landscape)');
+    const bar = box.querySelector('.lightbox__bar');
+
     function fitStage() {
       if (box.hidden) return;
 
@@ -2857,6 +2864,20 @@
       const previewW = parseFloat(rootStyle.getPropertyValue('--preview-w'));
       const previewH = parseFloat(rootStyle.getPropertyValue('--preview-h'));
       if (!previewW || !previewH) return;
+
+      if (sideBySide.matches && bar) {
+        panel.style.width = '';
+        const cs = getComputedStyle(box);
+        const room = (a, b) => parseFloat(cs[a]) + parseFloat(cs[b]);
+        const border = 2;   // the panel's own hairline, both sides
+        const width = box.clientWidth - room('paddingLeft', 'paddingRight')
+          - bar.getBoundingClientRect().width - border;
+        const height = box.clientHeight - room('paddingTop', 'paddingBottom') - border;
+        lightboxScale = Math.max(0, Math.min(width / previewW, height / previewH, 1));
+        box.style.setProperty('--lightbox-scale', lightboxScale.toFixed(4));
+        tellScale(frame, lightboxScale);
+        return;
+      }
 
       // Measure against the panel's natural width first.
       panel.style.width = '';

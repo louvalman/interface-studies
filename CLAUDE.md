@@ -1240,6 +1240,25 @@ events *on*, so there the component's real `:hover` does the work and no message
 is involved. Both routes load the same file — there is no second thumbnail to
 keep in step.
 
+**Quick look is always on the card.** Its chip sits in the thumbnail's corner
+as a glyph at rest and widens to say "Quick look" when the card is hovered or
+focused, by opening a grid track from `0fr` to `1fr`. It was at opacity 0 until
+then, and the variants it opens onto — five to seven a study — were behind a
+control nobody had a reason to look for. On a coarse pointer it says its words
+from the start.
+
+**In landscape from 48rem, quick look sits side by side**: the preview on the
+left at the panel's full height, and the title, the variants, the note and the
+links in a 20rem column beside it. Stacked, the bar above and the footer below
+took the height a 4:5 preview needs, so a 1440x810 laptop showed it at 0.75 in
+a panel 360px wide — "full size" smaller than the card that opened it. Side by
+side, the same laptop shows it at 1:1, the size its hover states were drawn
+at, and a phone on its side goes from a scrolling stack to 0.60 with nothing
+hidden. `fitStage` works the scale out from the room the overlay has less that
+column, and the stage is sized from the scale, so nothing measures itself.
+Portrait stays stacked: a 768x1024 tablet ran at 0.81 side by side and has
+room for 0.99 stacked.
+
 **Quick look plays the variants until a reader takes one, and then stops for
 good.** It steps through them every `AUTOPLAY_MS` on opening, which is how a
 pointer that never reaches the dots learns there are variants at all. It used

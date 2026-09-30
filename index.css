@@ -1242,15 +1242,24 @@ body.is-locked {
 }
 
 /* Sits above the stretched link so it can take its own click. */
+/* Quick look is always there: a small glyph-only chip in the thumbnail's
+   corner, which widens to say what it does when the card is hovered or
+   focused. It used to sit at opacity 0 until then, and the variants it opens
+   onto — five to seven per study — were behind a control nobody had a reason
+   to know about. The words arrive by opening a grid track from 0fr to 1fr, so
+   the chip grows with them instead of the label appearing in a pill that was
+   already its full width. */
 .piece__expand {
   position: absolute;
   right: 0.875rem;
   bottom: 0.875rem;
   z-index: 3;
-  display: inline-flex;
+  display: inline-grid;
+  grid-template-columns: auto 0fr;
   align-items: center;
-  gap: 0.45rem;
-  padding: 0.5em 0.85em;
+  column-gap: 0;
+  min-height: 1.875rem;
+  padding: 0 0.6rem;
   border: 1px solid var(--hairline);
   border-radius: 999px;
   background: var(--chip-over-preview-strong);
@@ -1261,24 +1270,28 @@ body.is-locked {
   letter-spacing: 0.14em;
   text-transform: uppercase;
   cursor: pointer;
-  opacity: 0;
-  transform: translateY(0.4rem);
   transition:
-    opacity 320ms var(--ease),
-    transform 320ms var(--ease),
+    grid-template-columns 320ms var(--ease),
+    column-gap 320ms var(--ease),
     border-color 320ms var(--ease);
+}
+
+.piece__expand-text {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .piece:focus-within .piece__expand,
 .piece__expand:focus-visible {
-  opacity: 1;
-  transform: translateY(0);
+  grid-template-columns: auto 1fr;
+  column-gap: 0.45rem;
 }
 
 @media (hover: hover) {
   .piece:hover .piece__expand {
-    opacity: 1;
-    transform: translateY(0);
+    grid-template-columns: auto 1fr;
+    column-gap: 0.45rem;
   }
 }
 
@@ -1294,12 +1307,12 @@ body.is-locked {
   height: 0.7rem;
 }
 
-/* Coarse pointers get no hover, so the affordance stays put — and it has to
-   be big enough to hit with a thumb. */
+/* Coarse pointers get no hover, so the chip says its words from the start —
+   and it has to be big enough to hit with a thumb. */
 @media (hover: none) {
   .piece__expand {
-    opacity: 1;
-    transform: none;
+    grid-template-columns: auto 1fr;
+    column-gap: 0.45rem;
     min-height: 2.25rem;
     padding-inline: 1rem;
   }
@@ -1678,8 +1691,7 @@ body.is-locked {
 }
 
 /* Quick look loses its words and keeps its glyph: a row has a column for it,
-   not a thumbnail's corner. It still arrives on hover, as it does on a card,
-   and where there is no hover the (hover: none) rule above keeps it showing. */
+   not a thumbnail's corner. */
 :root[data-view="list"] .piece__expand {
   grid-area: ql;
   position: relative;
@@ -2201,6 +2213,58 @@ body.is-locked {
 .lightbox__link svg {
   width: 0.8rem;
   height: 0.8rem;
+}
+
+/* Side by side from 48rem: the preview on the left at the panel's full height,
+   and the title, the variants, the note and the links in a column beside it.
+   Stacked, the chrome above and below the preview took the height a 4:5
+   preview needs, so on a 1440x810 laptop it ran at 0.75 in a panel 360px wide
+   — "full size" smaller than the card that opened it. Beside it, the same
+   laptop shows it at 1:1, which is the size its hover states were drawn at.
+   index.js works the scale out from the room left beside the column, and the
+   stage is sized from the scale, so nothing measures itself.
+
+   Landscape only. A portrait window has the height stacked needs and not the
+   width a column takes: a 768x1024 tablet ran at 0.81 side by side, and has
+   room for 1:1 stacked. */
+@media (min-width: 48rem) and (orientation: landscape) {
+  .lightbox__panel {
+    --lightbox-side: 20rem;
+    display: grid;
+    grid-template-columns: auto var(--lightbox-side);
+    grid-template-rows: auto auto 1fr;
+    grid-template-areas:
+      "stage bar"
+      "stage variants"
+      "stage foot";
+    width: auto;
+  }
+
+  .lightbox__stage {
+    grid-area: stage;
+    width: calc(var(--preview-w) * var(--lightbox-scale));
+    height: calc(var(--preview-h) * var(--lightbox-scale));
+    min-height: 0;
+    border-right: 1px solid var(--hairline);
+  }
+
+  .lightbox__bar { grid-area: bar; }
+
+  /* The bar's own rule is the line above the variants now. */
+  .lightbox__variants {
+    grid-area: variants;
+    border-top: 0;
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  /* The note under the variants, the links at the foot of the column. */
+  .lightbox__foot {
+    grid-area: foot;
+    justify-content: space-between;
+    border-top: 0;
+  }
+
+  .lightbox__note { max-width: none; }
 }
 
 /* --- foot -------------------------------------------------------------- */
