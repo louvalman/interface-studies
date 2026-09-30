@@ -1389,6 +1389,29 @@ and an anchor may not contain a button. Everything the overlay shows is read
 back out of that block, so no title, note or path is written twice. That is the
 only file outside the study folder that a new study may touch.
 
+### Earlier versions of the index are archived, not kept in step
+
+When the index changes enough that its old design is worth pointing at — from
+a study, from the Figma file, from a later version saying what it changed — the
+old version is kept in `archive/YYYY-MM-index/`, and the commit it came from is
+tagged `index-YYYY-MM`. The first is `archive/2026-09-index/`, main at
+`db496b6` before the first-screen, type and quick-look passes.
+
+An archive holds three things copied from that commit, `index.html`,
+`index.css` and `index.js`, and a `DESIGN.md` beside them recording the system
+in the DESIGN.md format: tokens in the frontmatter, then overview, colours,
+type, layout, depth, shapes, components, and what superseded it. The copy is
+changed in exactly two ways: its paths gain `../../` so it still frames the
+live studies from two folders down, and its head drops the canonical link and
+the social card and says `noindex`, so it is never offered as the site's page.
+
+After that it is not edited. It is a record, and a record kept in step with
+the present is no longer a record of anything; a fix belongs in the live index.
+It frames the studies as they are now rather than as they were, which its
+`DESIGN.md` says. Nothing links to it and nothing loads from it, so deleting
+`archive/` breaks no page — the same test `tools/` passes — and the study
+rules do not reach it, since it is not a study.
+
 ### Figma is on the page twice, and the two are not the same link
 
 The button in the masthead is the companion file on Figma Community. The circle
