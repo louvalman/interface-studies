@@ -677,16 +677,14 @@ body.is-locked {
 .rail__view { grid-area: view; justify-self: end; }
 .rail__cols { grid-area: cols; }
 
-/* One label or the other: the rail reports where it is, "Study 01 / 08",
-   and the list, which has no read position, how many it is showing. */
-.rail__count-all { display: none; }
-:root[data-view="list"] .rail__count-one,
-:root[data-view="list"] .rail__count-at { display: none; }
-:root[data-view="list"] .rail__count-all { display: inline; }
+/* "8 studies", or "1 study" when the filter leaves one. */
+.rail__count-one { display: none; }
+.rail__count.is-one .rail__count-one { display: inline; }
+.rail__count.is-one .rail__count-many { display: none; }
 
 .rail__count {
   margin: 0;
-  /* "Study 01 / 05" is one thing to read; a narrow bar may drop the buttons to
+  /* "8 studies" is one thing to read; a narrow bar may drop the buttons to
      their own line, but it may never break the label across two. */
   white-space: nowrap;
   font-family: var(--mono);
@@ -704,10 +702,10 @@ body.is-locked {
 /* Two rows on a phone: the count and the carousel controls, then the filter
    and the switch. Measured at 390, one row wants 470px of the 342 there.
 
-   Tighter gaps, not smaller buttons: at 320 in Danish, "Studie 01 / 08" is
-   120px and the three 44px buttons 148px with their gaps, which ran the page
-   4px wide against the 272px there. 8px between the two and 4px between the
-   buttons leaves 268. */
+   Tighter gaps, not smaller buttons: at 320 in Danish the count and the three
+   44px buttons ran the page 4px wide against the 272px there, when the count
+   still read "Studie 01 / 08". 8px between the two and 4px between the
+   buttons kept them inside it. */
 @media (max-width: 36rem) {
   .rail__head {
     grid-template-columns: auto minmax(0, 1fr) auto;
@@ -724,33 +722,33 @@ body.is-locked {
 
 /* On a phone the rail's head is one line again, and the first screen names a
    study. Measured at 390x844 it did not: two rows of six controls under a
-   five-line masthead put the first card's title at y=881. Three things give
-   the room back, all on a touch screen only:
+   five-line masthead put the first card's title at y=881. Two things give
+   the room back, both on a touch screen only:
 
    - Previous and next go. A finger swipes the rail, which is the platform's
      own gesture and the one CLAUDE.md hands the landing to; the buttons were
      two 44px targets for something the thumb was already doing. The pause
      stays — content that moves by itself owes a way to stop it.
-   - The count drops its word in the rail: "01 / 08", tied to the card by the
-     filled chip. With the word, the row ran 4px past 342 in English and
-     further in Danish.
    - The lede's how-to sentence steps aside. On touch every card already
      labels its quick look and the card at the mark runs by itself, so the
      sentence spent three lines describing what the screen below it shows,
      and its "tap quick look to run a card" no longer matched what a card
      does. It stays in the page for every wider or pointer screen. */
 @media (max-width: 36rem) and (hover: none) {
+  /* No empty spacer column: the pause takes the free track and holds itself
+     to its end, which is two gaps fewer than a blank column between the two
+     groups. "8 studier" is two characters longer than the "01 / 08" it
+     replaced, and at 360 in Danish the spacer's gaps were the 8px the switch
+     ran past the gutter by. */
   .rail__head {
-    grid-template-columns: auto auto minmax(0, 1fr) auto auto;
+    grid-template-columns: auto auto minmax(0, 1fr) auto;
     grid-template-areas:
-      "count filter . nav view"
-      "cols cols cols cols cols";
+      "count filter nav view"
+      "cols cols cols cols";
   }
 
   .rail__nav [data-rail-prev],
   .rail__nav [data-rail-next] { display: none; }
-
-  :root:not([data-view="list"]) .rail__count-one { display: none; }
 
   .head__lede [data-lede-hint] { display: none; }
 }
@@ -1215,11 +1213,11 @@ body.is-locked {
   .piece:hover { transform: translateY(-6px); }
 }
 
-/* .is-active marks the card in the read position. It drives the counter and,
-   on touch, which preview plays. The card itself is not painted — lifting or
-   outlining one card made the rail look misaligned rather than focused — but
-   its number is: see .piece__no below, which is what ties the counter to a
-   card. */
+/* .is-active marks the card in the read position, which on touch is the
+   preview that plays. Nothing paints it. Lifting or outlining the card made
+   the rail look misaligned rather than focused, and filling its number, to tie
+   a "Study 04 / 08" counter to it, was one more thing changing by itself on a
+   rail that already drifts; the counter went with it. */
 .piece__frame {
   position: relative;
   overflow: hidden;
@@ -1329,17 +1327,6 @@ body.is-locked {
     opacity 240ms var(--ease),
     background-color 320ms var(--ease),
     color 320ms var(--ease);
-}
-
-/* The counted card's number is filled, the state the filter and the view
-   switch use for "this is what the rail is on", so "Study 04 / 08" points at
-   the one card whose 04 is filled. It travels with the mark as the rail
-   drifts. Only the chip changes, never the card's box, so nothing in the row
-   moves out of line. The rail only: the list has no read position. */
-:root:not([data-view="list"]) .piece.is-active .piece__no {
-  background: var(--on-ink-bg);
-  box-shadow: none;
-  color: var(--on-ink-fg);
 }
 
 /* The rail only: in the list they are columns of the row, not chips over a

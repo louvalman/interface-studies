@@ -1238,6 +1238,23 @@ telling apart before looking anywhere else: the row is too short to loop, or
 reduced motion is set. Everything else about the drift is about when it stops,
 not whether it exists.
 
+**Tab gets the row in the file's order.** The loop reorders cards with flex
+`order`, and Tab follows the DOM, so on a rotated rail the next card by Tab
+was wherever the ring had put it: from 06 to 07 the rail jumped seven cards
+backwards, 07 at x=-1391 while 01 sat at 9. Keyboard focus arriving in a card
+now puts the ring back in the file's order and holds the recycle off for as
+long as focus stays in the row (`keyHold`), so the rail is finite exactly
+while it is being read by Tab: the next card is the one beside this one, and
+the last leads out of the row rather than round it, which is what keeps Tab
+from looping forever. The card that took focus keeps its place on screen, or
+comes to the mark if it had been off it; only its neighbours change. Focus
+leaving the row, or going back to the track itself, lets go, and the recycle
+puts the loop back without moving anything on screen. Keyboard only, because
+keyboard focus has already stopped the drift for good, and a drifting rail
+needs the recycle. Checked by focusing every card in file order on a rotated
+rail, both ways — not with real Tab presses, which a hidden automation tab
+does not receive.
+
 The pointer path still steps itself, through `stepTo`, and keeps the old
 arithmetic. There is nothing native to defer to there: the drag is scripted from
 `pointermove`, there is no momentum, and a recycle mid-step has to move both
@@ -1336,13 +1353,17 @@ nothing else, broken by hand at its comma, since a fixed-size image has no
 width to reflow into. The domain is not on it either: every unfurl prints it
 under the card already.
 
-**The counter points at a card.** "Study 04 / 08" counts the card at the read
-mark, and nothing on the rail said which one that was, with the drift moving
-and the gutter fading. The counted card's number chip is filled now, in the
-state the filter and the view switch use for "this is what the rail is on", so
-the 04 in the counter is the one filled 04 on the rail. Only the chip changes:
-lifting or outlining the card itself was tried once and made the row look
-misaligned rather than focused.
+**The rail's head states a count, not a position.** It read "Study 04 / 08"
+off the read mark for a while, and nothing said which card that was, with the
+drift moving and the gutter fading, so the counted card's number chip was
+filled to tie the two together. That made two things changing by themselves
+on a rail that already drifts, to say what the progress rule under the cards
+and the cards' own numbers already said. Both went: the head says "8 studies",
+unpadded, in both views and in the same place, "1 study" when the filter
+leaves one, and no card is painted for being at the mark. `.is-active` still
+marks it, for the preview that plays on touch. Lifting or outlining the card
+itself was tried once too, and made the row look misaligned rather than
+focused.
 
 The left gutter is empty at rest: the track is masked clear up to a rail gap
 short of the first card and fades in across the gap, because a looping rail
@@ -1895,13 +1916,15 @@ it read as the page's navigation, and it was height the masthead needed.
 On a touch phone it is one line too, with less on it: previous and next go,
 because a finger swipes the rail and the buttons were two 44px targets for
 what the thumb was already doing; the pause stays, as content that moves by
-itself owes a way to stop it; and the count drops its word to "01 / 08", tied
-to its card by the filled chip. The lede's how-to sentence steps aside there as
+itself owes a way to stop it; and the grid has no empty spacer column, so the
+pause takes the free track and holds itself to its end — two gaps fewer, which
+is the 8px "8 studier" needed at 360 in Danish. The lede's how-to sentence steps aside there as
 well — every card already labels its quick look on touch and the card at the
 mark runs by itself, so it spent three lines on what the screen showed, and
 its "tap quick look to run a card" had stopped matching what a card does.
 Measured at 390x844, the first card's title went from y=881, under the fold,
-to y=775. Under 360px the one line does not fit — 6px over at 320 in Danish —
+to y=775, and to y=754 once the date moved under the title. Under 360px the
+one line does not fit — 6px over at 320 in Danish —
 and the head goes back to two rows. A narrow window with a mouse keeps the
 two-row head with every control, because one row wants 470px of the 342 at
 390. The gaps tighten
@@ -1938,7 +1961,15 @@ Filtering hides cards with a class rather than the `hidden` attribute — `.piec
 sets its own `display`, and the warning about `[hidden]` in the preview contract
 applies here for the same reason. The rail counts what it is showing and the
 footer counts what exists — the masthead states neither, because the rail's own
-"Study 01 / 05" is where a reader takes the total from.
+"8 studies" is where a reader takes the total from.
+
+**A control that is only an icon has a tooltip**, `data-tip` on the button:
+the theme toggle, the rail's pause, previous and next, the rail/list switch,
+and quick look's close and pause. The tooltip is the button's own
+`aria-label`, copied into `title` by a small observer in `index.js` whenever
+it changes, so the language switch and the pause buttons' state labels carry
+it with them and there is no second string to keep in step. A control that
+shows its words — the filter, EN/DA, quick look's chip on hover — needs none.
 
 ### The site is set in Mona Sans and Fragment Mono
 
@@ -2089,8 +2120,8 @@ rail is a rail, each at the one place it is asked:
   whole track and the sideways test would call all of them on screen. The
   page's own scroll runs `syncVisibility`, coalesced onto the frame.
 
-The count reads "Studies 08" rather than "Study 01 / 08" — the list has no read
-position, and both labels are in the markup with `index.css` showing one. The
+The count reads "8 studies" here as on the rail, now that neither reports a
+read position. The
 track loses its tab stop, since a list is read with the page's keys, and is
 labelled "Study list"; `renderNav` owns that label and runs after the language
 module, so a switch of language keeps it.
@@ -2184,7 +2215,9 @@ place a reader is being sent to go and look at it.
 The meta list is four rows and each says something the others do not: what the
 page is set in, what the studies are made of, what types they cover, and how
 many there are. The last two are written from the cards, so neither is a number
-anyone keeps by hand.
+anyone keeps by hand. The count is written plainly, "8" and not "08", like the
+rail's "8 studies": it is a quantity, and padded it read as an ID. The cards'
+own numbers keep their padding, because those are positions in a set.
 
 The `Types` row reads the same badges the filter does, through the same
 `typeCounts`/`typeOrder`, so both list them commonest-first in the same order —

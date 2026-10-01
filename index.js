@@ -66,8 +66,8 @@
         + 'bladre gennem dets varianter, eller åbn studiet for at se det '
         + 'i sin helhed.',
       'head.figma': 'Åbn Figma-filen',
-      'rail.study': 'Studie',
-      'rail.studies': 'Studier',
+      'rail.study': 'studie',
+      'rail.studies': 'studier',
       'type.card': 'Kort',
       'type.aesthetic': 'Æstetik',
       'type.navigation': 'Navigation',
@@ -290,6 +290,36 @@
 })();
 
 
+// --- tooltips --------------------------------------------------------------
+//
+// A control that is only an icon says what it does on hover as well, for a
+// pointer that cannot read an aria-label. The words are the control's own
+// accessible name rather than a second string: the language switch rewrites
+// it, and the two pause buttons rewrite theirs from state, so a title written
+// into the markup would go stale the first time either moved.
+// One string, copied across whenever it changes. A title that matches the
+// name is not read out a second time.
+(function () {
+  const tipped = document.querySelectorAll('[data-tip]');
+  if (!tipped.length) return;
+
+  function tip(el) {
+    const label = el.getAttribute('aria-label');
+    if (label) el.setAttribute('title', label);
+    else el.removeAttribute('title');
+  }
+
+  tipped.forEach(tip);
+  if (!('MutationObserver' in window)) return;
+  const watch = new MutationObserver((records) => {
+    records.forEach((record) => tip(record.target));
+  });
+  tipped.forEach((el) => {
+    watch.observe(el, { attributes: true, attributeFilter: ['aria-label'] });
+  });
+})();
+
+
 // --- theme ---------------------------------------------------------------
 //
 // Site chrome only, like the language switch above, and for the same reason:
@@ -452,7 +482,6 @@
   const next = document.querySelector('[data-rail-next]');
   const driftBtn = document.querySelector('[data-rail-drift]');
   const progress = document.querySelector('[data-rail-progress]');
-  const indexOut = document.getElementById('rail-index');
   const totalOut = document.getElementById('rail-total');
   const footCount = document.getElementById('foot-count');
   const footTypes = document.getElementById('foot-types');
@@ -1637,7 +1666,7 @@
   // sixty in a three-second drag, against none while the rail sits still.
   // Callers that have not just written it pass nothing and pay for one read.
   function recycle(at) {
-    if (!loopable()) return 0;
+    if (!loopable() || keyed) return 0;
 
     const w = step();
     const home = homePos();
@@ -1694,6 +1723,58 @@
     ring = row;
     applyRing();
     track.scrollLeft = 0;
+  }
+
+  // Tab walks the cards in the order of the file, and the loop lays them out in
+  // the order of the ring. The two only agree before the first recycle, so
+  // tabbing across a rotated rail sent focus to a card the rail had placed
+  // somewhere else, and the browser scrolled to wherever that was: from 06 to
+  // 07 the rail jumped seven cards backwards, 07 at x=-1391 while 01 sat at 9.
+  //
+  // So the ring gives way to the keyboard. Focus arriving in a card by key puts
+  // the row back in the file's order and holds the recycle off for as long as
+  // focus stays in the row, which makes the rail finite exactly while it is
+  // being read by Tab: the next card is the one beside this one, and the last
+  // one leads out of the row instead of round it, so Tab never loops. The card
+  // that took focus stays where it was on screen, or comes to the mark if the
+  // jump had taken it off; only its neighbours change. Focus leaving the row
+  // lets go, and the first recycle after puts the loop back underneath, moving
+  // nothing on screen.
+  //
+  // Keyboard only, because the drift is: keyboard focus has already stopped
+  // it for good, and a drifting rail needs the recycle to keep going.
+  let keyed = false;
+
+  function keyHold(target) {
+    const piece = target.closest && target.closest('.piece');
+    if (keyed || !piece || !loopable()) return;
+    keyed = true;
+    const row = laidOut();
+    if (ring.every((el, i) => el === row[i])) return;
+
+    const tr = track.getBoundingClientRect();
+    const r = piece.getBoundingClientRect();
+    const seen = r.right > tr.left && r.left < tr.right;
+    const onScreen = r.left - tr.left;
+
+    ring = row;
+    applyRing();
+    const to = seen ? piece.offsetLeft - onScreen : piece.offsetLeft - sized().inset;
+
+    track.classList.add('is-recycling');
+    track.scrollLeft = Math.max(0, Math.min(maxScroll(), to));
+    cancelAnimationFrame(snapFrame);
+    snapFrame = requestAnimationFrame(() => {
+      snapFrame = 0;
+      track.classList.remove('is-recycling');
+    });
+    syncSoon();
+  }
+
+  function keyRelease() {
+    if (!keyed) return;
+    keyed = false;
+    recycle();
   }
 
   // The card sitting in the read position: the one whose left edge is nearest
@@ -1845,13 +1926,18 @@
     const max = maxScroll();
 
     // The rail counts what it is showing; the footer counts what exists.
-    // Filtering to one type does not mean four studies stopped being written,
-    // and the rail's own "Study 01 / 05" is where the total is read anyway —
-    // which is why the masthead no longer carries a second copy of it.
+    // Filtering to one type does not mean four studies stopped being written.
+    // A count, not a position: "8 studies", unpadded, the same in both views.
+    // It used to read "Study 04 / 08" off the read mark, which on a drifting
+    // rail was a number changing by itself, and needed the card's own chip
+    // filled to say which card it meant.
     const count = real().length;
     const total = allPieces().length;
-    if (totalOut) totalOut.textContent = pad(count);
-    if (footCount) footCount.textContent = pad(total);
+    if (totalOut) {
+      totalOut.textContent = String(count);
+      totalOut.parentNode.classList.toggle('is-one', count === 1);
+    }
+    if (footCount) footCount.textContent = String(total);
 
 
     syncVisibility();
@@ -1881,7 +1967,6 @@
       ? true
       : (drift === 'on' ? read.signed <= w * ON_MARK : read.off <= w * ON_MARK);
     markActive(active, arrived);
-    if (indexOut) indexOut.textContent = pad(Math.min(count, active + 1));
 
     if (progress) {
       // The track stays: it is the rule the footer used to draw for itself.
@@ -2413,8 +2498,16 @@
     let keyboard = true;
     try { keyboard = event.target.matches(':focus-visible'); }
     catch (err) { /* older engine: treat focus as deliberate */ }
-    if (keyboard) driftStop();
+    if (keyboard) { driftStop(); keyHold(event.target); }
     else driftHold();
+  });
+
+  // Out of the row, or back onto the track itself, which is the scroller and
+  // steps the rail with the arrow keys rather than being one of its cards.
+  track.addEventListener('focusout', (event) => {
+    const to = event.relatedTarget;
+    if (to && to !== track && track.contains(to)) return;
+    keyRelease();
   });
 
   // A wheel scrolls the track natively and snap lands it on a card, with
