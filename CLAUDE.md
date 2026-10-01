@@ -1963,6 +1963,14 @@ applies here for the same reason. The rail counts what it is showing and the
 footer counts what exists — the masthead states neither, because the rail's own
 "8 studies" is where a reader takes the total from.
 
+**A control that is only an icon has a tooltip**, `data-tip` on the button:
+the theme toggle, the rail's pause, previous and next, the rail/list switch,
+and quick look's close and pause. The tooltip is the button's own
+`aria-label`, copied into `title` by a small observer in `index.js` whenever
+it changes, so the language switch and the pause buttons' state labels carry
+it with them and there is no second string to keep in step. A control that
+shows its words — the filter, EN/DA, quick look's chip on hover — needs none.
+
 ### The site is set in Mona Sans and Fragment Mono
 
 It was Plus Jakarta Sans and JetBrains Mono, and the design checker flagged the

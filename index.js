@@ -290,6 +290,36 @@
 })();
 
 
+// --- tooltips --------------------------------------------------------------
+//
+// A control that is only an icon says what it does on hover as well, for a
+// pointer that cannot read an aria-label. The words are the control's own
+// accessible name rather than a second string: the language switch rewrites
+// it, and the two pause buttons rewrite theirs from state, so a title written
+// into the markup would go stale the first time either moved.
+// One string, copied across whenever it changes. A title that matches the
+// name is not read out a second time.
+(function () {
+  const tipped = document.querySelectorAll('[data-tip]');
+  if (!tipped.length) return;
+
+  function tip(el) {
+    const label = el.getAttribute('aria-label');
+    if (label) el.setAttribute('title', label);
+    else el.removeAttribute('title');
+  }
+
+  tipped.forEach(tip);
+  if (!('MutationObserver' in window)) return;
+  const watch = new MutationObserver((records) => {
+    records.forEach((record) => tip(record.target));
+  });
+  tipped.forEach((el) => {
+    watch.observe(el, { attributes: true, attributeFilter: ['aria-label'] });
+  });
+})();
+
+
 // --- theme ---------------------------------------------------------------
 //
 // Site chrome only, like the language switch above, and for the same reason:
