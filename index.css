@@ -1831,6 +1831,18 @@ body.is-locked {
 
 :root[data-view="list"] .piece__expand-text { display: none; }
 
+/* One column in every state. The rail's chip opens a second track on hover
+   and focus to let its label in, and that rule reached the list too: with
+   the label hidden there, the empty track and its gap pushed the glyph 11px
+   off centre in a 36px circle whenever the row was hovered. */
+:root[data-view="list"] .piece__expand,
+:root[data-view="list"] .piece:hover .piece__expand,
+:root[data-view="list"] .piece:focus-within .piece__expand,
+:root[data-view="list"] .piece__expand:focus-visible {
+  grid-template-columns: auto;
+  column-gap: 0;
+}
+
 /* The row is the link, so the call to action is only its arrow. */
 :root[data-view="list"] .piece__cta {
   grid-area: go;
@@ -2325,6 +2337,9 @@ body.is-locked {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
+  /* 24px tall whatever the label's size, the target size the smaller pair
+     would otherwise fall under. */
+  min-height: 1.5rem;
   text-decoration: none;
   /* Actions, in the sans, as on the card. */
   font-family: var(--sans);
@@ -2340,28 +2355,27 @@ body.is-locked {
 
 .lightbox__link:hover { text-decoration: underline; }
 
-/* The way into the study: an outlined pill in the accent, the size of the
-   masthead's button, and filled on hover. Outlined rather than filled at
-   rest, because the filled accent pill on this page is the Figma file's, and
-   the two would read as the same action. */
+/* The way into the study leads by size and colour rather than by a box: the
+   accent at 17px, against the pair under it at 13px in the text's own grey.
+   An outlined pill was tried here and sat badly beside two text links, and
+   the filled accent pill on this page is the Figma file's. */
 .lightbox__link--study {
-  min-height: 2.75rem;
-  padding: 0 1.1rem 0 1.15rem;
-  border: 1px solid var(--accent);
-  border-radius: 999px;
-  font-size: 0.9375rem;
-  transition:
-    background-color 200ms var(--ease),
-    color 200ms var(--ease);
+  font-size: 1.0625rem;
 }
 
-.lightbox__link--study:hover {
-  text-decoration: none;
-  background: var(--accent);
-  color: var(--on-accent);
+.lightbox__link--study svg {
+  width: 0.9rem;
+  height: 0.9rem;
 }
 
-.lightbox__link--study:focus-visible { border-radius: 999px; }
+/* The study's two other homes, a step quieter than the way in. */
+.lightbox__links-out .lightbox__link {
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+  transition: color 200ms var(--ease);
+}
+
+.lightbox__links-out .lightbox__link:hover { color: var(--ink); }
 
 .lightbox__link:focus-visible {
   outline: 2px solid var(--ink);
