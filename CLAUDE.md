@@ -288,8 +288,9 @@ All page-level context lives here, and only here:
   decisions offering it — see **A React adapter, generated**
 - the arrival: `data-reveal` on the page's own blocks, the motion in its
   `<style>` and a script of its own — see **The demo page arrives** below
-- the companion Figma file's Community listing, as the last item in the
-  kicker — see **A card links the Figma file, and so does its demo page**
+- the companion Figma file's Community listing and the study's own folder on
+  GitHub, as the kicker's last two items, kept together — see **A card links
+  the Figma file, and so does its demo page**
 
 demo.html links `component.css`; it never redefines it. If the demo needs a
 style, that style belongs in a `<style>` block scoped to the demo page's own
@@ -1027,7 +1028,7 @@ Two things legitimately sweep every folder, and both are the same shape. One is
 an identity change — the site was renamed, and each `demo.html` carries its own
 copy of the back link's strings. The other is a page contract every demo has to
 meet, which is how the language switch arrived, how the theme switch did, how
-the page arrival did and how the Figma link did:
+the page arrival did, how the Figma link did and how the GitHub link did:
 each folder gets its own copy, written into its own file, in its own palette.
 
 Neither is a refactor. The test is what the folder owns afterwards: a sweep
@@ -1299,6 +1300,16 @@ was at opacity 0 until
 then, and the variants it opens onto — five to seven a study — were behind a
 control nobody had a reason to look for. On a coarse pointer it says its words
 from the start.
+
+**"Open study" is quick look's one button.** It is an outlined pill in the
+accent, 44px tall and 15px, filled on hover, on its own line; under it, 16px
+down, "Open in Figma" and "Open on GitHub" sit side by side as text links.
+All three were one row of identical accent links for a while, which made the
+way into the study the same weight as the two ways out of the site, and on a
+narrow panel split the Figma and GitHub pair across two lines. Outlined rather
+than filled, because the filled accent pill on this page is the Figma file's.
+Measured 5.07:1 in light and 6.24:1 in dark for the label and its outline,
+6.66:1 for the label on the hover fill.
 
 **In landscape from 48rem, quick look sits side by side**: the preview on the
 left at the panel's full height, and the title, the variants, the note and the
@@ -1649,8 +1660,19 @@ most of the others its dark theme clears the floor by a third of a point. The
 lede's tone measures 5.72 to 9.60 across every page in both themes. The accent
 is the underline and not the text because as text it does not clear 4.5:1 at
 11px on every ground. An `::after` stretches the hit area to 24px tall without
-moving the line — measured at 1440, 390 and 320 on every page, and the kicker
-stays one line at 320 with `NAVIGATION` in it.
+moving the line — measured at 1440, 390 and 320 on every page.
+
+**And GitHub beside it**, `…/tree/main/<folder>`, the study's own folder: a
+study lives in three places, the page, the Figma file and the repository, and
+the page names the other two side by side, set alike, as quick look does. The
+two are one `.demo__kicker-links` span that does not wrap inside, so where the
+kicker wraps, the pair moves to the next line together rather than leaving
+GitHub on a line of its own. That is at 320 on every page and at 390 on the
+toolbar's, which has `NAVIGATION` in it: "2026-09 · Card ·" and then
+"Figma ↗ · GitHub ↗". The kicker held one line at 320 with the Figma link
+alone; it costs a line there now. Like the canonical URL, the address is
+absolute and the folder's own, and `_template/` carries it as
+`YYYY-MM-slug` to be filled in with the folder's name.
 
 The URL is written on every card and in every kicker rather than once in the
 folder's `notes.md`, which is the opposite of where the `Inspiration:` line
@@ -2255,6 +2277,23 @@ true as the React adapters arrive, because an adapter is a wrapper for an app
 that already has React and the component inside it still depends on nothing.
 It does not name React: one study of eight has an adapter so far, and a row
 of facts is not the place for one that is only true of a few.
+
+**The blurb says where to copy one out from.** "Copy one out and it keeps
+working" used to stop there, with nothing on the page linking the repository;
+the GitHub icon in the handles is the profile. The line under it links the
+repository, and quick look links each study's own folder,
+`…/tree/main/<folder>`, as "Open on GitHub". It sits beside "Open in Figma",
+set alike and grouped so the pair wraps as one: the study's two other homes,
+of equal weight, after "Open study".
+The address is written once, on the footer link's `data-repo`, and quick look
+reads it from there; the folder is the first segment of the card's own link.
+
+The ask for a star is a line beside that link — "Star it there if it is useful
+to you." — not a modal in front of it. A reader who has clicked through to
+GitHub has already decided to go, a modal is a thing to dismiss on the way,
+and the star button is where the link lands. Stars are not one of the two
+things PRODUCT.md counts as success; if they become one, that is where it is
+written down.
 
 **The disclaimer rule binds here too.** It is written above for `notes.md` and
 it is the same rule: this paragraph ended "none is a copy of one", which argues

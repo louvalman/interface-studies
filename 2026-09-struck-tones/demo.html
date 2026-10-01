@@ -375,6 +375,11 @@
        is underlined in the accent, the way this page marks every link, since
        the accent as text does not clear 4.5:1 at 11px on every ground. The
        ::after widens the hit area to 24px tall without moving the line. */
+    /* The study's two other homes, kept together: where the kicker wraps on a
+       narrow screen, the pair goes to the next line as one rather than leaving
+       GitHub on a line of its own. */
+    .demo__kicker-links { white-space: nowrap; }
+
     .demo__kicker-link {
       position: relative;
       color: var(--demo-soft);
@@ -1572,13 +1577,22 @@
     <header class="demo__intro">
       <p class="demo__kicker" data-reveal>
         2026-09 &middot; <span data-i18n="type">Aesthetic</span> &middot;
-        <a
-          class="demo__kicker-link"
-          href="https://www.figma.com/community/file/1683607518896928224/interface-studies"
-          target="_blank"
-          rel="noopener noreferrer"
-          data-i18n-aria="a11y.figma"
-          aria-label="Open in Figma">Figma<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true" focusable="false"><path d="M4 12 12 4M6 4h6v6" stroke-linecap="round" stroke-linejoin="round" /></svg></a>
+        <span class="demo__kicker-links">
+          <a
+            class="demo__kicker-link"
+            href="https://www.figma.com/community/file/1683607518896928224/interface-studies"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-i18n-aria="a11y.figma"
+            aria-label="Open in Figma">Figma<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true" focusable="false"><path d="M4 12 12 4M6 4h6v6" stroke-linecap="round" stroke-linejoin="round" /></svg></a> &middot;
+          <a
+            class="demo__kicker-link"
+            href="https://github.com/louvalman/interface-studies/tree/main/2026-09-struck-tones"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-i18n-aria="a11y.github"
+            aria-label="Open on GitHub">GitHub<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true" focusable="false"><path d="M4 12 12 4M6 4h6v6" stroke-linecap="round" stroke-linejoin="round" /></svg></a>
+        </span>
       </p>
       <h1 class="demo__heading" data-reveal data-i18n="heading">Struck tones</h1>
       <p class="demo__lede" data-reveal data-i18n="lede">
@@ -3012,6 +3026,7 @@ float sig(float t) {
       var DA = {
         'a11y.theme': 'M\u00f8rk tilstand',
         'a11y.figma': '\u00c5bn i Figma',
+        'a11y.github': '\u00c5bn p\u00e5 GitHub',
         'back': 'Alle studier',
         'notes.title': 'Beslutninger',
         'notes.type': 'Type',

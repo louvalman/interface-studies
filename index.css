@@ -2300,13 +2300,21 @@ body.is-locked {
   color: var(--ink-soft);
 }
 
-/* The two links sit in a row. Measured at the panel's 288px floor, both fit
-   on one line in English and in Danish, so the wrap is a floor under a label
-   longer than these rather than something the current pair reaches — and it
-   is a wrap rather than a squeeze because these are two whole labels, not a
-   line of prose. */
+/* "Open study" first and on its own line, the one button in the panel;
+   then, a step quieter, the study's two other homes. The gap between them is
+   wider than the gap inside the pair, so the button reads as the action and
+   the pair as where else it lives. */
 .lightbox__links {
   display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+/* Figma and GitHub, side by side and set alike: the study's two other homes,
+   one flex item in the row so the pair moves to the next line together. */
+.lightbox__links-out {
+  display: inline-flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0.35rem 1.1rem;
@@ -2331,6 +2339,29 @@ body.is-locked {
 .lightbox__link[hidden] { display: none; }
 
 .lightbox__link:hover { text-decoration: underline; }
+
+/* The way into the study: an outlined pill in the accent, the size of the
+   masthead's button, and filled on hover. Outlined rather than filled at
+   rest, because the filled accent pill on this page is the Figma file's, and
+   the two would read as the same action. */
+.lightbox__link--study {
+  min-height: 2.75rem;
+  padding: 0 1.1rem 0 1.15rem;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  font-size: 0.9375rem;
+  transition:
+    background-color 200ms var(--ease),
+    color 200ms var(--ease);
+}
+
+.lightbox__link--study:hover {
+  text-decoration: none;
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.lightbox__link--study:focus-visible { border-radius: 999px; }
 
 .lightbox__link:focus-visible {
   outline: 2px solid var(--ink);
@@ -2481,6 +2512,51 @@ body.is-locked {
   font-size: 0.9375rem;
   line-height: 1.6;
   color: var(--ink-soft);
+}
+
+/* Where to copy a study out from. A link in prose, so set as the page sets
+   links in prose — the text's own ink, underlined in the accent — with the
+   arrow that says it leaves the site. The star line beside it is quieter:
+   it asks, and it is not the link. */
+.foot__source {
+  margin: 1rem 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.75rem;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+.foot__source-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.3em;
+  transition: text-decoration-thickness 200ms var(--ease);
+}
+
+.foot__source-link:hover { text-decoration-thickness: 2px; }
+
+.foot__source-link:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.foot__source-arrow {
+  width: 0.75rem;
+  height: 0.75rem;
+  flex: none;
+}
+
+.foot__source-star {
+  font-size: 0.8125rem;
+  color: var(--muted);
 }
 
 /* The provenance line, a step quieter than the blurb above it: it is there
