@@ -1076,8 +1076,29 @@ it cramped the masthead into 308px: the headline on three lines, the lede five,
 and the Figma file a mono value in a meta row nobody's eye went to. The band
 gives the headline two lines and the lede a readable measure, and it pays for
 the height with the rail's head, which went from two rows and a row of filter
-chips to one slim line. The headline and the aside centre on each other;
-aligned to a shared bottom line, the headline sat low under an empty band.
+chips to one slim line.
+
+**The band stands on the rail's columns.** The headline spans the first two
+cards and the lede starts where the third card does, two cards wide, from the
+same `--card-w` and `--rail-gap` the track lays the cards out with — so the
+masthead's edge is a card's edge at every width and in both card sizes:
+x=720 at 1470, 824 at 1920. The two halves used to be shares of the page,
+centred on each other, which put the lede at an x nothing else used, 156px
+from the headline at 1470 and further at 1920, with neither tops nor bottoms
+meeting. They are top-aligned now: the lede starts on the headline's line and
+runs on under it. Where the window is too narrow for two cards and a lede,
+below about 1100px, the lede keeps 24rem and the headline's column gives way,
+so the band holds without the card edge.
+
+**Its spacing is one scale, smallest inside and largest at the edge**: 20px
+from the lede to its button, 40px from the mark's line to the headline, 56px
+from the masthead to the rail. It was the other way round, 47px above the
+headline and 24px between the Figma button and the rail's own row of pills,
+so the button read as one of the rail's controls and the top felt cramped
+exactly where it should have ended. A one-block version was tried on a branch
+and dropped: stacking the lede under a one-line headline aligned everything to
+one edge, but it put the headline 20px under the mark and left the button
+floating mid-page, aligned only to the headline's full stop.
 
 **A shorter window gets a narrower card**, 288px rather than 336 below 60rem of
 height, so a card's title is on screen with its thumbnail and not a scroll
@@ -1085,8 +1106,11 @@ under it: the frame is 4:5 off the card's width, and at 336px the title sat
 under the fold of a 1470x802 laptop. 288 keeps `--preview-scale` an exact 0.6.
 It answers to height because the fold does, and a tall screen keeps the wider
 card, which is also what lets a wide rail keep looping. Measured with the
-arrival finished: the first card's title clears the fold by 21px at 1470x802
-in both languages and has room to spare from 900px of height up. It does not
+arrival finished: the first card's title clears the fold by 25px at 1470x802
+in both languages, at y=777, and has room to spare from 900px of height up.
+The spacing scale above cost 43px of that against the band before it, most of
+it the gap above the rail; the phone's first title went from y=754 to 778 at
+390x844, still above the fold. It does not
 at 1280x720, nor at 1024x768 in Danish, nor on a phone, where the masthead
 stacks above the rail; the original masthead showed 27% of the card at 1470,
 title nowhere.

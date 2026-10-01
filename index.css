@@ -536,13 +536,20 @@ body.is-locked {
    the Figma link a mono footnote under it. The band keeps the headline on
    two lines and gives the lede a readable measure, and at 1470x802 the first
    card is still about two thirds on screen, the rail head having gone down
-   to one line to pay for it. */
+   to one line to pay for it.
+
+   Its spacing is one scale, smallest inside and largest at the edge: the lede
+   to its button, then the mark's line to the headline, then the masthead to
+   the rail. It was the other way round — 47px above the headline, 24px
+   between the Figma button and the rail's own row of pills — so the button
+   read as one of the rail's controls and the top felt cramped where it
+   should have ended. */
 .head {
-  padding: var(--bar-top) var(--gutter) clamp(1.25rem, 2vw, 1.5rem);
+  padding: var(--bar-top) var(--gutter) clamp(2.25rem, 3.8vw, 3.5rem);
 }
 
 .head__eyebrow {
-  margin: 0 0 clamp(1.25rem, 2.4vw, 2rem);
+  margin: 0 0 clamp(1.5rem, 2.8vw, 2.5rem);
   min-height: var(--bar-h);
   display: flex;
   align-items: center;
@@ -594,7 +601,7 @@ body.is-locked {
   align-items: center;
   gap: 0.6rem;
   min-height: 2.75rem;
-  margin-top: 1rem;
+  margin-top: 1.25rem;
   padding: 0 1.15rem 0 1rem;
   border-radius: 999px;
   background: var(--accent);
@@ -630,19 +637,32 @@ body.is-locked {
   .figma-btn:hover .figma-btn__arrow { transform: translate(2px, -2px); }
 }
 
-/* Side by side from 64rem: the headline takes the wider share, and the two
-   columns centre on each other. Aligned to a shared bottom line they left the
-   headline sitting low, under an empty band as tall as the lede was longer.
-   Below it the three stack, in reading order. */
+/* Side by side from 64rem, on the rail's own columns. The headline spans the
+   first two cards and the lede starts where the third card does, two cards
+   wide: the same --card-w and --rail-gap the track lays the cards out with,
+   so the masthead's edge is a card's edge at every width and in both card
+   sizes. It used to be two shares of the page centred on each other, which
+   put the lede at an x nothing else used, 156px from the headline at 1470 and
+   further at 1920, with neither tops nor bottoms meeting.
+
+   Top-aligned: the lede starts on the headline's line and runs on under it,
+   which is what a reader takes as one statement. Where the window is too
+   narrow for two cards and a lede, the lede keeps 24rem and the headline's
+   column gives way, so the band still holds without the card edge.
+   Below 64rem the three stack, in reading order. */
 @media (min-width: 64rem) {
   .head__body {
     display: grid;
-    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
-    column-gap: clamp(3rem, 6vw, 8rem);
-    align-items: center;
+    grid-template-columns:
+      minmax(0, calc(var(--card-w) * 2 + var(--rail-gap)))
+      minmax(min(24rem, 100%), 1fr);
+    column-gap: var(--rail-gap);
+    align-items: start;
   }
 
   .head__aside { margin-top: 0; }
+
+  .head__lede { max-width: calc(var(--card-w) * 2 + var(--rail-gap)); }
 }
 
 /* --- rail ------------------------------------------------------------- */
@@ -2437,10 +2457,14 @@ body.is-locked {
 }
 
 @media (min-width: 64rem) {
+  /* On the rail's columns, as the masthead is, so the two bands share an
+     edge: the text starts where the third card does. */
   .foot__invite {
     display: grid;
-    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
-    column-gap: clamp(3rem, 6vw, 8rem);
+    grid-template-columns:
+      minmax(0, calc(var(--card-w) * 2 + var(--rail-gap)))
+      minmax(min(24rem, 100%), 1fr);
+    column-gap: var(--rail-gap);
     align-items: center;
   }
 
