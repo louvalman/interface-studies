@@ -207,17 +207,17 @@
          row: it makes this a different kind of object from everything round
          it, which a row of facts did not want and a button does. -->
       <a
-        class="head__figma"
+        class="figma-btn head__figma"
         href="https://www.figma.com/community/file/1683607518896928224/interface-studies"
         target="_blank"
         rel="noopener noreferrer"
         data-reveal>
-        <svg class="head__figma-mark" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false">
+        <svg class="figma-btn__mark" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false">
           <path d="M8 .5H5.5a2.5 2.5 0 0 0 0 5H8zM8 5.5H5.5a2.5 2.5 0 0 0 0 5H8zM8 10.5H5.5a2.5 2.5 0 0 0 0 5H8zM8 .5h2.5a2.5 2.5 0 0 1 0 5H8z" />
           <circle cx="10.5" cy="8" r="2.5" />
         </svg>
         <span data-i18n="head.figma">Open the Figma file</span>
-        <svg class="head__figma-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false">
+        <svg class="figma-btn__arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false">
           <path d="M4 12 12 4M6 4h6v6" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
       </a>
@@ -1182,6 +1182,37 @@
     </section>
 
     <footer class="foot">
+      <!-- The page closes on the shape it opened with: a statement on the left,
+         and beside it the Figma file, the same button the masthead carries.
+         Someone who has read down past the rail has seen the studies; the
+         file is the other half of what the site counts as success, and the
+         end of the page is where a next step is looked for. -->
+      <div class="foot__invite" data-reveal>
+        <h2 class="foot__invite-title" data-i18n="foot.inviteTitle">
+          Take the set with you.
+        </h2>
+        <div class="foot__invite-aside">
+          <p class="foot__invite-text" data-i18n="foot.inviteText">
+            Every study is drawn in the Figma file too, a page each, with its
+            variants and its motion, ready to duplicate.
+          </p>
+          <a
+            class="figma-btn foot__figma"
+            href="https://www.figma.com/community/file/1683607518896928224/interface-studies"
+            target="_blank"
+            rel="noopener noreferrer">
+            <svg class="figma-btn__mark" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false">
+              <path d="M8 .5H5.5a2.5 2.5 0 0 0 0 5H8zM8 5.5H5.5a2.5 2.5 0 0 0 0 5H8zM8 10.5H5.5a2.5 2.5 0 0 0 0 5H8zM8 .5h2.5a2.5 2.5 0 0 1 0 5H8z" />
+              <circle cx="10.5" cy="8" r="2.5" />
+            </svg>
+            <span data-i18n="head.figma">Open the Figma file</span>
+            <svg class="figma-btn__arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false">
+              <path d="M4 12 12 4M6 4h6v6" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </a>
+        </div>
+      </div>
+
       <div class="foot__main">
         <div class="foot__brand" data-reveal>
           <p class="foot__mark">

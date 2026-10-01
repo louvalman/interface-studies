@@ -1474,10 +1474,11 @@ It frames the studies as they are now rather than as they were, which its
 `archive/` breaks no page — the same test `tools/` passes — and the study
 rules do not reach it, since it is not a study.
 
-### Figma is on the page twice, and the two are not the same link
+### Figma is on the page as a file and as a profile, and they are not the same link
 
-The button in the masthead is the companion file on Figma Community. The circle
-in the footer's handles nav is the profile. One is where this set is also
+The button in the masthead is the companion file on Figma Community, and so is
+the same button closing the footer. The circle in the footer's handles nav is
+the profile. One is where this set is also
 drawn; the other is that the person has an account, which is what that nav is
 for — the same test that keeps the tip jar out of it.
 
@@ -1494,6 +1495,14 @@ brand glyph would have made one fact a different kind of object from the facts
 around it. A button is a different kind of object, and the mark says where it
 goes before the words do. The footer's mark labels a handle, which is a
 different thing, so the two are not the same use twice.
+
+**The page closes on it too.** The footer opens on a band that mirrors the
+masthead's, a size down: "Take the set with you." on the left, and beside it
+what the file holds and the same button. Someone who has read down past the
+rail has seen the studies, and the end of a page is where a next step is
+looked for; the footer used to end on credits, with nothing asked. It is one
+block, `.figma-btn`, in both places rather than the masthead's class borrowed,
+and a hairline under the band hands over to the colophon.
 
 It says "Open the Figma file" rather than naming the listing, because that is
 the action; the Community listing is where it lands, for the reasons under **A
@@ -2182,8 +2191,9 @@ to 39 — because what the load spends is the previews booting, not this.
 
 ### The footer says each thing once, and says none of it twice
 
-Two paragraphs and a meta list: what a folder is, where a study started, and
-the facts about the set.
+A closing band, then two paragraphs and a meta list: the invitation to the
+Figma file (see **Figma is on the page as a file and as a profile**), what a
+folder is, where a study started, and the facts about the set.
 
 **The blurb states the self-containment positively and once.** It was three
 negations for a while — "no shared stylesheet, no build step, no dependency on
