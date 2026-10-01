@@ -1249,8 +1249,8 @@ set off, so "Start the carousel again" was wrong in exactly the state where the
 control matters most, and the word carried nothing a reader needed in the other.
 
 The rail loops, and so drifts, while the row can cover the viewport with a card
-to spare: `client <= (ring - 2) * step`, which at eight cards and a 336px card
-is 2184px. The 288px card a short window gets lowers that ceiling, which is
+to spare: `client <= (ring - 2) * step`, which with ten in the ring — eight
+studies and two forthcoming slots — and a 336px card is 2912px. The 288px card a short window gets lowers that ceiling, which is
 one reason it is keyed to height: the wide screens that would reach it are
 tall ones, and keep the 336px card. Past that it is finite and the drift control hides itself — the one
 case documented under `loopable()`, and the ceiling rises by a card with every
@@ -1931,13 +1931,20 @@ fling both on the compositor — a heavy preview costs a busy main thread that
 nothing is waiting on. The lesson is the order to look in. Measure the thread
 only after establishing that something on it is in the way.
 
-The three cards at the end of the rail are forthcoming slots — a month, a year
-and a title, in a dashed frame. They are in the ring and recycle with the rest;
-`real()` skips them, so the counts and the progress bar go on counting studies,
-and the filter hides all three at once because a slot has no type to be narrowed
-to. Three rather than one because the row reads as a set and a single trailing
-placeholder reads as an accident. When a study lands, replace the slot whose
-month it is.
+The two cards at the end of the rail are forthcoming slots — "Est. start",
+a month and a year over the title "Forthcoming study", in a dashed frame. They
+are in the ring and recycle with the rest; `real()` skips them, so the counts
+and the progress bar go on counting studies, and the filter hides both at once
+because a slot has no type to be narrowed to. The list shows only the nearest.
+
+There were three, a month each and nothing else, and a month that passed
+without a study left a slot promising the past: on the first of October the
+first slot was "October" with nothing to say it was an estimate. The estimate
+is the fix — it says the set is still growing without promising a cadence.
+Two rather than one for the loop's sake, not the look's: the ring needs its
+length to keep looping on a wide screen (see the ceiling above), and with one
+slot a 2560px window stopped looping and lost its drift. When a study lands,
+replace the slot whose month it was, and move the other on a month.
 
 The rail's head is one line — `.rail__head` — with where you are and what you
 are looking at on the left, the count and the type filter, and how to move and
