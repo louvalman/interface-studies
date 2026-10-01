@@ -60,12 +60,13 @@
       'head.lede': 'Én komponent pr. studie, bygget i Figma og kode, så lille, '
         + 'at den er til at gennemskue.',
       'head.ledeHint': 'Hold musen over et kort for at afspille det, tag et '
-        + 'hurtigt kig på dets varianter, eller åbn studiet for at se det '
-        + 'i sin helhed.',
+        + 'hurtigt kig på dets varianter, eller åbn studiet for '
+        + 'beslutningerne og teknikkerne bag.',
       'head.ledeHintTouch': 'Tryk på hurtigt kig for at afspille et kort og '
-        + 'bladre gennem dets varianter, eller åbn studiet for at se det '
-        + 'i sin helhed.',
-      'head.figma': 'Åbn Figma-filen',
+        + 'bladre gennem dets varianter, eller åbn studiet for '
+        + 'beslutningerne og teknikkerne bag.',
+      'meta.latest': 'Seneste',
+      'meta.figma': 'Community-fil',
       'rail.study': 'Studie',
       'rail.studies': 'Studier',
       'type.card': 'Kort',
@@ -74,14 +75,14 @@
       'type.layout': 'Layout',
       'filter.all': 'Alle',
       'piece.liquidGlassToolbar.title': 'Liquid glass toolbar',
-      'piece.liquidGlassToolbar.note': 'Én glasflade der skifter form, i seks '
-        + 'materialer fra én opskrift: det valgte punkt folder sig ud til en '
-        + 'pille med etiket, søgning til et felt, loggen til et panel.',
+      'piece.liquidGlassToolbar.note': 'Én glasflade der skifter form — det '
+        + 'valgte punkt folder sig ud til en pille med etiket, søgning til et '
+        + 'felt, loggen til et panel — i seks materialer fra én opskrift.',
       'cta.quickLookToolbar': 'Hurtigt kig: Liquid glass toolbar',
       'piece.shaderTokenField.title': 'Afgr\u00e6nsede shaders',
       'piece.shaderTokenField.note': 'Et gradientfelt tegnet to gange ud fra '
-        + '\u00e9n angivelse, \u00e9n gang af en CSS-stopliste og \u00e9n '
-        + 'gang af en WebGL-shader, s\u00e5 de to stemmer overens af '
+        + '\u00e9n angivelse \u2014 \u00e9n gang af en CSS-stopliste, \u00e9n '
+        + 'gang af en WebGL-shader \u2014 s\u00e5 de to stemmer overens af '
         + 'konstruktion. Hvert fragments lysstyrke afgr\u00e6nses til et '
         + 'angivet b\u00e5nd, og det er d\u00e9t, der l\u00e6gger et garanteret '
         + 'kontrastforhold under teksten.',
@@ -97,13 +98,13 @@
       'piece.bentoGrid.note': 'Syv fliser, der hver angiver den plads, de '
         + 'ønsker, på et grid, der afkorter hvert spænd efter sit eget '
         + 'antal kolonner. Hver flise svarer på den plads, den lander i, '
-        + 'frem for på den modifikator, den fik, og åbner man én, pakkes '
+        + 'frem for på den modifikator, den fik — og åbner man én, pakkes '
         + 'tavlen om omkring den.',
       'cta.quickLookBento': 'Hurtigt kig: Interaktivt bento-grid',
       'piece.inkedPlate.title': 'Kort med tegnede plader',
       'piece.inkedPlate.note': 'En billedplade og en tekstplade med afskårne '
         + 'hjørner mod hinanden, over et grid af punkter med snitmærker. '
-        + 'Stregtegningen tegner sig selv ved indlæsning i ren CSS: hver '
+        + 'Stregtegningen tegner sig selv ved indlæsning i ren CSS — hver '
         + 'streg angiver en længde på 1, så ét sæt keyframes tegner dem alle '
         + 'uden at måle nogen af dem.',
       'cta.quickLookInked': 'Hurtigt kig: Kort med tegnede plader',
@@ -124,7 +125,7 @@
       'piece.detailReveal.note': 'Et detaljepanel der stiger op fra bundkanten '
         + 'ved hover og skubber den hvilende etiket op foran sig. Rummer ethvert '
         + 'indhold; en kortvariant tilføjer højdekurver og en pulserende nål.',
-      'cta.openStudy': 'Åbn studiet',
+      'cta.openDemo': 'Åbn demo',
       'cta.openFigma': 'Åbn i Figma',
       'cta.quickLook': 'Hurtigt kig',
       'cta.quickLookOf': 'Hurtigt kig: Kort med detaljepanel',
@@ -158,8 +159,6 @@
       'a11y.filter': 'Filtrér efter type',
       'a11y.variants': 'Varianter',
       'a11y.closeQuickLook': 'Luk hurtigt kig',
-      'a11y.pauseVariants': 'Sæt varianterne på pause',
-      'a11y.playVariants': 'Afspil varianterne',
       'a11y.livePreview': 'Live forhåndsvisning af komponent',
       'a11y.theme': 'Mørk tilstand',
       'a11y.view': 'Visning',
@@ -454,6 +453,7 @@
   const progress = document.querySelector('[data-rail-progress]');
   const indexOut = document.getElementById('rail-index');
   const totalOut = document.getElementById('rail-total');
+  const metaLatest = document.getElementById('meta-latest');
   const footCount = document.getElementById('foot-count');
   const footTypes = document.getElementById('foot-types');
   const ledeHint = document.querySelector('[data-lede-hint]');
@@ -1086,18 +1086,20 @@
   // Long enough to read. The slowest open state in the set settles inside a
   // second, so this is the entry, a beat to look at it, and the way back out.
   const DEMO_HOLD = 2200;
-  // Between one card starting and the next, and it is the hold: a relay, one
-  // card performing at a time, the next opening as the last one closes. Not
-  // decoration either way — a performing card is an unpaused card, and every
-  // card starting at once is every preview restyling at once.
+  // Between one card starting and the next. Not decoration: the wave is what
+  // keeps the cost off a single frame, since a performing card is an unpaused
+  // card and every card starting at once is every preview restyling at once.
   //
-  // It was 850, a ripple: three cards open at the peak and a wave across four
-  // spending 4.75s of every 6, so something was nearly always moving and the
-  // rail read as several things happening at once rather than one card being
-  // shown. As a relay the only overlap is the hand-off, one card closing while
-  // the next opens. A wave across four now takes 8.8s, and the quiet after it
-  // is DEMO_REST as before.
-  const DEMO_STAGGER = DEMO_HOLD;
+  // It is a relay rather than a ripple, and the number is what makes it one.
+  // Against the hold, the stagger decides how many cards are open together:
+  // four of them overlap while it is under DEMO_HOLD / 3, and at 420 the whole
+  // row was open for the better part of a second, which reads as the rail
+  // flashing rather than as a wave crossing it. Past that third the count comes
+  // down a card at a time — here three at the peak, each one clearly leading
+  // the next, and every card gets a beat where it is the newest thing moving.
+  // One at a time exactly would want the stagger at DEMO_HOLD or the hold
+  // shortened to meet it; that is a different effect and not what this is.
+  const DEMO_STAGGER = 850;
   // A beat that could not run asks again on this rather than waiting out the
   // full gap. Everything it waits on — a pointer gone, the overlay closed, a
   // gesture ended — arrives without announcing itself.
@@ -1266,20 +1268,19 @@
   // with the part of the set you are most likely to want and does not
   // reshuffle itself every time a study is added.
   const filterRow = document.querySelector('[data-rail-filter]');
-  const filterSelect = document.querySelector('[data-rail-filter-select]');
-  const filterValue = document.querySelector('[data-rail-filter-value]');
   const ghosts = Array.from(track.querySelectorAll('.piece--ghost'));
 
   const FILTER_ALL = '*';
 
-  // All is the only label the filter owns — every other option borrows a
+  // The All chip is the only label this row owns — every other chip borrows a
   // card's badge text — so its English lives here with the nav labels rather
   // than in markup index.js never sees again. The i18n module reads the
-  // document once at start-up; options built afterwards are not in that list
-  // and are re-labelled on the lang:change below instead.
+  // document once at start-up; chips built afterwards are not in that list and
+  // are re-labelled on the lang:change below instead.
   const FILTER_EN = { 'filter.all': 'All' };
 
   let filterType = FILTER_ALL;
+  let filterBtns = [];
   let filterCopy = null;
 
   function filterText(key) {
@@ -1292,9 +1293,9 @@
     return key.startsWith('type.') ? key.slice(5) : '';
   }
 
-  // The label an option shows: the card's own badge text, so English comes
-  // from the markup and Danish from the table the rest of the page uses, and
-  // the filter never holds a type name of its own in either language.
+  // The label a chip shows: the card's own badge text, so English comes from
+  // the markup and Danish from the table the rest of the page uses, and this
+  // row never holds a type name of its own in either language.
   function typeLabel(type) {
     const piece = allPieces().find((el) => typeOf(el) === type);
     const badge = piece && piece.querySelector('.piece__type');
@@ -1314,7 +1315,9 @@
     // slot has no type to be narrowed to.
     ghosts.forEach((el) => el.classList.toggle('is-filtered', filterType !== FILTER_ALL));
 
-    renderFilterValue();
+    filterBtns.forEach((btn) => {
+      btn.setAttribute('aria-pressed', btn.dataset.type === filterType ? 'true' : 'false');
+    });
 
     // The rail is a different length now: renumber it, put it back at the
     // start, rebuild the row the loop cycles through, and let sync() redo the
@@ -1325,7 +1328,7 @@
     track.scrollLeft = 0;
     rebuildRing();
 
-    // Not restarted here: the filter handler stops the drift on purpose, and a
+    // Not restarted here: the chip handler stops the drift on purpose, and a
     // row that becomes loopable again on the way back to "All" is not a reason
     // to override that. The control is what offers it back.
     syncDriftBtn();
@@ -1334,9 +1337,8 @@
 
   // How many cards of each type, and the order the types are listed in:
   // commonest first, alphabetical where two are level. Two places read it —
-  // the filter's options and the footer's Types row — and a row that ordered
-  // them differently from the filter above would read as a different set of
-  // things.
+  // the filter chips and the footer's Types row — and a row that ordered them
+  // differently from the chips above would read as a different set of things.
   function typeCounts() {
     const counts = new Map();
     allPieces().forEach((piece) => {
@@ -1366,104 +1368,103 @@
       : '\u2014';
   }
 
-  const labelFor = (type) =>
-    type === FILTER_ALL ? filterText('filter.all') : typeLabel(type);
-
-  // The visible half of the control: the current choice, and a filled state
-  // while the rail is narrowed, because that is a state the whole rail is in
-  // and it should read as one from across the page. The select underneath
-  // says the same thing to everything that is not looking.
-  function renderFilterValue() {
-    if (!filterValue) return;
-    filterValue.textContent = labelFor(filterType);
-    filterRow.classList.toggle('is-active', filterType !== FILTER_ALL);
-  }
-
   function buildFilter() {
-    if (!filterRow || !filterSelect) return;
+    if (!filterRow) return;
 
     const counts = typeCounts();
 
     // One type is not a choice, and no types means no keys to read.
     if (counts.size < 2) {
       filterRow.hidden = true;
+      filterBtns = [];
       return;
     }
 
-    filterSelect.textContent = '';
+    const order = typeOrder(counts);
 
-    // The select's own face, for an engine that lets a select be styled
-    // (appearance: base-select): the icon and a live copy of the chosen
-    // option, which is what <selectedcontent> is. An engine that does not
-    // draws a select from its options alone and never renders these, and the
-    // label round the select draws the face instead — see index.css.
-    const face = document.createElement('button');
-    face.className = 'rail__filter-face';
-    const icon = filterRow.querySelector('.rail__filter-icon');
-    if (icon) face.appendChild(icon.cloneNode(true));
-    face.appendChild(document.createElement('selectedcontent'));
-    filterSelect.appendChild(face);
+    filterRow.textContent = '';
+    filterBtns = [FILTER_ALL].concat(order).map((type) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'rail__filter-btn';
+      btn.dataset.type = type;
+      btn.setAttribute('aria-pressed', type === filterType ? 'true' : 'false');
 
-    [FILTER_ALL].concat(typeOrder(counts)).forEach((type) => {
-      const n = type === FILTER_ALL ? allPieces().length : counts.get(type);
-      const option = document.createElement('option');
-      option.value = type;
-      // Three runs of text rather than one string, so a styled list can set
-      // the count apart, while a plain one — which reads only an option's
-      // text — still says "Card · 3" with the separator in it.
-      const name = document.createElement('span');
-      name.className = 'rail__filter-name';
-      name.textContent = labelFor(type);
-      const sep = document.createElement('span');
-      sep.className = 'rail__filter-sep';
-      sep.textContent = ' \u00b7 ';
-      const count = document.createElement('span');
-      count.className = 'rail__filter-n';
-      count.textContent = String(n);
-      option.append(name, sep, count);
-      filterSelect.appendChild(option);
+      const label = document.createElement('span');
+      label.textContent = type === FILTER_ALL ? filterText('filter.all') : typeLabel(type);
+      btn.appendChild(label);
+
+      const n = document.createElement('span');
+      n.className = 'rail__filter-count';
+      // The space is inside the text, not only in the margin: a screen reader
+      // reads the two spans as one run, and "Card3" is not what this says.
+      n.textContent = ' ' + (type === FILTER_ALL ? allPieces().length : counts.get(type));
+      btn.appendChild(n);
+
+      btn.addEventListener('click', () => {
+        if (filterType === type) return;
+        filterType = type;
+        // Filtering is a deliberate look at one part of the set; the rail
+        // sliding off it a second later is not what was asked for. In the
+        // list there is no rail moving to stop, and stopping it anyway would
+        // count as the reader having taken it, for good.
+        if (!listed()) driftStop();
+        applyFilter();
+      });
+
+      filterRow.appendChild(btn);
+      return btn;
     });
-    filterSelect.value = filterType;
 
-    renderFilterValue();
     filterRow.hidden = false;
+    syncFilterFade();
   }
 
-  if (filterSelect) {
-    filterSelect.addEventListener('change', () => {
-      filterType = filterSelect.value;
-      // Filtering is a deliberate look at one part of the set; the rail
-      // sliding off it a second later is not what was asked for. In the
-      // list there is no rail moving to stop, and stopping it anyway would
-      // count as the reader having taken it, for good.
-      if (!listed()) driftStop();
-      applyFilter();
+  // The row scrolls sideways on a narrow screen rather than wrapping, which
+  // means a chip can sit outside it — and Chromium does not bring a chip that
+  // Tab reaches back into view on its own here, so the last option is focused
+  // and invisible. One call, and a no-op at every width where the row fits.
+  if (filterRow) {
+    filterRow.addEventListener('focusin', (event) => {
+      const btn = event.target.closest('.rail__filter-btn');
+      if (btn) btn.scrollIntoView({ inline: 'nearest', block: 'nearest' });
     });
   }
 
-  // The options carry card labels, so they are rewritten with everything
-  // else when the language changes. This runs after the module has
-  // re-labelled the badges, which is where every option but All reads from.
+  // Which end of the row wears a fade. The mask is CSS; what it cannot know is
+  // whether there is anything past either edge, which is a scroll position and
+  // two widths. A whole pixel of slack, because a scrollLeft at the end is
+  // fractional on a fractional device ratio and a permanent fade at an end
+  // with nothing past it is the one thing this is meant not to say.
+  function syncFilterFade() {
+    if (!filterRow || filterRow.hidden) return;
+    const max = filterRow.scrollWidth - filterRow.clientWidth;
+    const at = filterRow.scrollLeft;
+    filterRow.classList.toggle('is-fade-start', at > 1);
+    filterRow.classList.toggle('is-fade-end', max > 1 && at < max - 1);
+  }
+
+  if (filterRow) {
+    filterRow.addEventListener('scroll', syncFilterFade, { passive: true });
+    window.addEventListener('resize', syncFilterFade);
+  }
+
+  // The chips carry card labels, so they are rewritten with everything else
+  // when the language changes. This runs after the module has re-labelled the
+  // badges, which is where every chip but All reads its text from.
   document.addEventListener('lang:change', (event) => {
     filterCopy = (event.detail && event.detail.copy) || null;
-    if (filterSelect) {
-      Array.from(filterSelect.options).forEach((option) => {
-        const name = option.querySelector('.rail__filter-name');
-        if (name) name.textContent = labelFor(option.value);
-      });
-      // <selectedcontent> copies the chosen option when the choice changes,
-      // not when the option's own text does, so a language switch left the
-      // face in the old language — measured, "Card" over a list of "Kort".
-      const face = filterSelect.querySelector('selectedcontent');
-      const chosen = filterSelect.selectedOptions[0];
-      if (face && chosen) {
-        face.replaceChildren(...Array.from(chosen.childNodes, (n) => n.cloneNode(true)));
-      }
-    }
-    renderFilterValue();
+    filterBtns.forEach((btn) => {
+      const type = btn.dataset.type;
+      btn.firstChild.textContent =
+        type === FILTER_ALL ? filterText('filter.all') : typeLabel(type);
+    });
     // Same strings, further down the page: the footer's Types row is the card
     // badges too, so it turns over with them rather than carrying its own.
     renderFootTypes();
+    // Danish labels are not the width English ones were, so the row may have
+    // gained or lost the overflow the fade is reporting.
+    syncFilterFade();
   });
 
   // --- rail -------------------------------------------------------------
@@ -1853,6 +1854,15 @@
     if (totalOut) totalOut.textContent = pad(count);
     if (footCount) footCount.textContent = pad(total);
 
+    // The newest study's month. order() has already sorted the rail newest
+    // first, so it is the first card's own date — read off the same attribute
+    // the sort uses rather than written down a second time. Numeric, so it
+    // needs no translating and no month table.
+    if (metaLatest) {
+      const newest = allPieces()[0];
+      const key = newest ? orderKey(newest) : '';
+      metaLatest.textContent = key ? key.slice(0, 7).replace('-', ' · ') : '—';
+    }
 
     syncVisibility();
 
@@ -1888,10 +1898,9 @@
       // What it fills with is no longer distance along the row — that is
       // nothing on a rail with no end — but how far through the set the card
       // in the read position is, which is what the number beside it says.
-      // A fraction, for the scale the fill is drawn with.
       progress.style.setProperty(
         '--rail-progress',
-        max > 0 && count > 0 ? ((active + 1) / count).toFixed(4) : '0'
+        max > 0 && count > 0 ? ((active + 1) / count * 100).toFixed(2) + '%' : '0%'
       );
     }
 
@@ -2366,26 +2375,12 @@
     return true;
   }
 
-  // Over a card is different, and it holds for as long as the pointer is
-  // there. Someone pointing at a card is reading it — its note runs to fifty
-  // words — and a rail that set off again after four still seconds carried
-  // the note out from under them; motion has no business continuing under a
-  // hover. The idle release is for the rest of the track, the gaps and the
-  // gutters, where a parked cursor really is furniture. A card that drifts in
-  // under a still pointer counts too: it lifts under the cursor, and the rail
-  // stops with it there. A mouse or a pen only; a finger's gesture is the
-  // touch handlers' business.
-  const onCard = (event) =>
-    !!(event && event.pointerType !== 'touch' && event.target &&
-      event.target.closest && event.target.closest('.piece'));
-
   function pointerAwake(event) {
     if (drift === 'off') return;        // taken for good; nothing to hold
-    const card = onCard(event);
-    if (!card && !pointerMoved(event)) return;
+    if (!pointerMoved(event)) return;
     clearTimeout(idleTimer);
     driftHold();
-    if (!card) idleTimer = setTimeout(() => driftRelease(0), POINTER_IDLE);
+    idleTimer = setTimeout(() => driftRelease(0), POINTER_IDLE);
   }
 
   track.addEventListener('pointerenter', (event) => {
@@ -2779,17 +2774,6 @@
     const variantBar = box.querySelector('[data-lightbox-variants]');
     const dotsOut = box.querySelector('[data-lightbox-dots]');
     const variantLabel = box.querySelector('[data-lightbox-variant-label]');
-    const announceOut = box.querySelector('[data-lightbox-announce]');
-    const playBtn = box.querySelector('[data-lightbox-play]');
-
-    // The play control's label is state, like the drift's, so its English is
-    // here and its Danish comes off the table the language module hands over.
-    const QL_EN = {
-      'a11y.pauseVariants': 'Pause the variants',
-      'a11y.playVariants': 'Play the variants'
-    };
-    let qlCopy = null;
-    const qlText = (key) => (qlCopy && qlCopy[key]) || QL_EN[key];
 
     const AUTOPLAY_MS = 4000;   // one variant every four seconds
     const NUDGE_MS = 260;       // a manual pick moves the marker at once
@@ -2810,20 +2794,6 @@
     let autoplayTimer = null;
     let paused = false;
 
-    // Two different holds, and only one of them lets go. `paused` is a pointer
-    // resting on the preview, and it ends when the pointer does. `autoplay` is
-    // whether the variants are playing at all, and a reader turns it off by
-    // taking a variant — a dot, an arrow key, focus moved into the panel, a
-    // click into the component — for as long as the overlay stays open. The
-    // same rule a preview's own rotation keeps: a reader outranks it, for
-    // good, because a variant that someone chose and that then moves on four
-    // seconds later has been taken away from them. The button is the way back.
-    let autoplay = 'on';
-
-    // open() puts focus on the close button itself, and that is not a reader
-    // moving it — so the focus rule below is told to look away while it does.
-    let placingFocus = false;
-
     const text = (el) => (el ? el.textContent.trim() : '');
 
     // Taking the body out of flow is what actually stops iOS scrolling the
@@ -2838,11 +2808,7 @@
     function unlockScroll() {
       document.body.classList.remove('is-locked');
       document.body.style.top = '';
-      // Instant, whatever the page's own scroll-behavior: the page is already
-      // where it was under the overlay, and html's smooth scrolling turned
-      // putting it back into a visible scroll from the top on every close —
-      // the 36px a reader saw after Escape.
-      window.scrollTo({ top: lockedAt, behavior: 'instant' });
+      window.scrollTo(0, lockedAt);
     }
 
     // Quick look runs the preview with pointer events on so the component's
@@ -2867,13 +2833,6 @@
     // width no longer depends on the result.
     let lightboxScale = 1;
 
-    // From 48rem, in landscape, the preview sits beside a fixed column rather than between a
-    // bar and a footer, and index.css sizes the stage from the scale. So the
-    // scale is worked out from the room the overlay has, less that column —
-    // not measured off a stage whose size would be the answer.
-    const sideBySide = window.matchMedia('(min-width: 48rem) and (orientation: landscape)');
-    const bar = box.querySelector('.lightbox__bar');
-
     function fitStage() {
       if (box.hidden) return;
 
@@ -2881,20 +2840,6 @@
       const previewW = parseFloat(rootStyle.getPropertyValue('--preview-w'));
       const previewH = parseFloat(rootStyle.getPropertyValue('--preview-h'));
       if (!previewW || !previewH) return;
-
-      if (sideBySide.matches && bar) {
-        panel.style.width = '';
-        const cs = getComputedStyle(box);
-        const room = (a, b) => parseFloat(cs[a]) + parseFloat(cs[b]);
-        const border = 2;   // the panel's own hairline, both sides
-        const width = box.clientWidth - room('paddingLeft', 'paddingRight')
-          - bar.getBoundingClientRect().width - border;
-        const height = box.clientHeight - room('paddingTop', 'paddingBottom') - border;
-        lightboxScale = Math.max(0, Math.min(width / previewW, height / previewH, 1));
-        box.style.setProperty('--lightbox-scale', lightboxScale.toFixed(4));
-        tellScale(frame, lightboxScale);
-        return;
-      }
 
       // Measure against the panel's natural width first.
       panel.style.width = '';
@@ -2946,7 +2891,7 @@
     // are the same number by construction, not two settings kept in step.
     function queueAutoplay() {
       stopAutoplay();
-      if (autoplay !== 'on' || paused || variants.length < 2) return;
+      if (paused || reduced.matches || variants.length < 2) return;
 
       const next = (variantIndex + 1) % variants.length;
       moveMarker(next, AUTOPLAY_MS);
@@ -2969,33 +2914,10 @@
       });
       variantLabel.textContent = variants[variantIndex].label;
 
-      // Said aloud only when a reader asked for it. The visible label above
-      // follows every step; this line follows only theirs.
-      if (settings.manual) announceOut.textContent = variants[variantIndex].label;
-
       // Autoplay has already walked the marker here; a manual pick has not.
       if (settings.marker !== false) moveMarker(variantIndex, NUDGE_MS);
 
       queueAutoplay();
-    }
-
-    function renderPlay() {
-      if (!playBtn) return;
-      playBtn.dataset.autoplay = autoplay;
-      playBtn.setAttribute(
-        'aria-label',
-        qlText(autoplay === 'on' ? 'a11y.pauseVariants' : 'a11y.playVariants')
-      );
-    }
-
-    // A reader has the variants now. The marker goes back to the dot it
-    // belongs to, since it was on its way to the next one.
-    function takeOver() {
-      if (autoplay === 'off') return;
-      autoplay = 'off';
-      stopAutoplay();
-      moveMarker(variantIndex, NUDGE_MS);
-      renderPlay();
     }
 
     // Built from what the preview reported, so the index stays ignorant of
@@ -3014,10 +2936,7 @@
         dot.className = 'lightbox__dot';
         dot.setAttribute('aria-label', variant.label);
         dot.setAttribute('aria-current', n === 0 ? 'true' : 'false');
-        dot.addEventListener('click', () => {
-          takeOver();
-          showVariant(n, { manual: true });
-        });
+        dot.addEventListener('click', () => showVariant(n));
         dotsOut.appendChild(dot);
         dotEls.push(dot);
       });
@@ -3087,9 +3006,7 @@
       }
     }
 
-    document.addEventListener('lang:change', (event) => {
-      qlCopy = (event.detail && event.detail.copy) || null;
-      renderPlay();
+    document.addEventListener('lang:change', () => {
       if (!box.hidden && currentPiece) fillFrom(currentPiece);
     });
 
@@ -3105,12 +3022,6 @@
       // :hover does the work and no message contract is involved.
       stopAutoplay();
       paused = false;
-      // Every overlay starts playing, except under reduced motion, where the
-      // variants wait to be asked — the button offers to play them, which is
-      // the rail's arrangement for its drift.
-      autoplay = reduced.matches ? 'off' : 'on';
-      renderPlay();
-      announceOut.textContent = '';
       variants = [];
       variantIndex = 0;
       marker = null;
@@ -3140,11 +3051,7 @@
       box.classList.add('is-open');
 
       const closeBtn = box.querySelector('.lightbox__close');
-      if (closeBtn) {
-        placingFocus = true;
-        closeBtn.focus();
-        placingFocus = false;
-      }
+      if (closeBtn) closeBtn.focus();
     }
 
     function close() {
@@ -3210,48 +3117,13 @@
       queueAutoplay();
     });
 
-    if (playBtn) {
-      playBtn.addEventListener('click', () => {
-        if (autoplay === 'on') {
-          takeOver();
-        } else {
-          autoplay = 'on';
-          renderPlay();
-          queueAutoplay();
-        }
-      });
-    }
-
-    // Focus moved inside the panel is a reader at the controls — tabbing to
-    // the dots, the links, the preview — and variants changing under them
-    // while they do is the thing 2.2.2 is about. The play button is left out:
-    // pressing it focuses it first, and it decides for itself.
-    panel.addEventListener('focusin', (event) => {
-      if (placingFocus || event.target === playBtn) return;
-      takeOver();
-    });
-
-    // A click into the component moves focus into its frame, which this
-    // document only sees as its own window losing focus. Read after the
-    // event, once activeElement has caught up. This is also the touch path:
-    // a finger has no hover to hold the stage with, so a tap on the preview
-    // is how it says this one.
-    window.addEventListener('blur', () => {
-      setTimeout(() => {
-        if (!box.hidden && document.activeElement === frame) takeOver();
-      }, 0);
-    });
-
     document.addEventListener('keydown', (event) => {
       if (box.hidden) return;
       if (event.key === 'Escape') { event.preventDefault(); close(); }
 
       if (variants.length > 1) {
-        if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
-          event.preventDefault();
-          takeOver();
-          showVariant(variantIndex + (event.key === 'ArrowRight' ? 1 : -1), { manual: true });
-        }
+        if (event.key === 'ArrowRight') { event.preventDefault(); showVariant(variantIndex + 1); }
+        if (event.key === 'ArrowLeft') { event.preventDefault(); showVariant(variantIndex - 1); }
       }
 
       if (event.key !== 'Tab') return;
@@ -3280,9 +3152,10 @@
 
   const LEDE_EN = {
     pointer: 'Hover a card to run it in place, take a quick look at its '
-      + 'variants, or open the study to see it in full.',
+      + 'variants, or open the study for the decisions and techniques '
+      + 'behind it.',
     touch: 'Tap quick look to run a card and step through its variants, or '
-      + 'open the study to see it in full.'
+      + 'open the study for the decisions and techniques behind it.'
   };
 
   // Held so a pointer-type change can re-render without waiting for the next
@@ -3406,36 +3279,9 @@
     });
   }, { passive: true });
 
-  // A card's date, written from its own data-date, which carries the day. The
-  // markup's slug says only the year and the month, and while every study came
-  // from one month, eight cards all read "2026 · 09" and the date said nothing.
-  // The browser's own date formatting does the language, so there is no month
-  // table to keep: "21 Sept 2026", "21. sep. 2026". A card dated only to the
-  // month keeps what its markup says, and so does every card without script.
-  function renderDates(lang) {
-    let format;
-    try {
-      format = new Intl.DateTimeFormat(lang === 'da' ? 'da-DK' : 'en-GB', {
-        day: 'numeric', month: 'short', year: 'numeric'
-      });
-    } catch (err) { return; }
-    allPieces().forEach((piece) => {
-      const key = piece.dataset.date || '';
-      const slug = piece.querySelector('.piece__slug');
-      if (!slug || !/^\d{4}-\d{2}-\d{2}/.test(key)) return;
-      const date = new Date(key.slice(0, 10) + 'T12:00');
-      if (!isNaN(date)) slug.textContent = format.format(date);
-    });
-  }
-
-  document.addEventListener('lang:change', (event) => {
-    renderDates(event.detail && event.detail.lang);
-  });
-
   renderLedeHint(null);
   order();
-  renderDates(document.documentElement.lang);
-  buildFilter();   // after order(), so the options count a settled rail
+  buildFilter();   // after order(), so the chips count a settled rail
   renderFootTypes();
   number();
 

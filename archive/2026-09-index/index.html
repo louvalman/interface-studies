@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Interface Studies</title>
+    <title>Interface Studies — index, September 2026 (archived)</title>
     <meta
       name="description"
       content="Exploring interaction and aesthetics. One component per study, built in Figma and code, small enough to stay legible." />
@@ -12,39 +12,16 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Fragment+Mono&family=Mona+Sans:wght@400;600&display=swap" />
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" />
 
-    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-    <link rel="canonical" href="https://interface-studies.pages.dev/" />
+    <link rel="icon" href="../../favicon.svg" type="image/svg+xml" />
 
-    <!-- What a link to this page looks like when it is pasted somewhere: a
-       title, a sentence and a card image, rather than a bare URL. og.png is a
-       1200x630 render of the masthead, kept as a file because no scraper runs
-       the page — Slack, Discord, iMessage and LinkedIn read these tags off the
-       raw HTML and fetch the image, and none of them will rasterise an SVG.
-
-       Slack, Discord and iMessage resolve a relative path against the page
-       they fetched; Facebook and LinkedIn want an absolute one. The host is
-       interface-studies.pages.dev, so og:image carries it, and og:url and the
-       canonical link below say which URL this page is. Move the host and all
-       three move with it. -->
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Interface Studies" />
-    <meta property="og:url" content="https://interface-studies.pages.dev/" />
-    <meta
-      property="og:title"
-      content="Interface Studies — exploring interaction and aesthetics" />
-    <meta
-      property="og:description"
-      content="One component per study, built in Figma and code, small enough to stay legible. Open one to see it in full." />
-    <meta property="og:image" content="https://interface-studies.pages.dev/og.png" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta
-      property="og:image:alt"
-      content="Interface Studies: exploring interaction and aesthetics." />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:creator" content="@LouisDyrhauge" />
+    <!-- Archived: the index as it stood on main at db496b6 (tag
+       index-2026-09), before the first-screen, type and quick-look passes.
+       Kept runnable as a record of that design; see DESIGN.md beside it. Only
+       its paths have changed, so it still frames the live studies from two
+       folders down, and it is not indexed or offered as the site's page. -->
+    <meta name="robots" content="noindex" />
 
     <link rel="stylesheet" href="index.css" />
 
@@ -130,10 +107,6 @@
     </div>
 
     <header class="head" id="top">
-      <!-- The site mark, on the controls' own line: the page's bar, with the
-         name at the left and the settings in the corner. It sat above the
-         headline as a label for a while, which spent a line of the fold on
-         saying the site's name twice over. -->
       <p class="head__eyebrow">
         <!-- The site mark: the field favicon.svg draws, minus the tile — the page
            is already that ground. A dot's size falls with its distance from the
@@ -155,11 +128,9 @@
          the page opens, or when it is scrolled to if it starts below the
          fold. "each" arrives child by child. The order and the motion are in
          index.css's arrival section; index.js only decides what is held. -->
-      <div class="head__body">
       <h1 class="head__title" data-i18n="head.title" data-reveal>
         Exploring interaction and aesthetics.
       </h1>
-      <div class="head__aside">
       <!-- The closing sentence tells you how to work the rail, and that is
          not the same instruction on a phone as on a laptop, so it is written
          by index.js from the pointer type, the way the rail's hint is, and
@@ -167,7 +138,7 @@
 
          It carries the pointer to the study pages rather than the sentence
          before it. Both halves wanted to say "open": the lede to send a
-         reader to the studies, the hint to say what the second affordance
+         reader to the decisions, the hint to say what the second affordance
          on a card does. Two of them back to back read as two instructions
          for what is one action, so the hint says it once and says what
          opening is for.
@@ -180,13 +151,13 @@
          variants, five to seven per study, behind a button nobody had a
          reason to press.
 
-         From 64rem it sits in the masthead's right-hand column, beside the
-         headline rather than under it, so its length costs the fold nothing
-         there. On a phone the masthead stacks and the sentence costs lines
-         above the rail. Opening is for the study itself — the component and
-         its design, seen in full — not for the decisions behind it: those
-         are there for whoever wants the why, and the sentence used to send
-         every reader to them. -->
+         It costs the lede a fourth line, and the first card 28px of the
+         810px fold: 191px of it showing, against 163px. Measured, the line
+         is the third clause rather than its length — a 92-character version
+         saying the same three things in as few words as it can sets the same
+         four lines. So the sentence is as full as it can afford to be
+         instead, which is where "and techniques" comes from: at 129
+         characters it still stops on the fourth line. -->
       <p class="head__lede" data-reveal>
         <span data-i18n="head.lede">
           One component per study, built in Figma and code, small enough to
@@ -194,40 +165,70 @@
         </span>
         <span data-lede-hint>
           Hover a card to run it in place, take a quick look at its variants,
-          or open the study to see it in full.
+          or open the study for the decisions and techniques behind it.
         </span>
       </p>
 
-      <!-- The companion Figma file, as the masthead's one call to action. It
-         was a value in a meta row of mono facts, set like a fact, and it read
-         as one; it is half of what the site counts as success, so it is a
-         button now, in the accent that on this page means "this leaves the
-         site". The mark is beside it for the reason it was kept out of the
-         row: it makes this a different kind of object from everything round
-         it, which a row of facts did not want and a button does. -->
-      <a
-        class="head__figma"
-        href="https://www.figma.com/community/file/1683607518896928224/interface-studies"
-        target="_blank"
-        rel="noopener noreferrer"
-        data-reveal>
-        <svg class="head__figma-mark" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false">
-          <path d="M8 .5H5.5a2.5 2.5 0 0 0 0 5H8zM8 5.5H5.5a2.5 2.5 0 0 0 0 5H8zM8 10.5H5.5a2.5 2.5 0 0 0 0 5H8zM8 .5h2.5a2.5 2.5 0 0 1 0 5H8z" />
-          <circle cx="10.5" cy="8" r="2.5" />
-        </svg>
-        <span data-i18n="head.figma">Open the Figma file</span>
-        <svg class="head__figma-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false">
-          <path d="M4 12 12 4M6 4h6v6" stroke-linecap="round" stroke-linejoin="round" />
-        </svg>
-      </a>
-      </div>
-      </div>
+      <!-- One item, and the rule it is the last survivor of: a fact the page
+         can count, not in the lede, and said nowhere else. "Scope — a few
+         decisions" and "Each study — stands alone" used to sit here — the
+         lede says the first in its own first sentence and the footer says the
+         second in full, so the row spent ninety pixels repeating what was
+         already on the page twice. The count went the same way: the rail
+         states its own total below, which is where a reader takes it from.
+
+         The date is one of them: whether the set is still moving, written by
+         index.js from the cards. The companion Figma file is the other, and
+         it is the one item here that is neither counted nor derived — which
+         is a departure from the rule above and a deliberate one. It is here
+         because the alternatives are worse: the footer is below the fold on
+         every viewport, and the rail's count line put a link in a bar that
+         is otherwise all controls. The row had the room, measured: 31px with
+         one item and 31px with two, at 1440, 390 and 320, with the first
+         card keeping every pixel it had above the fold.
+
+         No Figma mark beside it. The values in this row are plain facts in
+         mono, and a brand glyph would make one of them a different kind of
+         object; the mark does that job in the footer, where it is a handle.
+         The arrow is the page's own, and it is there because the link leaves
+         the site. -->
+      <dl class="head__meta" data-reveal>
+        <div class="head__meta-item">
+          <dt class="head__meta-key" data-i18n="meta.latest">Latest</dt>
+          <dd class="head__meta-val" id="meta-latest">&mdash;</dd>
+        </div>
+        <div class="head__meta-item">
+          <dt class="head__meta-key">Figma</dt>
+          <dd class="head__meta-val">
+            <a
+              class="head__meta-link"
+              href="https://www.figma.com/community/file/1683607518896928224/interface-studies"
+              target="_blank"
+              rel="noopener noreferrer">
+              <span data-i18n="meta.figma">Community file</span>
+              <svg
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+                aria-hidden="true">
+                <path
+                  d="M4 12 12 4M6 4h6v6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+            </a>
+          </dd>
+        </div>
+      </dl>
     </header>
 
     <section class="rail">
-      <!-- One line: the count and the type filter on the left, the carousel
-         controls and the view switch on the right. On a phone it is two rows
-         of the same four things - see index.css. -->
+      <!-- One grid rather than a bar and a row beneath it: the count sits on
+         the top line, the type filter on the one below, and the carousel
+         controls span both and land on the filter chips' own bottom edge. On a
+         narrow viewport the chips need the full width, so the areas restack
+         and the controls go back up beside the count - see index.css. -->
       <div class="rail__head" data-reveal>
         <!-- The rail reports a read position, "Study 01 / 08"; the list has
            none, so it says how many it is showing, "Studies 08". Both are in
@@ -311,27 +312,18 @@
           </button>
         </nav>
 
-      <!-- Type filter: one small control rather than a row of chips. The
-         chips were a menu's worth of pills in the one line that introduces
-         the rail, and they read as the page's navigation. This is the icon
-         and the current choice, over a native select, so the phone's own
-         picker, the keyboard and a screen reader all come with it.
-
-         The options are written by index.js from the types the cards actually
-         declare, so a study of a new type needs nothing added here. It reads
-         the same `type.*` key the card's badge carries — the type is stated
-         once per card and this is not a second place to state it. -->
-      <label class="rail__filter" data-rail-filter hidden>
-        <svg class="rail__filter-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true" focusable="false">
-          <path d="M2 4h12M4.5 8h7M7 12h2" stroke-linecap="round" />
-        </svg>
-        <span class="rail__filter-value" data-rail-filter-value aria-hidden="true"></span>
-        <select
-          class="rail__filter-select"
-          data-rail-filter-select
-          data-i18n-aria="a11y.filter"
-          aria-label="Filter by type"></select>
-      </label>
+      <!-- Type filter. The buttons are written by index.js from the types the
+         cards actually declare, so this row is empty markup until it runs and
+         a study of a new type needs nothing added here. It reads the same
+         `type.*` key the card's badge carries — the type is stated once per
+         card and this is not a second place to state it. -->
+      <div
+        class="rail__filter"
+        data-rail-filter
+        role="group"
+        data-i18n-aria="a11y.filter"
+        aria-label="Filter by type"
+        hidden></div>
 
       <!-- Rail or list. Its own grid area, rightmost, so hiding the carousel
          controls in the list does not move the switch out from under the
@@ -433,7 +425,7 @@
             <div class="piece__thumb">
               <iframe
                 class="piece__preview"
-                data-src="2026-09-shader-token-field/preview.html"
+                data-src="../../2026-09-shader-token-field/preview.html"
                 loading="lazy"
                 scrolling="no"
                 tabindex="-1"
@@ -442,27 +434,48 @@
             </div>
             <span class="piece__type" data-i18n="type.aesthetic">Aesthetic</span>
             <span class="piece__no">&mdash;</span>
+            <button
+              class="piece__expand"
+              type="button"
+              data-expand
+              data-i18n-aria="cta.quickLookShader"
+              aria-label="Quick look: Banded shaders">
+              <svg
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+                aria-hidden="true">
+                <path
+                  d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+              <span class="piece__expand-text" data-i18n="cta.quickLook">
+                Quick look
+              </span>
+            </button>
           </div>
           <div class="piece__body">
+            <span class="piece__slug">2026 &middot; 09</span>
             <h2 class="piece__title">
               <a
                 class="piece__link"
-                href="2026-09-shader-token-field/demo.html"
-                data-lang-link="2026-09-shader-token-field/demo.html"
+                href="../../2026-09-shader-token-field/demo.html"
+                data-lang-link="../../2026-09-shader-token-field/demo.html"
                 data-i18n="piece.shaderTokenField.title">
                 Banded shaders
               </a>
             </h2>
-            <span class="piece__slug">2026 &middot; 09</span>
             <p
               class="piece__note"
               data-note
               data-i18n="piece.shaderTokenField.note">
-              A gradient field drawn twice from one declaration, once by a
-              CSS stop list and once by a WebGL shader, so the two agree by
+              A gradient field drawn twice from one declaration &mdash; once by
+              a CSS stop list, once by a WebGL shader &mdash; so the two agree by
               construction. Every fragment&rsquo;s luminance is clamped into a
-              declared band, which is what puts a guaranteed contrast ratio
-              under the type.
+              declared band, which is what puts a guaranteed contrast ratio under
+              the type.
             </p>
             <ul
               class="piece__stack"
@@ -473,9 +486,9 @@
               <li class="piece__code" data-code="js" title="JavaScript">JavaScript</li>
               <li class="piece__code" data-code="react" title="React">React</li>
             </ul>
-            <span class="piece__cta" aria-hidden="true">
-              <span class="piece__cta-text" data-i18n="cta.openStudy">
-                Open study
+            <span class="piece__cta">
+              <span class="piece__cta-text" data-i18n="cta.openDemo">
+                Open demo
               </span>
               <svg
                 viewBox="0 0 16 16"
@@ -484,33 +497,12 @@
                 stroke-width="1.4"
                 aria-hidden="true">
                 <path
-                  d="M3 8h10M9 4l4 4-4 4"
+                  d="M4 12 12 4M6 4h6v6"
                   stroke-linecap="round"
                   stroke-linejoin="round" />
               </svg>
             </span>
           </div>
-          <button
-            class="piece__expand"
-            type="button"
-            data-expand
-            data-i18n-aria="cta.quickLookShader"
-            aria-label="Quick look: Banded shaders">
-            <svg
-              viewBox="0 0 16 16"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.4"
-              aria-hidden="true">
-              <path
-                d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4"
-                stroke-linecap="round"
-                stroke-linejoin="round" />
-            </svg>
-            <span class="piece__expand-text" data-i18n="cta.quickLook">
-              Quick look
-            </span>
-          </button>
         </article>
 
         <article
@@ -522,7 +514,7 @@
             <div class="piece__thumb">
               <iframe
                 class="piece__preview"
-                data-src="2026-09-struck-tones/preview.html"
+                data-src="../../2026-09-struck-tones/preview.html"
                 loading="lazy"
                 scrolling="no"
                 tabindex="-1"
@@ -531,25 +523,46 @@
             </div>
             <span class="piece__type" data-i18n="type.aesthetic">Aesthetic</span>
             <span class="piece__no">&mdash;</span>
+            <button
+              class="piece__expand"
+              type="button"
+              data-expand
+              data-i18n-aria="cta.quickLookStruck"
+              aria-label="Quick look: Struck tones">
+              <svg
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+                aria-hidden="true">
+                <path
+                  d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+              <span class="piece__expand-text" data-i18n="cta.quickLook">
+                Quick look
+              </span>
+            </button>
           </div>
           <div class="piece__body">
+            <span class="piece__slug">2026 &middot; 09</span>
             <h2 class="piece__title">
               <a
                 class="piece__link"
-                href="2026-09-struck-tones/demo.html"
-                data-lang-link="2026-09-struck-tones/demo.html"
+                href="../../2026-09-struck-tones/demo.html"
+                data-lang-link="../../2026-09-struck-tones/demo.html"
                 data-i18n="piece.struckTones.title">
                 Struck tones
               </a>
             </h2>
-            <span class="piece__slug">2026 &middot; 09</span>
             <p
               class="piece__note"
               data-note
               data-i18n="piece.struckTones.note">
               A UI sound palette written as a token block: four sounds declared
               as a tuning, a voice, a strike and a room, then synthesised from
-              those numbers rather than played from files, the reverb
+              those numbers rather than played from files &mdash; the reverb
               included. It ships silent, and draws everything it says.
             </p>
             <ul
@@ -560,9 +573,9 @@
               <li class="piece__code" data-code="css" title="CSS">CSS</li>
               <li class="piece__code" data-code="js" title="JavaScript">JavaScript</li>
             </ul>
-            <span class="piece__cta" aria-hidden="true">
-              <span class="piece__cta-text" data-i18n="cta.openStudy">
-                Open study
+            <span class="piece__cta">
+              <span class="piece__cta-text" data-i18n="cta.openDemo">
+                Open demo
               </span>
               <svg
                 viewBox="0 0 16 16"
@@ -571,33 +584,12 @@
                 stroke-width="1.4"
                 aria-hidden="true">
                 <path
-                  d="M3 8h10M9 4l4 4-4 4"
+                  d="M4 12 12 4M6 4h6v6"
                   stroke-linecap="round"
                   stroke-linejoin="round" />
               </svg>
             </span>
           </div>
-          <button
-            class="piece__expand"
-            type="button"
-            data-expand
-            data-i18n-aria="cta.quickLookStruck"
-            aria-label="Quick look: Struck tones">
-            <svg
-              viewBox="0 0 16 16"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.4"
-              aria-hidden="true">
-              <path
-                d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4"
-                stroke-linecap="round"
-                stroke-linejoin="round" />
-            </svg>
-            <span class="piece__expand-text" data-i18n="cta.quickLook">
-              Quick look
-            </span>
-          </button>
         </article>
 
         <article
@@ -609,7 +601,7 @@
             <div class="piece__thumb">
               <iframe
                 class="piece__preview"
-                data-src="2026-09-bento-grid/preview.html"
+                data-src="../../2026-09-bento-grid/preview.html"
                 loading="lazy"
                 scrolling="no"
                 tabindex="-1"
@@ -618,18 +610,39 @@
             </div>
             <span class="piece__type" data-i18n="type.layout">Layout</span>
             <span class="piece__no">&mdash;</span>
+            <button
+              class="piece__expand"
+              type="button"
+              data-expand
+              data-i18n-aria="cta.quickLookBento"
+              aria-label="Quick look: Interactive bento grid">
+              <svg
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+                aria-hidden="true">
+                <path
+                  d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+              <span class="piece__expand-text" data-i18n="cta.quickLook">
+                Quick look
+              </span>
+            </button>
           </div>
           <div class="piece__body">
+            <span class="piece__slug">2026 &middot; 09</span>
             <h2 class="piece__title">
               <a
                 class="piece__link"
-                href="2026-09-bento-grid/demo.html"
-                data-lang-link="2026-09-bento-grid/demo.html"
+                href="../../2026-09-bento-grid/demo.html"
+                data-lang-link="../../2026-09-bento-grid/demo.html"
                 data-i18n="piece.bentoGrid.title">
                 Interactive bento grid
               </a>
             </h2>
-            <span class="piece__slug">2026 &middot; 09</span>
             <p
               class="piece__note"
               data-note
@@ -637,7 +650,7 @@
               Seven tiles that each declare the room they want, on a grid that
               clamps every span against its own column count. Each tile answers
               for the slot it lands in rather than for the modifier it was
-              given, and opening one re-packs the board around it.
+              given &mdash; and opening one re-packs the board around it.
             </p>
             <ul
               class="piece__stack"
@@ -647,9 +660,9 @@
               <li class="piece__code" data-code="css" title="CSS">CSS</li>
               <li class="piece__code" data-code="js" title="JavaScript">JavaScript</li>
             </ul>
-            <span class="piece__cta" aria-hidden="true">
-              <span class="piece__cta-text" data-i18n="cta.openStudy">
-                Open study
+            <span class="piece__cta">
+              <span class="piece__cta-text" data-i18n="cta.openDemo">
+                Open demo
               </span>
               <svg
                 viewBox="0 0 16 16"
@@ -658,33 +671,12 @@
                 stroke-width="1.4"
                 aria-hidden="true">
                 <path
-                  d="M3 8h10M9 4l4 4-4 4"
+                  d="M4 12 12 4M6 4h6v6"
                   stroke-linecap="round"
                   stroke-linejoin="round" />
               </svg>
             </span>
           </div>
-          <button
-            class="piece__expand"
-            type="button"
-            data-expand
-            data-i18n-aria="cta.quickLookBento"
-            aria-label="Quick look: Interactive bento grid">
-            <svg
-              viewBox="0 0 16 16"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.4"
-              aria-hidden="true">
-              <path
-                d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4"
-                stroke-linecap="round"
-                stroke-linejoin="round" />
-            </svg>
-            <span class="piece__expand-text" data-i18n="cta.quickLook">
-              Quick look
-            </span>
-          </button>
         </article>
 
         <article
@@ -696,7 +688,7 @@
             <div class="piece__thumb">
               <iframe
                 class="piece__preview"
-                data-src="2026-09-inked-plate-card/preview.html"
+                data-src="../../2026-09-inked-plate-card/preview.html"
                 loading="lazy"
                 scrolling="no"
                 tabindex="-1"
@@ -705,25 +697,46 @@
             </div>
             <span class="piece__type" data-i18n="type.card">Card</span>
             <span class="piece__no">&mdash;</span>
+            <button
+              class="piece__expand"
+              type="button"
+              data-expand
+              data-i18n-aria="cta.quickLookInked"
+              aria-label="Quick look: Inked plate card">
+              <svg
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+                aria-hidden="true">
+                <path
+                  d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+              <span class="piece__expand-text" data-i18n="cta.quickLook">
+                Quick look
+              </span>
+            </button>
           </div>
           <div class="piece__body">
+            <span class="piece__slug">2026 &middot; 09</span>
             <h2 class="piece__title">
               <a
                 class="piece__link"
-                href="2026-09-inked-plate-card/demo.html"
-                data-lang-link="2026-09-inked-plate-card/demo.html"
+                href="../../2026-09-inked-plate-card/demo.html"
+                data-lang-link="../../2026-09-inked-plate-card/demo.html"
                 data-i18n="piece.inkedPlate.title">
                 Inked plate card
               </a>
             </h2>
-            <span class="piece__slug">2026 &middot; 09</span>
             <p
               class="piece__note"
               data-note
               data-i18n="piece.inkedPlate.note">
               An artwork plate and a caption plate with their facing corners
               cut, over a crop-marked dot grid. The line drawing inks itself on
-              load in pure CSS: every path declares a length of 1, so one
+              load in pure CSS &mdash; every path declares a length of 1, so one
               keyframe pair draws all of them without measuring any.
             </p>
             <ul
@@ -733,9 +746,9 @@
               <li class="piece__code" data-code="html" title="HTML">HTML</li>
               <li class="piece__code" data-code="css" title="CSS">CSS</li>
             </ul>
-            <span class="piece__cta" aria-hidden="true">
-              <span class="piece__cta-text" data-i18n="cta.openStudy">
-                Open study
+            <span class="piece__cta">
+              <span class="piece__cta-text" data-i18n="cta.openDemo">
+                Open demo
               </span>
               <svg
                 viewBox="0 0 16 16"
@@ -744,33 +757,12 @@
                 stroke-width="1.4"
                 aria-hidden="true">
                 <path
-                  d="M3 8h10M9 4l4 4-4 4"
+                  d="M4 12 12 4M6 4h6v6"
                   stroke-linecap="round"
                   stroke-linejoin="round" />
               </svg>
             </span>
           </div>
-          <button
-            class="piece__expand"
-            type="button"
-            data-expand
-            data-i18n-aria="cta.quickLookInked"
-            aria-label="Quick look: Inked plate card">
-            <svg
-              viewBox="0 0 16 16"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.4"
-              aria-hidden="true">
-              <path
-                d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4"
-                stroke-linecap="round"
-                stroke-linejoin="round" />
-            </svg>
-            <span class="piece__expand-text" data-i18n="cta.quickLook">
-              Quick look
-            </span>
-          </button>
         </article>
 
         <article
@@ -782,7 +774,7 @@
             <div class="piece__thumb">
               <iframe
                 class="piece__preview"
-                data-src="2026-09-raster-pulse/preview.html"
+                data-src="../../2026-09-raster-pulse/preview.html"
                 loading="lazy"
                 scrolling="no"
                 tabindex="-1"
@@ -791,18 +783,39 @@
             </div>
             <span class="piece__type" data-i18n="type.card">Card</span>
             <span class="piece__no">&mdash;</span>
+            <button
+              class="piece__expand"
+              type="button"
+              data-expand
+              data-i18n-aria="cta.quickLookRaster"
+              aria-label="Quick look: Raster pulse">
+              <svg
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+                aria-hidden="true">
+                <path
+                  d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+              <span class="piece__expand-text" data-i18n="cta.quickLook">
+                Quick look
+              </span>
+            </button>
           </div>
           <div class="piece__body">
+            <span class="piece__slug">2026 &middot; 09</span>
             <h2 class="piece__title">
               <a
                 class="piece__link"
-                href="2026-09-raster-pulse/demo.html"
-                data-lang-link="2026-09-raster-pulse/demo.html"
+                href="../../2026-09-raster-pulse/demo.html"
+                data-lang-link="../../2026-09-raster-pulse/demo.html"
                 data-i18n="piece.rasterPulse.title">
                 Raster pulse
               </a>
             </h2>
-            <span class="piece__slug">2026 &middot; 09</span>
             <p
               class="piece__note"
               data-note
@@ -819,9 +832,9 @@
               <li class="piece__code" data-code="html" title="HTML">HTML</li>
               <li class="piece__code" data-code="css" title="CSS">CSS</li>
             </ul>
-            <span class="piece__cta" aria-hidden="true">
-              <span class="piece__cta-text" data-i18n="cta.openStudy">
-                Open study
+            <span class="piece__cta">
+              <span class="piece__cta-text" data-i18n="cta.openDemo">
+                Open demo
               </span>
               <svg
                 viewBox="0 0 16 16"
@@ -830,33 +843,12 @@
                 stroke-width="1.4"
                 aria-hidden="true">
                 <path
-                  d="M3 8h10M9 4l4 4-4 4"
+                  d="M4 12 12 4M6 4h6v6"
                   stroke-linecap="round"
                   stroke-linejoin="round" />
               </svg>
             </span>
           </div>
-          <button
-            class="piece__expand"
-            type="button"
-            data-expand
-            data-i18n-aria="cta.quickLookRaster"
-            aria-label="Quick look: Raster pulse">
-            <svg
-              viewBox="0 0 16 16"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.4"
-              aria-hidden="true">
-              <path
-                d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4"
-                stroke-linecap="round"
-                stroke-linejoin="round" />
-            </svg>
-            <span class="piece__expand-text" data-i18n="cta.quickLook">
-              Quick look
-            </span>
-          </button>
         </article>
 
         <article
@@ -868,7 +860,7 @@
             <div class="piece__thumb">
               <iframe
                 class="piece__preview"
-                data-src="2026-09-drawn-gradients/preview.html"
+                data-src="../../2026-09-drawn-gradients/preview.html"
                 loading="lazy"
                 scrolling="no"
                 tabindex="-1"
@@ -879,18 +871,39 @@
               Aesthetic
             </span>
             <span class="piece__no">&mdash;</span>
+            <button
+              class="piece__expand"
+              type="button"
+              data-expand
+              data-i18n-aria="cta.quickLookGradients"
+              aria-label="Quick look: Drawn gradients">
+              <svg
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+                aria-hidden="true">
+                <path
+                  d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+              <span class="piece__expand-text" data-i18n="cta.quickLook">
+                Quick look
+              </span>
+            </button>
           </div>
           <div class="piece__body">
+            <span class="piece__slug">2026 &middot; 09</span>
             <h2 class="piece__title">
               <a
                 class="piece__link"
-                href="2026-09-drawn-gradients/demo.html"
-                data-lang-link="2026-09-drawn-gradients/demo.html"
+                href="../../2026-09-drawn-gradients/demo.html"
+                data-lang-link="../../2026-09-drawn-gradients/demo.html"
                 data-i18n="piece.drawnGradients.title">
                 Drawn gradients
               </a>
             </h2>
-            <span class="piece__slug">2026 &middot; 09</span>
             <p
               class="piece__note"
               data-note
@@ -907,9 +920,9 @@
               <li class="piece__code" data-code="html" title="HTML">HTML</li>
               <li class="piece__code" data-code="css" title="CSS">CSS</li>
             </ul>
-            <span class="piece__cta" aria-hidden="true">
-              <span class="piece__cta-text" data-i18n="cta.openStudy">
-                Open study
+            <span class="piece__cta">
+              <span class="piece__cta-text" data-i18n="cta.openDemo">
+                Open demo
               </span>
               <svg
                 viewBox="0 0 16 16"
@@ -918,33 +931,12 @@
                 stroke-width="1.4"
                 aria-hidden="true">
                 <path
-                  d="M3 8h10M9 4l4 4-4 4"
+                  d="M4 12 12 4M6 4h6v6"
                   stroke-linecap="round"
                   stroke-linejoin="round" />
               </svg>
             </span>
           </div>
-          <button
-            class="piece__expand"
-            type="button"
-            data-expand
-            data-i18n-aria="cta.quickLookGradients"
-            aria-label="Quick look: Drawn gradients">
-            <svg
-              viewBox="0 0 16 16"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.4"
-              aria-hidden="true">
-              <path
-                d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4"
-                stroke-linecap="round"
-                stroke-linejoin="round" />
-            </svg>
-            <span class="piece__expand-text" data-i18n="cta.quickLook">
-              Quick look
-            </span>
-          </button>
         </article>
 
         <article
@@ -956,7 +948,7 @@
             <div class="piece__thumb">
               <iframe
                 class="piece__preview"
-                data-src="2026-09-detail-reveal-card/preview.html"
+                data-src="../../2026-09-detail-reveal-card/preview.html"
                 loading="lazy"
                 scrolling="no"
                 tabindex="-1"
@@ -965,18 +957,39 @@
             </div>
             <span class="piece__type" data-i18n="type.card">Card</span>
             <span class="piece__no">&mdash;</span>
+            <button
+              class="piece__expand"
+              type="button"
+              data-expand
+              data-i18n-aria="cta.quickLookOf"
+              aria-label="Quick look: Detail reveal card">
+              <svg
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+                aria-hidden="true">
+                <path
+                  d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+              <span class="piece__expand-text" data-i18n="cta.quickLook">
+                Quick look
+              </span>
+            </button>
           </div>
           <div class="piece__body">
+            <span class="piece__slug">2026 &middot; 09</span>
             <h2 class="piece__title">
               <a
                 class="piece__link"
-                href="2026-09-detail-reveal-card/demo.html"
-                data-lang-link="2026-09-detail-reveal-card/demo.html"
+                href="../../2026-09-detail-reveal-card/demo.html"
+                data-lang-link="../../2026-09-detail-reveal-card/demo.html"
                 data-i18n="piece.detailReveal.title">
                 Detail reveal card
               </a>
             </h2>
-            <span class="piece__slug">2026 &middot; 09</span>
             <p
               class="piece__note"
               data-note
@@ -992,9 +1005,9 @@
               <li class="piece__code" data-code="html" title="HTML">HTML</li>
               <li class="piece__code" data-code="css" title="CSS">CSS</li>
             </ul>
-            <span class="piece__cta" aria-hidden="true">
-              <span class="piece__cta-text" data-i18n="cta.openStudy">
-                Open study
+            <span class="piece__cta">
+              <span class="piece__cta-text" data-i18n="cta.openDemo">
+                Open demo
               </span>
               <svg
                 viewBox="0 0 16 16"
@@ -1003,33 +1016,12 @@
                 stroke-width="1.4"
                 aria-hidden="true">
                 <path
-                  d="M3 8h10M9 4l4 4-4 4"
+                  d="M4 12 12 4M6 4h6v6"
                   stroke-linecap="round"
                   stroke-linejoin="round" />
               </svg>
             </span>
           </div>
-          <button
-            class="piece__expand"
-            type="button"
-            data-expand
-            data-i18n-aria="cta.quickLookOf"
-            aria-label="Quick look: Detail reveal card">
-            <svg
-              viewBox="0 0 16 16"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.4"
-              aria-hidden="true">
-              <path
-                d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4"
-                stroke-linecap="round"
-                stroke-linejoin="round" />
-            </svg>
-            <span class="piece__expand-text" data-i18n="cta.quickLook">
-              Quick look
-            </span>
-          </button>
         </article>
 
         <article
@@ -1041,7 +1033,7 @@
             <div class="piece__thumb">
               <iframe
                 class="piece__preview"
-                data-src="2026-09-liquid-glass-toolbar/preview.html"
+                data-src="../../2026-09-liquid-glass-toolbar/preview.html"
                 loading="lazy"
                 scrolling="no"
                 tabindex="-1"
@@ -1052,25 +1044,46 @@
               Navigation
             </span>
             <span class="piece__no">&mdash;</span>
+            <button
+              class="piece__expand"
+              type="button"
+              data-expand
+              data-i18n-aria="cta.quickLookToolbar"
+              aria-label="Quick look: Liquid glass toolbar">
+              <svg
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.4"
+                aria-hidden="true">
+                <path
+                  d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+              <span class="piece__expand-text" data-i18n="cta.quickLook">
+                Quick look
+              </span>
+            </button>
           </div>
           <div class="piece__body">
+            <span class="piece__slug">2026 &middot; 09</span>
             <h2 class="piece__title">
               <a
                 class="piece__link"
-                href="2026-09-liquid-glass-toolbar/demo.html"
-                data-lang-link="2026-09-liquid-glass-toolbar/demo.html"
+                href="../../2026-09-liquid-glass-toolbar/demo.html"
+                data-lang-link="../../2026-09-liquid-glass-toolbar/demo.html"
                 data-i18n="piece.liquidGlassToolbar.title">
                 Liquid glass toolbar
               </a>
             </h2>
-            <span class="piece__slug">2026 &middot; 09</span>
             <p
               class="piece__note"
               data-note
               data-i18n="piece.liquidGlassToolbar.note">
-              One glass surface that changes shape, in six materials off a
-              single recipe: the selected item opens into a labelled pill,
-              search into a field, the log into a panel.
+              One glass surface that changes shape &mdash; the selected item
+              opens into a labelled pill, search into a field, the log into a
+              panel &mdash; in six materials off a single recipe.
             </p>
             <ul
               class="piece__stack"
@@ -1080,9 +1093,9 @@
               <li class="piece__code" data-code="css" title="CSS">CSS</li>
               <li class="piece__code" data-code="js" title="JavaScript">JavaScript</li>
             </ul>
-            <span class="piece__cta" aria-hidden="true">
-              <span class="piece__cta-text" data-i18n="cta.openStudy">
-                Open study
+            <span class="piece__cta">
+              <span class="piece__cta-text" data-i18n="cta.openDemo">
+                Open demo
               </span>
               <svg
                 viewBox="0 0 16 16"
@@ -1091,33 +1104,12 @@
                 stroke-width="1.4"
                 aria-hidden="true">
                 <path
-                  d="M3 8h10M9 4l4 4-4 4"
+                  d="M4 12 12 4M6 4h6v6"
                   stroke-linecap="round"
                   stroke-linejoin="round" />
               </svg>
             </span>
           </div>
-          <button
-            class="piece__expand"
-            type="button"
-            data-expand
-            data-i18n-aria="cta.quickLookToolbar"
-            aria-label="Quick look: Liquid glass toolbar">
-            <svg
-              viewBox="0 0 16 16"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.4"
-              aria-hidden="true">
-              <path
-                d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4"
-                stroke-linecap="round"
-                stroke-linejoin="round" />
-            </svg>
-            <span class="piece__expand-text" data-i18n="cta.quickLook">
-              Quick look
-            </span>
-          </button>
         </article>
 
         <!-- The slots at the end of the rail. Three, because the row reads as a
@@ -1135,10 +1127,10 @@
             </span>
           </div>
           <div class="piece__body">
+            <span class="piece__slug">2026 &middot; 10</span>
             <p class="piece__title piece__title--ghost" data-i18n="ghost.title">
               Forthcoming study
             </p>
-            <span class="piece__slug">2026 &middot; 10</span>
           </div>
         </div>
 
@@ -1150,10 +1142,10 @@
             </span>
           </div>
           <div class="piece__body">
+            <span class="piece__slug">2026 &middot; 11</span>
             <p class="piece__title piece__title--ghost" data-i18n="ghost.title">
               Forthcoming study
             </p>
-            <span class="piece__slug">2026 &middot; 11</span>
           </div>
         </div>
 
@@ -1165,10 +1157,10 @@
             </span>
           </div>
           <div class="piece__body">
+            <span class="piece__slug">2026 &middot; 12</span>
             <p class="piece__title piece__title--ghost" data-i18n="ghost.title">
               Forthcoming study
             </p>
-            <span class="piece__slug">2026 &middot; 12</span>
           </div>
         </div>
       </div>
@@ -1269,7 +1261,7 @@
         <dl class="foot__meta" data-reveal="each">
           <div class="foot__row">
             <dt class="foot__key" data-i18n="foot.typefaces">Typefaces</dt>
-            <dd class="foot__val">Mona Sans &middot; Fragment Mono</dd>
+            <dd class="foot__val">Plus Jakarta Sans &middot; JetBrains Mono</dd>
           </div>
           <div class="foot__row">
             <dt class="foot__key" data-i18n="foot.stack">Stack</dt>
@@ -1280,7 +1272,7 @@
           <!-- What the set covers, not just how much of it there is. The
              values are written by index.js off the cards' own type badges,
              so a study of a new type needs nothing added here — the same
-             single declaration the filter reads. -->
+             single declaration the filter chips read. -->
           <div class="foot__row">
             <dt class="foot__key" data-i18n="foot.types">Types</dt>
             <dd class="foot__val" id="foot-types">&mdash;</dd>
@@ -1387,69 +1379,29 @@
         </div>
 
         <!-- Dots are built from whatever variants the preview reports; the
-           index never knows what any of them mean.
-
-           The variants play by themselves until a reader takes one, and the
-           button in front of the dots stops or starts that — anything that
-           changes on its own for more than five seconds owes the reader a
-           pause (WCAG 2.2.2), the reason the rail's drift has one. Its label
-           is state, so index.js writes it, as it does the drift's.
-
-           The visible label is not a live region: it changes every four
-           seconds while the variants play, and a screen reader would read
-           every one of those out. The hidden line under it is, and index.js
-           writes it only when a reader has picked a variant themselves. -->
+           index never knows what any of them mean. -->
         <nav
           class="lightbox__variants"
           data-lightbox-variants
           data-i18n-aria="a11y.variants"
           aria-label="Variants"
           hidden>
-          <!-- The button and the dots are one group, so the row never parts
-             them: where there is not room for the label as well, the label
-             takes a line of its own below. -->
-          <div class="lightbox__playback">
-          <button
-            class="lightbox__play"
-            type="button"
-            data-lightbox-play
-            data-autoplay="on"
-            aria-label="Pause the variants">
-            <svg
-              class="lightbox__play-icon lightbox__play-icon--pause"
-              viewBox="0 0 16 16"
-              fill="currentColor"
-              aria-hidden="true">
-              <rect x="5" y="4" width="2" height="8" rx="0.6" />
-              <rect x="9" y="4" width="2" height="8" rx="0.6" />
-            </svg>
-            <svg
-              class="lightbox__play-icon lightbox__play-icon--play"
-              viewBox="0 0 16 16"
-              fill="currentColor"
-              aria-hidden="true">
-              <path d="M5.4 3.6a.6.6 0 0 1 .92-.5l6 4.4a.6.6 0 0 1 0 1l-6 4.4a.6.6 0 0 1-.92-.5z" />
-            </svg>
-          </button>
           <div class="lightbox__dots" data-lightbox-dots></div>
-          </div>
-          <p class="lightbox__variant-label" data-lightbox-variant-label></p>
           <p
-            class="lightbox__announce"
-            data-lightbox-announce
+            class="lightbox__variant-label"
+            data-lightbox-variant-label
             aria-live="polite"></p>
         </nav>
 
         <!-- Two links, and the second is drawn only where the card names a
-           board. No Figma mark: they are the same kind of control, and the
-           label is what says where to. The arrows differ because the
-           destinations do — the study is on this site, so its arrow points
-           on; Figma's points out, as every link that leaves the site does. -->
+           board. Both carry the same arrow rather than one of them a Figma
+           mark: they are the same kind of control — this page, left — and
+           the label is what says where to. -->
         <footer class="lightbox__foot">
           <p class="lightbox__note" data-lightbox-note></p>
           <div class="lightbox__links">
             <a class="lightbox__link" href="#" data-lightbox-demo>
-              <span data-i18n="cta.openStudy">Open study</span>
+              <span data-i18n="cta.openDemo">Open demo</span>
               <svg
                 viewBox="0 0 16 16"
                 fill="none"
@@ -1457,7 +1409,7 @@
                 stroke-width="1.4"
                 aria-hidden="true">
                 <path
-                  d="M3 8h10M9 4l4 4-4 4"
+                  d="M4 12 12 4M6 4h6v6"
                   stroke-linecap="round"
                   stroke-linejoin="round" />
               </svg>

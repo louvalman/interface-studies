@@ -1,0 +1,16 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [
+      "archive/**"
+    ],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "mona sans",
+        "createdAt": "2026-09-30T17:59:49.768Z",
+        "reason": "user confirmed: chose Mona Sans with Fragment Mono from a side-by-side on the index's own classes, 2026-09-30"
+      }
+    ]
+  }
+}

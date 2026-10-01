@@ -37,20 +37,11 @@
   --well: #f3f2ef;
   --ink: #17181a;
   --ink-soft: #55565a;
-  /* The quietest text the page sets, so it is measured against the ground it
-     does worst on rather than the one it was picked on: 5.30:1 on --well,
-     5.39 on --paper. It was #6c6b67, which cleared 4.5 by a quarter of a
-     point on the well — the headroom CLAUDE.md asks small mono type to keep,
-     and this is all 11px mono. */
-  --muted: #65645f;
+  --muted: #6c6b67;
   --note: #61625f;
   --hairline: rgba(23, 24, 26, 0.1);
   --hairline-strong: rgba(23, 24, 26, 0.22);
   --accent: #ac512d;
-  /* The masthead's Figma button: text on the accent fill, 5.07:1, and the
-     fill a step darker on hover, 6.09. */
-  --on-accent: #fbfaf8;
-  --accent-hover: #9a4726;
 
   /* The page's ground: a wash of two corner lights over the base, and a grain
      film over both. Each theme draws the same noise at the scale its ground
@@ -105,8 +96,7 @@
      difference is the edge. */
   --chip-over-preview-line: transparent;
 
-  /* The inverted surface: the filter while it narrows the rail, and the view
-     switch's pressed button. */
+  /* The one inverted surface on the page: the filter chip that is pressed. */
   --on-ink-bg: var(--ink);
   --on-ink-fg: var(--paper);
 
@@ -117,20 +107,12 @@
   --shadow-lift: 0 22px 46px -20px rgba(23, 24, 26, 0.32);
   --shadow-panel: 0 40px 80px -32px rgba(23, 24, 26, 0.5);
 
-  --sans: "Mona Sans", system-ui, sans-serif;
-  --mono: "Fragment Mono", ui-monospace, monospace;
+  --sans: "Plus Jakarta Sans", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, monospace;
 
   --gutter: clamp(1.5rem, 6vw, 6rem);
   --card-w: 21rem;
   --rail-gap: clamp(1rem, 2vw, 1.75rem);
-
-  /* The page's bar: the site mark at the left and the controls in the corner,
-     on one line. The masthead opens on the cluster's own inset and the mark is
-     as tall as the cluster, so the two centre on each other without either
-     being positioned against the other. The touch block below grows the
-     cluster, and --bar-h with it. */
-  --bar-top: clamp(1.25rem, 3vw, 2.25rem);
-  --bar-h: 1.85rem;
 
   /* The preview iframe renders at a fixed logical viewport, then scales to
      the card. Keep --preview-scale == --card-w / --preview-w exactly, or the
@@ -152,20 +134,6 @@
   --lightbox-scale: 1;
 
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* A shorter window gets a narrower card, so a card's title is on screen with
-   its thumbnail rather than a scroll below it: the frame is 4:5 off the card's
-   width, and at 336px it put the title's baseline under the fold of a 1470x802
-   laptop. 288px keeps the scale an exact 0.6. By height rather than width,
-   because the fold is what it answers to — and a tall screen keeps the wider
-   card, which is also what lets a wide rail keep looping. The phone block
-   further down comes later and wins where both apply. */
-@media (max-height: 60rem) {
-  :root {
-    --card-w: 18rem;           /* 288px */
-    --preview-scale: 0.6;      /* 288 / 480 */
-  }
 }
 
 /* The dark theme: the same names, and nothing else. It hangs off the
@@ -200,17 +168,12 @@
   --well: #191b1e;
   --ink: #e9e8e4;
   --ink-soft: #a4a39f;
-  /* 5.13:1 on --surface, the quick-look panel, and 5.52 on the page. It was
-     #7e7d79, which passed on the page at 4.51 and failed on the panel at
-     4.19 — the panel's slug and variant label were under the floor. */
-  --muted: #8d8c88;
+  --muted: #7e7d79;
   --note: #9a9995;
   --hairline: rgba(233, 232, 228, 0.11);
   --hairline-strong: rgba(233, 232, 228, 0.26);
   /* Lifted off #ac512d, which is a 3:1 burnt orange against this ground. */
   --accent: #e08453;
-  --on-accent: #131417;      /* 6.66:1 on the fill */
-  --accent-hover: #e8956a;   /* 7.84 */
 
   /* No compensation on this side: the dark palette was picked with the grain
      already over it, and a dark speckle on a dark ground barely moves it. */
@@ -299,12 +262,12 @@ body.is-locked {
    next button: both are pinned to the gutter's right edge, and at the scroll
    offset that puts the rail bar near the top of the window the chip covered
    it. Positioned against the initial containing block rather than a wrapper,
-   so it still hangs off the page's top-right corner. The site mark shares its
-   line — see --bar-top and --bar-h — and the one width too narrow for both is
-   answered at the foot of the file. */
+   so it still hangs off the page's top-right corner; the masthead's own top
+   padding is deeper than the cluster, which is what keeps it clear of the
+   eyebrow at every width. */
 .controls {
   position: absolute;
-  top: var(--bar-top);
+  top: clamp(1.25rem, 3vw, 2.25rem);
   right: var(--gutter);
   z-index: 40;
   display: flex;
@@ -330,7 +293,7 @@ body.is-locked {
   background: transparent;
   color: var(--muted);
   font-family: var(--mono);
-  font-size: 0.6875rem;
+  font-size: 0.625rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   cursor: pointer;
@@ -524,26 +487,13 @@ body.is-locked {
 
 /* --- masthead --------------------------------------------------------- */
 
-/* A band across the top of the page: the mark on the controls' line, then
-   the headline at the left and, beside it, the lede and the one call to
-   action. The rail runs full width underneath.
-
-   It has been two other things, and both are worth knowing before changing
-   it. It opened 112px down with the mark on a line of its own, and put the
-   first card at y=627 of an 802px window, 27% of it showing. Then it was a
-   column one card wide beside the rail, which put 95% of the card on screen
-   and left the masthead cramped into 308px, the headline on three lines and
-   the Figma link a mono footnote under it. The band keeps the headline on
-   two lines and gives the lede a readable measure, and at 1470x802 the first
-   card is still about two thirds on screen, the rail head having gone down
-   to one line to pay for it. */
 .head {
-  padding: var(--bar-top) var(--gutter) clamp(1.25rem, 2vw, 1.5rem);
+  padding: clamp(3.5rem, 9vw, 7rem) var(--gutter) clamp(2rem, 4vw, 3rem);
+  max-width: 64rem;
 }
 
 .head__eyebrow {
-  margin: 0 0 clamp(1.25rem, 2.4vw, 2rem);
-  min-height: var(--bar-h);
+  margin: 0 0 clamp(1.5rem, 4vw, 2.75rem);
   display: flex;
   align-items: center;
   gap: 0.7rem;
@@ -561,7 +511,7 @@ body.is-locked {
      It only fires where a word cannot fit a line on its own, so a title that
      hyphenates or fits is untouched. */
   overflow-wrap: break-word;
-  font-size: clamp(2rem, 4vw, 3.25rem);
+  font-size: clamp(2.25rem, 6vw, 4rem);
   font-weight: 600;
   line-height: 1.04;
   letter-spacing: -0.03em;
@@ -569,78 +519,74 @@ body.is-locked {
   text-wrap: balance;
 }
 
-.head__aside {
-  margin-top: 1.25rem;
-}
-
 .head__lede {
-  margin: 0;
-  max-width: 52ch;
-  /* No one-word last line: at 1470 the sentence ended on "it." alone. */
-  text-wrap: pretty;
-  font-size: clamp(1rem, 1.2vw, 1.0625rem);
+  margin: 1.5rem 0 0;
+  max-width: 46ch;
+  font-size: clamp(1rem, 1.4vw, 1.125rem);
   line-height: 1.55;
   color: var(--ink-soft);
 }
 
-/* The companion file, as a button. Accent, because on this page the accent
-   is what leaves the site, and filled, because it is the one action the
-   masthead offers and half of what the site counts as success. 44px tall on
-   every pointer: it is the only control up here that is not a setting. */
-.head__figma {
+/* Small stat row under the lede. */
+/* One item now that the count has gone to the rail, where "Study 01 / 05"
+   already carries it — so a little less air above it than a row of three
+   wanted. */
+.head__meta {
+  margin: clamp(1.5rem, 3vw, 2.25rem) 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 2.5rem;
+}
+
+.head__meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding-left: 0.9rem;
+  border-left: 1px solid var(--hairline);
+}
+
+.head__meta-key {
+  font-family: var(--mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.head__meta-val {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 0.8125rem;
+  color: var(--ink);
+}
+
+/* One value in this row is a link, and it is set like quick look's rather
+   than like the byline's: accent and an arrow, because it leaves the site,
+   where the byline's hairline underline reads as prose. It keeps the row's
+   own size and case — the values here are mono 13px in sentence case, and a
+   link that changed either would stop being a value. */
+.head__meta-link {
   display: inline-flex;
   align-items: center;
-  gap: 0.6rem;
-  min-height: 2.75rem;
-  margin-top: 1rem;
-  padding: 0 1.15rem 0 1rem;
-  border-radius: 999px;
-  background: var(--accent);
-  color: var(--on-accent);
-  font-size: 0.9375rem;
-  font-weight: 600;
-  letter-spacing: -0.005em;
+  gap: 0.35rem;
   text-decoration: none;
-  transition: background-color 200ms var(--ease);
+  color: var(--accent);
+  white-space: nowrap;
 }
 
-.head__figma:hover { background: var(--accent-hover); }
+.head__meta-link:hover { text-decoration: underline; }
 
-.head__figma:focus-visible {
+.head__meta-link:focus-visible {
   outline: 2px solid var(--ink);
   outline-offset: 3px;
+  border-radius: 0.2rem;
 }
 
-.head__figma-mark {
-  width: 0.95rem;
-  height: 0.95rem;
-  flex: none;
-}
-
-.head__figma-arrow {
-  width: 0.8rem;
-  height: 0.8rem;
-  flex: none;
-  transition: transform 240ms var(--ease);
-}
-
-@media (hover: hover) {
-  .head__figma:hover .head__figma-arrow { transform: translate(2px, -2px); }
-}
-
-/* Side by side from 64rem: the headline takes the wider share, and the two
-   columns centre on each other. Aligned to a shared bottom line they left the
-   headline sitting low, under an empty band as tall as the lede was longer.
-   Below it the three stack, in reading order. */
-@media (min-width: 64rem) {
-  .head__body {
-    display: grid;
-    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
-    column-gap: clamp(3rem, 6vw, 8rem);
-    align-items: center;
-  }
-
-  .head__aside { margin-top: 0; }
+.head__meta-link svg {
+  width: 0.75rem;
+  height: 0.75rem;
 }
 
 /* --- rail ------------------------------------------------------------- */
@@ -654,27 +600,31 @@ body.is-locked {
   padding-bottom: clamp(1.5rem, 3vw, 2rem);
 }
 
-/* One line: where you are and what you are looking at on the left, how to
-   move and how to see it on the right. It was two rows and a menu's worth of
-   filter chips, and the band above could only be as roomy as the rail's head
-   was slim. The list's column heads are its last row, hidden in the rail. */
+/* The count, the type filter and the carousel controls, as one grid rather
+   than a bar with a row under it.
+
+   The controls used to sit on their own line with only the count opposite them,
+   which left the right side floating: a cluster of circles on a line that was
+   otherwise empty for a thousand pixels. Spanning them down the grid puts them
+   beside the filter chips, so they land on something, and takes 31px off the
+   header — measured — which is 31px more of the first card above the fold.
+
+   Bottom-aligned rather than centred, because the chips and the circles are
+   different heights and the chips' bottom edge is the line the eye already has.
+   The nav's bottom padding matches the filter's, so the circles finish on the
+   chips' edge rather than on the scroller's box. */
 .rail__head {
   display: grid;
-  grid-template-columns: auto auto minmax(0, 1fr) auto auto;
+  grid-template-columns: minmax(0, 1fr) auto auto;
   grid-template-areas:
-    "count filter . nav view"
-    "cols cols cols cols cols";
-  align-items: center;
-  column-gap: 1rem;
-  padding: 0 var(--gutter) 1rem;
+    "count nav view"
+    "filter nav view"
+    "cols cols cols";
+  align-items: end;
 }
 
-/* Each held to its own end, so a control that shares a column with a wider
-   one on a phone keeps its own width instead of stretching to the other's. */
-.rail__count { grid-area: count; justify-self: start; }
-.rail__filter { grid-area: filter; justify-self: start; }
-.rail__nav { grid-area: nav; justify-self: end; }
-.rail__view { grid-area: view; justify-self: end; }
+.rail__count { grid-area: count; }
+.rail__filter { grid-area: filter; }
 .rail__cols { grid-area: cols; }
 
 /* One label or the other: the rail reports where it is, "Study 01 / 08",
@@ -684,8 +634,15 @@ body.is-locked {
 :root[data-view="list"] .rail__count-at { display: none; }
 :root[data-view="list"] .rail__count-all { display: inline; }
 
+.rail__nav {
+  grid-area: nav;
+  align-self: end;
+  padding: 0 0 0.875rem 1rem;
+}
+
 .rail__count {
   margin: 0;
+  padding: 0 0 1.25rem var(--gutter);
   /* "Study 01 / 05" is one thing to read; a narrow bar may drop the buttons to
      their own line, but it may never break the label across two. */
   white-space: nowrap;
@@ -701,79 +658,50 @@ body.is-locked {
   gap: 0.5rem;
 }
 
-/* Two rows on a phone: the count and the carousel controls, then the filter
-   and the switch. Measured at 390, one row wants 470px of the 342 there.
-
-   Tighter gaps, not smaller buttons: at 320 in Danish, "Studie 01 / 08" is
-   120px and the three 44px buttons 148px with their gaps, which ran the page
-   4px wide against the 272px there. 8px between the two and 4px between the
-   buttons leaves 268. */
-@media (max-width: 36rem) {
+/* Side by side only where all four chips still fit beside the controls. Below
+   that the chips lose more than they gain — measured at 320px with the drift
+   control showing, the scroller is left 132px and one chip of four — so the
+   areas restack to what they were: controls up beside the count, chips full
+   width underneath. */
+@media (max-width: 52rem) {
+  /* The count and the carousel controls share the top row as one area, one
+     held to each end, rather than taking a column each: a column the controls
+     sat in would be one the switch below them had to be as wide as, and every
+     pixel of that comes off the chips. */
   .rail__head {
-    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-columns: minmax(0, 1fr) auto;
     grid-template-areas:
-      "count . nav"
-      "filter . view"
-      "cols cols cols";
-    column-gap: 0.5rem;
-    row-gap: 0.75rem;
+      "top top"
+      "filter view"
+      "cols cols";
+    align-items: center;
   }
 
-  .rail__nav { gap: 0.25rem; }
-}
+  .rail__count { grid-area: top; justify-self: start; }
 
-/* On a phone the rail's head is one line again, and the first screen names a
-   study. Measured at 390x844 it did not: two rows of six controls under a
-   five-line masthead put the first card's title at y=881. Three things give
-   the room back, all on a touch screen only:
-
-   - Previous and next go. A finger swipes the rail, which is the platform's
-     own gesture and the one CLAUDE.md hands the landing to; the buttons were
-     two 44px targets for something the thumb was already doing. The pause
-     stays — content that moves by itself owes a way to stop it.
-   - The count drops its word in the rail: "01 / 08", tied to the card by the
-     filled chip. With the word, the row ran 4px past 342 in English and
-     further in Danish.
-   - The lede's how-to sentence steps aside. On touch every card already
-     labels its quick look and the card at the mark runs by itself, so the
-     sentence spent three lines describing what the screen below it shows,
-     and its "tap quick look to run a card" no longer matched what a card
-     does. It stays in the page for every wider or pointer screen. */
-@media (max-width: 36rem) and (hover: none) {
-  .rail__head {
-    grid-template-columns: auto auto minmax(0, 1fr) auto auto;
-    grid-template-areas:
-      "count filter . nav view"
-      "cols cols cols cols cols";
+  .rail__nav {
+    grid-area: top;
+    justify-self: end;
+    padding: 0 var(--gutter) 1.25rem 1rem;
   }
 
-  .rail__nav [data-rail-prev],
-  .rail__nav [data-rail-next] { display: none; }
+  .rail__view { margin-bottom: 0.5rem; }
 
-  :root:not([data-view="list"]) .rail__count-one { display: none; }
-
-  .head__lede [data-lede-hint] { display: none; }
+  /* The chips no longer run to the page edge, so they keep only the fade's
+     width of padding past the last one rather than a whole gutter. */
+  .rail__filter { padding-right: var(--rail-filter-fade); }
 }
 
-/* Under 360px the one line does not fit: at 320 in Danish the count, the
-   filter's "Alle", the pause and the switch ran the page 6px wide. The head
-   goes back to two rows there — the previous and next buttons stay gone. */
-@media (max-width: 22.49rem) and (hover: none) {
-  .rail__head {
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    grid-template-areas:
-      "count . nav"
-      "filter . view"
-      "cols cols cols";
-  }
-}
-
-/* Rail or list: two buttons in one pill. Pressed is filled, as the filter is
-   while it is narrowing the rail, and for the same reason — it is a state the
-   whole rail is in, and it has to read as one from across the page. */
+/* Rail or list: two buttons in one pill, the same height as the carousel
+   circles beside it. Pressed is filled, as the filter's chip is, and for the
+   filter's reason — it is a state the whole rail is in, and it has to read as
+   one from across the page. */
 .rail__view {
+  grid-area: view;
+  align-self: end;
   display: flex;
   gap: 0.125rem;
+  margin: 0 var(--gutter) 0.875rem 0.75rem;
   padding: 0.1875rem;
   border: 1px solid var(--hairline);
   border-radius: 999px;
@@ -813,8 +741,9 @@ body.is-locked {
 }
 
 /* The switch is script: without it there is no list to switch to, so it is
-   not offered. */
+   not offered, and the carousel controls take the gutter it would have held. */
 :root:not(.js) .rail__view { display: none; }
+:root:not(.js) .rail__nav { padding-right: var(--gutter); }
 
 .rail__btn {
   width: 2.75rem;
@@ -875,30 +804,95 @@ body.is-locked {
 
 /* --- type filter -------------------------------------------------------- */
 
-/* An icon and the current choice, over a native select laid across the whole
-   control: the select is what is clicked, tabbed to and read out, and the
-   phone's own picker is what opens. It was a row of chips, one per type plus
-   All, and in the line that introduces the rail they read as the page's
-   navigation rather than as a way of narrowing it.
+/* Written by index.js from the types the cards declare, so it is empty until
+   it runs and hidden when there is only one type to choose between — a filter
+   with a single option is a label pretending to be a control.
 
-   Written by index.js from the types the cards declare, and hidden when there
-   is only one type to choose between — a filter with a single option is a
-   label pretending to be a control. */
+   One row that scrolls, not two rows that wrap. A second line of chips pushed
+   the first card off the fold on a phone, and the rail underneath already
+   answers a narrow screen by scrolling sideways — so the filter answers it the
+   same way, at whatever width it runs out of room rather than only below a
+   breakpoint. Same treatment as `.rail__track`: no scrollbar drawn, and a
+   swipe that reaches either end stays in the row instead of chaining out as a
+   back-navigation gesture.
+
+   The top padding is the focus ring's. `overflow-x: auto` computes overflow-y
+   to `auto` as well, so an outline drawn 2px outside a chip is clipped without
+   it; the bottom padding gives back what it takes, and the box is the height
+   it was. */
 .rail__filter {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  height: 2.25rem;
-  padding: 0 0.9rem 0 0.8rem;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.4rem;
+  padding: 0.375rem var(--gutter) 0.875rem;
+  overflow-x: auto;
+  /* min-width so a grid column may shrink it: an auto track takes the
+     scroller's max-content width and the row stops scrolling at all. */
+  min-width: 0;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  scroll-padding-inline: var(--gutter);
+
+  /* And a fade at whichever end has more chips past it, so the row reads as
+     scrollable rather than as one that happens to be cut off. The mask is on
+     the scroller itself, which paints against its border box and so stays put
+     while the chips move under it — no overlay element, and nothing for the
+     scroll to drag out of place. */
+  --rail-filter-fade: 1.25rem;
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 var(--rail-filter-fade-start),
+    #000 calc(100% - var(--rail-filter-fade-end)),
+    transparent 100%
+  );
+  transition:
+    --rail-filter-fade-start 200ms var(--ease),
+    --rail-filter-fade-end 200ms var(--ease);
+}
+
+.rail__filter::-webkit-scrollbar { display: none; }
+
+/* The two ends of the row's mask, registered so they interpolate — an
+   unregistered custom property is a token, and a token swap is a jump cut. An
+   engine without @property still gets the fade, it just arrives all at once. */
+@property --rail-filter-fade-start {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+@property --rail-filter-fade-end {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+
+/* Set by index.js from the row's own scroll position, each end independently:
+   the fade is there to say there is more that way, so an end with nothing past
+   it does not wear one. A row that fits wears neither and reads as a plain row
+   of chips, which is what it is.
+
+   Narrower than --gutter on purpose. The row keeps a gutter of padding past
+   the last chip, so at either extreme the chip nearest the edge — and the 2px
+   focus ring outside it — clears the ramp rather than being dimmed by it. */
+.rail__filter.is-fade-start { --rail-filter-fade-start: var(--rail-filter-fade); }
+.rail__filter.is-fade-end { --rail-filter-fade-end: var(--rail-filter-fade); }
+
+.rail__filter-btn {
+  /* A chip is as wide as its label. Without this the flex line shrinks them
+     all to fit instead of overflowing, which is the wrap problem again on one
+     line. */
+  flex: 0 0 auto;
+  padding: 0.4rem 0.75rem;
   border: 1px solid var(--hairline);
   border-radius: 999px;
-  color: var(--ink-soft);
+  background: transparent;
+  color: var(--muted);
   font-family: var(--mono);
-  font-size: 0.6875rem;
+  font-size: 0.625rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  white-space: nowrap;
   cursor: pointer;
   transition:
     color 200ms var(--ease),
@@ -906,172 +900,33 @@ body.is-locked {
     background-color 200ms var(--ease);
 }
 
-/* The control sets a display, and an author rule beats the UA [hidden]. */
-.rail__filter[hidden] { display: none; }
-
-.rail__filter:hover {
+.rail__filter-btn:hover {
   color: var(--ink);
   border-color: var(--hairline-strong);
 }
 
-/* Filled while the rail is narrowed: the one state that changes what the
-   whole row below shows, so it reads from across the page. */
-.rail__filter.is-active {
+/* Filled, not underlined: this one is a state the rest of the rail is in, and
+   it has to read as pressed from across the page rather than as a link. */
+.rail__filter-btn[aria-pressed="true"] {
   background: var(--on-ink-bg);
   border-color: var(--on-ink-bg);
   color: var(--on-ink-fg);
 }
 
-.rail__filter:has(.rail__filter-select:focus-visible) {
+.rail__filter-btn:focus-visible {
   outline: 2px solid var(--ink);
   outline-offset: 2px;
 }
 
-.rail__filter-icon {
-  width: 0.875rem;
-  height: 0.875rem;
-  flex: none;
+/* The count in each chip: the same type, a step quieter, so the row states
+   how much is behind each option without becoming two columns of text. */
+.rail__filter-count {
+  opacity: 0.55;
+  white-space: pre;   /* the space the label reads with, kept in the render */
 }
 
-/* Laid over the control and invisible, so the visible half can be as small as
-   an icon and a word while everything a select does still works. 16px, or
-   iOS zooms the page to it on focus. */
-.rail__filter-select {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  opacity: 0;
-  font-size: 1rem;
-  cursor: pointer;
-  appearance: none;
-}
-
-/* Where a select may be styled, the select is the control and its list is
-   part of the page: the same pill, and under it a panel in the page's own
-   surface, hairline and type, rather than the operating system's menu in the
-   middle of an 11px mono row. The label's own icon and value step aside and the
-   select draws its face from its first child — the icon, and <selectedcontent>,
-   a live copy of the chosen option. An engine without base-select never
-   renders that child and keeps everything above: the invisible select over
-   the label, and the platform's picker, which on a phone is the better one.
-
-   Keyboard, typeahead and what a screen reader announces are still the
-   select's own either way; nothing here is script. */
-@supports (appearance: base-select) {
-  .rail__filter { padding: 0; }
-
-  .rail__filter > .rail__filter-icon,
-  .rail__filter > .rail__filter-value { display: none; }
-
-  .rail__filter-select,
-  .rail__filter-select::picker(select) {
-    appearance: base-select;
-  }
-
-  .rail__filter-select {
-    position: static;
-    width: auto;
-    height: 100%;
-    padding: 0 0.9rem 0 0.8rem;
-    border: 0;
-    border-radius: inherit;
-    background: transparent;
-    color: inherit;
-    opacity: 1;
-    font: inherit;
-    letter-spacing: inherit;
-    text-transform: inherit;
-  }
-
-  .rail__filter-select::picker-icon { display: none; }
-
-  .rail__filter-face {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  /* The face says what the rail is showing, not how many: the count belongs to
-     the list, where it helps choose. */
-  .rail__filter-face .rail__filter-sep,
-  .rail__filter-face .rail__filter-n { display: none; }
-
-  /* The list: a raised panel on the page's surface, hung a little under the
-     pill and left-aligned to it. */
-  .rail__filter-select::picker(select) {
-    min-width: 13rem;
-    margin-top: 0.4rem;
-    padding: 0.35rem;
-    border: 1px solid var(--hairline-strong);
-    border-radius: 0.9rem;
-    background: var(--surface);
-    color: var(--ink-soft);
-    box-shadow: var(--shadow-lift);
-    font-family: var(--mono);
-    font-size: 0.6875rem;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    opacity: 0;
-    translate: 0 -0.25rem;
-    transition:
-      opacity 180ms var(--ease),
-      translate 180ms var(--ease),
-      overlay 180ms allow-discrete,
-      display 180ms allow-discrete;
-  }
-
-  .rail__filter-select:open::picker(select) {
-    opacity: 1;
-    translate: 0 0;
-  }
-
-  @starting-style {
-    .rail__filter-select:open::picker(select) {
-      opacity: 0;
-      translate: 0 -0.25rem;
-    }
-  }
-
-  .rail__filter-select option {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    min-height: 2.25rem;
-    padding: 0 0.75rem;
-    border-radius: 0.6rem;
-    color: var(--ink-soft);
-    cursor: pointer;
-  }
-
-  .rail__filter-select option:hover,
-  .rail__filter-select option:focus-visible {
-    background: var(--hairline);
-    color: var(--ink);
-    outline: none;
-  }
-
-  .rail__filter-select option:checked { color: var(--ink); }
-
-  /* The chosen one is ticked in the accent, the colour this page gives what
-     is currently in force; every other row keeps the tick's room, so the
-     names stay on one line. */
-  .rail__filter-select option::checkmark {
-    order: -1;
-    width: 0.75rem;
-    color: var(--accent);
-  }
-
-  .rail__filter-select option .rail__filter-sep { display: none; }
-
-  .rail__filter-select option .rail__filter-n {
-    margin-left: auto;
-    color: var(--muted);
-    font-variant-numeric: tabular-nums;
-  }
+@media (hover: none) {
+  .rail__filter-btn { min-height: 2.25rem; }
 }
 
 .rail__track {
@@ -1101,34 +956,10 @@ body.is-locked {
 
 .rail__track::-webkit-scrollbar { display: none; }
 
-/* The ring goes round the rail, not the track: the track's left edge is under
-   the mask below, which would take the ring's left side with it. */
-.rail__track:focus-visible { outline: none; }
-
-.rail:has(.rail__track:focus-visible) {
+.rail__track:focus-visible {
   outline: 2px solid var(--ink);
   outline-offset: -2px;
   border-radius: 0.5rem;
-}
-
-/* The left gutter is empty at rest. A looping rail always has a card before
-   the first one, and the card before the newest study is the last forthcoming
-   slot: only its dashed right edge showed, a sliver at the page's edge that
-   read as a card that had failed to draw. The track fades out across the
-   gutter instead, clear up to a rail gap short of the first card, so at rest
-   nothing is there and a drifting card leaves by fading rather than by being
-   cut. The right edge keeps its partial card, which is what says the rail
-   goes on.
-
-   A mask on the scroller itself, as the filter's chip row had, so it paints
-   against the track's border box and stays put while the cards scroll under
-   it. Not in the list, where there is no gutter traffic to hide. */
-:root:not([data-view="list"]) .rail__track {
-  mask-image: linear-gradient(
-    to right,
-    transparent calc(var(--gutter) - var(--rail-gap)),
-    #000 var(--gutter)
-  );
 }
 
 /* The drift and a step both write scrollLeft every frame, so snap has to come
@@ -1166,18 +997,14 @@ body.is-locked {
   overflow: hidden;
 }
 
-/* The fill is the whole track scaled from its left end, so moving it is a
-   transform the compositor draws rather than a width the page lays out on
-   every card the rail passes. */
 .rail__progress::after {
   content: "";
   position: absolute;
-  inset: 0;
+  inset: 0 auto 0 0;
+  width: var(--rail-progress, 30%);
   border-radius: 2px;
   background: var(--progress);
-  transform: scaleX(var(--rail-progress, 0.3));
-  transform-origin: left center;
-  transition: transform 200ms linear;
+  transition: width 200ms linear;
 }
 
 /* --- piece ------------------------------------------------------------ */
@@ -1216,10 +1043,8 @@ body.is-locked {
 }
 
 /* .is-active marks the card in the read position. It drives the counter and,
-   on touch, which preview plays. The card itself is not painted — lifting or
-   outlining one card made the rail look misaligned rather than focused — but
-   its number is: see .piece__no below, which is what ties the counter to a
-   card. */
+   on touch, which preview plays — but it is deliberately not painted: lifting
+   or outlining one card made the rail look misaligned rather than focused. */
 .piece__frame {
   position: relative;
   overflow: hidden;
@@ -1304,7 +1129,7 @@ body.is-locked {
   box-shadow: inset 0 0 0 1px var(--chip-over-preview-line);
   backdrop-filter: blur(6px);
   font-family: var(--mono);
-  font-size: 0.6875rem;
+  font-size: 0.625rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--chip-over-preview-ink);
@@ -1317,105 +1142,44 @@ body.is-locked {
   color: var(--chip-over-preview-ink-soft);
 }
 
-/* The type and the number step aside while a pointer is on the card. That is
-   when a reader is looking at the component rather than labelling it, and a
-   component in its open state can reach the thumbnail's top edge — the bento
-   board's heading ran under the LAYOUT badge. Quick look stays: hover is when
-   it is wanted. Pointer only, and not the demo wave, because a chip fading on
-   its own every few seconds is motion nobody asked for. */
-.piece__type,
-.piece__no {
-  transition:
-    opacity 240ms var(--ease),
-    background-color 320ms var(--ease),
-    color 320ms var(--ease);
-}
-
-/* The counted card's number is filled, the state the filter and the view
-   switch use for "this is what the rail is on", so "Study 04 / 08" points at
-   the one card whose 04 is filled. It travels with the mark as the rail
-   drifts. Only the chip changes, never the card's box, so nothing in the row
-   moves out of line. The rail only: the list has no read position. */
-:root:not([data-view="list"]) .piece.is-active .piece__no {
-  background: var(--on-ink-bg);
-  box-shadow: none;
-  color: var(--on-ink-fg);
-}
-
-/* The rail only: in the list they are columns of the row, not chips over a
-   thumbnail. */
-@media (hover: hover) {
-  :root:not([data-view="list"]) .piece:hover .piece__type,
-  :root:not([data-view="list"]) .piece:hover .piece__no,
-  /* And while the demo wave has a card performing, for the same reason:
-     the open state is the component at its most worth seeing, and the chips
-     sat on it — the bento's heading ran under its LAYOUT badge. Inside
-     (hover: hover) because the wave only runs there, and because on touch
-     the card at the mark is held active for as long as it is the mark, which
-     would take its filled number away for good. */
-  :root:not([data-view="list"]) .piece[data-active="true"] .piece__type,
-  :root:not([data-view="list"]) .piece[data-active="true"] .piece__no { opacity: 0; }
-}
-
 /* Sits above the stretched link so it can take its own click. */
-/* Quick look is always there: a small glyph-only chip in the thumbnail's
-   corner, which widens to say what it does when the card is hovered or
-   focused. It used to sit at opacity 0 until then, and the variants it opens
-   onto — five to seven per study — were behind a control nobody had a reason
-   to know about. The words arrive by opening a grid track from 0fr to 1fr, so
-   the chip grows with them instead of the label appearing in a pill that was
-   already its full width. */
 .piece__expand {
-  /* Placed from the card rather than from the thumbnail's frame, because the
-     button comes after the card's body in the markup: Tab reaches the study's
-     title first and quick look second, and a screen reader meets the name of
-     the thing before an action on it. The frame is 4:5 of the card's width,
-     so its foot is a height the card already knows. */
   position: absolute;
-  top: calc(var(--card-w) * 1.25 - 0.875rem);
   right: 0.875rem;
-  translate: 0 -100%;
+  bottom: 0.875rem;
   z-index: 3;
-  display: inline-grid;
-  grid-template-columns: auto 0fr;
+  display: inline-flex;
   align-items: center;
-  column-gap: 0;
-  min-height: 1.875rem;
-  padding: 0 0.6rem;
+  gap: 0.45rem;
+  padding: 0.5em 0.85em;
   border: 1px solid var(--hairline);
   border-radius: 999px;
   background: var(--chip-over-preview-strong);
   backdrop-filter: blur(6px);
   color: var(--ink);
-  /* An action among the thumbnail's labels, so the sans: the type and the
-     number beside it are facts and keep the mono. */
-  font-family: var(--sans);
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0;
+  font-family: var(--mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   cursor: pointer;
+  opacity: 0;
+  transform: translateY(0.4rem);
   transition:
-    grid-template-columns 320ms var(--ease),
-    column-gap 320ms var(--ease),
+    opacity 320ms var(--ease),
+    transform 320ms var(--ease),
     border-color 320ms var(--ease);
-}
-
-.piece__expand-text {
-  min-width: 0;
-  overflow: hidden;
-  white-space: nowrap;
 }
 
 .piece:focus-within .piece__expand,
 .piece__expand:focus-visible {
-  grid-template-columns: auto 1fr;
-  column-gap: 0.45rem;
+  opacity: 1;
+  transform: translateY(0);
 }
 
 @media (hover: hover) {
   .piece:hover .piece__expand {
-    grid-template-columns: auto 1fr;
-    column-gap: 0.45rem;
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -1431,12 +1195,12 @@ body.is-locked {
   height: 0.7rem;
 }
 
-/* Coarse pointers get no hover, so the chip says its words from the start —
-   and it has to be big enough to hit with a thumb. */
+/* Coarse pointers get no hover, so the affordance stays put — and it has to
+   be big enough to hit with a thumb. */
 @media (hover: none) {
   .piece__expand {
-    grid-template-columns: auto 1fr;
-    column-gap: 0.45rem;
+    opacity: 1;
+    transform: none;
     min-height: 2.25rem;
     padding-inline: 1rem;
   }
@@ -1454,13 +1218,9 @@ body.is-locked {
   padding: 1.25rem 0.125rem 0;
 }
 
-/* Under the title, not above it: the name is the first thing under the
-   component, and the date is a fact about it. It sat above as a kicker in the
-   September design, inherited rather than chosen. */
 .piece__slug {
-  margin-top: -0.125rem;
   font-family: var(--mono);
-  font-size: 0.6875rem;
+  font-size: 0.625rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--muted);
@@ -1510,13 +1270,10 @@ body.is-locked {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  /* An action, so the sans: the mono is for facts — dates, counts, types,
-     numbers — and it had been carrying every label on the page, actions
-     included, until no one of them read as the thing to do. */
-  font-family: var(--sans);
-  font-size: 0.875rem;
-  font-weight: 600;
-  letter-spacing: -0.005em;
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   color: var(--accent);
 }
 
@@ -1588,10 +1345,7 @@ body.is-locked {
 .piece__ghost-year {
   font-size: 0.6875rem;
   letter-spacing: 0.14em;
-  /* --muted, like the month. It was the hairline colour, about 2:1 — under
-     the 3:1 below which quiet text is not quiet but gone — and the year is
-     said nowhere else in the slot. The month's size is the hierarchy. */
-  color: var(--muted);
+  color: var(--hairline-strong);
 }
 
 /* A title that is not a link and never will be: the title's size, the note's
@@ -1648,12 +1402,12 @@ body.is-locked {
   display: grid;
   grid-template-columns: var(--list-cols);
   column-gap: var(--list-gap);
-  padding: 0.5rem 0 0.75rem;
+  padding: 0.5rem var(--gutter) 0.75rem;
 }
 
 .rail__col {
   font-family: var(--mono);
-  font-size: 0.6875rem;
+  font-size: 0.625rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--muted);
@@ -1790,7 +1544,6 @@ body.is-locked {
 
 :root[data-view="list"] .piece__slug {
   grid-area: date;
-  margin-top: 0;
   font-size: 0.6875rem;
 }
 
@@ -1823,13 +1576,11 @@ body.is-locked {
 }
 
 /* Quick look loses its words and keeps its glyph: a row has a column for it,
-   not a thumbnail's corner. */
+   not a thumbnail's corner. It still arrives on hover, as it does on a card,
+   and where there is no hover the (hover: none) rule above keeps it showing. */
 :root[data-view="list"] .piece__expand {
   grid-area: ql;
   position: relative;
-  top: auto;
-  right: auto;
-  translate: none;
   width: 2.25rem;
   height: 2.25rem;
   min-height: 0;
@@ -1898,7 +1649,7 @@ body.is-locked {
 }
 
 :root[data-view="list"] .piece__ghost-month { font-size: 0.6875rem; }
-:root[data-view="list"] .piece__ghost-year { font-size: 0.6875rem; }
+:root[data-view="list"] .piece__ghost-year { font-size: 0.5625rem; }
 
 /* The stack's marks. The text stays in the markup, which is what a screen
    reader and the tooltip read; the glyph is a mask painted in currentColor,
@@ -2055,7 +1806,7 @@ body.is-locked {
 .lightbox__eyebrow {
   margin: 0;
   font-family: var(--mono);
-  font-size: 0.6875rem;
+  font-size: 0.625rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--muted);
@@ -2136,9 +1887,8 @@ body.is-locked {
 .lightbox__variants {
   flex: 0 0 auto;
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: 0.5rem 0.85rem;
+  gap: 0.85rem;
   padding: 0.85rem 1.25rem;
   border-top: 1px solid var(--hairline);
 }
@@ -2217,76 +1967,10 @@ body.is-locked {
 .lightbox__variant-label {
   margin: 0;
   font-family: var(--mono);
-  font-size: 0.6875rem;
+  font-size: 0.625rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--muted);
-}
-
-/* The play button and the dots, held together so the row wraps the label
-   rather than parting the two. The dots may still wrap inside it on a phone,
-   where they are finger-sized, and the marker follows them onto the second
-   line. */
-.lightbox__playback {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  min-width: 0;
-}
-
-/* Stops and starts the variants playing. The rail's drift button at the
-   dots' scale: a hairline circle the size of a dot's target, holding the
-   same two glyphs, and offering the state it would move to. */
-.lightbox__play {
-  flex: none;
-  width: 1.75rem;
-  height: 1.75rem;
-  display: grid;
-  place-items: center;
-  padding: 0;
-  border: 1px solid var(--hairline);
-  border-radius: 50%;
-  background: transparent;
-  color: var(--muted);
-  cursor: pointer;
-  transition:
-    color 200ms var(--ease),
-    border-color 200ms var(--ease);
-}
-
-.lightbox__play:hover {
-  color: var(--ink);
-  border-color: var(--hairline-strong);
-}
-
-.lightbox__play:focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: 2px;
-}
-
-.lightbox__play-icon {
-  grid-area: 1 / 1;
-  width: 0.875rem;
-  height: 0.875rem;
-}
-
-.lightbox__play[data-autoplay="on"] .lightbox__play-icon--play,
-.lightbox__play[data-autoplay="off"] .lightbox__play-icon--pause { display: none; }
-
-/* What a screen reader hears when a reader picks a variant: the label again,
-   in a line of its own that only a pick writes to. Off screen rather than
-   display:none, which would take it out of the accessibility tree and so out
-   of being announced at all. */
-.lightbox__announce {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-  border: 0;
 }
 
 /* Stacked at every size: the panel is only as wide as the preview, which is
@@ -2326,11 +2010,10 @@ body.is-locked {
   align-items: center;
   gap: 0.4rem;
   text-decoration: none;
-  /* Actions, in the sans, as on the card. */
-  font-family: var(--sans);
-  font-size: 0.875rem;
-  font-weight: 600;
-  letter-spacing: -0.005em;
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   color: var(--accent);
 }
 
@@ -2349,58 +2032,6 @@ body.is-locked {
 .lightbox__link svg {
   width: 0.8rem;
   height: 0.8rem;
-}
-
-/* Side by side from 48rem: the preview on the left at the panel's full height,
-   and the title, the variants, the note and the links in a column beside it.
-   Stacked, the chrome above and below the preview took the height a 4:5
-   preview needs, so on a 1440x810 laptop it ran at 0.75 in a panel 360px wide
-   — "full size" smaller than the card that opened it. Beside it, the same
-   laptop shows it at 1:1, which is the size its hover states were drawn at.
-   index.js works the scale out from the room left beside the column, and the
-   stage is sized from the scale, so nothing measures itself.
-
-   Landscape only. A portrait window has the height stacked needs and not the
-   width a column takes: a 768x1024 tablet ran at 0.81 side by side, and has
-   room for 1:1 stacked. */
-@media (min-width: 48rem) and (orientation: landscape) {
-  .lightbox__panel {
-    --lightbox-side: 20rem;
-    display: grid;
-    grid-template-columns: auto var(--lightbox-side);
-    grid-template-rows: auto auto 1fr;
-    grid-template-areas:
-      "stage bar"
-      "stage variants"
-      "stage foot";
-    width: auto;
-  }
-
-  .lightbox__stage {
-    grid-area: stage;
-    width: calc(var(--preview-w) * var(--lightbox-scale));
-    height: calc(var(--preview-h) * var(--lightbox-scale));
-    min-height: 0;
-    border-right: 1px solid var(--hairline);
-  }
-
-  .lightbox__bar { grid-area: bar; }
-
-  /* The bar's own rule is the line above the variants now. */
-  .lightbox__variants {
-    grid-area: variants;
-    border-top: 0;
-    border-bottom: 1px solid var(--hairline);
-  }
-
-  /* The note under the variants, the links at the foot of the column. */
-  .lightbox__foot {
-    grid-area: foot;
-    justify-content: space-between;
-    border-top: 0;
-  }
-
-  .lightbox__note { max-width: none; }
 }
 
 /* --- foot -------------------------------------------------------------- */
@@ -2506,7 +2137,7 @@ body.is-locked {
 
 .foot__key {
   font-family: var(--mono);
-  font-size: 0.6875rem;
+  font-size: 0.625rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--muted);
@@ -2579,8 +2210,10 @@ body.is-locked {
   align-items: center;
   gap: 0.5rem;
   text-decoration: none;
-  font-family: var(--sans);
-  font-size: 0.8125rem;
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   color: var(--muted);
   transition: color 240ms var(--ease);
 }
@@ -2622,8 +2255,10 @@ body.is-locked {
   align-items: center;
   gap: 0.45rem;
   text-decoration: none;
-  font-family: var(--sans);
-  font-size: 0.8125rem;
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   color: var(--muted);
   transition: color 240ms var(--ease);
 }
@@ -2669,10 +2304,6 @@ body.is-locked {
    of the rest: a preview may report seven variants, and a row of 44px targets
    would not fit across a phone even after wrapping. */
 @media (hover: none) {
-  /* The cluster's height with the chip's own padding round the grown
-     buttons, so the mark stays centred on it. */
-  :root { --bar-h: 2.65rem; }
-
   .lang__btn {
     display: grid;
     place-items: center;
@@ -2700,10 +2331,10 @@ body.is-locked {
     height: 2rem;
   }
 
-  .lightbox__play {
-    width: 2.25rem;
-    height: 2.25rem;
-  }
+  /* The dots grew, so a preview reporting six or seven variants no longer
+     fits beside its label on a phone. The label drops to its own line rather
+     than the row scrolling sideways. */
+  .lightbox__variants { flex-wrap: wrap; }
 }
 
 @media (max-width: 52rem) {
@@ -2713,24 +2344,40 @@ body.is-locked {
   }
 }
 
-/* The one width too narrow for the bar. The mark measures 181px in Fragment
-   Mono and the cluster comes to 130px at touch size by the touch block's own
-   numbers, so with the gutters and a gap they want 371px, and below that the
-   name would run under EN — measured at 320, it did. A change of face moves
-   this: re-measure the mark and set the query to match. The mark takes its own line under
-   the cluster instead, with the air it had there before the two shared one.
-
-   The cluster itself stays in the corner at every width. Controls at the
-   top right is a convention strong enough that a reader who wants one looks
-   there first, and EN/DA at the top of the page says who it is for before a
-   word of it has been read — which is the whole of what a Danish reader, an
-   international one, or someone arriving to judge the work needs to know up
-   front. A setting can be moved down the page; that cannot. */
-@media (max-width: 23.25rem) {
-  .head { padding-top: calc(var(--bar-top) + var(--bar-h) + 1.25rem); }
-}
-
 @media (max-width: 40rem) {
+  /* The cluster keeps its own corner rather than joining the masthead's top
+     line, but it stops crowding it. At 1.25rem its bottom edge crossed the
+     site mark's cap line by six pixels — near-tangency, which reads as a
+     header that has come apart rather than as two things one above the other.
+
+     So it drops a little and the masthead opens to meet it: the mark now has
+     the same air above it as below, 1.5rem either side, which is what makes
+     the offset read as placed rather than missed. The padding is that sum —
+     the cluster's inset, its touch-sized height (2.65rem), and the eyebrow's
+     own bottom margin. It costs 42px of the fold on a phone, which is the
+     price of the corner not being shared.
+
+     Why it stays in the corner, since the corner is what costs the 42px and
+     the skew: everything else on a phone hangs off one left rail — the mark,
+     the title, the lede, the rail's own count and chips — so the cluster is
+     the only thing off it, and at 390px the page reads top-right first and
+     then jumps back down-left to start. Two arrangements answer that, and
+     both were built and looked at: the cluster on the eyebrow's own line, and
+     the cluster ending the masthead on the meta row, where there is a hole in
+     the right half waiting for it.
+
+     Neither was taken, for reasons that outrank the composition. Controls at
+     the top-right corner is a convention strong enough that a reader who
+     wants one looks there first and nowhere else. And the language switch is
+     not only a control here: EN/DA at the top of the page says who the page
+     is for before a word of it has been read, which is the whole of what a
+     Danish reader, an international one, or someone arriving to judge the
+     work needs to know about it up front. A setting can be moved down the
+     page; that cannot. */
+  .controls { top: 2rem; }
+
+  .head { padding-top: 6.125rem; }
+
   .foot__bar {
     flex-direction: column;
     align-items: flex-start;
@@ -2748,8 +2395,8 @@ body.is-locked {
 /* --- arrival ------------------------------------------------------------ */
 
 /* The page arrives once, in reading order. The mark's pulse opens it — that
-   was already here — and the headline, the lede, the Figma button, the
-   rail's head, each card and the rule under them follow a beat apart, all rising the
+   was already here — and the headline, the lede, the meta row, the rail's
+   head, each card and the rule under them follow a beat apart, all rising the
    same short distance. The controls are not in it: a switch that fades in is
    a switch you wait for.
 
@@ -2813,7 +2460,7 @@ body.is-locked {
 
   .head__title { --arrive-at: 0; }
   .head__lede { --arrive-at: 1; }
-  .head__figma { --arrive-at: 2; }
+  .head__meta { --arrive-at: 2; }
   .rail__head { --arrive-at: 3; }
   .rail__track { --arrive-at: 4; }
 

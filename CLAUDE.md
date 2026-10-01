@@ -1050,6 +1050,51 @@ component, not `ref.png`. A reference image is a record of what the build was
 based on rather than something the site shows, which is why one can be
 withheld — see the folder structure above — without any page changing.
 
+### The rail leads the first screen
+
+The page is a showcase, and for a while it opened on a statement about the
+work instead of the work: a mark on a line of its own, a 64px headline, a
+four-line lede and a meta row put the first card at y=627 of an 802px laptop
+window, with 27% of it showing. The fold was measured line by line — the
+lede's fourth line costing 28px of it — while the masthead's height was taken
+as given, and the height was the thing to question.
+
+Two moves answer it. **The site mark sits on the controls' line**, the bar the
+page always had room for, rather than above the headline as a label saying the
+site's name a second time. `--bar-top` is the cluster's inset and `--bar-h`
+its height, and the mark takes both, so the two centre on each other without
+either being positioned against the other. Below 23.25rem the two no longer fit
+side by side and the mark takes its own line under the cluster, which stays in
+the corner at every width for the reasons given beside that rule in
+`index.css`.
+
+**From 64rem the masthead is a band**: the headline at the left on two lines,
+and beside it the lede and the Figma button, above a full-width rail. It was a
+column one card wide beside the rail for a while, and that is worth knowing
+before trying it again. It put 95% of the first card on screen at 1470x802, and
+it cramped the masthead into 308px: the headline on three lines, the lede five,
+and the Figma file a mono value in a meta row nobody's eye went to. The band
+gives the headline two lines and the lede a readable measure, and it pays for
+the height with the rail's head, which went from two rows and a row of filter
+chips to one slim line. The headline and the aside centre on each other;
+aligned to a shared bottom line, the headline sat low under an empty band.
+
+**A shorter window gets a narrower card**, 288px rather than 336 below 60rem of
+height, so a card's title is on screen with its thumbnail and not a scroll
+under it: the frame is 4:5 off the card's width, and at 336px the title sat
+under the fold of a 1470x802 laptop. 288 keeps `--preview-scale` an exact 0.6.
+It answers to height because the fold does, and a tall screen keeps the wider
+card, which is also what lets a wide rail keep looping. Measured with the
+arrival finished: the first card's title clears the fold by 21px at 1470x802
+in both languages and has room to spare from 900px of height up. It does not
+at 1280x720, nor at 1024x768 in Danish, nor on a phone, where the masthead
+stacks above the rail; the original masthead showed 27% of the card at 1470,
+title nowhere.
+
+The masthead no longer carries a date. "Latest 2026 · 09" was written from the
+newest card, and while every study is from one month it said nothing the cards
+did not.
+
 A touch release is the platform's, end to end — its momentum, its snap, its
 deceleration curve. Nothing in `index.js` animates the landing.
 
@@ -1144,6 +1189,15 @@ under a reader — they need only have moved within that window, not be moving
 now. Measured on a 1440x810 viewport: parked, the rail is held for the first
 2.5s and drifting again by 6.5s; nudged every 700ms, it stays put throughout.
 
+**Except over a card, where it holds for as long as the pointer is there.** The
+idle release carried a fifty-word note out from under someone reading it, and
+motion has no business continuing under a hover — the owner's call, and the
+right one. So the idle rule now covers only the track's gaps and gutters, where
+a parked cursor is furniture; a card under a mouse or a pen holds the drift
+until the pointer leaves it. A card that drifts in under a still pointer counts
+as hovered too: it lifts under the cursor and the rail stops with it there. A
+finger's gesture stays with the touch handlers.
+
 **A pointer moving is not the same as a pointermove.** A browser dispatches one
 of its own when the content under a stationary cursor changes, so `:hover` can
 land on whatever is under it now — and a drifting rail changes that every frame.
@@ -1172,7 +1226,9 @@ control matters most, and the word carried nothing a reader needed in the other.
 
 The rail loops, and so drifts, while the row can cover the viewport with a card
 to spare: `client <= (ring - 2) * step`, which at eight cards and a 336px card
-is 2184px. Past that it is finite and the drift control hides itself — the one
+is 2184px. The 288px card a short window gets lowers that ceiling, which is
+one reason it is keyed to height: the wide screens that would reach it are
+tall ones, and keep the 336px card. Past that it is finite and the drift control hides itself — the one
 case documented under `loopable()`, and the ceiling rises by a card with every
 study added. A wider screen than that needs a wider card, and the pair to keep
 in step is `--card-w` and `--preview-scale`.
@@ -1193,6 +1249,66 @@ events *on*, so there the component's real `:hover` does the work and no message
 is involved. Both routes load the same file — there is no second thumbnail to
 keep in step.
 
+**Quick look is always on the card.** Its chip sits in the thumbnail's corner
+as a glyph at rest and widens to say "Quick look" when the card is hovered or
+focused, by opening a grid track from `0fr` to `1fr`. It comes after the card's
+body in the markup and is placed from the card, `var(--card-w) * 1.25` down,
+so Tab reaches the study's title first and a screen reader meets the name of
+the thing before an action on it. While a pointer is on a card in the rail its
+type and number chips fade, since that is when the reader is looking at the
+component and an open state can reach the thumbnail's top edge — and they fade
+while the demo wave has the card performing, for the same reason, which is
+where they were still sitting on the bento's heading. Both on a fine pointer
+only: on touch the card at the mark is held active for as long as it is the
+mark, and a fade keyed on that would take its filled number away for good. It
+was at opacity 0 until
+then, and the variants it opens onto — five to seven a study — were behind a
+control nobody had a reason to look for. On a coarse pointer it says its words
+from the start.
+
+**In landscape from 48rem, quick look sits side by side**: the preview on the
+left at the panel's full height, and the title, the variants, the note and the
+links in a 20rem column beside it. Stacked, the bar above and the footer below
+took the height a 4:5 preview needs, so a 1440x810 laptop showed it at 0.75 in
+a panel 360px wide — "full size" smaller than the card that opened it. Side by
+side, the same laptop shows it at 1:1, the size its hover states were drawn
+at, and a phone on its side goes from a scrolling stack to 0.60 with nothing
+hidden. `fitStage` works the scale out from the room the overlay has less that
+column, and the stage is sized from the scale, so nothing measures itself.
+Portrait stays stacked: a 768x1024 tablet ran at 0.81 side by side and has
+room for 0.99 stacked.
+
+**Quick look plays the variants until a reader takes one, and then stops for
+good.** It steps through them every `AUTOPLAY_MS` on opening, which is how a
+pointer that never reaches the dots learns there are variants at all. It used
+to start again after every pick: `showVariant()` ended by queueing the next
+step, so the variant someone had just chosen moved on four seconds later, and
+only a pointer resting on the preview held it. A keyboard never did, and a
+finger's tap is an enter and a leave in the same moment. Now a dot, an arrow
+key, focus moved inside the panel or a click into the component turns
+`autoplay` off until the overlay closes. That is the rule a preview's own
+rotation keeps, one level up: a reader outranks it, for good. The pointer's
+hold is still there and still lets go, because it is a different thing — a
+reader looking, not a reader choosing.
+
+The focus rule looks away once. `open()` puts focus on the close button
+itself, and counted as a reader, that would stop every overlay before it had
+played a step. A click into the component is read off this window losing focus
+to the frame, since nothing inside an iframe reaches this document.
+
+The button in front of the dots is the way back, and the pause WCAG 2.2.2 asks
+of anything that moves by itself for more than five seconds. It is the drift
+button's pair: the same two glyphs, the label written from state in `index.js`,
+and under reduced motion it starts on play, so the variants wait to be asked
+rather than being unavailable. The button and the dots are one group, and where
+the panel is too narrow for the label beside them the label takes its own line,
+rather than the sixth dot wrapping under the first five.
+
+The visible label is not a live region. It follows every step, and as one it
+had a screen reader say a new variant name every four seconds for as long as
+the overlay stayed open. `.lightbox__announce` is: it sits off screen, and only
+a pick writes to it.
+
 `og.png` at the root is the social card: a 1200x630 render of the masthead,
 kept as a file because no scraper runs the page, and as a PNG because none of
 them will rasterise an SVG. Slack, Discord and iMessage resolve a relative path
@@ -1209,9 +1325,9 @@ lede — so a headline change means editing `index.html`, then `og.html`, then
 re-rendering, and skipping the last two leaves a link that pastes as one page
 and opens as another.
 
-It has no meta row, and that is deliberate. The masthead's row is the newest
-study's date, read off the cards at runtime, and baked into a PNG it is wrong
-from the next study onward — so is a count. The card carried three facts that
+It has no meta row, and that is deliberate. The masthead carried the newest
+study's date for a while, read off the cards at runtime, and baked into a PNG
+a date is wrong from the next study onward — so is a count. The card carried three facts that
 do not move instead, Exploring, Stack and Each study, and not moving was all
 they had going for them: one repeated the headline, one only made sense to
 someone who had read these rules, and the stack stopped being the whole story
@@ -1220,9 +1336,31 @@ nothing else, broken by hand at its comma, since a fixed-size image has no
 width to reflow into. The domain is not on it either: every unfurl prints it
 under the card already.
 
+**The counter points at a card.** "Study 04 / 08" counts the card at the read
+mark, and nothing on the rail said which one that was, with the drift moving
+and the gutter fading. The counted card's number chip is filled now, in the
+state the filter and the view switch use for "this is what the rail is on", so
+the 04 in the counter is the one filled 04 on the rail. Only the chip changes:
+lifting or outlining the card itself was tried once and made the row look
+misaligned rather than focused.
+
+The left gutter is empty at rest: the track is masked clear up to a rail gap
+short of the first card and fades in across the gap, because a looping rail
+always has a card before the first, and that card is the last forthcoming slot,
+whose dashed edge read as a card that had failed to draw. Drifting cards leave
+by fading. The mask takes the track's own focus ring with it, so the ring is
+drawn round `.rail` instead. It has not been measured on a phone; a masked
+scroller is the arrangement the filter's chip row used, and a phone is the test.
+
+Closing quick look puts the page back where it was instantly, whatever html's
+own `scroll-behavior`: smooth scrolling had turned that restore into a visible
+scroll on every close.
+
 The rail ends on its own rule: `.rail__progress` is both the scroll position
 and the line under the cards, so its track is always drawn and only the fill is
-conditional. The footer has no `border-top` of its own — it used to, 98px below
+conditional. The fill is the whole track scaled from its left end, so moving it
+is a transform rather than a width relaid out on every step. The footer has no
+`border-top` of its own — it used to, 98px below
 the progress track, which was the page drawing the same line twice with nothing
 in between.
 
@@ -1292,39 +1430,53 @@ and an anchor may not contain a button. Everything the overlay shows is read
 back out of that block, so no title, note or path is written twice. That is the
 only file outside the study folder that a new study may touch.
 
+### Earlier versions of the index are archived, not kept in step
+
+When the index changes enough that its old design is worth pointing at — from
+a study, from the Figma file, from a later version saying what it changed — the
+old version is kept in `archive/YYYY-MM-index/`, and the commit it came from is
+tagged `index-YYYY-MM`. The first is `archive/2026-09-index/`, main at
+`db496b6` before the first-screen, type and quick-look passes.
+
+An archive holds three things copied from that commit, `index.html`,
+`index.css` and `index.js`, and a `DESIGN.md` beside them recording the system
+in the DESIGN.md format: tokens in the frontmatter, then overview, colours,
+type, layout, depth, shapes, components, and what superseded it. The copy is
+changed in exactly two ways: its paths gain `../../` so it still frames the
+live studies from two folders down, and its head drops the canonical link and
+the social card and says `noindex`, so it is never offered as the site's page.
+
+After that it is not edited. It is a record, and a record kept in step with
+the present is no longer a record of anything; a fix belongs in the live index.
+It frames the studies as they are now rather than as they were, which its
+`DESIGN.md` says. Nothing links to it and nothing loads from it, so deleting
+`archive/` breaks no page — the same test `tools/` passes — and the study
+rules do not reach it, since it is not a study.
+
 ### Figma is on the page twice, and the two are not the same link
 
-The `Figma` item in the masthead's meta row is the companion file on Figma
-Community. The circle in the footer's handles nav is the profile. One is
-where this set is also drawn; the other is that the person has an account,
-which is what that nav is for — the same test that keeps the tip jar out of
-it.
+The button in the masthead is the companion file on Figma Community. The circle
+in the footer's handles nav is the profile. One is where this set is also
+drawn; the other is that the person has an account, which is what that nav is
+for — the same test that keeps the tip jar out of it.
 
-**The file link is a stated exception to the meta row's rule, not a fit for
-it.** That row is otherwise facts the page counts from the cards, and two
-items were evicted from it once for repeating what the page said elsewhere —
-so a link that is neither counted nor derived is a departure, and worth
-naming as one rather than quietly widening the rule. What earns it is that
-the alternatives are worse. The footer is below the fold on every viewport,
-and a link nobody scrolls to is a link nobody follows. The rail's count line
-is above the fold and was tried, but it puts a link in a bar that is
-otherwise entirely controls — the count, the type chips, the carousel
-buttons — and reads as one.
+**It is a button, and the masthead's only one.** It began as a value in a meta
+row of mono facts, set like a fact, and read as one: the file is half of what
+the site counts as success, and a mono 13px value under the lede was where the
+eye went last. So it is filled, in the accent, which on this page means "this
+leaves the site", 44px tall on every pointer, beside the lede where the band
+puts it above the fold at every width. `--on-accent` is its text, 5.07:1 on
+the light fill and 6.66 on the dark, and `--accent-hover` its hover.
 
-The row had the room, which was never the question but is worth having
-measured: 31px with one item and 31px with two, at 1440, 390 and 320, with
-the first card keeping every pixel it had above the fold in both languages.
+**The Figma mark is beside it now.** It was kept out of the meta row because a
+brand glyph would have made one fact a different kind of object from the facts
+around it. A button is a different kind of object, and the mark says where it
+goes before the words do. The footer's mark labels a handle, which is a
+different thing, so the two are not the same use twice.
 
-It is set like quick look's link rather than like the byline's — accent and
-an arrow, because it leaves the site, where the byline's hairline underline
-reads as prose. It keeps the row's own size and case, because the values
-here are mono 13px in sentence case and a link that changed either would
-stop being a value.
-
-**No Figma mark beside it.** The values in this row are plain facts in mono,
-and a brand glyph would make one of them a different kind of object. The
-mark already does that job in the footer, where the thing it labels is a
-handle.
+It says "Open the Figma file" rather than naming the listing, because that is
+the action; the Community listing is where it lands, for the reasons under **A
+card links the Figma file** below.
 
 ### A study's page in the file reads as a document
 
@@ -1406,7 +1558,7 @@ which is where the file is fetched from.
 
 `data-figma` on the `<article class="piece">` block is the companion Figma
 file's Community listing, and quick look draws an `Open in Figma` link beside
-`Open demo` where a card carries one. Every study has one. It stays optional
+`Open study` where a card carries one. Every study has one. It stays optional
 because a study can land before it is in the file: no attribute, no link, and
 nothing else reads it. The link opens in a new tab and takes neither `?lang=`
 nor `?theme=` — Figma resolves neither, and the choice is this site's rather
@@ -1432,9 +1584,9 @@ pointing at the folder's `demo.html`, and like the type it is kept by hand. A
 slug that changes takes it with it.
 
 **The demo page links it too**, as the last item in its kicker:
-`2026-09 · Card · Figma ↗`. The kicker is that page's meta line, the job the
-masthead's meta row does on the index, where the Community file link already
-sits; it is above the fold and costs no height. The Decisions block was the
+`2026-09 · Card · Figma ↗`. The kicker is that page's meta line, and the
+index's masthead is where the same file has its button; the kicker is above
+the fold and costs no height. The Decisions block was the
 other candidate — beside the `notes.md` link, where the page already sends a
 reader for the rest of the record — and lost on being below the fold inside a
 closed `<details>`, the reason the index kept its own link out of the footer.
@@ -1522,19 +1674,21 @@ yet shows its resting state.
 ### The rail demonstrates itself
 
 Every `DEMO_EVERY` the cards on screen perform on their own for `DEMO_HOLD` and
-settle back, the card at the read mark leading and the rest following a beat
-apart. It is a wave crossing the rail rather than everything flashing at once,
+settle back, the card at the read mark leading and the rest following one at a
+time. It is a relay crossing the rail rather than everything flashing at once,
 and the stagger is not decoration — a performing card is an unpaused card, so
 every card starting together is every preview restyling on one frame.
 
-`DEMO_STAGGER` against `DEMO_HOLD` is what decides how much of a wave it is,
-and the two have to be read together. Below `DEMO_HOLD / 3` every card on
-screen is open at the same time for most of a second, which is the flash the
-stagger exists to prevent wearing a delay; above it the count comes down a card
-at a time. It runs at 850 against a 2200 hold — three cards at the peak, each
-leading the next plainly enough to be followed, and the last one still opening
-while the first is up. A stagger at the hold or past it is a relay of one card
-at a time, which is a different thing and not what this is.
+`DEMO_STAGGER` against `DEMO_HOLD` is what decides how many cards move at
+once, and the stagger is now the hold: one card performing at a time, the next
+opening as the last one closes, so the only overlap is the hand-off. It was a
+ripple for a while, 850 against the same 2200 — three cards open at the peak and
+a wave across four spending 4.75s of every 6 — and that read as several things
+happening at once rather than as one card being shown. Below `DEMO_HOLD / 3`
+it is worse again: every card on screen open together for most of a second,
+the flash the stagger exists to prevent wearing a delay. The relay costs time
+instead, which is the right thing to spend: a wave across four takes 8.8s, and
+`DEMO_REST` follows it as before.
 
 It is there because of an asymmetry that is invisible in the code: `handoff` is
 what tells a card at the mark to perform, and it returns early unless
@@ -1599,10 +1753,10 @@ between marks is dropped, and a dropped beat costs a whole period: measured over
 again on `DEMO_RETRY`, because everything it waits on — a pointer gone, the
 overlay closed, a gesture ended — arrives without announcing itself.
 
-**What it costs, measured.** Three cards perform at once at the peak of a wave,
-which is the case `wantPaused` holds down to two during the drift. The figures
-below were taken at the old 420 stagger, where four overlapped, so they are a
-ceiling on what it costs now rather than a reading of it. Over 25s of
+**What it costs, measured.** As a relay, one card performs at a time and two
+only across a hand-off. The figures below were taken at the old 420 stagger,
+where four overlapped, so they are a well-cleared ceiling on what it costs now
+rather than a reading of it. Over 25s of
 drift against the same page with one card: unthrottled it is not there at all —
 median 16.7ms either way, p95 33.4ms either way, and the wave's worst frame is
 the better of the two at 83ms against 100ms. At 4x it is real: p95 83ms to
@@ -1731,43 +1885,152 @@ to. Three rather than one because the row reads as a set and a single trailing
 placeholder reads as an accident. When a study lands, replace the slot whose
 month it is.
 
-The rail's head is one grid — `.rail__head` — holding the count, the type
-filter and the carousel controls, rather than a bar with a row beneath it. The
-controls span both rows and sit in the right column, so they land on the filter
-chips' own bottom edge instead of floating on a line that is otherwise empty for
-a thousand pixels. It takes 31px off the header, which is 31px more of the first
-card above the fold.
+The rail's head is one line — `.rail__head` — with where you are and what you
+are looking at on the left, the count and the type filter, and how to move and
+how to see it on the right, the carousel controls and the rail/list switch. It
+was two rows once, the filter chips under the count with the controls spanning
+both, and that was a menu's worth of pills in the line that introduces the rail:
+it read as the page's navigation, and it was height the masthead needed.
 
-Bottom-aligned rather than centred, because the chips and the circles are
-different heights and the chips' bottom edge is the line the eye already has;
-the nav's bottom padding matches the filter's so the circles finish on the chips
-rather than on the scroller's box. Right-aligned to the page gutter, the same
-one the masthead and the cards use.
+On a touch phone it is one line too, with less on it: previous and next go,
+because a finger swipes the rail and the buttons were two 44px targets for
+what the thumb was already doing; the pause stays, as content that moves by
+itself owes a way to stop it; and the count drops its word to "01 / 08", tied
+to its card by the filled chip. The lede's how-to sentence steps aside there as
+well — every card already labels its quick look on touch and the card at the
+mark runs by itself, so it spent three lines on what the screen showed, and
+its "tap quick look to run a card" had stopped matching what a card does.
+Measured at 390x844, the first card's title went from y=881, under the fold,
+to y=775. Under 360px the one line does not fit — 6px over at 320 in Danish —
+and the head goes back to two rows. A narrow window with a mouse keeps the
+two-row head with every control, because one row wants 470px of the 342 at
+390. The gaps tighten
+there rather than the buttons shrinking: at 320 in Danish, "Studie 01 / 08" and
+the three 44px buttons ran the page 4px wide until the gap between them went to
+8px and the gaps inside the nav to 4px. Each control is held to its own end of
+its column, or on a phone the narrower of two sharing a column stretches to the
+other's width. The grid restacks with `grid-template-areas`, so nothing moves in
+the DOM.
 
-Side by side only above 52rem, which is where all four chips still fit beside
-the controls. Below it the areas restack to what they were — controls up beside
-the count, chips full width underneath — because the chips lose more than they
-gain: measured at 320px with the drift control showing, the scroller is left
-132px and one chip of four. The grid restacks with `grid-template-areas`, so
-nothing moves in the DOM and the nav is one element in both layouts.
+The type filter is an icon and the current choice, laid over a native
+`<select>`. The select covers the whole control and is invisible, so it is what
+is clicked, tabbed to and read out, and a phone opens its own picker; the
+visible half can be as small as an icon and a word. It fills while the rail is
+narrowed, because that is a state the whole row below is in. Its options are
+built by `index.js` from the `type.*` key on each card's badge, so a study of a
+new type needs nothing added to it, and each carries its count in its own text,
+"Card · 3", since a native list draws nothing but text. The select is 16px
+although nobody sees it, because iOS zooms the page to a smaller one on focus.
 
-The type filter above the rail is built by `index.js` from the `type.*` key on
-each card's badge, so a study of a new type needs nothing added to it. Filtering
-hides cards with a class rather than the `hidden` attribute — `.piece` sets its
-own `display`, and the warning about `[hidden]` in the preview contract applies
-here for the same reason. The chips are one row that scrolls sideways, never
-two rows that wrap: a second line pushed the first card off the fold on a
-phone, and the rail below already answers a narrow screen the same way. That
-costs the focus ring two things — `overflow-x: auto` computes overflow-y to
-`auto`, so the row carries top padding or the outline is clipped, and Chromium
-does not scroll a chip that Tab reaches back into view, so `index.js` does it
-on `focusin`. A mask fades whichever end has chips past it, so the row says it
-scrolls rather than looking cut off; the mask paints against the scroller's own
-border box and stays put while the chips move under it, and `index.js` sets
-each end from the scroll position, because whether there is anything past an
-edge is not something CSS can ask. The rail counts what it is showing and the footer
-counts what exists — the masthead states neither, because the rail's own
+Where a select can be styled (`appearance: base-select`, Chromium today), the
+select becomes the control itself and its list is part of the page: a panel in
+`--surface` with a hairline edge, the 11px mono labels, the count set apart on
+the right in `--muted`, and the chosen row ticked in the accent. The select's
+face is its first child, a `<button>` holding the icon and `<selectedcontent>`,
+which index.js adds and an engine without base-select never renders. There the
+label round the select draws the face and the platform's own list opens, which
+on a phone is the better one. Each option is three spans — name, " · ", count —
+so a styled list can place the count and a plain one still reads "Card · 3".
+One thing does not come for free: `<selectedcontent>` copies the chosen option
+when the choice changes, not when the option's text does, so a language switch
+left "Card" over a list of "Kort" until index.js started copying it itself.
+Filtering hides cards with a class rather than the `hidden` attribute — `.piece`
+sets its own `display`, and the warning about `[hidden]` in the preview contract
+applies here for the same reason. The rail counts what it is showing and the
+footer counts what exists — the masthead states neither, because the rail's own
 "Study 01 / 05" is where a reader takes the total from.
+
+### The site is set in Mona Sans and Fragment Mono
+
+It was Plus Jakarta Sans and JetBrains Mono, and the design checker flagged the
+sans on every run for good reason: by Google Fonts' own popularity ranking it
+is 20th of 1,946 families, and JetBrains Mono is 45th. Mona Sans is 227th and
+Fragment Mono 316th. Both were chosen by eye from a side-by-side on the index's
+real classes, and both are OFL on Google Fonts, loaded the way the old pair was.
+Only 400 and 600 are loaded, because nothing else on the index is used.
+
+Changing a face is not only a font swap here, because several things on the
+index are measured off text. Re-measure them when a face changes:
+
+- the site mark's width, which sets where it and the controls stop sharing a
+  line — 181px in Fragment Mono, so the query is 23.25rem;
+- the rail head's count beside the carousel buttons at 320, which fits with
+  4px to spare in Danish;
+- the headline's line count in the band, two from 360px up in both languages;
+- `og.png`, re-rendered from `og.html`, which carries its own copy of the pair.
+
+The demo pages followed, as a sweep of the identity kind: each folder's own
+copy, in its own file. The rule it applied is the one to keep:
+
+- **A page's chrome is Fragment Mono on every page** — the back link, the
+  kicker, the language buttons, the decisions block's labels, the captions,
+  everything a `demo__` rule set in the old mono.
+- **A page's prose is Mona Sans where it was the site's face**, and on the two
+  pages that had never loaded one, `2026-09-bento-grid` and `_template`, whose
+  system-ui was the template's placeholder rather than a decision.
+  `2026-09-raster-pulse` sets its page in Space Grotesk, the face its component
+  is in, and keeps it.
+- **A component is never swept.** Five studies set their components in the old
+  pair, in their own `component.css`, and that is each study's decision, not
+  something the site's choice reaches. A page still loads whatever its
+  component names, so those pages carry both pairs, and a page drops a face
+  only when nothing on it uses that face any more. `2026-09-struck-tones`
+  keeps JetBrains Mono for its instrument staging, which mirrors its
+  component's readouts rather than being chrome.
+
+The template carries the pair, loaded, so a new study is born with it and adds
+its component's own faces to the same link.
+
+### The mono is for facts, the sans is for actions
+
+The mono had been carrying every label on the index — the count, the chips,
+the dates, the footer's keys, and also every action: "Open demo", quick look's
+links, the quick-look chip, the footer's coffee and back-to-top links. Eleven
+pixels of letter-spaced capitals in nine roles, until no one of them read as
+the thing to do, and the critique called the frame generic for it. So the
+line is drawn by role: facts and labels — dates, counts, types, numbers, EN/DA,
+the footer's keys — stay mono; actions are set in the sans, the way the
+masthead's Figma button already was. "Open study" and quick look's links are
+14px at 600 in the accent, the chip 12px, the footer's links 13px.
+
+A card's date sits under its title rather than above it as a kicker, which it
+had been since the September design without anyone choosing it: the name is
+the first thing under the component, and the date is a fact about it. It is
+written from the card's own `data-date`, which carries the day,
+through the browser's date formatting: "21 Sept 2026", "21. sep. 2026". The
+markup's slug says "2026 · 09", and while every study came from one month all
+eight cards said exactly that, so the date carried nothing — the list's Date
+column was the same in every row. The markup keeps the month as the no-script
+fallback, and a card dated only to the month keeps it too.
+
+### The index's small type is one size, with headroom
+
+Every mono label on the index is 11px: the filter, the controls, the slugs,
+the list's column heads, quick look's slug and variant name.
+It used to be two sizes, 10px and 11px, and a 1px step is too small to carry
+two roles, so what told those roles apart was always their tone, case and
+place. Keeping it meant keeping ten labels under the 11px floor that
+functional text is held to, the chips and EN/DA among them, which are
+controls.
+
+`--muted`, the quietest text on the page, is measured against the ground it
+does worst on rather than the one it was picked on. In dark it was 4.51:1 on
+the page and 4.19 on `--surface`, the quick-look panel, so that panel's slug
+and variant name were under the floor. It is `#8d8c88` there now, 5.13 on the
+panel, and `#65645f` in light, 5.30 on `--well`. Both keep the headroom small
+mono type needs, because the ratio does not model size.
+
+The filter chips' counts were a step quieter than their labels by opacity,
+0.55, which put them at 2.2:1 in both themes, inside a control. The chips have
+since gone, and the lesson stays: a quieter tone is a token that clears the
+floor, never an opacity on one that already sits near it. The forthcoming
+slots' year had the same problem in the hairline colour, about 2:1, and is
+`--muted` now, with the month's size as the hierarchy.
+
+Measured by computed colour against computed background across the page, the
+quick-look panel and the list, in both themes: nothing is under 5:1 except the
+card chips over a thumbnail, whose ground is the preview's and can only be
+estimated from here.
 
 ### The rail has a list view, made of the same cards
 
@@ -1809,8 +2072,8 @@ rail is a rail, each at the one place it is asked:
 
 - The drift is *parked*, `driftStop(false, false)` — stopped without counting
   as the reader having taken it, so going back to the rail sets it off again
-  unless someone had stopped it. For the same reason a filter chip pressed in
-  the list does not stop it, and neither does tabbing down the rows.
+  unless someone had stopped it. For the same reason a filter picked in the
+  list does not stop it, and neither does tabbing down the rows.
 - `loopable()` answers no, which is also what gives the list its order: with
   no rotation, `rebuildRing` numbers the cards in the DOM order `order()` has
   already sorted. The `!important` on `order` that stood in for this is gone.
@@ -1846,8 +2109,8 @@ way to derive it — the same wall the type runs into.
 ### The page arrives once, and what is below the fold waits for you
 
 The masthead, the rail and the footer rise into place in reading order as the
-page opens — the mark's pulse first, then the headline, the lede, the meta row,
-the rail's head, each card a beat apart and the rule drawn under them. A block
+page opens — the mark's pulse first, then the headline, the lede, the Figma
+button, the rail's head, each card a beat apart and the rule drawn under them. A block
 carries `data-reveal`; `data-reveal="each"` staggers its children instead,
 which is how the cards and the footer's rows arrive as rows. The order is a
 slot per block in index.css's arrival section, and it is written there and
@@ -1923,9 +2186,9 @@ page is set in, what the studies are made of, what types they cover, and how
 many there are. The last two are written from the cards, so neither is a number
 anyone keeps by hand.
 
-The `Types` row reads the same badges the chips do, through the same
+The `Types` row reads the same badges the filter does, through the same
 `typeCounts`/`typeOrder`, so both list them commonest-first in the same order —
-a row ordering them differently from the chips a screen above would read as a
+a row ordering them differently from the filter's options would read as a
 different set of things. It is written once at boot and again on `lang:change`,
 never from `sync()`: the set of types is static, and `sync()` is on the scroll
 path. And like the `Studies` count beside it, it counts what exists rather than

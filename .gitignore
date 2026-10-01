@@ -65,3 +65,14 @@ __pycache__/
 # available in every session and every repo — putting one here would scope it
 # to this project and publish it with the code.
 .claude/skills/
+
+# Impeccable, the design tooling. PRODUCT.md and .impeccable/config.json are
+# committed: the one is the product record every design command reads, the
+# other holds decisions the owner has signed off, such as a detector finding
+# that is deliberate. The rest is per-run or per-machine — a critique's dated
+# snapshot, a live-mode session, the hook's cache, a local override — and
+# means nothing to anyone reading the repo.
+/.impeccable/critique/
+/.impeccable/live/
+/.impeccable/hook.cache.json
+/.impeccable/config.local.json
