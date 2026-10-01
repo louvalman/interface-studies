@@ -479,6 +479,7 @@
               <li class="piece__code" data-code="css" title="CSS">CSS</li>
               <li class="piece__code" data-code="js" title="JavaScript">JavaScript</li>
               <li class="piece__code" data-code="react" title="React">React</li>
+              <li class="piece__code" data-code="figma" title="Figma">Figma</li>
             </ul>
             <span class="piece__cta" aria-hidden="true">
               <span class="piece__cta-text" data-i18n="cta.openStudy">
@@ -568,6 +569,7 @@
               <li class="piece__code" data-code="html" title="HTML">HTML</li>
               <li class="piece__code" data-code="css" title="CSS">CSS</li>
               <li class="piece__code" data-code="js" title="JavaScript">JavaScript</li>
+              <li class="piece__code" data-code="figma" title="Figma">Figma</li>
             </ul>
             <span class="piece__cta" aria-hidden="true">
               <span class="piece__cta-text" data-i18n="cta.openStudy">
@@ -657,6 +659,7 @@
               <li class="piece__code" data-code="html" title="HTML">HTML</li>
               <li class="piece__code" data-code="css" title="CSS">CSS</li>
               <li class="piece__code" data-code="js" title="JavaScript">JavaScript</li>
+              <li class="piece__code" data-code="figma" title="Figma">Figma</li>
             </ul>
             <span class="piece__cta" aria-hidden="true">
               <span class="piece__cta-text" data-i18n="cta.openStudy">
@@ -745,6 +748,7 @@
               aria-label="Available in">
               <li class="piece__code" data-code="html" title="HTML">HTML</li>
               <li class="piece__code" data-code="css" title="CSS">CSS</li>
+              <li class="piece__code" data-code="figma" title="Figma">Figma</li>
             </ul>
             <span class="piece__cta" aria-hidden="true">
               <span class="piece__cta-text" data-i18n="cta.openStudy">
@@ -833,6 +837,7 @@
               aria-label="Available in">
               <li class="piece__code" data-code="html" title="HTML">HTML</li>
               <li class="piece__code" data-code="css" title="CSS">CSS</li>
+              <li class="piece__code" data-code="figma" title="Figma">Figma</li>
             </ul>
             <span class="piece__cta" aria-hidden="true">
               <span class="piece__cta-text" data-i18n="cta.openStudy">
@@ -923,6 +928,7 @@
               aria-label="Available in">
               <li class="piece__code" data-code="html" title="HTML">HTML</li>
               <li class="piece__code" data-code="css" title="CSS">CSS</li>
+              <li class="piece__code" data-code="figma" title="Figma">Figma</li>
             </ul>
             <span class="piece__cta" aria-hidden="true">
               <span class="piece__cta-text" data-i18n="cta.openStudy">
@@ -1010,6 +1016,7 @@
               aria-label="Available in">
               <li class="piece__code" data-code="html" title="HTML">HTML</li>
               <li class="piece__code" data-code="css" title="CSS">CSS</li>
+              <li class="piece__code" data-code="figma" title="Figma">Figma</li>
             </ul>
             <span class="piece__cta" aria-hidden="true">
               <span class="piece__cta-text" data-i18n="cta.openStudy">
@@ -1100,6 +1107,7 @@
               <li class="piece__code" data-code="html" title="HTML">HTML</li>
               <li class="piece__code" data-code="css" title="CSS">CSS</li>
               <li class="piece__code" data-code="js" title="JavaScript">JavaScript</li>
+              <li class="piece__code" data-code="figma" title="Figma">Figma</li>
             </ul>
             <span class="piece__cta" aria-hidden="true">
               <span class="piece__cta-text" data-i18n="cta.openStudy">
@@ -1194,25 +1202,62 @@
          file is the other half of what the site counts as success, and the
          end of the page is where a next step is looked for. -->
       <div class="foot__invite" data-reveal>
-        <h2 class="foot__invite-title" data-i18n="foot.inviteTitle">
-          Take the set with you.
-        </h2>
+        <div class="foot__invite-lead">
+          <h2 class="foot__invite-title" data-i18n="foot.inviteTitle">
+            Take the set with you.
+          </h2>
+          <!-- What the file holds, drawn rather than named: the shape every
+             study's page in it shares, a Start here frame and then four
+             chapters read top to bottom, each a row of its boards. A diagram
+             of the file, built here, not a picture of it. The chapter names
+             are the file's own and stay in English; the description a screen
+             reader gets is translated. -->
+          <div
+            class="foot__file"
+            role="img"
+            data-i18n-aria="a11y.filePage"
+            aria-label="A study's page in the Figma file: a Start here frame, then four chapters, The idea, The design, In use and The build.">
+            <div class="foot__file-row foot__file-row--start">
+              <span class="foot__file-label">Start here</span>
+              <span class="foot__file-boards foot__file-boards--start">
+                <i class="foot__file-heading"></i>
+                <span class="foot__file-instances"><i></i><i></i><i></i><i></i></span>
+              </span>
+            </div>
+            <div class="foot__file-row">
+              <span class="foot__file-label">01 · The idea</span>
+              <span class="foot__file-boards"><i style="flex: 1"></i><i style="flex: 1.3"></i></span>
+            </div>
+            <div class="foot__file-row">
+              <span class="foot__file-label">02 · The design</span>
+              <span class="foot__file-boards"><i style="flex: 1.2"></i><i style="flex: 1"></i><i style="flex: 0.8"></i></span>
+            </div>
+            <div class="foot__file-row">
+              <span class="foot__file-label">03 · In use</span>
+              <span class="foot__file-boards"><i style="flex: 1.6"></i><i style="flex: 0.8"></i><i style="flex: 0.6"></i></span>
+            </div>
+            <div class="foot__file-row">
+              <span class="foot__file-label">04 · The build</span>
+              <span class="foot__file-boards"><i style="flex: 1.4"></i><i style="flex: 0.8"></i><i style="flex: 0.6"></i></span>
+            </div>
+          </div>
+        </div>
         <div class="foot__invite-aside">
           <p class="foot__invite-text" data-i18n="foot.inviteText">
             Every study is drawn in the Figma file too, a page each, with its
             variants and its motion, ready to duplicate.
           </p>
+          <!-- A link, not a second copy of the masthead's button: the same
+             filled pill with the same words at the top and the bottom of the
+             page read as a template, and the drawing beside it already shows
+             what the file holds. Set as the footer sets its links. -->
           <a
-            class="figma-btn foot__figma"
+            class="foot__link foot__invite-link"
             href="https://www.figma.com/community/file/1683607518896928224/interface-studies"
             target="_blank"
             rel="noopener noreferrer">
-            <svg class="figma-btn__mark" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false">
-              <path d="M8 .5H5.5a2.5 2.5 0 0 0 0 5H8zM8 5.5H5.5a2.5 2.5 0 0 0 0 5H8zM8 10.5H5.5a2.5 2.5 0 0 0 0 5H8zM8 .5h2.5a2.5 2.5 0 0 1 0 5H8z" />
-              <circle cx="10.5" cy="8" r="2.5" />
-            </svg>
-            <span data-i18n="head.figma">Open the Figma file</span>
-            <svg class="figma-btn__arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false">
+            <span data-i18n="foot.getFile">Get the file on Figma Community</span>
+            <svg class="foot__link-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false">
               <path d="M4 12 12 4M6 4h6v6" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
           </a>
@@ -1252,13 +1297,13 @@
              and the star button is where the link lands. -->
           <p class="foot__source">
             <a
-              class="foot__source-link"
+              class="foot__link foot__source-link"
               href="https://github.com/louvalman/interface-studies"
               target="_blank"
               rel="noopener noreferrer"
               data-repo>
               <span data-i18n="foot.source">The source is on GitHub</span>
-              <svg class="foot__source-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false">
+              <svg class="foot__link-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false">
                 <path d="M4 12 12 4M6 4h6v6" stroke-linecap="round" stroke-linejoin="round" />
               </svg>
             </a>

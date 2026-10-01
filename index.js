@@ -134,6 +134,9 @@
       'ghost.month.oct': 'oktober',
       'ghost.month.nov': 'november',
       'foot.inviteTitle': 'Tag samlingen med dig.',
+      'a11y.filePage': 'En studies side i Figma-filen: en Start here-ramme, '
+        + 'derefter fire kapitler, The idea, The design, In use og The build.',
+      'foot.getFile': 'Hent filen på Figma Community',
       'foot.inviteText': 'Hvert studie er også tegnet i Figma-filen, en side '
         + 'hver, med sine varianter og sin bevægelse, klar til at duplikere.',
       'foot.source': 'Kildekoden ligger på GitHub',

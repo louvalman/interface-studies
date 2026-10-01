@@ -579,8 +579,9 @@ body.is-locked {
    is what leaves the site, and filled, because it is the one action the
    masthead offers and half of what the site counts as success. 44px tall on
    every pointer: it is the only control up there that is not a setting.
-   A block of its own rather than the masthead's, because the footer's
-   closing band carries the same button. */
+   The page's one filled pill: the footer's band links the file in the
+   footer's own link style instead, since the same button with the same
+   words at the top and the bottom of the page read as a template. */
 .figma-btn {
   display: inline-flex;
   align-items: center;
@@ -1597,10 +1598,32 @@ body.is-locked {
    .piece__body goes to `contents` too, so its slug, title and note are cells
    beside them. */
 
-/* Hidden in the rail: the column heads, and the stack, which the rail's cards
-   do not show. */
-.rail__cols,
+/* Hidden in the rail: the column heads. */
+.rail__cols { display: none; }
+
+/* What a study comes in, on the rail as well as in the list: the marks sit at
+   the far end of the "Open study" line, where the card ends. They were the
+   list's alone for a while, so a card on the rail said nothing of Figma,
+   which every study has and which is half of what the site counts. Placed
+   against the body rather than laid out in it, so the call to action keeps
+   the row it lines up on across the rail. */
 .piece__stack { display: none; }
+
+.piece__body { position: relative; }
+
+:root:not([data-view="list"]) .piece__stack {
+  position: absolute;
+  right: 0.125rem;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  height: 1.3125rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--muted);
+}
 
 .piece__thumb { display: contents; }
 
@@ -1927,6 +1950,7 @@ body.is-locked {
   mask: var(--code-icon) center / contain no-repeat;
 }
 
+.piece__code[data-code="figma"] { --code-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 .5H5.5a2.5 2.5 0 0 0 0 5H8zM8 5.5H5.5a2.5 2.5 0 0 0 0 5H8zM8 10.5H5.5a2.5 2.5 0 0 0 0 5H8zM8 .5h2.5a2.5 2.5 0 0 1 0 5H8z'/%3E%3Ccircle cx='10.5' cy='8' r='2.5'/%3E%3C/svg%3E"); }
 .piece__code[data-code="html"] { --code-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M1.5 0h21l-1.91 21.563L11.977 24l-8.564-2.438L1.5 0zm7.031 9.75l-.232-2.718 10.059.003.23-2.622L5.412 4.41l.698 8.01h9.126l-.326 3.426-2.91.804-2.955-.81-.188-2.11H6.248l.33 4.171L12 19.351l5.379-1.443.744-8.157H8.531z'/%3E%3C/svg%3E"); }
 .piece__code[data-code="css"] { --code-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M0 0v20.16A3.84 3.84 0 0 0 3.84 24h16.32A3.84 3.84 0 0 0 24 20.16V3.84A3.84 3.84 0 0 0 20.16 0Zm14.256 13.08c1.56 0 2.28 1.08 2.304 2.64h-1.608c.024-.288-.048-.6-.144-.84-.096-.192-.288-.264-.552-.264-.456 0-.696.264-.696.84-.024.576.288.888.768 1.08.72.288 1.608.744 1.92 1.296q.432.648.432 1.656c0 1.608-.912 2.592-2.496 2.592-1.656 0-2.4-1.032-2.424-2.688h1.68c0 .792.264 1.176.792 1.176.264 0 .456-.072.552-.24.192-.312.24-1.176-.048-1.512-.312-.408-.912-.6-1.32-.816q-.828-.396-1.224-.936c-.24-.36-.36-.888-.36-1.536 0-1.44.936-2.472 2.424-2.448m5.4 0c1.584 0 2.304 1.08 2.328 2.64h-1.608c0-.288-.048-.6-.168-.84-.096-.192-.264-.264-.528-.264-.48 0-.72.264-.72.84s.288.888.792 1.08c.696.288 1.608.744 1.92 1.296.264.432.408.984.408 1.656.024 1.608-.888 2.592-2.472 2.592-1.68 0-2.424-1.056-2.448-2.688h1.68c0 .744.264 1.176.792 1.176.264 0 .456-.072.552-.24.216-.312.264-1.176-.048-1.512-.288-.408-.888-.6-1.32-.816-.552-.264-.96-.576-1.2-.936s-.36-.888-.36-1.536c-.024-1.44.912-2.472 2.4-2.448m-11.031.018c.711-.006 1.419.198 1.839.63.432.432.672 1.128.648 1.992H9.336c.024-.456-.096-.792-.432-.96-.312-.144-.768-.048-.888.24-.12.264-.192.576-.168.864v3.504c0 .744.264 1.128.768 1.128a.65.65 0 0 0 .552-.264c.168-.24.192-.552.168-.84h1.776c.096 1.632-.984 2.712-2.568 2.688-1.536 0-2.496-.864-2.472-2.472v-4.032c0-.816.24-1.44.696-1.848.432-.408 1.146-.624 1.857-.63'/%3E%3C/svg%3E"); }
 .piece__code[data-code="js"] { --code-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M0 0h24v24H0V0zm22.034 18.276c-.175-1.095-.888-2.015-3.003-2.873-.736-.345-1.554-.585-1.797-1.14-.091-.33-.105-.51-.046-.705.15-.646.915-.84 1.515-.66.39.12.75.42.976.9 1.034-.676 1.034-.676 1.755-1.125-.27-.42-.404-.601-.586-.78-.63-.705-1.469-1.065-2.834-1.034l-.705.089c-.676.165-1.32.525-1.71 1.005-1.14 1.291-.811 3.541.569 4.471 1.365 1.02 3.361 1.244 3.616 2.205.24 1.17-.87 1.545-1.966 1.41-.811-.18-1.26-.586-1.755-1.336l-1.83 1.051c.21.48.45.689.81 1.109 1.74 1.756 6.09 1.666 6.871-1.004.029-.09.24-.705.074-1.65l.046.067zm-8.983-7.245h-2.248c0 1.938-.009 3.864-.009 5.805 0 1.232.063 2.363-.138 2.711-.33.689-1.18.601-1.566.48-.396-.196-.597-.466-.83-.855-.063-.105-.11-.196-.127-.196l-1.825 1.125c.305.63.75 1.172 1.324 1.517.855.51 2.004.675 3.207.405.783-.226 1.458-.691 1.811-1.411.51-.93.402-2.07.397-3.346.012-2.054 0-4.109 0-6.179l.004-.056z'/%3E%3C/svg%3E"); }
@@ -2473,7 +2497,89 @@ body.is-locked {
   text-wrap: balance;
 }
 
+/* The shape of a study's page in the Figma file, drawn in the page's own
+   hairlines: a row per part, its name in the mono and its boards as quiet
+   blocks laid left to right, the way the file lays them out. Decoration with
+   one description for a screen reader, so the blocks carry no contrast rule;
+   the labels are --muted text and clear it. */
+.foot__file {
+  display: grid;
+  gap: 0.375rem;
+  max-width: 34rem;
+  margin-top: 1.5rem;
+}
+
+.foot__file-row {
+  display: grid;
+  grid-template-columns: 8.5rem minmax(0, 1fr);
+  align-items: center;
+  gap: 1rem;
+  padding: 0.5rem 0.625rem;
+  border: 1px solid var(--hairline);
+  border-radius: 0.5rem;
+}
+
+.foot__file-label {
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--muted);
+}
+
+.foot__file-boards {
+  display: flex;
+  gap: 0.375rem;
+  min-width: 0;
+}
+
+/* Outlines, not fills: frames on a canvas. Filled grey blocks read as a
+   loading skeleton, a page still waiting for its content. */
+.foot__file-boards i {
+  height: 1.375rem;
+  border: 1px solid var(--hairline-strong);
+  border-radius: 0.25rem;
+}
+
+/* Start here: the study's name over a row of the component itself. */
+.foot__file-boards--start {
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.foot__file-boards--start .foot__file-heading {
+  width: 45%;
+  height: 0.3125rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--ink-soft);
+  opacity: 0.55;
+}
+
+.foot__file-instances {
+  display: flex;
+  gap: 0.375rem;
+}
+
+.foot__file-instances i {
+  flex: 1;
+  height: 1.375rem;
+}
+
+@media (max-width: 30rem) {
+  .foot__file-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.4rem;
+  }
+}
+
 .foot__invite-aside { margin-top: 1rem; }
+
+.foot__invite-link {
+  margin-top: 0.75rem;
+  font-size: 1rem;
+}
 
 .foot__invite-text {
   margin: 0;
@@ -2487,16 +2593,34 @@ body.is-locked {
 @media (min-width: 64rem) {
   /* On the rail's columns, as the masthead is, so the two bands share an
      edge: the text starts where the third card does. */
+  /* The title on its own row, then the drawing of the file and, beside it,
+     the sentence and the button centred on the drawing they describe: centred
+     on the whole left column they sat level with the title instead, over an
+     empty column as tall as the drawing. The lead's wrapper steps out of the
+     layout here so its two children can take a row each; below 64rem it
+     stacks them in reading order as before. */
   .foot__invite {
     display: grid;
     grid-template-columns:
       minmax(0, calc(var(--card-w) * 2 + var(--rail-gap)))
       minmax(min(24rem, 100%), 1fr);
+    grid-template-areas:
+      "title ."
+      "file  aside";
     column-gap: var(--rail-gap);
-    align-items: center;
+    row-gap: 1.5rem;
+    align-items: start;
   }
 
-  .foot__invite-aside { margin-top: 0; }
+  .foot__invite-lead { display: contents; }
+  .foot__invite-title { grid-area: title; }
+  .foot__file { grid-area: file; margin-top: 0; }
+
+  .foot__invite-aside {
+    grid-area: aside;
+    align-self: center;
+    margin-top: 0;
+  }
 }
 
 /* Statement left, specifics right — the same split the masthead makes, so
@@ -2542,8 +2666,9 @@ body.is-locked {
   line-height: 1.6;
 }
 
-.foot__source-link {
+.foot__link {
   display: inline-flex;
+  min-height: 1.5rem;
   align-items: center;
   gap: 0.35rem;
   color: var(--ink);
@@ -2554,15 +2679,15 @@ body.is-locked {
   transition: text-decoration-thickness 200ms var(--ease);
 }
 
-.foot__source-link:hover { text-decoration-thickness: 2px; }
+.foot__link:hover { text-decoration-thickness: 2px; }
 
-.foot__source-link:focus-visible {
+.foot__link:focus-visible {
   outline: 2px solid var(--ink);
   outline-offset: 3px;
   border-radius: 2px;
 }
 
-.foot__source-arrow {
+.foot__link-arrow {
   width: 0.75rem;
   height: 0.75rem;
   flex: none;
