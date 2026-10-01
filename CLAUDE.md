@@ -288,8 +288,9 @@ All page-level context lives here, and only here:
   decisions offering it — see **A React adapter, generated**
 - the arrival: `data-reveal` on the page's own blocks, the motion in its
   `<style>` and a script of its own — see **The demo page arrives** below
-- the companion Figma file's Community listing, as the last item in the
-  kicker — see **A card links the Figma file, and so does its demo page**
+- the companion Figma file's Community listing and the study's own folder on
+  GitHub, as the kicker's last two items, kept together — see **A card links
+  the Figma file, and so does its demo page**
 
 demo.html links `component.css`; it never redefines it. If the demo needs a
 style, that style belongs in a `<style>` block scoped to the demo page's own
@@ -1027,7 +1028,7 @@ Two things legitimately sweep every folder, and both are the same shape. One is
 an identity change — the site was renamed, and each `demo.html` carries its own
 copy of the back link's strings. The other is a page contract every demo has to
 meet, which is how the language switch arrived, how the theme switch did, how
-the page arrival did and how the Figma link did:
+the page arrival did, how the Figma link did and how the GitHub link did:
 each folder gets its own copy, written into its own file, in its own palette.
 
 Neither is a refactor. The test is what the folder owns afterwards: a sweep
@@ -1659,8 +1660,19 @@ most of the others its dark theme clears the floor by a third of a point. The
 lede's tone measures 5.72 to 9.60 across every page in both themes. The accent
 is the underline and not the text because as text it does not clear 4.5:1 at
 11px on every ground. An `::after` stretches the hit area to 24px tall without
-moving the line — measured at 1440, 390 and 320 on every page, and the kicker
-stays one line at 320 with `NAVIGATION` in it.
+moving the line — measured at 1440, 390 and 320 on every page.
+
+**And GitHub beside it**, `…/tree/main/<folder>`, the study's own folder: a
+study lives in three places, the page, the Figma file and the repository, and
+the page names the other two side by side, set alike, as quick look does. The
+two are one `.demo__kicker-links` span that does not wrap inside, so where the
+kicker wraps, the pair moves to the next line together rather than leaving
+GitHub on a line of its own. That is at 320 on every page and at 390 on the
+toolbar's, which has `NAVIGATION` in it: "2026-09 · Card ·" and then
+"Figma ↗ · GitHub ↗". The kicker held one line at 320 with the Figma link
+alone; it costs a line there now. Like the canonical URL, the address is
+absolute and the folder's own, and `_template/` carries it as
+`YYYY-MM-slug` to be filled in with the folder's name.
 
 The URL is written on every card and in every kicker rather than once in the
 folder's `notes.md`, which is the opposite of where the `Inspiration:` line
