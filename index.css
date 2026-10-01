@@ -1453,7 +1453,7 @@ body.is-locked {
 
 /* Grows to fill the card so the call to action can sit at the bottom of it.
    The track stretches every card to the tallest, so a body that fills its card
-   puts every "Open demo" on one line across the rail — notes run four lines or
+   puts every "Open study" on one line across the rail — notes run four lines or
    five, and the links used to land wherever each note happened to stop. */
 .piece__body {
   flex: 1;
@@ -1645,7 +1645,7 @@ body.is-locked {
     [title] minmax(0, 1fr)
     [type] 7rem
     [stack] 6.5rem
-    [date] 5.5rem
+    [date] 7rem
     [ql] 2.25rem
     [go] 1rem;
   --list-gap: clamp(1rem, 2vw, 1.75rem);
@@ -1801,6 +1801,9 @@ body.is-locked {
 :root[data-view="list"] .piece__slug {
   grid-area: date;
   margin-top: 0;
+  /* One line: the column is sized for the longest date, "10. sep. 2026" in
+     Danish. It was 5.5rem, sized for "2026 · 09", and every full date wrapped. */
+  white-space: nowrap;
   font-size: 0.6875rem;
 }
 
@@ -2802,8 +2805,6 @@ body.is-locked {
     --card-w: 16.5rem;         /* 264px */
     --preview-scale: 0.55;     /* 264 / 480 */
   }
-
-  .rail__filter { padding-bottom: 0.625rem; }
 }
 
 /* --- arrival ------------------------------------------------------------ */

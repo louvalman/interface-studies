@@ -150,6 +150,7 @@
       'foot.builtBy': 'Bygget af',
       'foot.coffee': 'Giv en kop kaffe',
       'foot.backToTop': 'Til toppen',
+      'a11y.figmaProfile': 'Figma-profil',
       'a11y.elsewhere': 'Andre steder',
       'a11y.carousel': 'Karrusel',
       'a11y.previous': 'Forrige',
