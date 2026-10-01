@@ -1502,7 +1502,8 @@ rules do not reach it, since it is not a study.
 
 The button in the masthead is the companion file on Figma Community, and so is
 the same button closing the footer. The circle in the footer's handles nav is
-the profile. One is where this set is also
+the profile, and is named "Figma profile" so a screen reader does not hear it
+as a second copy of the file button a few stops earlier. One is where this set is also
 drawn; the other is that the person has an account, which is what that nav is
 for — the same test that keeps the tip jar out of it.
 
@@ -2072,7 +2073,9 @@ through the browser's date formatting: "21 Sept 2026", "21. sep. 2026". The
 markup's slug says "2026 · 09", and while every study came from one month all
 eight cards said exactly that, so the date carried nothing — the list's Date
 column was the same in every row. The markup keeps the month as the no-script
-fallback, and a card dated only to the month keeps it too.
+fallback, and a card dated only to the month keeps it too. The list's Date
+column went from 5.5rem, sized for "2026 · 09", to 7rem, the longest date
+being Danish "10. sep. 2026", and the cell does not wrap.
 
 ### The index's small type is one size, with headroom
 
