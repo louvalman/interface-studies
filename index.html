@@ -441,27 +441,6 @@
             </div>
             <span class="piece__type" data-i18n="type.aesthetic">Aesthetic</span>
             <span class="piece__no">&mdash;</span>
-            <button
-              class="piece__expand"
-              type="button"
-              data-expand
-              data-i18n-aria="cta.quickLookShader"
-              aria-label="Quick look: Banded shaders">
-              <svg
-                viewBox="0 0 16 16"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.4"
-                aria-hidden="true">
-                <path
-                  d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round" />
-              </svg>
-              <span class="piece__expand-text" data-i18n="cta.quickLook">
-                Quick look
-              </span>
-            </button>
           </div>
           <div class="piece__body">
             <span class="piece__slug">2026 &middot; 09</span>
@@ -478,11 +457,11 @@
               class="piece__note"
               data-note
               data-i18n="piece.shaderTokenField.note">
-              A gradient field drawn twice from one declaration &mdash; once by
-              a CSS stop list, once by a WebGL shader &mdash; so the two agree by
+              A gradient field drawn twice from one declaration, once by a
+              CSS stop list and once by a WebGL shader, so the two agree by
               construction. Every fragment&rsquo;s luminance is clamped into a
-              declared band, which is what puts a guaranteed contrast ratio under
-              the type.
+              declared band, which is what puts a guaranteed contrast ratio
+              under the type.
             </p>
             <ul
               class="piece__stack"
@@ -510,6 +489,27 @@
               </svg>
             </span>
           </div>
+          <button
+            class="piece__expand"
+            type="button"
+            data-expand
+            data-i18n-aria="cta.quickLookShader"
+            aria-label="Quick look: Banded shaders">
+            <svg
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.4"
+              aria-hidden="true">
+              <path
+                d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4"
+                stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+            <span class="piece__expand-text" data-i18n="cta.quickLook">
+              Quick look
+            </span>
+          </button>
         </article>
 
         <article
@@ -530,27 +530,6 @@
             </div>
             <span class="piece__type" data-i18n="type.aesthetic">Aesthetic</span>
             <span class="piece__no">&mdash;</span>
-            <button
-              class="piece__expand"
-              type="button"
-              data-expand
-              data-i18n-aria="cta.quickLookStruck"
-              aria-label="Quick look: Struck tones">
-              <svg
-                viewBox="0 0 16 16"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.4"
-                aria-hidden="true">
-                <path
-                  d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round" />
-              </svg>
-              <span class="piece__expand-text" data-i18n="cta.quickLook">
-                Quick look
-              </span>
-            </button>
           </div>
           <div class="piece__body">
             <span class="piece__slug">2026 &middot; 09</span>
@@ -569,7 +548,7 @@
               data-i18n="piece.struckTones.note">
               A UI sound palette written as a token block: four sounds declared
               as a tuning, a voice, a strike and a room, then synthesised from
-              those numbers rather than played from files &mdash; the reverb
+              those numbers rather than played from files, the reverb
               included. It ships silent, and draws everything it says.
             </p>
             <ul
@@ -597,6 +576,27 @@
               </svg>
             </span>
           </div>
+          <button
+            class="piece__expand"
+            type="button"
+            data-expand
+            data-i18n-aria="cta.quickLookStruck"
+            aria-label="Quick look: Struck tones">
+            <svg
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.4"
+              aria-hidden="true">
+              <path
+                d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4"
+                stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+            <span class="piece__expand-text" data-i18n="cta.quickLook">
+              Quick look
+            </span>
+          </button>
         </article>
 
         <article
@@ -617,27 +617,6 @@
             </div>
             <span class="piece__type" data-i18n="type.layout">Layout</span>
             <span class="piece__no">&mdash;</span>
-            <button
-              class="piece__expand"
-              type="button"
-              data-expand
-              data-i18n-aria="cta.quickLookBento"
-              aria-label="Quick look: Interactive bento grid">
-              <svg
-                viewBox="0 0 16 16"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.4"
-                aria-hidden="true">
-                <path
-                  d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round" />
-              </svg>
-              <span class="piece__expand-text" data-i18n="cta.quickLook">
-                Quick look
-              </span>
-            </button>
           </div>
           <div class="piece__body">
             <span class="piece__slug">2026 &middot; 09</span>
@@ -657,7 +636,7 @@
               Seven tiles that each declare the room they want, on a grid that
               clamps every span against its own column count. Each tile answers
               for the slot it lands in rather than for the modifier it was
-              given &mdash; and opening one re-packs the board around it.
+              given, and opening one re-packs the board around it.
             </p>
             <ul
               class="piece__stack"
@@ -684,6 +663,27 @@
               </svg>
             </span>
           </div>
+          <button
+            class="piece__expand"
+            type="button"
+            data-expand
+            data-i18n-aria="cta.quickLookBento"
+            aria-label="Quick look: Interactive bento grid">
+            <svg
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.4"
+              aria-hidden="true">
+              <path
+                d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4"
+                stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+            <span class="piece__expand-text" data-i18n="cta.quickLook">
+              Quick look
+            </span>
+          </button>
         </article>
 
         <article
@@ -704,27 +704,6 @@
             </div>
             <span class="piece__type" data-i18n="type.card">Card</span>
             <span class="piece__no">&mdash;</span>
-            <button
-              class="piece__expand"
-              type="button"
-              data-expand
-              data-i18n-aria="cta.quickLookInked"
-              aria-label="Quick look: Inked plate card">
-              <svg
-                viewBox="0 0 16 16"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.4"
-                aria-hidden="true">
-                <path
-                  d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round" />
-              </svg>
-              <span class="piece__expand-text" data-i18n="cta.quickLook">
-                Quick look
-              </span>
-            </button>
           </div>
           <div class="piece__body">
             <span class="piece__slug">2026 &middot; 09</span>
@@ -743,7 +722,7 @@
               data-i18n="piece.inkedPlate.note">
               An artwork plate and a caption plate with their facing corners
               cut, over a crop-marked dot grid. The line drawing inks itself on
-              load in pure CSS &mdash; every path declares a length of 1, so one
+              load in pure CSS: every path declares a length of 1, so one
               keyframe pair draws all of them without measuring any.
             </p>
             <ul
@@ -770,6 +749,27 @@
               </svg>
             </span>
           </div>
+          <button
+            class="piece__expand"
+            type="button"
+            data-expand
+            data-i18n-aria="cta.quickLookInked"
+            aria-label="Quick look: Inked plate card">
+            <svg
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.4"
+              aria-hidden="true">
+              <path
+                d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4"
+                stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+            <span class="piece__expand-text" data-i18n="cta.quickLook">
+              Quick look
+            </span>
+          </button>
         </article>
 
         <article
@@ -790,27 +790,6 @@
             </div>
             <span class="piece__type" data-i18n="type.card">Card</span>
             <span class="piece__no">&mdash;</span>
-            <button
-              class="piece__expand"
-              type="button"
-              data-expand
-              data-i18n-aria="cta.quickLookRaster"
-              aria-label="Quick look: Raster pulse">
-              <svg
-                viewBox="0 0 16 16"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.4"
-                aria-hidden="true">
-                <path
-                  d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round" />
-              </svg>
-              <span class="piece__expand-text" data-i18n="cta.quickLook">
-                Quick look
-              </span>
-            </button>
           </div>
           <div class="piece__body">
             <span class="piece__slug">2026 &middot; 09</span>
@@ -856,6 +835,27 @@
               </svg>
             </span>
           </div>
+          <button
+            class="piece__expand"
+            type="button"
+            data-expand
+            data-i18n-aria="cta.quickLookRaster"
+            aria-label="Quick look: Raster pulse">
+            <svg
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.4"
+              aria-hidden="true">
+              <path
+                d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4"
+                stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+            <span class="piece__expand-text" data-i18n="cta.quickLook">
+              Quick look
+            </span>
+          </button>
         </article>
 
         <article
@@ -878,27 +878,6 @@
               Aesthetic
             </span>
             <span class="piece__no">&mdash;</span>
-            <button
-              class="piece__expand"
-              type="button"
-              data-expand
-              data-i18n-aria="cta.quickLookGradients"
-              aria-label="Quick look: Drawn gradients">
-              <svg
-                viewBox="0 0 16 16"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.4"
-                aria-hidden="true">
-                <path
-                  d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round" />
-              </svg>
-              <span class="piece__expand-text" data-i18n="cta.quickLook">
-                Quick look
-              </span>
-            </button>
           </div>
           <div class="piece__body">
             <span class="piece__slug">2026 &middot; 09</span>
@@ -944,6 +923,27 @@
               </svg>
             </span>
           </div>
+          <button
+            class="piece__expand"
+            type="button"
+            data-expand
+            data-i18n-aria="cta.quickLookGradients"
+            aria-label="Quick look: Drawn gradients">
+            <svg
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.4"
+              aria-hidden="true">
+              <path
+                d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4"
+                stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+            <span class="piece__expand-text" data-i18n="cta.quickLook">
+              Quick look
+            </span>
+          </button>
         </article>
 
         <article
@@ -964,27 +964,6 @@
             </div>
             <span class="piece__type" data-i18n="type.card">Card</span>
             <span class="piece__no">&mdash;</span>
-            <button
-              class="piece__expand"
-              type="button"
-              data-expand
-              data-i18n-aria="cta.quickLookOf"
-              aria-label="Quick look: Detail reveal card">
-              <svg
-                viewBox="0 0 16 16"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.4"
-                aria-hidden="true">
-                <path
-                  d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round" />
-              </svg>
-              <span class="piece__expand-text" data-i18n="cta.quickLook">
-                Quick look
-              </span>
-            </button>
           </div>
           <div class="piece__body">
             <span class="piece__slug">2026 &middot; 09</span>
@@ -1029,6 +1008,27 @@
               </svg>
             </span>
           </div>
+          <button
+            class="piece__expand"
+            type="button"
+            data-expand
+            data-i18n-aria="cta.quickLookOf"
+            aria-label="Quick look: Detail reveal card">
+            <svg
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.4"
+              aria-hidden="true">
+              <path
+                d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4"
+                stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+            <span class="piece__expand-text" data-i18n="cta.quickLook">
+              Quick look
+            </span>
+          </button>
         </article>
 
         <article
@@ -1051,27 +1051,6 @@
               Navigation
             </span>
             <span class="piece__no">&mdash;</span>
-            <button
-              class="piece__expand"
-              type="button"
-              data-expand
-              data-i18n-aria="cta.quickLookToolbar"
-              aria-label="Quick look: Liquid glass toolbar">
-              <svg
-                viewBox="0 0 16 16"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.4"
-                aria-hidden="true">
-                <path
-                  d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round" />
-              </svg>
-              <span class="piece__expand-text" data-i18n="cta.quickLook">
-                Quick look
-              </span>
-            </button>
           </div>
           <div class="piece__body">
             <span class="piece__slug">2026 &middot; 09</span>
@@ -1088,9 +1067,9 @@
               class="piece__note"
               data-note
               data-i18n="piece.liquidGlassToolbar.note">
-              One glass surface that changes shape &mdash; the selected item
-              opens into a labelled pill, search into a field, the log into a
-              panel &mdash; in six materials off a single recipe.
+              One glass surface that changes shape, in six materials off a
+              single recipe: the selected item opens into a labelled pill,
+              search into a field, the log into a panel.
             </p>
             <ul
               class="piece__stack"
@@ -1117,6 +1096,27 @@
               </svg>
             </span>
           </div>
+          <button
+            class="piece__expand"
+            type="button"
+            data-expand
+            data-i18n-aria="cta.quickLookToolbar"
+            aria-label="Quick look: Liquid glass toolbar">
+            <svg
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.4"
+              aria-hidden="true">
+              <path
+                d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4"
+                stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+            <span class="piece__expand-text" data-i18n="cta.quickLook">
+              Quick look
+            </span>
+          </button>
         </article>
 
         <!-- The slots at the end of the rail. Three, because the row reads as a

@@ -1055,10 +1055,34 @@ body.is-locked {
 
 .rail__track::-webkit-scrollbar { display: none; }
 
-.rail__track:focus-visible {
+/* The ring goes round the rail, not the track: the track's left edge is under
+   the mask below, which would take the ring's left side with it. */
+.rail__track:focus-visible { outline: none; }
+
+.rail:has(.rail__track:focus-visible) {
   outline: 2px solid var(--ink);
   outline-offset: -2px;
   border-radius: 0.5rem;
+}
+
+/* The left gutter is empty at rest. A looping rail always has a card before
+   the first one, and the card before the newest study is the last forthcoming
+   slot: only its dashed right edge showed, a sliver at the page's edge that
+   read as a card that had failed to draw. The track fades out across the
+   gutter instead, clear up to a rail gap short of the first card, so at rest
+   nothing is there and a drifting card leaves by fading rather than by being
+   cut. The right edge keeps its partial card, which is what says the rail
+   goes on.
+
+   A mask on the scroller itself, as the filter's chip row had, so it paints
+   against the track's border box and stays put while the cards scroll under
+   it. Not in the list, where there is no gutter traffic to hide. */
+:root:not([data-view="list"]) .rail__track {
+  mask-image: linear-gradient(
+    to right,
+    transparent calc(var(--gutter) - var(--rail-gap)),
+    #000 var(--gutter)
+  );
 }
 
 /* The drift and a step both write scrollLeft every frame, so snap has to come
@@ -1096,14 +1120,18 @@ body.is-locked {
   overflow: hidden;
 }
 
+/* The fill is the whole track scaled from its left end, so moving it is a
+   transform the compositor draws rather than a width the page lays out on
+   every card the rail passes. */
 .rail__progress::after {
   content: "";
   position: absolute;
-  inset: 0 auto 0 0;
-  width: var(--rail-progress, 30%);
+  inset: 0;
   border-radius: 2px;
   background: var(--progress);
-  transition: width 200ms linear;
+  transform: scaleX(var(--rail-progress, 0.3));
+  transform-origin: left center;
+  transition: transform 200ms linear;
 }
 
 /* --- piece ------------------------------------------------------------ */
@@ -1142,8 +1170,10 @@ body.is-locked {
 }
 
 /* .is-active marks the card in the read position. It drives the counter and,
-   on touch, which preview plays — but it is deliberately not painted: lifting
-   or outlining one card made the rail look misaligned rather than focused. */
+   on touch, which preview plays. The card itself is not painted — lifting or
+   outlining one card made the rail look misaligned rather than focused — but
+   its number is: see .piece__no below, which is what ties the counter to a
+   card. */
 .piece__frame {
   position: relative;
   overflow: hidden;
@@ -1241,6 +1271,38 @@ body.is-locked {
   color: var(--chip-over-preview-ink-soft);
 }
 
+/* The type and the number step aside while a pointer is on the card. That is
+   when a reader is looking at the component rather than labelling it, and a
+   component in its open state can reach the thumbnail's top edge — the bento
+   board's heading ran under the LAYOUT badge. Quick look stays: hover is when
+   it is wanted. Pointer only, and not the demo wave, because a chip fading on
+   its own every few seconds is motion nobody asked for. */
+.piece__type,
+.piece__no {
+  transition:
+    opacity 240ms var(--ease),
+    background-color 320ms var(--ease),
+    color 320ms var(--ease);
+}
+
+/* The counted card's number is filled, the state the filter and the view
+   switch use for "this is what the rail is on", so "Study 04 / 08" points at
+   the one card whose 04 is filled. It travels with the mark as the rail
+   drifts. Only the chip changes, never the card's box, so nothing in the row
+   moves out of line. The rail only: the list has no read position. */
+:root:not([data-view="list"]) .piece.is-active .piece__no {
+  background: var(--on-ink-bg);
+  box-shadow: none;
+  color: var(--on-ink-fg);
+}
+
+/* The rail only: in the list they are columns of the row, not chips over a
+   thumbnail. */
+@media (hover: hover) {
+  :root:not([data-view="list"]) .piece:hover .piece__type,
+  :root:not([data-view="list"]) .piece:hover .piece__no { opacity: 0; }
+}
+
 /* Sits above the stretched link so it can take its own click. */
 /* Quick look is always there: a small glyph-only chip in the thumbnail's
    corner, which widens to say what it does when the card is hovered or
@@ -1250,9 +1312,15 @@ body.is-locked {
    the chip grows with them instead of the label appearing in a pill that was
    already its full width. */
 .piece__expand {
+  /* Placed from the card rather than from the thumbnail's frame, because the
+     button comes after the card's body in the markup: Tab reaches the study's
+     title first and quick look second, and a screen reader meets the name of
+     the thing before an action on it. The frame is 4:5 of the card's width,
+     so its foot is a height the card already knows. */
   position: absolute;
+  top: calc(var(--card-w) * 1.25 - 0.875rem);
   right: 0.875rem;
-  bottom: 0.875rem;
+  translate: 0 -100%;
   z-index: 3;
   display: inline-grid;
   grid-template-columns: auto 0fr;
@@ -1695,6 +1763,9 @@ body.is-locked {
 :root[data-view="list"] .piece__expand {
   grid-area: ql;
   position: relative;
+  top: auto;
+  right: auto;
+  translate: none;
   width: 2.25rem;
   height: 2.25rem;
   min-height: 0;

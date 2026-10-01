@@ -74,14 +74,14 @@
       'type.layout': 'Layout',
       'filter.all': 'Alle',
       'piece.liquidGlassToolbar.title': 'Liquid glass toolbar',
-      'piece.liquidGlassToolbar.note': 'Én glasflade der skifter form — det '
-        + 'valgte punkt folder sig ud til en pille med etiket, søgning til et '
-        + 'felt, loggen til et panel — i seks materialer fra én opskrift.',
+      'piece.liquidGlassToolbar.note': 'Én glasflade der skifter form, i seks '
+        + 'materialer fra én opskrift: det valgte punkt folder sig ud til en '
+        + 'pille med etiket, søgning til et felt, loggen til et panel.',
       'cta.quickLookToolbar': 'Hurtigt kig: Liquid glass toolbar',
       'piece.shaderTokenField.title': 'Afgr\u00e6nsede shaders',
       'piece.shaderTokenField.note': 'Et gradientfelt tegnet to gange ud fra '
-        + '\u00e9n angivelse \u2014 \u00e9n gang af en CSS-stopliste, \u00e9n '
-        + 'gang af en WebGL-shader \u2014 s\u00e5 de to stemmer overens af '
+        + '\u00e9n angivelse, \u00e9n gang af en CSS-stopliste og \u00e9n '
+        + 'gang af en WebGL-shader, s\u00e5 de to stemmer overens af '
         + 'konstruktion. Hvert fragments lysstyrke afgr\u00e6nses til et '
         + 'angivet b\u00e5nd, og det er d\u00e9t, der l\u00e6gger et garanteret '
         + 'kontrastforhold under teksten.',
@@ -97,13 +97,13 @@
       'piece.bentoGrid.note': 'Syv fliser, der hver angiver den plads, de '
         + 'ønsker, på et grid, der afkorter hvert spænd efter sit eget '
         + 'antal kolonner. Hver flise svarer på den plads, den lander i, '
-        + 'frem for på den modifikator, den fik — og åbner man én, pakkes '
+        + 'frem for på den modifikator, den fik, og åbner man én, pakkes '
         + 'tavlen om omkring den.',
       'cta.quickLookBento': 'Hurtigt kig: Interaktivt bento-grid',
       'piece.inkedPlate.title': 'Kort med tegnede plader',
       'piece.inkedPlate.note': 'En billedplade og en tekstplade med afskårne '
         + 'hjørner mod hinanden, over et grid af punkter med snitmærker. '
-        + 'Stregtegningen tegner sig selv ved indlæsning i ren CSS — hver '
+        + 'Stregtegningen tegner sig selv ved indlæsning i ren CSS: hver '
         + 'streg angiver en længde på 1, så ét sæt keyframes tegner dem alle '
         + 'uden at måle nogen af dem.',
       'cta.quickLookInked': 'Hurtigt kig: Kort med tegnede plader',
@@ -1890,9 +1890,10 @@
       // What it fills with is no longer distance along the row — that is
       // nothing on a rail with no end — but how far through the set the card
       // in the read position is, which is what the number beside it says.
+      // A fraction, for the scale the fill is drawn with.
       progress.style.setProperty(
         '--rail-progress',
-        max > 0 && count > 0 ? ((active + 1) / count * 100).toFixed(2) + '%' : '0%'
+        max > 0 && count > 0 ? ((active + 1) / count).toFixed(4) : '0'
       );
     }
 
@@ -2825,7 +2826,11 @@
     function unlockScroll() {
       document.body.classList.remove('is-locked');
       document.body.style.top = '';
-      window.scrollTo(0, lockedAt);
+      // Instant, whatever the page's own scroll-behavior: the page is already
+      // where it was under the overlay, and html's smooth scrolling turned
+      // putting it back into a visible scroll from the top on every close —
+      // the 36px a reader saw after Escape.
+      window.scrollTo({ top: lockedAt, behavior: 'instant' });
     }
 
     // Quick look runs the preview with pointer events on so the component's

@@ -1242,7 +1242,12 @@ keep in step.
 
 **Quick look is always on the card.** Its chip sits in the thumbnail's corner
 as a glyph at rest and widens to say "Quick look" when the card is hovered or
-focused, by opening a grid track from `0fr` to `1fr`. It was at opacity 0 until
+focused, by opening a grid track from `0fr` to `1fr`. It comes after the card's
+body in the markup and is placed from the card, `var(--card-w) * 1.25` down,
+so Tab reaches the study's title first and a screen reader meets the name of
+the thing before an action on it. While a pointer is on a card in the rail its
+type and number chips fade, since that is when the reader is looking at the
+component and an open state can reach the thumbnail's top edge. It was at opacity 0 until
 then, and the variants it opens onto — five to seven a study — were behind a
 control nobody had a reason to look for. On a coarse pointer it says its words
 from the start.
@@ -1317,9 +1322,31 @@ nothing else, broken by hand at its comma, since a fixed-size image has no
 width to reflow into. The domain is not on it either: every unfurl prints it
 under the card already.
 
+**The counter points at a card.** "Study 04 / 08" counts the card at the read
+mark, and nothing on the rail said which one that was, with the drift moving
+and the gutter fading. The counted card's number chip is filled now, in the
+state the filter and the view switch use for "this is what the rail is on", so
+the 04 in the counter is the one filled 04 on the rail. Only the chip changes:
+lifting or outlining the card itself was tried once and made the row look
+misaligned rather than focused.
+
+The left gutter is empty at rest: the track is masked clear up to a rail gap
+short of the first card and fades in across the gap, because a looping rail
+always has a card before the first, and that card is the last forthcoming slot,
+whose dashed edge read as a card that had failed to draw. Drifting cards leave
+by fading. The mask takes the track's own focus ring with it, so the ring is
+drawn round `.rail` instead. It has not been measured on a phone; a masked
+scroller is the arrangement the filter's chip row used, and a phone is the test.
+
+Closing quick look puts the page back where it was instantly, whatever html's
+own `scroll-behavior`: smooth scrolling had turned that restore into a visible
+scroll on every close.
+
 The rail ends on its own rule: `.rail__progress` is both the scroll position
 and the line under the cards, so its track is always drawn and only the fill is
-conditional. The footer has no `border-top` of its own — it used to, 98px below
+conditional. The fill is the whole track scaled from its left end, so moving it
+is a transform rather than a width relaid out on every step. The footer has no
+`border-top` of its own — it used to, 98px below
 the progress track, which was the page drawing the same line twice with nothing
 in between.
 
