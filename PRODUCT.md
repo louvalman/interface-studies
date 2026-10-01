@@ -24,21 +24,25 @@ An open notebook of interaction and aesthetics: one component per study,
 its decisions written down, built in Figma and code, each folder standing on
 its own.
 
-Success is two things, counted together:
+Success is two things, of roughly equal weight:
 
-- **Studies get opened** — a reader goes past the thumbnail, into a
-  `demo.html`, and reads the decisions behind the component.
+- **Studies get opened** — a reader goes past the thumbnail into a
+  `demo.html`, to see the component and the study in full and take what they
+  came for: a technique, an idea, inspiration.
 - **Figma file engagement** — duplicates and likes on the Community listing
   (https://www.figma.com/community/file/1683607518896928224/interface-studies),
   which are counted there and nowhere else.
 
 ## Positioning
 
-A notebook rather than a library or a gallery. What a neighbouring component
-collection could not truthfully claim: each study names the specific
-decisions it captures and why (`notes.md`, rendered on its demo page), exists
-as both code and a matching Figma page, and is a folder that keeps working
-when copied out alone — no shared code, no dependencies, no build step.
+A notebook rather than a library or a gallery. The study is the product: the
+design and the component, in code and in Figma. What a neighbouring component
+collection could not truthfully claim: each study exists as both code and a
+matching Figma page, is a folder that keeps working when copied out alone — no
+shared code, no dependencies, no build step — and writes down the decisions
+behind it (`notes.md`, rendered on its demo page). The decisions back the work
+up and show the ability to make them; they are not the product, and reading
+them is not a goal in itself.
 
 ## Operating Context
 
@@ -88,8 +92,9 @@ when copied out alone — no shared code, no dependencies, no build step.
 
 ## Product Principles
 
-1. **The decisions are the product.** A component shown without its reasons
-   is a gallery entry; every surface should lead a reader toward why.
+1. **The study is the product.** The component and its design lead every
+   surface; the decisions are there for whoever wants the why, and back the
+   work up rather than stand in front of it.
 2. **Isolation is the promise.** Anything that makes one folder depend on
    another, or on the index, breaks the thing the site claims.
 3. **Two media, one study.** Code and Figma are equal halves; each should

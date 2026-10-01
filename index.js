@@ -60,11 +60,11 @@
       'head.lede': 'Én komponent pr. studie, bygget i Figma og kode, så lille, '
         + 'at den er til at gennemskue.',
       'head.ledeHint': 'Hold musen over et kort for at afspille det, tag et '
-        + 'hurtigt kig på dets varianter, eller åbn studiet for '
-        + 'beslutningerne og teknikkerne bag.',
+        + 'hurtigt kig på dets varianter, eller åbn studiet for at se det '
+        + 'i sin helhed.',
       'head.ledeHintTouch': 'Tryk på hurtigt kig for at afspille et kort og '
-        + 'bladre gennem dets varianter, eller åbn studiet for '
-        + 'beslutningerne og teknikkerne bag.',
+        + 'bladre gennem dets varianter, eller åbn studiet for at se det '
+        + 'i sin helhed.',
       'head.figma': 'Åbn Figma-filen',
       'rail.study': 'Studie',
       'rail.studies': 'Studier',
@@ -124,7 +124,7 @@
       'piece.detailReveal.note': 'Et detaljepanel der stiger op fra bundkanten '
         + 'ved hover og skubber den hvilende etiket op foran sig. Rummer ethvert '
         + 'indhold; en kortvariant tilføjer højdekurver og en pulserende nål.',
-      'cta.openDemo': 'Åbn demo',
+      'cta.openStudy': 'Åbn studiet',
       'cta.openFigma': 'Åbn i Figma',
       'cta.quickLook': 'Hurtigt kig',
       'cta.quickLookOf': 'Hurtigt kig: Kort med detaljepanel',
@@ -2368,12 +2368,26 @@
     return true;
   }
 
+  // Over a card is different, and it holds for as long as the pointer is
+  // there. Someone pointing at a card is reading it — its note runs to fifty
+  // words — and a rail that set off again after four still seconds carried
+  // the note out from under them; motion has no business continuing under a
+  // hover. The idle release is for the rest of the track, the gaps and the
+  // gutters, where a parked cursor really is furniture. A card that drifts in
+  // under a still pointer counts too: it lifts under the cursor, and the rail
+  // stops with it there. A mouse or a pen only; a finger's gesture is the
+  // touch handlers' business.
+  const onCard = (event) =>
+    !!(event && event.pointerType !== 'touch' && event.target &&
+      event.target.closest && event.target.closest('.piece'));
+
   function pointerAwake(event) {
     if (drift === 'off') return;        // taken for good; nothing to hold
-    if (!pointerMoved(event)) return;
+    const card = onCard(event);
+    if (!card && !pointerMoved(event)) return;
     clearTimeout(idleTimer);
     driftHold();
-    idleTimer = setTimeout(() => driftRelease(0), POINTER_IDLE);
+    if (!card) idleTimer = setTimeout(() => driftRelease(0), POINTER_IDLE);
   }
 
   track.addEventListener('pointerenter', (event) => {
@@ -3268,10 +3282,9 @@
 
   const LEDE_EN = {
     pointer: 'Hover a card to run it in place, take a quick look at its '
-      + 'variants, or open the study for the decisions and techniques '
-      + 'behind it.',
+      + 'variants, or open the study to see it in full.',
     touch: 'Tap quick look to run a card and step through its variants, or '
-      + 'open the study for the decisions and techniques behind it.'
+      + 'open the study to see it in full.'
   };
 
   // Held so a pointer-type change can re-render without waiting for the next

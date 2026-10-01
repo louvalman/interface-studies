@@ -1189,6 +1189,15 @@ under a reader — they need only have moved within that window, not be moving
 now. Measured on a 1440x810 viewport: parked, the rail is held for the first
 2.5s and drifting again by 6.5s; nudged every 700ms, it stays put throughout.
 
+**Except over a card, where it holds for as long as the pointer is there.** The
+idle release carried a fifty-word note out from under someone reading it, and
+motion has no business continuing under a hover — the owner's call, and the
+right one. So the idle rule now covers only the track's gaps and gutters, where
+a parked cursor is furniture; a card under a mouse or a pen holds the drift
+until the pointer leaves it. A card that drifts in under a still pointer counts
+as hovered too: it lifts under the cursor and the rail stops with it there. A
+finger's gesture stays with the touch handlers.
+
 **A pointer moving is not the same as a pointermove.** A browser dispatches one
 of its own when the content under a stationary cursor changes, so `:hover` can
 land on whatever is under it now — and a drifting rail changes that every frame.
@@ -1544,7 +1553,7 @@ which is where the file is fetched from.
 
 `data-figma` on the `<article class="piece">` block is the companion Figma
 file's Community listing, and quick look draws an `Open in Figma` link beside
-`Open demo` where a card carries one. Every study has one. It stays optional
+`Open study` where a card carries one. Every study has one. It stays optional
 because a study can land before it is in the file: no attribute, no link, and
 nothing else reads it. The link opens in a new tab and takes neither `?lang=`
 nor `?theme=` — Figma resolves neither, and the choice is this site's rather
