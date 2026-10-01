@@ -1505,7 +1505,7 @@ rules do not reach it, since it is not a study.
 ### Figma is on the page as a file and as a profile, and they are not the same link
 
 The button in the masthead is the companion file on Figma Community, and so is
-the same button closing the footer. The circle in the footer's handles nav is
+the link closing the footer's band. The circle in the footer's handles nav is
 the profile, and is named "Figma profile" so a screen reader does not hear it
 as a second copy of the file button a few stops earlier. One is where this set is also
 drawn; the other is that the person has an account, which is what that nav is
@@ -1525,13 +1525,33 @@ around it. A button is a different kind of object, and the mark says where it
 goes before the words do. The footer's mark labels a handle, which is a
 different thing, so the two are not the same use twice.
 
-**The page closes on it too.** The footer opens on a band that mirrors the
-masthead's, a size down: "Take the set with you." on the left, and beside it
-what the file holds and the same button. Someone who has read down past the
-rail has seen the studies, and the end of a page is where a next step is
-looked for; the footer used to end on credits, with nothing asked. It is one
-block, `.figma-btn`, in both places rather than the masthead's class borrowed,
-and a hairline under the band hands over to the colophon.
+**The page closes on it too, but not with the same button.** The footer opens
+on a band that mirrors the masthead's: "Take the set with you." over a drawing
+of what the file holds, and beside the drawing a sentence and a link, "Get
+the file on Figma Community ↗", set as the footer sets its links. Someone who
+has read down past the rail has seen the studies, and the end of a page is
+where a next step is looked for; the footer used to end on credits, with
+nothing asked. It carried a copy of the masthead's filled button for a while,
+same pill and same words, and the pair at the top and the bottom of a short
+page read as a template rather than as an ask — so `.figma-btn` is the
+masthead's alone, and a hairline under the band hands over to the colophon.
+
+**And it draws what the file holds rather than only naming it.** Under the
+band's title is the shape every study's page in the file shares, built in the
+page's own hairlines: a Start here frame, the study's name over a row of the
+component, and then the four chapters top to bottom, each a row of its boards
+outlined left to right. The third critique's point was that the page asked
+for the file twice and never showed it. A picture of the file would be the
+file as it was on the day it was taken; the drawing is the page shape, which
+**A study's page in the file reads as a document** fixes, so it stays true
+while the file changes. Outlines, not fills: filled grey blocks read as a
+loading skeleton. The chapter names are the file's and stay in English in
+both languages; the element is one `role="img"` with a translated description,
+so a screen reader hears what it shows rather than five labels. If the
+chapters change in the file, they change here. From 64rem the title takes a row of its own and the
+sentence and the button sit beside the drawing, centred on it, on the third
+card's edge like the masthead's lede; centred on the whole left column they
+had sat level with the title over an empty column.
 
 It says "Open the Figma file" rather than naming the listing, because that is
 the action; the Community listing is where it lands, for the reasons under **A
