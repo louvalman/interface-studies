@@ -1301,15 +1301,15 @@ then, and the variants it opens onto — five to seven a study — were behind a
 control nobody had a reason to look for. On a coarse pointer it says its words
 from the start.
 
-**"Open study" is quick look's one button.** It is an outlined pill in the
-accent, 44px tall and 15px, filled on hover, on its own line; under it, 16px
-down, "Open in Figma" and "Open on GitHub" sit side by side as text links.
-All three were one row of identical accent links for a while, which made the
-way into the study the same weight as the two ways out of the site, and on a
-narrow panel split the Figma and GitHub pair across two lines. Outlined rather
-than filled, because the filled accent pill on this page is the Figma file's.
-Measured 5.07:1 in light and 6.24:1 in dark for the label and its outline,
-6.66:1 for the label on the hover fill.
+**"Open study" leads quick look's links by size, not by a box.** It is the
+accent at 17px on its own line; under it, 16px down, "Open in Figma" and
+"Open on GitHub" sit side by side at 13px in the text's own grey, turning
+to the ink on hover. All three were one row of identical accent links for a
+while, which made the way into the study the same weight as the two ways out
+of the site and, on a narrow panel, split the Figma and GitHub pair across two
+lines. An outlined accent pill was tried for "Open study" and sat badly beside
+two text links; a filled one would have read as the Figma file's button. Every
+link keeps a 24px target whatever its size.
 
 **In landscape from 48rem, quick look sits side by side**: the preview on the
 left at the panel's full height, and the title, the variants, the note and the
