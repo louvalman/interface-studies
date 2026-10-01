@@ -1238,6 +1238,23 @@ telling apart before looking anywhere else: the row is too short to loop, or
 reduced motion is set. Everything else about the drift is about when it stops,
 not whether it exists.
 
+**Tab gets the row in the file's order.** The loop reorders cards with flex
+`order`, and Tab follows the DOM, so on a rotated rail the next card by Tab
+was wherever the ring had put it: from 06 to 07 the rail jumped seven cards
+backwards, 07 at x=-1391 while 01 sat at 9. Keyboard focus arriving in a card
+now puts the ring back in the file's order and holds the recycle off for as
+long as focus stays in the row (`keyHold`), so the rail is finite exactly
+while it is being read by Tab: the next card is the one beside this one, and
+the last leads out of the row rather than round it, which is what keeps Tab
+from looping forever. The card that took focus keeps its place on screen, or
+comes to the mark if it had been off it; only its neighbours change. Focus
+leaving the row, or going back to the track itself, lets go, and the recycle
+puts the loop back without moving anything on screen. Keyboard only, because
+keyboard focus has already stopped the drift for good, and a drifting rail
+needs the recycle. Checked by focusing every card in file order on a rotated
+rail, both ways — not with real Tab presses, which a hidden automation tab
+does not receive.
+
 The pointer path still steps itself, through `stepTo`, and keeps the old
 arithmetic. There is nothing native to defer to there: the drag is scripted from
 `pointermove`, there is no momentum, and a recycle mid-step has to move both
