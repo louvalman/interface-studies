@@ -860,10 +860,9 @@ framed document — over `file://` it is behind an opaque origin — so the them
 rides on the src and over `preview:theme`. Every preview moves its shared
 ground with it and nothing else; see **The preview message contract**.
 
-The chips that sit *on* a thumbnail are the part of the index that has to know:
-the type badge, the number and quick look are painted against the preview
-rather than against the page, so they invert with the chrome rather than with
-the plate they cover.
+The chip that sits *on* a thumbnail is the part of the index that has to know:
+quick look is painted against the preview rather than against the page, so it
+inverts with the chrome rather than with the plate it covers.
 
 The choice travels in the link, the way the language does: the index appends
 `?theme=` to the link that opens a demo, the demo's back link hands it back,
@@ -1295,13 +1294,7 @@ as a glyph at rest and widens to say "Quick look" when the card is hovered or
 focused, by opening a grid track from `0fr` to `1fr`. It comes after the card's
 body in the markup and is placed from the card, `var(--card-w) * 1.25` down,
 so Tab reaches the study's title first and a screen reader meets the name of
-the thing before an action on it. While a pointer is on a card in the rail its
-type and number chips fade, since that is when the reader is looking at the
-component and an open state can reach the thumbnail's top edge — and they fade
-while the demo wave has the card performing, for the same reason, which is
-where they were still sitting on the bento's heading. Both on a fine pointer
-only: on touch the card at the mark is held active for as long as it is the
-mark, and a fade keyed on that would take its filled number away for good. It
+the thing before an action on it. It
 was at opacity 0 until
 then, and the variants it opens onto — five to seven a study — were behind a
 control nobody had a reason to look for. On a coarse pointer it says its words
@@ -2053,6 +2046,23 @@ copy, in its own file. The rule it applied is the one to keep:
 The template carries the pair, loaded, so a new study is born with it and adds
 its component's own faces to the same link.
 
+### Nothing sits on a component but quick look
+
+A thumbnail carried three chips: the type top left, the card's number top
+right, and quick look bottom right. Measured as the share of each chip lying
+over the component's own box, the two at the top covered 45% and 33% of
+themselves on Banded shaders and 20% and 12% on the inked plate, the two
+studies that fill their frames. They faded under a pointer and while the demo
+wave had the card performing, which hid them exactly when they were in the
+way and left them over the component the rest of the time. Moving the type to
+the bottom line beside quick look was tried, and was worse — 58% and 66% —
+because those components reach further down their frames than up them.
+
+So the type and the number are on the card's meta line now, with the date:
+"21 SEPT 2026 · AESTHETIC", and the number at the line's far end like a
+catalogue number. Quick look is the one chip left on a thumbnail. The type's
+span is still the badge the filter and the footer read, wherever it sits.
+
 ### The mono is for facts, the sans is for actions
 
 The mono had been carrying every label on the index — the count, the chips,
@@ -2118,8 +2128,9 @@ the component inside it, so nothing moves in the DOM: the view is
 `data-view="list"` on `<html>` and `index.css` re-lays out the same
 `<article>`s. Two wrappers trade `display: contents` to make that work — in the
 rail `.piece__frame` is the box and `.piece__thumb` takes no part in layout; in
-the list it is the other way round, so the chips that sat on the thumbnail
-become cells of the row and the thumb holds only the preview. Every thumbnail
+the list it is the other way round, and `.piece__body` and its meta line take
+no part either, so the date, the type and the number become cells of the row
+and the thumb holds only the preview. Every thumbnail
 in the list is the document the card was already running.
 
 `--list-thumb` and `--list-scale` are the list's own pair, with the invariant
