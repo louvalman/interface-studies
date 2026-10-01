@@ -1907,7 +1907,7 @@
       totalOut.textContent = String(count);
       totalOut.parentNode.classList.toggle('is-one', count === 1);
     }
-    if (footCount) footCount.textContent = pad(total);
+    if (footCount) footCount.textContent = String(total);
 
 
     syncVisibility();

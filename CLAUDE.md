@@ -2207,7 +2207,9 @@ place a reader is being sent to go and look at it.
 The meta list is four rows and each says something the others do not: what the
 page is set in, what the studies are made of, what types they cover, and how
 many there are. The last two are written from the cards, so neither is a number
-anyone keeps by hand.
+anyone keeps by hand. The count is written plainly, "8" and not "08", like the
+rail's "8 studies": it is a quantity, and padded it read as an ID. The cards'
+own numbers keep their padding, because those are positions in a set.
 
 The `Types` row reads the same badges the filter does, through the same
 `typeCounts`/`typeOrder`, so both list them commonest-first in the same order —
