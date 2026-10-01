@@ -66,8 +66,8 @@
         + 'bladre gennem dets varianter, eller åbn studiet for at se det '
         + 'i sin helhed.',
       'head.figma': 'Åbn Figma-filen',
-      'rail.study': 'Studie',
-      'rail.studies': 'Studier',
+      'rail.study': 'studie',
+      'rail.studies': 'studier',
       'type.card': 'Kort',
       'type.aesthetic': 'Æstetik',
       'type.navigation': 'Navigation',
@@ -452,7 +452,6 @@
   const next = document.querySelector('[data-rail-next]');
   const driftBtn = document.querySelector('[data-rail-drift]');
   const progress = document.querySelector('[data-rail-progress]');
-  const indexOut = document.getElementById('rail-index');
   const totalOut = document.getElementById('rail-total');
   const footCount = document.getElementById('foot-count');
   const footTypes = document.getElementById('foot-types');
@@ -1897,12 +1896,17 @@
     const max = maxScroll();
 
     // The rail counts what it is showing; the footer counts what exists.
-    // Filtering to one type does not mean four studies stopped being written,
-    // and the rail's own "Study 01 / 05" is where the total is read anyway —
-    // which is why the masthead no longer carries a second copy of it.
+    // Filtering to one type does not mean four studies stopped being written.
+    // A count, not a position: "8 studies", unpadded, the same in both views.
+    // It used to read "Study 04 / 08" off the read mark, which on a drifting
+    // rail was a number changing by itself, and needed the card's own chip
+    // filled to say which card it meant.
     const count = real().length;
     const total = allPieces().length;
-    if (totalOut) totalOut.textContent = pad(count);
+    if (totalOut) {
+      totalOut.textContent = String(count);
+      totalOut.parentNode.classList.toggle('is-one', count === 1);
+    }
     if (footCount) footCount.textContent = pad(total);
 
 
@@ -1933,7 +1937,6 @@
       ? true
       : (drift === 'on' ? read.signed <= w * ON_MARK : read.off <= w * ON_MARK);
     markActive(active, arrived);
-    if (indexOut) indexOut.textContent = pad(Math.min(count, active + 1));
 
     if (progress) {
       // The track stays: it is the rule the footer used to draw for itself.

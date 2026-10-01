@@ -1353,13 +1353,17 @@ nothing else, broken by hand at its comma, since a fixed-size image has no
 width to reflow into. The domain is not on it either: every unfurl prints it
 under the card already.
 
-**The counter points at a card.** "Study 04 / 08" counts the card at the read
-mark, and nothing on the rail said which one that was, with the drift moving
-and the gutter fading. The counted card's number chip is filled now, in the
-state the filter and the view switch use for "this is what the rail is on", so
-the 04 in the counter is the one filled 04 on the rail. Only the chip changes:
-lifting or outlining the card itself was tried once and made the row look
-misaligned rather than focused.
+**The rail's head states a count, not a position.** It read "Study 04 / 08"
+off the read mark for a while, and nothing said which card that was, with the
+drift moving and the gutter fading, so the counted card's number chip was
+filled to tie the two together. That made two things changing by themselves
+on a rail that already drifts, to say what the progress rule under the cards
+and the cards' own numbers already said. Both went: the head says "8 studies",
+unpadded, in both views and in the same place, "1 study" when the filter
+leaves one, and no card is painted for being at the mark. `.is-active` still
+marks it, for the preview that plays on touch. Lifting or outlining the card
+itself was tried once too, and made the row look misaligned rather than
+focused.
 
 The left gutter is empty at rest: the track is masked clear up to a rail gap
 short of the first card and fades in across the gap, because a looping rail
@@ -1912,13 +1916,15 @@ it read as the page's navigation, and it was height the masthead needed.
 On a touch phone it is one line too, with less on it: previous and next go,
 because a finger swipes the rail and the buttons were two 44px targets for
 what the thumb was already doing; the pause stays, as content that moves by
-itself owes a way to stop it; and the count drops its word to "01 / 08", tied
-to its card by the filled chip. The lede's how-to sentence steps aside there as
+itself owes a way to stop it; and the grid has no empty spacer column, so the
+pause takes the free track and holds itself to its end — two gaps fewer, which
+is the 8px "8 studier" needed at 360 in Danish. The lede's how-to sentence steps aside there as
 well — every card already labels its quick look on touch and the card at the
 mark runs by itself, so it spent three lines on what the screen showed, and
 its "tap quick look to run a card" had stopped matching what a card does.
 Measured at 390x844, the first card's title went from y=881, under the fold,
-to y=775. Under 360px the one line does not fit — 6px over at 320 in Danish —
+to y=775, and to y=754 once the date moved under the title. Under 360px the
+one line does not fit — 6px over at 320 in Danish —
 and the head goes back to two rows. A narrow window with a mouse keeps the
 two-row head with every control, because one row wants 470px of the 342 at
 390. The gaps tighten
@@ -1955,7 +1961,7 @@ Filtering hides cards with a class rather than the `hidden` attribute — `.piec
 sets its own `display`, and the warning about `[hidden]` in the preview contract
 applies here for the same reason. The rail counts what it is showing and the
 footer counts what exists — the masthead states neither, because the rail's own
-"Study 01 / 05" is where a reader takes the total from.
+"8 studies" is where a reader takes the total from.
 
 ### The site is set in Mona Sans and Fragment Mono
 
@@ -2106,8 +2112,8 @@ rail is a rail, each at the one place it is asked:
   whole track and the sideways test would call all of them on screen. The
   page's own scroll runs `syncVisibility`, coalesced onto the frame.
 
-The count reads "Studies 08" rather than "Study 01 / 08" — the list has no read
-position, and both labels are in the markup with `index.css` showing one. The
+The count reads "8 studies" here as on the rail, now that neither reports a
+read position. The
 track loses its tab stop, since a list is read with the page's keys, and is
 labelled "Study list"; `renderNav` owns that label and runs after the language
 module, so a switch of language keeps it.

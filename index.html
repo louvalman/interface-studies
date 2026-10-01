@@ -229,14 +229,13 @@
          controls and the view switch on the right. On a phone it is two rows
          of the same four things - see index.css. -->
       <div class="rail__head" data-reveal>
-        <!-- The rail reports a read position, "Study 01 / 08"; the list has
-           none, so it says how many it is showing, "Studies 08". Both are in
-           the markup and index.css shows one, so neither is written twice. -->
+        <!-- How many studies the rail is showing, "8 studies", in both views.
+           The noun is in the markup in both numbers and index.css shows one;
+           index.js writes the number and says which. -->
         <p class="rail__count">
-          <span class="rail__count-one" data-i18n="rail.study">Study</span>
-          <span class="rail__count-all" data-i18n="rail.studies">Studies</span>
-          <span class="rail__count-at"><span id="rail-index">01</span> /</span>
-          <span id="rail-total">01</span>
+          <span id="rail-total">8</span>
+          <span class="rail__count-one" data-i18n="rail.study">study</span>
+          <span class="rail__count-many" data-i18n="rail.studies">studies</span>
         </p>
         <nav
           class="rail__nav"
