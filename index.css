@@ -1379,10 +1379,12 @@ body.is-locked {
   background: var(--chip-over-preview-strong);
   backdrop-filter: blur(6px);
   color: var(--ink);
-  font-family: var(--mono);
-  font-size: 0.6875rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  /* An action among the thumbnail's labels, so the sans: the type and the
+     number beside it are facts and keep the mono. */
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0;
   cursor: pointer;
   transition:
     grid-template-columns 320ms var(--ease),
@@ -1444,7 +1446,11 @@ body.is-locked {
   padding: 1.25rem 0.125rem 0;
 }
 
+/* Under the title, not above it: the name is the first thing under the
+   component, and the date is a fact about it. It sat above as a kicker in the
+   September design, inherited rather than chosen. */
 .piece__slug {
+  margin-top: -0.125rem;
   font-family: var(--mono);
   font-size: 0.6875rem;
   letter-spacing: 0.14em;
@@ -1496,10 +1502,13 @@ body.is-locked {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  font-family: var(--mono);
-  font-size: 0.6875rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  /* An action, so the sans: the mono is for facts — dates, counts, types,
+     numbers — and it had been carrying every label on the page, actions
+     included, until no one of them read as the thing to do. */
+  font-family: var(--sans);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: -0.005em;
   color: var(--accent);
 }
 
@@ -1773,6 +1782,7 @@ body.is-locked {
 
 :root[data-view="list"] .piece__slug {
   grid-area: date;
+  margin-top: 0;
   font-size: 0.6875rem;
 }
 
@@ -2308,10 +2318,11 @@ body.is-locked {
   align-items: center;
   gap: 0.4rem;
   text-decoration: none;
-  font-family: var(--mono);
-  font-size: 0.6875rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  /* Actions, in the sans, as on the card. */
+  font-family: var(--sans);
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: -0.005em;
   color: var(--accent);
 }
 
@@ -2560,10 +2571,8 @@ body.is-locked {
   align-items: center;
   gap: 0.5rem;
   text-decoration: none;
-  font-family: var(--mono);
-  font-size: 0.6875rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font-family: var(--sans);
+  font-size: 0.8125rem;
   color: var(--muted);
   transition: color 240ms var(--ease);
 }
@@ -2605,10 +2614,8 @@ body.is-locked {
   align-items: center;
   gap: 0.45rem;
   text-decoration: none;
-  font-family: var(--mono);
-  font-size: 0.6875rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font-family: var(--sans);
+  font-size: 0.8125rem;
   color: var(--muted);
   transition: color 240ms var(--ease);
 }

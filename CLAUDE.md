@@ -1974,6 +1974,28 @@ copy, in its own file. The rule it applied is the one to keep:
 The template carries the pair, loaded, so a new study is born with it and adds
 its component's own faces to the same link.
 
+### The mono is for facts, the sans is for actions
+
+The mono had been carrying every label on the index — the count, the chips,
+the dates, the footer's keys, and also every action: "Open demo", quick look's
+links, the quick-look chip, the footer's coffee and back-to-top links. Eleven
+pixels of letter-spaced capitals in nine roles, until no one of them read as
+the thing to do, and the critique called the frame generic for it. So the
+line is drawn by role: facts and labels — dates, counts, types, numbers, EN/DA,
+the footer's keys — stay mono; actions are set in the sans, the way the
+masthead's Figma button already was. "Open study" and quick look's links are
+14px at 600 in the accent, the chip 12px, the footer's links 13px.
+
+A card's date sits under its title rather than above it as a kicker, which it
+had been since the September design without anyone choosing it: the name is
+the first thing under the component, and the date is a fact about it. It is
+written from the card's own `data-date`, which carries the day,
+through the browser's date formatting: "21 Sept 2026", "21. sep. 2026". The
+markup's slug says "2026 · 09", and while every study came from one month all
+eight cards said exactly that, so the date carried nothing — the list's Date
+column was the same in every row. The markup keeps the month as the no-script
+fallback, and a card dated only to the month keeps it too.
+
 ### The index's small type is one size, with headroom
 
 Every mono label on the index is 11px: the filter, the controls, the slugs,

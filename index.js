@@ -3408,8 +3408,35 @@
     });
   }, { passive: true });
 
+  // A card's date, written from its own data-date, which carries the day. The
+  // markup's slug says only the year and the month, and while every study came
+  // from one month, eight cards all read "2026 · 09" and the date said nothing.
+  // The browser's own date formatting does the language, so there is no month
+  // table to keep: "21 Sept 2026", "21. sep. 2026". A card dated only to the
+  // month keeps what its markup says, and so does every card without script.
+  function renderDates(lang) {
+    let format;
+    try {
+      format = new Intl.DateTimeFormat(lang === 'da' ? 'da-DK' : 'en-GB', {
+        day: 'numeric', month: 'short', year: 'numeric'
+      });
+    } catch (err) { return; }
+    allPieces().forEach((piece) => {
+      const key = piece.dataset.date || '';
+      const slug = piece.querySelector('.piece__slug');
+      if (!slug || !/^\d{4}-\d{2}-\d{2}/.test(key)) return;
+      const date = new Date(key.slice(0, 10) + 'T12:00');
+      if (!isNaN(date)) slug.textContent = format.format(date);
+    });
+  }
+
+  document.addEventListener('lang:change', (event) => {
+    renderDates(event.detail && event.detail.lang);
+  });
+
   renderLedeHint(null);
   order();
+  renderDates(document.documentElement.lang);
   buildFilter();   // after order(), so the options count a settled rail
   renderFootTypes();
   number();
