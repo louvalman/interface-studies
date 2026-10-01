@@ -1244,6 +1244,27 @@
             needs one. Copy one out and it keeps working.
           </p>
 
+          <!-- Where to copy one out from. The repository is public, and this
+             link is the one place its address is written: quick look reads
+             it from here to link each study's own folder. The ask for a star
+             is a line beside the link rather than a modal in front of it — a
+             reader who clicked through to GitHub has already decided to go,
+             and the star button is where the link lands. -->
+          <p class="foot__source">
+            <a
+              class="foot__source-link"
+              href="https://github.com/louvalman/interface-studies"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-repo>
+              <span data-i18n="foot.source">The source is on GitHub</span>
+              <svg class="foot__source-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false">
+                <path d="M4 12 12 4M6 4h6v6" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </a>
+            <span class="foot__source-star" data-i18n="foot.star">Star it there if it is useful to you.</span>
+          </p>
+
           <!-- Where the studies came from. It sits down here rather than
              in the masthead because it is provenance, not a pitch: the
              folders carry it, and the folders are where someone checking
@@ -1493,7 +1514,7 @@
         <footer class="lightbox__foot">
           <p class="lightbox__note" data-lightbox-note></p>
           <div class="lightbox__links">
-            <a class="lightbox__link" href="#" data-lightbox-demo>
+            <a class="lightbox__link lightbox__link--study" href="#" data-lightbox-demo>
               <span data-i18n="cta.openStudy">Open study</span>
               <svg
                 viewBox="0 0 16 16"
@@ -1507,26 +1528,51 @@
                   stroke-linejoin="round" />
               </svg>
             </a>
-            <a
-              class="lightbox__link"
-              href="#"
-              target="_blank"
-              rel="noopener noreferrer"
-              data-lightbox-figma
-              hidden>
-              <span data-i18n="cta.openFigma">Open in Figma</span>
-              <svg
-                viewBox="0 0 16 16"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.4"
-                aria-hidden="true">
-                <path
-                  d="M4 12 12 4M6 4h6v6"
-                  stroke-linecap="round"
-                  stroke-linejoin="round" />
-              </svg>
-            </a>
+            <!-- The two other places a study lives, as one group of equal
+               weight: it wraps onto its own line as a unit rather than
+               splitting the pair across two. -->
+            <span class="lightbox__links-out">
+              <a
+                class="lightbox__link"
+                href="#"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-lightbox-figma
+                hidden>
+                <span data-i18n="cta.openFigma">Open in Figma</span>
+                <svg
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.4"
+                  aria-hidden="true">
+                  <path
+                    d="M4 12 12 4M6 4h6v6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
+              </a>
+              <a
+                class="lightbox__link"
+                href="#"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-lightbox-source
+                hidden>
+                <span data-i18n="cta.openGithub">Open on GitHub</span>
+                <svg
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.4"
+                  aria-hidden="true">
+                  <path
+                    d="M4 12 12 4M6 4h6v6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
+              </a>
+            </span>
           </div>
         </footer>
       </div>

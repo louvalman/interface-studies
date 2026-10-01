@@ -1300,6 +1300,16 @@ then, and the variants it opens onto — five to seven a study — were behind a
 control nobody had a reason to look for. On a coarse pointer it says its words
 from the start.
 
+**"Open study" is quick look's one button.** It is an outlined pill in the
+accent, 44px tall and 15px, filled on hover, on its own line; under it, 16px
+down, "Open in Figma" and "Open on GitHub" sit side by side as text links.
+All three were one row of identical accent links for a while, which made the
+way into the study the same weight as the two ways out of the site, and on a
+narrow panel split the Figma and GitHub pair across two lines. Outlined rather
+than filled, because the filled accent pill on this page is the Figma file's.
+Measured 5.07:1 in light and 6.24:1 in dark for the label and its outline,
+6.66:1 for the label on the hover fill.
+
 **In landscape from 48rem, quick look sits side by side**: the preview on the
 left at the panel's full height, and the title, the variants, the note and the
 links in a 20rem column beside it. Stacked, the bar above and the footer below
@@ -2255,6 +2265,23 @@ true as the React adapters arrive, because an adapter is a wrapper for an app
 that already has React and the component inside it still depends on nothing.
 It does not name React: one study of eight has an adapter so far, and a row
 of facts is not the place for one that is only true of a few.
+
+**The blurb says where to copy one out from.** "Copy one out and it keeps
+working" used to stop there, with nothing on the page linking the repository;
+the GitHub icon in the handles is the profile. The line under it links the
+repository, and quick look links each study's own folder,
+`…/tree/main/<folder>`, as "Open on GitHub". It sits beside "Open in Figma",
+set alike and grouped so the pair wraps as one: the study's two other homes,
+of equal weight, after "Open study".
+The address is written once, on the footer link's `data-repo`, and quick look
+reads it from there; the folder is the first segment of the card's own link.
+
+The ask for a star is a line beside that link — "Star it there if it is useful
+to you." — not a modal in front of it. A reader who has clicked through to
+GitHub has already decided to go, a modal is a thing to dismiss on the way,
+and the star button is where the link lands. Stars are not one of the two
+things PRODUCT.md counts as success; if they become one, that is where it is
+written down.
 
 **The disclaimer rule binds here too.** It is written above for `notes.md` and
 it is the same rule: this paragraph ended "none is a copy of one", which argues

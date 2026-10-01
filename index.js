@@ -126,6 +126,7 @@
         + 'indhold; en kortvariant tilføjer højdekurver og en pulserende nål.',
       'cta.openStudy': 'Åbn studiet',
       'cta.openFigma': 'Åbn i Figma',
+      'cta.openGithub': 'Åbn på GitHub',
       'cta.quickLook': 'Hurtigt kig',
       'cta.quickLookOf': 'Hurtigt kig: Kort med detaljepanel',
       'ghost.title': 'Kommende studie',
@@ -135,6 +136,8 @@
       'foot.inviteTitle': 'Tag samlingen med dig.',
       'foot.inviteText': 'Hvert studie er også tegnet i Figma-filen, en side '
         + 'hver, med sine varianter og sin bevægelse, klar til at duplikere.',
+      'foot.source': 'Kildekoden ligger på GitHub',
+      'foot.star': 'Giv den en stjerne der, hvis du kan bruge den.',
       'foot.blurb': 'Hvert studie er en mappe, der står for sig selv: sin egen '
         + 'markup, sit eget stylesheet, sine egne tokens og, hvor der er brug '
         + 'for det, sit eget script. Kopiér en ud, og den virker videre.',
@@ -2870,6 +2873,11 @@
     const noteOut = box.querySelector('[data-lightbox-note]');
     const demoOut = box.querySelector('[data-lightbox-demo]');
     const figmaOut = box.querySelector('[data-lightbox-figma]');
+    const sourceOut = box.querySelector('[data-lightbox-source]');
+    // The repository's address is written once, on the footer's link, and
+    // read from there rather than repeated here.
+    const repoLink = document.querySelector('[data-repo]');
+    const repo = repoLink ? repoLink.getAttribute('href').replace(/\/+$/, '') : '';
     const closers = box.querySelectorAll('[data-lightbox-close]');
 
     const stage = box.querySelector('.lightbox__stage');
@@ -3181,6 +3189,17 @@
         if (figma) figmaOut.href = figma;
         else figmaOut.removeAttribute('href');
         figmaOut.hidden = !figma;
+      }
+      // The study's own folder on GitHub: the card's link is the folder's
+      // demo page, so its first path segment is the folder. Like Figma, a URL
+      // on another site, so no ?lang= or ?theme=.
+      if (sourceOut) {
+        const path = (link.getAttribute('data-lang-link') || link.getAttribute('href') || '').split('?')[0];
+        const folder = path.split('/')[0];
+        const ok = repo && /^\d{4}-\d{2}-[a-z0-9-]+$/.test(folder);
+        if (ok) sourceOut.href = repo + '/tree/main/' + folder;
+        else sourceOut.removeAttribute('href');
+        sourceOut.hidden = !ok;
       }
     }
 
