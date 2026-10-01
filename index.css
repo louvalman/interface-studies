@@ -1346,7 +1346,15 @@ body.is-locked {
    thumbnail. */
 @media (hover: hover) {
   :root:not([data-view="list"]) .piece:hover .piece__type,
-  :root:not([data-view="list"]) .piece:hover .piece__no { opacity: 0; }
+  :root:not([data-view="list"]) .piece:hover .piece__no,
+  /* And while the demo wave has a card performing, for the same reason:
+     the open state is the component at its most worth seeing, and the chips
+     sat on it — the bento's heading ran under its LAYOUT badge. Inside
+     (hover: hover) because the wave only runs there, and because on touch
+     the card at the mark is held active for as long as it is the mark, which
+     would take its filled number away for good. */
+  :root:not([data-view="list"]) .piece[data-active="true"] .piece__type,
+  :root:not([data-view="list"]) .piece[data-active="true"] .piece__no { opacity: 0; }
 }
 
 /* Sits above the stretched link so it can take its own click. */

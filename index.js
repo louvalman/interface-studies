@@ -1086,20 +1086,18 @@
   // Long enough to read. The slowest open state in the set settles inside a
   // second, so this is the entry, a beat to look at it, and the way back out.
   const DEMO_HOLD = 2200;
-  // Between one card starting and the next. Not decoration: the wave is what
-  // keeps the cost off a single frame, since a performing card is an unpaused
-  // card and every card starting at once is every preview restyling at once.
+  // Between one card starting and the next, and it is the hold: a relay, one
+  // card performing at a time, the next opening as the last one closes. Not
+  // decoration either way — a performing card is an unpaused card, and every
+  // card starting at once is every preview restyling at once.
   //
-  // It is a relay rather than a ripple, and the number is what makes it one.
-  // Against the hold, the stagger decides how many cards are open together:
-  // four of them overlap while it is under DEMO_HOLD / 3, and at 420 the whole
-  // row was open for the better part of a second, which reads as the rail
-  // flashing rather than as a wave crossing it. Past that third the count comes
-  // down a card at a time — here three at the peak, each one clearly leading
-  // the next, and every card gets a beat where it is the newest thing moving.
-  // One at a time exactly would want the stagger at DEMO_HOLD or the hold
-  // shortened to meet it; that is a different effect and not what this is.
-  const DEMO_STAGGER = 850;
+  // It was 850, a ripple: three cards open at the peak and a wave across four
+  // spending 4.75s of every 6, so something was nearly always moving and the
+  // rail read as several things happening at once rather than one card being
+  // shown. As a relay the only overlap is the hand-off, one card closing while
+  // the next opens. A wave across four now takes 8.8s, and the quiet after it
+  // is DEMO_REST as before.
+  const DEMO_STAGGER = DEMO_HOLD;
   // A beat that could not run asks again on this rather than waiting out the
   // full gap. Everything it waits on — a pointer gone, the overlay closed, a
   // gesture ended — arrives without announcing itself.
