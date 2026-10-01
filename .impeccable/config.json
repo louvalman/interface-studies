@@ -10,6 +10,15 @@
         "value": "mona sans",
         "createdAt": "2026-09-30T17:59:49.768Z",
         "reason": "user confirmed: chose Mona Sans with Fragment Mono from a side-by-side on the index's own classes, 2026-09-30"
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "index.html"
+        ],
+        "createdAt": "2026-10-01T12:16:27.629Z",
+        "reason": "Agent: false positive on .foot__invite. The static scan flags it with any padding-bottom, a plain 3rem included; rendered, the band has clamp(2.5rem, 4.5vw, 3.5rem) above its hairline, 56px at 1489px wide and 40px at the floor"
       }
     ]
   }

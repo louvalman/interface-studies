@@ -586,8 +586,10 @@ body.is-locked {
 /* The companion file, as a button. Accent, because on this page the accent
    is what leaves the site, and filled, because it is the one action the
    masthead offers and half of what the site counts as success. 44px tall on
-   every pointer: it is the only control up here that is not a setting. */
-.head__figma {
+   every pointer: it is the only control up there that is not a setting.
+   A block of its own rather than the masthead's, because the footer's
+   closing band carries the same button. */
+.figma-btn {
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
@@ -604,20 +606,20 @@ body.is-locked {
   transition: background-color 200ms var(--ease);
 }
 
-.head__figma:hover { background: var(--accent-hover); }
+.figma-btn:hover { background: var(--accent-hover); }
 
-.head__figma:focus-visible {
+.figma-btn:focus-visible {
   outline: 2px solid var(--ink);
   outline-offset: 3px;
 }
 
-.head__figma-mark {
+.figma-btn__mark {
   width: 0.95rem;
   height: 0.95rem;
   flex: none;
 }
 
-.head__figma-arrow {
+.figma-btn__arrow {
   width: 0.8rem;
   height: 0.8rem;
   flex: none;
@@ -625,7 +627,7 @@ body.is-locked {
 }
 
 @media (hover: hover) {
-  .head__figma:hover .head__figma-arrow { transform: translate(2px, -2px); }
+  .figma-btn:hover .figma-btn__arrow { transform: translate(2px, -2px); }
 }
 
 /* Side by side from 64rem: the headline takes the wider share, and the two
@@ -2401,6 +2403,50 @@ body.is-locked {
   padding: clamp(1.75rem, 3.5vw, 2.75rem) 0 clamp(2rem, 4vw, 3rem);
 }
 
+/* The closing band. The masthead's band again, a size down: a statement on
+   the left, and beside it what the Figma file holds and the button to it.
+   The page opens and closes on the same pair, and a reader who has come down
+   past the rail ends on a next step rather than on the credits. A hairline
+   under it hands over to the colophon below. */
+.foot__invite {
+  padding-bottom: clamp(2.5rem, 4.5vw, 3.5rem);
+  margin-bottom: clamp(2.5rem, 4.5vw, 3.5rem);
+  border-bottom: 1px solid var(--hairline);
+}
+
+.foot__invite-title {
+  margin: 0;
+  overflow-wrap: break-word;
+  font-size: clamp(1.625rem, 3vw, 2.375rem);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  max-width: 16ch;
+  text-wrap: balance;
+}
+
+.foot__invite-aside { margin-top: 1rem; }
+
+.foot__invite-text {
+  margin: 0;
+  max-width: 46ch;
+  text-wrap: pretty;
+  font-size: 1rem;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+
+@media (min-width: 64rem) {
+  .foot__invite {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    column-gap: clamp(3rem, 6vw, 8rem);
+    align-items: center;
+  }
+
+  .foot__invite-aside { margin-top: 0; }
+}
+
 /* Statement left, specifics right — the same split the masthead makes, so
    the page closes on the shape it opened with. */
 .foot__main {
@@ -2814,8 +2860,9 @@ body.is-locked {
   }
 
   /* On a screen tall enough to show it at load, the footer comes last. */
-  .foot__brand { --arrive-at: 7; }
-  .foot__meta { --arrive-at: 8; }
+  .foot__invite { --arrive-at: 7; }
+  .foot__brand { --arrive-at: 8; }
+  .foot__meta { --arrive-at: 9; }
   .foot__bar { --arrive-at: 12; }
 
   /* Recycling moves cards with flex order and never in the DOM, so child

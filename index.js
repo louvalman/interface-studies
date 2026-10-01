@@ -132,6 +132,9 @@
       'ghost.month.oct': 'oktober',
       'ghost.month.nov': 'november',
       'ghost.month.dec': 'december',
+      'foot.inviteTitle': 'Tag samlingen med dig.',
+      'foot.inviteText': 'Hvert studie er også tegnet i Figma-filen, en side '
+        + 'hver, med sine varianter og sin bevægelse, klar til at duplikere.',
       'foot.blurb': 'Hvert studie er en mappe, der står for sig selv: sin egen '
         + 'markup, sit eget stylesheet, sine egne tokens og, hvor der er brug '
         + 'for det, sit eget script. Kopiér en ud, og den virker videre.',
