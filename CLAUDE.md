@@ -2208,7 +2208,12 @@ module, so a switch of language keeps it.
 each entry as a mask from Simple Icons, keyed on `data-code`, with the name left
 in the markup for a screen reader and the tooltip. It is what a study comes
 *in*, not what it is made of, which is why the shader's WebGL is not on it: that
-is inside its JS. A study that gains a `component.js` or an adapter gains the
+is inside its JS. Figma is on it for every study, after the code — every study has a page
+in the file, and code and Figma are the two halves PRODUCT.md names. It used to
+be the list's alone and to leave Figma off, so a card on the rail said nothing
+about the half of success that is the file. The rail shows the marks too, at
+the far end of the "Open study" line, positioned against the card's body so
+the call to action keeps the row it lines up on. A study that gains a `component.js` or an adapter gains the
 mark on its card in the same change, the way a change of type is made in two
 places. The index cannot list a folder's files over `file://`, so there is no
 way to derive it — the same wall the type runs into.
