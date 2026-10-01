@@ -129,9 +129,9 @@
       'cta.quickLook': 'Hurtigt kig',
       'cta.quickLookOf': 'Hurtigt kig: Kort med detaljepanel',
       'ghost.title': 'Kommende studie',
+      'ghost.est': 'Forventet start',
       'ghost.month.oct': 'oktober',
       'ghost.month.nov': 'november',
-      'ghost.month.dec': 'december',
       'foot.inviteTitle': 'Tag samlingen med dig.',
       'foot.inviteText': 'Hvert studie er også tegnet i Figma-filen, en side '
         + 'hver, med sine varianter og sin bevægelse, klar til at duplikere.',

@@ -1575,9 +1575,9 @@ body.is-locked {
   box-shadow: none;
 }
 
-/* The month is what tells the three apart, so it is what the frame holds, at a
-   size that survives the thumbnail. The year sits under it small: all three
-   share it, and it is not the part being read. */
+/* The month is the part being read, so it is what the frame holds, at a size
+   that survives the thumbnail; "Est. start" above it and the year below are
+   small, a date stamp rather than a sentence. */
 .piece__ghost-when {
   display: grid;
   justify-items: center;
@@ -1594,6 +1594,7 @@ body.is-locked {
   letter-spacing: 0.02em;
 }
 
+.piece__ghost-est,
 .piece__ghost-year {
   font-size: 0.6875rem;
   letter-spacing: 0.14em;
@@ -1892,8 +1893,8 @@ body.is-locked {
   }
 }
 
-/* One forthcoming row, not three: in the rail the three read as a set, and
-   in a list they read as the same line printed three times. */
+/* One forthcoming row, the nearest: a list is where a study is looked up,
+   and a second row of the same title says nothing the first does not. */
 :root[data-view="list"] .piece--ghost ~ .piece--ghost { display: none; }
 
 :root[data-view="list"] .piece__ghost-when {
@@ -1908,6 +1909,9 @@ body.is-locked {
 
 :root[data-view="list"] .piece__ghost-month { font-size: 0.6875rem; }
 :root[data-view="list"] .piece__ghost-year { font-size: 0.6875rem; }
+/* The list's thumbnail is too small for three lines; the title beside it
+   says what the slot is, and the month and year say when. */
+:root[data-view="list"] .piece__ghost-est { display: none; }
 
 /* The stack's marks. The text stays in the markup, which is what a screen
    reader and the tooltip read; the glyph is a mask painted in currentColor,
