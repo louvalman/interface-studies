@@ -722,6 +722,52 @@ body.is-locked {
   .rail__nav { gap: 0.25rem; }
 }
 
+/* On a phone the rail's head is one line again, and the first screen names a
+   study. Measured at 390x844 it did not: two rows of six controls under a
+   five-line masthead put the first card's title at y=881. Three things give
+   the room back, all on a touch screen only:
+
+   - Previous and next go. A finger swipes the rail, which is the platform's
+     own gesture and the one CLAUDE.md hands the landing to; the buttons were
+     two 44px targets for something the thumb was already doing. The pause
+     stays — content that moves by itself owes a way to stop it.
+   - The count drops its word in the rail: "01 / 08", tied to the card by the
+     filled chip. With the word, the row ran 4px past 342 in English and
+     further in Danish.
+   - The lede's how-to sentence steps aside. On touch every card already
+     labels its quick look and the card at the mark runs by itself, so the
+     sentence spent three lines describing what the screen below it shows,
+     and its "tap quick look to run a card" no longer matched what a card
+     does. It stays in the page for every wider or pointer screen. */
+@media (max-width: 36rem) and (hover: none) {
+  .rail__head {
+    grid-template-columns: auto auto minmax(0, 1fr) auto auto;
+    grid-template-areas:
+      "count filter . nav view"
+      "cols cols cols cols cols";
+  }
+
+  .rail__nav [data-rail-prev],
+  .rail__nav [data-rail-next] { display: none; }
+
+  :root:not([data-view="list"]) .rail__count-one { display: none; }
+
+  .head__lede [data-lede-hint] { display: none; }
+}
+
+/* Under 360px the one line does not fit: at 320 in Danish the count, the
+   filter's "Alle", the pause and the switch ran the page 6px wide. The head
+   goes back to two rows there — the previous and next buttons stay gone. */
+@media (max-width: 22.49rem) and (hover: none) {
+  .rail__head {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      "count . nav"
+      "filter . view"
+      "cols cols cols";
+  }
+}
+
 /* Rail or list: two buttons in one pill. Pressed is filled, as the filter is
    while it is narrowing the rail, and for the same reason — it is a state the
    whole rail is in, and it has to read as one from across the page. */

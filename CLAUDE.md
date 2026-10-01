@@ -1885,8 +1885,19 @@ was two rows once, the filter chips under the count with the controls spanning
 both, and that was a menu's worth of pills in the line that introduces the rail:
 it read as the page's navigation, and it was height the masthead needed.
 
-On a phone it is two rows again, the count and the controls, then the filter
-and the switch, because one row wants 470px of the 342 at 390. The gaps tighten
+On a touch phone it is one line too, with less on it: previous and next go,
+because a finger swipes the rail and the buttons were two 44px targets for
+what the thumb was already doing; the pause stays, as content that moves by
+itself owes a way to stop it; and the count drops its word to "01 / 08", tied
+to its card by the filled chip. The lede's how-to sentence steps aside there as
+well — every card already labels its quick look on touch and the card at the
+mark runs by itself, so it spent three lines on what the screen showed, and
+its "tap quick look to run a card" had stopped matching what a card does.
+Measured at 390x844, the first card's title went from y=881, under the fold,
+to y=775. Under 360px the one line does not fit — 6px over at 320 in Danish —
+and the head goes back to two rows. A narrow window with a mouse keeps the
+two-row head with every control, because one row wants 470px of the 342 at
+390. The gaps tighten
 there rather than the buttons shrinking: at 320 in Danish, "Studie 01 / 08" and
 the three 44px buttons ran the page 4px wide until the gap between them went to
 8px and the gaps inside the nav to 4px. Each control is held to its own end of
