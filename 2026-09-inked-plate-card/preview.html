@@ -138,7 +138,7 @@
      style="--inked-plate-card-width: 24rem;">
     <span class="inked-plate-card__plate">
       <span class="inked-plate-card__head">
-        <span class="inked-plate-card__title">Bølgelængder</span>
+        <span class="inked-plate-card__title">Wavelengths</span>
       </span>
 
       <span class="inked-plate-card__art">
@@ -168,7 +168,7 @@
     </span>
 
     <span class="inked-plate-card__caption">
-      <span class="inked-plate-card__note">Samdrift på tværs af teams.</span>
+      <span class="inked-plate-card__note">Collaboration across teams.</span>
       <span class="inked-plate-card__count">9 paths</span>
     </span>
   </a>
@@ -338,6 +338,35 @@
       var count = root.querySelector('.' + BASE + '__count');
       var note = root.querySelector('.' + BASE + '__note');
 
+      // The sample copy, in both languages. English is the markup's, so the
+      // thumbnail is right without script; a page in Danish hands its language
+      // in on the src (?lang=) or over the channel (preview:lang), and the
+      // plates' titles, notes and counts follow, with the variant names quick
+      // look prints under its dots. Only the words move: the plates, their
+      // drawings and their sizes are the same in both.
+      var COPY = {
+        en: {
+          wavelengths: 'Wavelengths', framing: 'Framing', network: 'Network',
+          together: 'Collaboration across teams.',
+          frame: 'The case\u2019s frame: scope and deadlines.',
+          relations: 'Relations between parties and cases.',
+          paths: 'paths',
+          acid: 'Lime', porcelain: 'Porcelain', graphite: 'Graphite',
+          ochre: 'Ochre', indigo: 'Indigo', chalk: 'Chalk'
+        },
+        da: {
+          wavelengths: 'B\u00f8lgel\u00e6ngder', framing: 'Rammes\u00e6tning', network: 'Netv\u00e6rk',
+          together: 'Samdrift p\u00e5 tv\u00e6rs af teams.',
+          frame: 'Rammer for sagen: omfang og frister.',
+          relations: 'Relationer mellem parter og sager.',
+          paths: 'streger',
+          acid: 'Lime', porcelain: 'Porcel\u00e6n', graphite: 'Grafit',
+          ochre: 'Okker', indigo: 'Indigo', chalk: 'Kridt'
+        }
+      };
+      var lang = new URLSearchParams(location.search).get('lang') === 'da' ? 'da' : 'en';
+      function t(key) { return (COPY[lang] && COPY[lang][key]) || COPY.en[key]; }
+
       // The resting drawing is the one in the markup; the other two come out
       // of the template, so all three live in this file exactly once.
       var pool = [root.querySelector('.' + BASE + '__ink').cloneNode(true)];
@@ -354,34 +383,28 @@
       // and the envelope out of the template, in that order.
       var VARIANTS = [
         {
-          id: 'acid', label: 'Lime', classes: ['--acid'], drawing: 0,
-          title: 'Bølgelængder', count: '9 paths',
-          note: 'Samdrift på tværs af teams.'
+          id: 'acid', classes: ['--acid'], drawing: 0,
+          title: 'wavelengths', paths: 9, note: 'together'
         },
         {
-          id: 'porcelain', label: 'Porcelæn', classes: [], drawing: 1,
-          title: 'Rammesætning', count: '13 paths',
-          note: 'Rammer for sagen: omfang og frister.'
+          id: 'porcelain', classes: [], drawing: 1,
+          title: 'framing', paths: 13, note: 'frame'
         },
         {
-          id: 'graphite', label: 'Grafit', classes: ['--graphite'], drawing: 2,
-          title: 'Netværk', count: '48 paths',
-          note: 'Relationer mellem parter og sager.'
+          id: 'graphite', classes: ['--graphite'], drawing: 2,
+          title: 'network', paths: 48, note: 'relations'
         },
         {
-          id: 'ochre', label: 'Okker', classes: ['--ochre'], drawing: 1,
-          title: 'Rammesætning', count: '13 paths',
-          note: 'Rammer for sagen: omfang og frister.'
+          id: 'ochre', classes: ['--ochre'], drawing: 1,
+          title: 'framing', paths: 13, note: 'frame'
         },
         {
-          id: 'indigo', label: 'Indigo', classes: ['--indigo'], drawing: 0,
-          title: 'Bølgelængder', count: '9 paths',
-          note: 'Samdrift på tværs af teams.'
+          id: 'indigo', classes: ['--indigo'], drawing: 0,
+          title: 'wavelengths', paths: 9, note: 'together'
         },
         {
-          id: 'chalk', label: 'Kridt', classes: ['--chalk'], drawing: 2,
-          title: 'Netværk', count: '48 paths',
-          note: 'Relationer mellem parter og sager.'
+          id: 'chalk', classes: ['--chalk'], drawing: 2,
+          title: 'network', paths: 48, note: 'relations'
         }
       ];
 
@@ -391,9 +414,8 @@
         });
         variant.classes.forEach(function (c) { root.classList.add(BASE + c); });
 
-        title.textContent = variant.title;
-        count.textContent = variant.count;
-        note.textContent = variant.note;
+        shown = variant;
+        retext();
 
         var current = art.querySelector('.' + BASE + '__ink');
         var next = pool[variant.drawing].cloneNode(true);
@@ -425,6 +447,22 @@
         if (current) art.replaceChild(next, current);
         else art.appendChild(next);
       }
+
+      // The plate on show, so a change of language can re-word it without
+      // re-inking it. Null until a variant is applied: the markup's plate,
+      // which is the lime one.
+      var shown = null;
+
+      function retext() {
+        var v = shown || VARIANTS[0];
+        title.textContent = t(v.title);
+        count.textContent = v.paths + ' ' + t('paths');
+        note.textContent = t(v.note);
+      }
+
+      // Loaded on a Danish page: the markup's English plate is re-worded once,
+      // before anything else moves.
+      if (lang !== 'en') retext();
 
       function byId(id) {
         return VARIANTS.filter(function (v) { return v.id === id; })[0];
@@ -611,6 +649,13 @@
           if (!held) cycleRelease();
         }
 
+        // The page's language changed while this was on screen: the words on
+        // the plate follow, and nothing is redrawn.
+        if (data.type === 'preview:lang') {
+          lang = data.lang === 'da' ? 'da' : 'en';
+          retext();
+        }
+
         if (data.type === 'preview:theme') {
           if (data.theme === 'dark') {
             document.documentElement.setAttribute('data-theme', 'dark');
@@ -656,7 +701,7 @@
         window.parent.postMessage({
           source: CHANNEL,
           type: 'preview:ready',
-          variants: list.map(function (v) { return { id: v.id, label: v.label }; })
+          variants: list.map(function (v) { return { id: v.id, label: t(v.id) }; })
         }, '*');
       }
 

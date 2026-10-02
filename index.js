@@ -17,6 +17,8 @@
 //                         scale: n }
 //   parent -> preview   { source: 'interface-studies', type: 'preview:theme',
 //                         theme: 'light' | 'dark' }
+//   parent -> preview   { source: 'interface-studies', type: 'preview:lang',
+//                         lang: 'en' | 'da' }
 //   parent -> preview   { source: 'interface-studies', type: 'preview:pause',
 //                         paused: bool, reason: 'gesture'|'offscreen'|'drift'|'' }
 //   preview -> parent   { source: 'interface-studies', type: 'preview:ready',
@@ -34,6 +36,18 @@
 //
 // A preview that ignores all of it still renders correctly; it just doesn't
 // move, and quick look shows it without dots.
+
+// A preview's src carries the page's theme and its language as query
+// parameters, and the two modules that write them run apart: each sets its
+// own and keeps the other's. The theme used to rewrite the whole query, which
+// was fine while it was the only thing in it.
+function withParam(src, key, value) {
+  const at = src.indexOf('?');
+  const path = at === -1 ? src : src.slice(0, at);
+  const params = new URLSearchParams(at === -1 ? '' : src.slice(at + 1));
+  params.set(key, value);
+  return path + '?' + params.toString();
+}
 
 // --- language ------------------------------------------------------------
 //
@@ -232,6 +246,27 @@
     syncLinks();
   });
 
+  // The previews are told too, the way the theme module tells them: on the
+  // src they are loaded with, and over the channel if they are already up.
+  // A study whose folder carries its sample copy in both languages switches
+  // it; the rest ignore the message and keep the copy they were written with.
+  function tellPreviewsLang(lang) {
+    document.querySelectorAll('[data-preview]').forEach((frame) => {
+      const src = frame.getAttribute('data-src');
+      if (src) frame.setAttribute('data-src', withParam(src, 'lang', lang));
+    });
+    document.querySelectorAll('[data-preview], [data-lightbox-frame]').forEach((frame) => {
+      const live = frame.getAttribute('src');
+      if (!live || live === 'about:blank') return;
+      try {
+        frame.contentWindow.postMessage(
+          { source: 'interface-studies', type: 'preview:lang', lang: lang },
+          '*'
+        );
+      } catch (err) { /* not loaded yet: the ready re-send catches it */ }
+    });
+  }
+
   function apply(lang) {
     const table = COPY[lang];
     current = lang;
@@ -254,6 +289,7 @@
     });
 
     document.documentElement.lang = lang;
+    tellPreviewsLang(lang);
     buttons.forEach((b) => {
       b.setAttribute('aria-pressed', b.dataset.lang === lang ? 'true' : 'false');
     });
@@ -407,7 +443,7 @@
   function tellPreviews(theme) {
     document.querySelectorAll('[data-preview]').forEach((frame) => {
       const src = frame.getAttribute('data-src');
-      if (src) frame.setAttribute('data-src', src.split('?')[0] + '?theme=' + theme);
+      if (src) frame.setAttribute('data-src', withParam(src, 'theme', theme));
     });
 
     document.querySelectorAll('[data-preview], [data-lightbox-frame]').forEach((frame) => {
@@ -783,6 +819,7 @@
     // ready message is the one moment a preview is known to be listening.
     tellScale(piece.querySelector('[data-preview]'), cardScale());
     tellTheme(piece.querySelector('[data-preview]'));
+    tellLang(piece.querySelector('[data-preview]'));
     // Including the pause, and for the same reason. A document that has just
     // announced itself is holding none of the state the index thinks it is —
     // markReady would return early on a card that is already ready and never
@@ -843,6 +880,19 @@
         : 'light';
     frame.contentWindow.postMessage(
       { source: CHANNEL, type: 'preview:theme', theme: theme },
+      '*'
+    );
+  }
+
+  // The language, re-stated at the same moment and for the same reason as the
+  // theme: a document loading when the switch happened was handed the old one
+  // on its src and missed the message. <html lang> is where the language
+  // module has already resolved the choice. A preview whose folder has not
+  // translated its sample copy ignores it.
+  function tellLang(frame) {
+    if (!frame || !frame.contentWindow) return;
+    frame.contentWindow.postMessage(
+      { source: CHANNEL, type: 'preview:lang', lang: document.documentElement.lang === 'da' ? 'da' : 'en' },
       '*'
     );
   }
@@ -3194,6 +3244,7 @@
       if (box.hidden || event.source !== frame.contentWindow) return;
       tellScale(frame, lightboxScale);
       tellTheme(frame);
+      tellLang(frame);
       buildDots(data.variants);
       playForTouch();
     });

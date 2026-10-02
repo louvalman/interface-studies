@@ -183,6 +183,15 @@
             document.documentElement.removeAttribute('data-theme');
           }
         }
+
+        // The page's language, 'en' or 'da' — also on the src as ?lang= when
+        // the frame is loaded. A study whose sample copy is written in both
+        // languages re-words its component here and at load, with English in
+        // the markup; see 2026-09-inked-plate-card/preview.html for one that
+        // does. Until then, ignore it: the copy stays as it was written.
+        if (data.type === 'preview:lang') {
+          /* re-word the sample copy, if this study carries it in both */
+        }
       });
 
       // Quick look runs this file with pointer events live, so the pointer —

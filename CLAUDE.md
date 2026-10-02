@@ -335,8 +335,9 @@ it fails over `file://`, where each document gets an opaque origin. Edit the
 one, edit the other.
 
 The decision prose stays in the language `notes.md` was written in. It is a
-record, not page copy — the same reason component sample copy is left alone by
-the language switch. Only the labels around it (`Decisions`, `Type`,
+record, not page copy — and unlike a component's sample copy, which a study
+may carry in both languages (see **A component's sample copy can follow the
+language**), it is not translated at all. Only the labels around it (`Decisions`, `Type`,
 `Inspiration`) carry `data-i18n`.
 
 A `notes.md` that has grown past the contract's 2–5 bullets renders the bullets
@@ -420,6 +421,7 @@ position:
 { source: 'interface-studies', type: 'preview:variant', index: n }
 { source: 'interface-studies', type: 'preview:scale', scale: n }
 { source: 'interface-studies', type: 'preview:theme', theme: 'light' | 'dark' }
+{ source: 'interface-studies', type: 'preview:lang', lang: 'en' | 'da' }
 { source: 'interface-studies', type: 'preview:pause', paused: true | false,
   reason: 'gesture' | 'offscreen' | 'drift' | '' }
 
@@ -559,6 +561,12 @@ preview to make up the difference would be the thumbnail reaching into the
 component, which is the rule this whole contract keeps. A study in that
 position picks a resting variant that does not need the help — see that
 folder's `notes.md`.
+
+`preview:lang` says which language the index is in, `'en'` or `'da'`. It
+arrives as `?lang=` on the src, as this message on a switch, and again on
+`preview:ready`, for the same three reasons the theme does. A preview that has
+not translated its sample copy ignores it; one that has re-words its component
+in place — see **A component's sample copy can follow the language**.
 
 `preview:key` is the fifth, and it goes the other way — preview to index. An
 iframe is its own document: keys pressed inside it fire against that document
@@ -1467,8 +1475,26 @@ shared module, because the folder has to survive being copied out. The index
 appends `?lang=` to the link that opens a demo, and the demo's back link hands
 the choice back; `localStorage` is the secondary channel, because over `file://`
 each document gets its own opaque origin and does not share it. `_template/`
-holds the block to copy. Translate the page's own prose only — component sample
-copy and class-name hints stay as they are.
+holds the block to copy. Translate the page's own prose, and the component's
+sample copy where the study carries it in both languages — see below.
+Class-name hints stay as they are.
+
+**A component's sample copy can follow the language, and the goal is that every
+study's does.** It used to be a rule that sample copy stays as written, and a
+study written in Danish showed Danish on the English page: two reviewers took
+the inked plate's "Bølgelængder" and "Samdrift på tværs af teams." for strings
+someone forgot to translate. Now English is the markup's and a study may carry
+a Danish set beside it. The demo page marks each sample string with a
+`data-i18n` key under `sample.*` and puts the Danish in its own table, like
+the rest of its prose. The preview takes the language the way it takes the
+theme — `?lang=` on its src, `preview:lang` if the index is switched with it on
+screen, and re-stated on `preview:ready` — and re-words the component without
+redrawing it; the variant names it reports to quick look follow too. The index
+writes `theme` and `lang` into a preview's src one parameter at a time, so
+neither overwrites the other. The inked plate is the first study to do it;
+the others keep their copy as written until each is given its Danish, one
+folder at a time, and `_template/` carries both halves for a new study. The
+Figma file's copy of a study is not reached by any of this.
 
 **The applier reads and writes `innerHTML`, not `textContent`, and every
 folder's copy does.** A demo page's prose wants markup the sentence needs — a
