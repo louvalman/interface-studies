@@ -1072,9 +1072,10 @@ page always had room for, rather than above the headline as a label saying the
 site's name a second time. `--bar-top` is the cluster's inset and `--bar-h`
 its height, and the mark takes both, so the two centre on each other without
 either being positioned against the other. Below 23.25rem the two no longer fit
-side by side and the mark takes its own line under the cluster, which stays in
-the corner at every width for the reasons given beside that rule in
-`index.css`.
+side by side, and the name steps out of sight while the mark stays on the line
+alone; the name is still read out. It took its own line under the cluster for
+a while, 63px of a 700px phone's first screen. The cluster stays in the corner
+at every width for the reasons given beside that rule in `index.css`.
 
 **From 64rem the masthead is a band**: the headline at the left on two lines,
 and beside it the lede and the Figma button, above a full-width rail. It was a
@@ -1097,6 +1098,20 @@ meeting. They are top-aligned now: the lede starts on the headline's line and
 runs on under it. Where the window is too narrow for two cards and a lede,
 below about 1100px, the lede keeps 24rem and the headline's column gives way,
 so the band holds without the card edge.
+
+**The masthead ends on the field rule.** The site mark is a field of dots,
+sized by their distance from a centre, the raster pulse read as a still; it
+was the one motif native to the site, and it appeared twice at 24px. Under the
+masthead it is drawn as a line now: the mark's dots across the content width,
+14px apart, sized along a slow wave, with the accent peak drifting through
+them while the rail drifts. It takes the middle of the gap that separated the
+masthead from the rail — 22px, a 12px rule, 22px — so the page is no taller,
+and the first card's title is where it was. The peak is an accent copy of the
+row shown through a soft mask window, one animated `mask-position` on one small
+element; it pauses whenever the rail is not drifting, and under reduced motion
+it rests. index.js draws the dots to the width and redraws on a resize. A 9x9
+field beside the headline was mocked and set aside: it read as a logo lockup,
+repeated the mark just above it, and moved the headline off the card columns.
 
 **Its spacing is one scale, smallest inside and largest at the edge**: 20px
 from the lede to its button, 40px from the mark's line to the headline, 56px
@@ -2001,7 +2016,15 @@ from the top, introducing itself again — and it put an iframe navigation into
 roughly every third drag. Measured over eight drags through the set: thirteen
 navigations and six of those flashes, against one and none after.
 
-A card whose preview has not loaded yet shows its skeleton, not an empty frame.
+A card whose preview has not loaded yet shows its skeleton, not an empty frame. A preview that fails is said to have failed: every preview announces
+itself with `preview:ready`, so one that has not, five seconds after its
+document loaded, marks its card `.is-stalled` and the frame reads "Preview
+unavailable" in the page's own language, while the title still opens the
+study; a late announcement takes it back. The clock starts at the frame's
+`load`, not when its src is set — the frames load lazily, and timed from the
+src two healthy cards off to the right were called unavailable before they had
+started. Before this, the skeleton's backstop lifted the cover off whatever
+was there, an empty frame or a server's error page.
 This does mean no previews at all without JavaScript; the index already needs it
 for the rail's order, its numbers and its counts.
 
@@ -2064,8 +2087,13 @@ mark runs by itself, so it spent three lines on what the screen showed, and
 its "tap quick look to run a card" had stopped matching what a card does.
 Measured at 390x844, the first card's title went from y=881, under the fold,
 to y=775, and to y=754 once the date moved under the title. Under 360px the
-one line does not fit — 6px over at 320 in Danish —
-and the head goes back to two rows. A narrow window with a mouse keeps the
+one line does not fit with the count in it — 6px over at 320 in Danish — so on
+a touch screen the count steps aside there, the filter's "All · 8" and the
+footer both stating it, and the head stays one line rather than two rows with
+the pause alone on the first. With the mark back on the controls' line, the
+first card's thumbnail starts at y=461 at 320x700 rather than 579; its title
+is still under the fold there, and reaching it would cost the lede or the
+Figma button. A narrow window with a mouse keeps the
 two-row head with every control, because one row wants 470px of the 342 at
 390. The gaps tighten
 there rather than the buttons shrinking: at 320 in Danish, "Studie 01 / 08" and
@@ -2074,6 +2102,19 @@ the three 44px buttons ran the page 4px wide until the gap between them went to
 its column, or on a phone the narrower of two sharing a column stretches to the
 other's width. The grid restacks with `grid-template-areas`, so nothing moves in
 the DOM.
+
+**And by technique.** The type is what a study is; a reader lifting one
+technique filters by what it is built with, and "CSS-only" could only be
+inferred from a missing JS mark. Each card carries `data-tech`, by hand like
+its type — `css-only`, `svg`, `webgl`, `web-audio`, `view-transitions`,
+`container-queries`, `backdrop-filter`, `tokens`, the last for a study whose
+custom properties set what it does rather than only how it looks. index.js
+writes them as a mono line under the card's note, each tag whole so a line
+breaks between tags and never inside one, and the filter offers them as a
+"Technique" group under the types, with counts, its values prefixed `tech:`.
+The labels are in index.js, English in `FILTER_EN` and Danish in the language
+table, so a new tag needs both. A technique goes in the address as
+`?tech=webgl` the way a type goes in as `?type=`; the two are exclusive.
 
 The chosen type is kept in the address as `?type=card`, written with
 `replaceState` as the language and the theme are, and read back once the rail

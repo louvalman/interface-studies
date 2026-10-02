@@ -87,6 +87,15 @@ function withParam(src, key, value) {
       'type.navigation': 'Navigation',
       'type.layout': 'Layout',
       'filter.all': 'Alle',
+      'filter.technique': 'Teknik',
+      'tech.css-only': 'Kun CSS',
+      'tech.svg': 'SVG',
+      'tech.webgl': 'WebGL',
+      'tech.web-audio': 'Web Audio',
+      'tech.view-transitions': 'View Transitions',
+      'tech.container-queries': 'Container queries',
+      'tech.backdrop-filter': 'Backdrop-filter',
+      'tech.tokens': 'Design-tokens',
       'piece.liquidGlassToolbar.title': 'Liquid glass toolbar',
       'piece.liquidGlassToolbar.note': 'Én glasflade der skifter form, i seks '
         + 'materialer fra én opskrift: det valgte punkt folder sig ud til en '
@@ -815,6 +824,10 @@ function withParam(src, key, value) {
       return frame && frame.contentWindow === event.source;
     });
     if (!piece) return;
+    // Announced, so not unavailable — however late it came.
+    const announced = piece.querySelector('[data-preview]');
+    if (announced) announced.dataset.announced = 'true';
+    piece.classList.remove('is-stalled');
     // Always, not only on the first pass: markReady is a one-shot, and the
     // ready message is the one moment a preview is known to be listening.
     tellScale(piece.querySelector('[data-preview]'), cardScale());
@@ -977,7 +990,33 @@ function withParam(src, key, value) {
 
     clearTimeout(readyTimers.get(piece));
     readyTimers.set(piece, setTimeout(() => markReady(piece), 2000));
+
+    // The backstop lifts the skeleton whatever happened, so a preview that
+    // failed — a 404, a script error, a network that gave up — used to show
+    // an empty frame or a server's error page inside the card. Every preview
+    // announces itself with preview:ready once its listener is live, so one
+    // that has not after STALL_MS is called unavailable, quietly, and the
+    // card's title still opens the study. A late announcement takes it back.
+    //
+    // Counted from the document's load, not from the src being set: the
+    // frames load lazily, and a card off to the right holds its src without
+    // loading anything until it nears the viewport — timed from the src, two
+    // healthy cards were called unavailable before they had started. A 404
+    // and a script that throws both still fire load, so both are caught.
+    clearTimeout(stallTimers.get(piece));
+    piece.classList.remove('is-stalled');
+    frame.addEventListener('load', () => {
+      const src = frame.getAttribute('src');
+      if (!src || src === 'about:blank') return;
+      clearTimeout(stallTimers.get(piece));
+      stallTimers.set(piece, setTimeout(() => {
+        if (frame.dataset.announced !== 'true') piece.classList.add('is-stalled');
+      }, STALL_MS));
+    }, { once: true });
   }
+
+  const STALL_MS = 5000;
+  const stallTimers = new WeakMap();
 
   // Every card on this page is a live component, which is the point of the
   // index and also what it costs: five studies is six documents, and one of
@@ -1079,6 +1118,9 @@ function withParam(src, key, value) {
     delete piece.dataset.seen;
     endGrace(piece);
     clearTimeout(readyTimers.get(piece));
+    clearTimeout(stallTimers.get(piece));
+    piece.classList.remove('is-stalled');
+    delete frame.dataset.announced;
     // The skeleton comes back with it: the card is about to hold a blank
     // document, and lifting the cover off that is worse than covering it.
     piece.classList.remove('is-ready');
@@ -1372,7 +1414,27 @@ function withParam(src, key, value) {
   // than in markup index.js never sees again. The i18n module reads the
   // document once at start-up; options built afterwards are not in that list
   // and are re-labelled on the lang:change below instead.
-  const FILTER_EN = { 'filter.all': 'All' };
+  const FILTER_EN = {
+    'filter.all': 'All',
+    'filter.technique': 'Technique',
+    'tech.css-only': 'CSS-only',
+    'tech.svg': 'SVG',
+    'tech.webgl': 'WebGL',
+    'tech.web-audio': 'Web Audio',
+    'tech.view-transitions': 'View Transitions',
+    'tech.container-queries': 'Container queries',
+    'tech.backdrop-filter': 'Backdrop filter',
+    'tech.tokens': 'Design tokens'
+  };
+
+  // A study's techniques, by hand on its card as data-tech, the way its type
+  // is on its badge: what a reader lifting one technique filters by, where the
+  // type is what the study is. The filter offers them as a second group, with
+  // "tech:" on the value to keep the two apart, and the card states them in a
+  // line of its own under the note.
+  const TECH = 'tech:';
+  const techsOf = (piece) => (piece.dataset.tech || '').split(/\s+/).filter(Boolean);
+  const techLabel = (key) => filterText('tech.' + key) || key;
 
   let filterType = FILTER_ALL;
   let filterCopy = null;
@@ -1398,7 +1460,10 @@ function withParam(src, key, value) {
 
   function applyFilter() {
     allPieces().forEach((piece) => {
-      const hit = filterType === FILTER_ALL || typeOf(piece) === filterType;
+      const hit = filterType === FILTER_ALL
+        || (filterType.startsWith(TECH)
+          ? techsOf(piece).includes(filterType.slice(TECH.length))
+          : typeOf(piece) === filterType);
       // A class, not the hidden attribute: .piece sets its own display, and an
       // author rule beats the UA rule [hidden] leans on.
       piece.classList.toggle('is-filtered', !hit);
@@ -1462,7 +1527,43 @@ function withParam(src, key, value) {
   }
 
   const labelFor = (type) =>
-    type === FILTER_ALL ? filterText('filter.all') : typeLabel(type);
+    type === FILTER_ALL ? filterText('filter.all')
+      : type.startsWith(TECH) ? techLabel(type.slice(TECH.length))
+      : typeLabel(type);
+
+  function techCounts() {
+    const counts = new Map();
+    allPieces().forEach((piece) => {
+      techsOf(piece).forEach((t) => counts.set(t, (counts.get(t) || 0) + 1));
+    });
+    return counts;
+  }
+
+  // The line under each card's note: its techniques, in the page's language.
+  function renderTech() {
+    allPieces().forEach((piece) => {
+      const tags = techsOf(piece);
+      let line = piece.querySelector('.piece__tech');
+      if (!tags.length) { if (line) line.remove(); return; }
+      if (!line) {
+        line = document.createElement('p');
+        line.className = 'piece__tech';
+        const before = piece.querySelector('.piece__actions');
+        const body = piece.querySelector('.piece__body');
+        if (before) before.before(line);
+        else if (body) body.appendChild(line);
+        else return;
+      }
+      line.replaceChildren();
+      tags.forEach((tag, i) => {
+        if (i) line.append(' \u00b7 ');
+        const span = document.createElement('span');
+        span.className = 'piece__tech-tag';
+        span.textContent = techLabel(tag);
+        line.append(span);
+      });
+    });
+  }
 
   // The visible half of the control: the current choice, and a filled state
   // while the rail is narrowed, because that is a state the whole rail is in
@@ -1499,8 +1600,7 @@ function withParam(src, key, value) {
     face.appendChild(document.createElement('selectedcontent'));
     filterSelect.appendChild(face);
 
-    [FILTER_ALL].concat(typeOrder(counts)).forEach((type) => {
-      const n = type === FILTER_ALL ? allPieces().length : counts.get(type);
+    const makeOption = (type, n) => {
       const option = document.createElement('option');
       option.value = type;
       // Three runs of text rather than one string, so a styled list can set
@@ -1516,8 +1616,22 @@ function withParam(src, key, value) {
       count.className = 'rail__filter-n';
       count.textContent = String(n);
       option.append(name, sep, count);
-      filterSelect.appendChild(option);
+      return option;
+    };
+
+    [FILTER_ALL].concat(typeOrder(counts)).forEach((type) => {
+      const n = type === FILTER_ALL ? allPieces().length : counts.get(type);
+      filterSelect.appendChild(makeOption(type, n));
     });
+
+    // The techniques, as their own group under the types.
+    const techs = techCounts();
+    if (techs.size) {
+      const group = document.createElement('optgroup');
+      group.label = filterText('filter.technique');
+      typeOrder(techs).forEach((t) => group.appendChild(makeOption(TECH + t, techs.get(t))));
+      filterSelect.appendChild(group);
+    }
     filterSelect.value = filterType;
 
     renderFilterValue();
@@ -1544,8 +1658,10 @@ function withParam(src, key, value) {
   function writeFilterUrl() {
     try {
       const url = new URL(location.href);
-      if (filterType === FILTER_ALL) url.searchParams.delete('type');
-      else url.searchParams.set('type', filterType);
+      url.searchParams.delete('type');
+      url.searchParams.delete('tech');
+      if (filterType.startsWith(TECH)) url.searchParams.set('tech', filterType.slice(TECH.length));
+      else if (filterType !== FILTER_ALL) url.searchParams.set('type', filterType);
       history.replaceState(history.state, '', url);
     } catch (err) { /* file:// can refuse replaceState */ }
   }
@@ -1554,7 +1670,8 @@ function withParam(src, key, value) {
   // leaving the rail filtered down to nothing.
   function readFilterUrl() {
     if (!filterSelect) return;
-    const asked = new URLSearchParams(location.search).get('type');
+    const params = new URLSearchParams(location.search);
+    const asked = params.get('tech') ? TECH + params.get('tech') : params.get('type');
     if (!asked || asked === filterType) return;
     const known = Array.from(filterSelect.options).some((o) => o.value === asked);
     if (!known) return;
@@ -1573,6 +1690,9 @@ function withParam(src, key, value) {
         const name = option.querySelector('.rail__filter-name');
         if (name) name.textContent = labelFor(option.value);
       });
+      filterSelect.querySelectorAll('optgroup').forEach((group) => {
+        group.label = filterText('filter.technique');
+      });
       // <selectedcontent> copies the chosen option when the choice changes,
       // not when the option's own text does, so a language switch left the
       // face in the old language — measured, "Card" over a list of "Kort".
@@ -1583,6 +1703,7 @@ function withParam(src, key, value) {
       }
     }
     renderFilterValue();
+    renderTech();
     // Same strings, further down the page: the footer's Types row is the card
     // badges too, so it turns over with them rather than carrying its own.
     renderFootTypes();
@@ -3670,10 +3791,48 @@ function withParam(src, key, value) {
     renderDates(event.detail && event.detail.lang);
   });
 
+  // The field rule under the masthead: the mark's dots across the content
+  // width, 14px apart, sized along a wave — redrawn when the width changes,
+  // since the count of dots is the width's. Two layers of the same row: the
+  // base in the ink, and the accent a little larger, shown through the
+  // drifting window index.css animates.
+  const rule = document.querySelector('[data-head-rule]');
+  let ruleWidth = 0;
+  function drawRule() {
+    if (!rule) return;
+    const w = Math.round(rule.clientWidth);
+    if (!w || w === ruleWidth) return;
+    ruleWidth = w;
+    const gap = 14;
+    const n = Math.max(2, Math.floor(w / gap));
+    const span = (w - gap) / (n - 1);
+    const h = rule.clientHeight || 12;
+    let base = '';
+    let peak = '';
+    for (let i = 0; i < n; i++) {
+      const t = i / (n - 1);
+      const wave = (Math.sin(t * Math.PI * 5 - 1.2) + 1) / 2;
+      const x = (gap / 2 + i * span).toFixed(1);
+      const r = 1 + wave * 1.9;
+      base += '<circle cx="' + x + '" cy="' + h / 2 + '" r="' + r.toFixed(2)
+        + '" fill="currentColor" opacity="' + (0.3 + wave * 0.5).toFixed(2) + '"/>';
+      peak += '<circle cx="' + x + '" cy="' + h / 2 + '" r="' + Math.min(r + 1.6, h / 2).toFixed(2)
+        + '" fill="currentColor"/>';
+    }
+    const box = '0 0 ' + w + ' ' + h;
+    rule.querySelector('.head__rule-base').setAttribute('viewBox', box);
+    rule.querySelector('.head__rule-peak').setAttribute('viewBox', box);
+    rule.querySelector('.head__rule-base').innerHTML = base;
+    rule.querySelector('.head__rule-peak').innerHTML = peak;
+  }
+  drawRule();
+  window.addEventListener('resize', () => requestAnimationFrame(drawRule));
+
   renderLedeHint(null);
   order();
   renderDates(document.documentElement.lang);
   buildFilter();   // after order(), so the options count a settled rail
+  renderTech();
   renderFootTypes();
   number();
 
