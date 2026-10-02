@@ -2245,9 +2245,13 @@ in the markup for a screen reader and the tooltip. It is what a study comes
 is inside its JS. Figma is on it for every study, after the code — every study has a page
 in the file, and code and Figma are the two halves PRODUCT.md names. It used to
 be the list's alone and to leave Figma off, so a card on the rail said nothing
-about the half of success that is the file. The rail shows the marks too, at
-the far end of the "Open study" line, positioned against the card's body so
-the call to action keeps the row it lines up on. A study that gains a `component.js` or an adapter gains the
+about the half of success that is the file. The rail shows the marks too, on
+the "Open study" line right after the link, past a short hairline that says
+they label the study rather than extend the link. They sat at the card's far
+edge first, and a reviewer measured them 32px from the next card's "Open
+study" and 94-182px from their own: they read as the neighbour's. The link and
+the marks share a `.piece__actions` row, which the list lays out of the way
+with `display: contents`. A study that gains a `component.js` or an adapter gains the
 mark on its card in the same change, the way a change of type is made in two
 places. The index cannot list a folder's files over `file://`, so there is no
 way to derive it — the same wall the type runs into.

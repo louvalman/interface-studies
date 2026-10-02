@@ -1482,11 +1482,6 @@ body.is-locked {
 }
 
 .piece__cta {
-  /* auto, not a fixed step: it takes up whatever the shorter note left over,
-     which is what lines the row up. The 0.6rem is the floor, for the card that
-     happens to be the tallest and has nothing spare. */
-  margin-top: auto;
-  padding-top: 0.6rem;
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
@@ -1601,26 +1596,32 @@ body.is-locked {
 /* Hidden in the rail: the column heads. */
 .rail__cols { display: none; }
 
-/* What a study comes in, on the rail as well as in the list: the marks sit at
-   the far end of the "Open study" line, where the card ends. They were the
-   list's alone for a while, so a card on the rail said nothing of Figma,
-   which every study has and which is half of what the site counts. Placed
-   against the body rather than laid out in it, so the call to action keeps
-   the row it lines up on across the rail. */
+/* What a study comes in, on the rail as well as in the list: the marks follow
+   the card's own "Open study" on its line, after a short hairline that says
+   they are a label of the study rather than more of the link. They sat at
+   the card's far edge for a while, and there they were 32px from the next
+   card's "Open study" and 94-182px from their own, so they read as the
+   neighbour's. */
 .piece__stack { display: none; }
 
-.piece__body { position: relative; }
+.piece__actions {
+  /* auto, not a fixed step: it takes up whatever the shorter note left over,
+     which is what lines the row up across the rail. The 0.6rem is the floor,
+     for the card that happens to be the tallest and has nothing spare. */
+  margin-top: auto;
+  padding-top: 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
 
 :root:not([data-view="list"]) .piece__stack {
-  position: absolute;
-  right: 0.125rem;
-  bottom: 0;
   display: flex;
   align-items: center;
   gap: 0.375rem;
-  height: 1.3125rem;
   margin: 0;
-  padding: 0;
+  padding: 0 0 0 0.75rem;
+  border-left: 1px solid var(--hairline-strong);
   list-style: none;
   color: var(--muted);
 }
@@ -1711,7 +1712,8 @@ body.is-locked {
 
 :root[data-view="list"] .piece__frame,
 :root[data-view="list"] .piece__body,
-:root[data-view="list"] .piece__meta { display: contents; }
+:root[data-view="list"] .piece__meta,
+:root[data-view="list"] .piece__actions { display: contents; }
 
 .js[data-view="list"] .piece__frame::after { content: none; }
 
