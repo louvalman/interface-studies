@@ -815,6 +815,10 @@ function withParam(src, key, value) {
       return frame && frame.contentWindow === event.source;
     });
     if (!piece) return;
+    // Announced, so not unavailable — however late it came.
+    const announced = piece.querySelector('[data-preview]');
+    if (announced) announced.dataset.announced = 'true';
+    piece.classList.remove('is-stalled');
     // Always, not only on the first pass: markReady is a one-shot, and the
     // ready message is the one moment a preview is known to be listening.
     tellScale(piece.querySelector('[data-preview]'), cardScale());
@@ -977,7 +981,33 @@ function withParam(src, key, value) {
 
     clearTimeout(readyTimers.get(piece));
     readyTimers.set(piece, setTimeout(() => markReady(piece), 2000));
+
+    // The backstop lifts the skeleton whatever happened, so a preview that
+    // failed — a 404, a script error, a network that gave up — used to show
+    // an empty frame or a server's error page inside the card. Every preview
+    // announces itself with preview:ready once its listener is live, so one
+    // that has not after STALL_MS is called unavailable, quietly, and the
+    // card's title still opens the study. A late announcement takes it back.
+    //
+    // Counted from the document's load, not from the src being set: the
+    // frames load lazily, and a card off to the right holds its src without
+    // loading anything until it nears the viewport — timed from the src, two
+    // healthy cards were called unavailable before they had started. A 404
+    // and a script that throws both still fire load, so both are caught.
+    clearTimeout(stallTimers.get(piece));
+    piece.classList.remove('is-stalled');
+    frame.addEventListener('load', () => {
+      const src = frame.getAttribute('src');
+      if (!src || src === 'about:blank') return;
+      clearTimeout(stallTimers.get(piece));
+      stallTimers.set(piece, setTimeout(() => {
+        if (frame.dataset.announced !== 'true') piece.classList.add('is-stalled');
+      }, STALL_MS));
+    }, { once: true });
   }
+
+  const STALL_MS = 5000;
+  const stallTimers = new WeakMap();
 
   // Every card on this page is a live component, which is the point of the
   // index and also what it costs: five studies is six documents, and one of
@@ -1079,6 +1109,9 @@ function withParam(src, key, value) {
     delete piece.dataset.seen;
     endGrace(piece);
     clearTimeout(readyTimers.get(piece));
+    clearTimeout(stallTimers.get(piece));
+    piece.classList.remove('is-stalled');
+    delete frame.dataset.announced;
     // The skeleton comes back with it: the card is about to hold a blank
     // document, and lifting the cover off that is worse than covering it.
     piece.classList.remove('is-ready');

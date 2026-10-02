@@ -2001,7 +2001,15 @@ from the top, introducing itself again — and it put an iframe navigation into
 roughly every third drag. Measured over eight drags through the set: thirteen
 navigations and six of those flashes, against one and none after.
 
-A card whose preview has not loaded yet shows its skeleton, not an empty frame.
+A card whose preview has not loaded yet shows its skeleton, not an empty frame. A preview that fails is said to have failed: every preview announces
+itself with `preview:ready`, so one that has not, five seconds after its
+document loaded, marks its card `.is-stalled` and the frame reads "Preview
+unavailable" in the page's own language, while the title still opens the
+study; a late announcement takes it back. The clock starts at the frame's
+`load`, not when its src is set — the frames load lazily, and timed from the
+src two healthy cards off to the right were called unavailable before they had
+started. Before this, the skeleton's backstop lifted the cover off whatever
+was there, an empty frame or a server's error page.
 This does mean no previews at all without JavaScript; the index already needs it
 for the rail's order, its numbers and its counts.
 

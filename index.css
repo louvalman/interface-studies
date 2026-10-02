@@ -1318,6 +1318,27 @@ body.is-locked {
   pointer-events: none;
 }
 
+.js .piece.is-stalled .piece__preview { opacity: 0; }
+
+/* A preview that never announced itself: the frame says so, quietly, in the
+   page's own words, and the card's title still opens the study. */
+:root { --stalled-label: "Preview unavailable"; }
+:root[lang="da"] { --stalled-label: "Forh\00E5ndsvisning utilg\00E6ngelig"; }
+
+.js .piece.is-stalled .piece__frame::before {
+  content: var(--stalled-label);
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
 .js .piece.is-ready .piece__frame::after {
   opacity: 0;
   animation: none;
@@ -2886,6 +2907,7 @@ body.is-locked {
 .foot__coffee {
   display: inline-flex;
   align-items: center;
+  min-height: 1.5rem;
   gap: 0.5rem;
   text-decoration: none;
   font-family: var(--sans);
@@ -2929,6 +2951,7 @@ body.is-locked {
 .foot__top {
   display: inline-flex;
   align-items: center;
+  min-height: 1.5rem;
   gap: 0.45rem;
   text-decoration: none;
   font-family: var(--sans);
