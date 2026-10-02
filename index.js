@@ -71,8 +71,8 @@ function withParam(src, key, value) {
       // hyphenation dictionary, which is what `hyphens: auto` would be
       // waiting on.
       'head.title': 'Udforskning af interaktion og æstetik.',
-      'head.lede': 'Én komponent pr. studie, bygget i Figma og kode, så lille, '
-        + 'at den er til at gennemskue.',
+      'head.lede': 'En løbende samling af komponenter: én pr. studie, i Figma '
+        + 'og kode.',
       'head.ledeHint': 'Hold musen over et kort for at afspille det, tag et '
         + 'hurtigt kig på dets varianter, eller åbn studiet for at se det '
         + 'i sin helhed.',
