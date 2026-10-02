@@ -2256,6 +2256,18 @@ zero in the authored order with the gaps closed, so the footer reached a
 minute in plays the same sequence it would have at load. The footer's mark
 waits with it: its one pass used to run at load, below the fold, for nobody.
 
+Two more things let a held block go, because the line can be unreachable.
+**The end of the page:** a block whose top is below the line when the page can
+scroll no further would wait for a scroll that never comes. On 1920x1080 the
+footer's bar stopped at 993 against a line at 972, on 1440x900 at 813 against
+810, and the byline, the tip jar and back to top were never shown. So when the
+page is at its end, whatever is on screen counts as reached. **Focus:** a
+block that receives keyboard focus is let go at once, since Tab reaches the
+footer's links long before a reader scrolls them past the line, and a focused
+link must be seen. Both were found by a reviewer in a rendering headless
+browser and reproduced there; a hidden automation tab never fires the
+observer at all, so it could not have shown either.
+
 Four details are load-bearing, and each is the obvious choice going wrong:
 
 - **`translate`, not `transform`.** The cards already lift on `transform`, and

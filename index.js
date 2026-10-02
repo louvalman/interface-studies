@@ -3647,9 +3647,13 @@
   //
   // So the footer reached on a desktop arrives as brand, rows and bar, a beat
   // apart from the moment it is seen; on a phone each arrives as it is reached.
-  const seen = new IntersectionObserver(
-    (entries) => {
-      const landed = entries.filter((e) => e.isIntersecting).map((e) => e.target);
+  // Blocks still waiting. Three things let one go, and each goes through
+  // release(): crossing the line, the page running out before the line can be
+  // reached, and keyboard focus arriving inside it.
+  const held = new Set();
+
+  function release(blocks) {
+      const landed = blocks.filter((block) => held.has(block));
       if (!landed.length) return;
 
       const bySlot = new Map();
@@ -3665,6 +3669,7 @@
           const group = bySlot.get(at);
           const steps = Math.max(...group.map(span));
           group.forEach((block) => {
+            held.delete(block);
             seen.unobserve(block);
             block.style.setProperty('--arrive-lead', '0ms');
             block.style.setProperty('--arrive-at', String(cursor));
@@ -3673,6 +3678,11 @@
           });
           cursor += steps;
         });
+  }
+
+  const seen = new IntersectionObserver(
+    (entries) => {
+      release(entries.filter((e) => e.isIntersecting).map((e) => e.target));
     },
     { rootMargin: '0px 0px ' + -Math.round((1 - REVEAL_LINE) * 100) + '% 0px' }
   );
@@ -3686,6 +3696,37 @@
       return;
     }
     block.classList.add('is-held');
+    held.add(block);
     seen.observe(block);
+  });
+
+  // The line is unreachable at the end of a page. A block whose top sits below
+  // it when the page can scroll no further would wait for a scroll that never
+  // comes: on a 1920x1080 screen the footer's bar stopped at 993 against a
+  // line at 972, and on 1440x900 at 813 against 810, so the byline, the tip jar
+  // and back to top were never shown at all. At the end of the page, whatever
+  // is on screen has been reached.
+  let endFrame = 0;
+  function atEnd() {
+    endFrame = 0;
+    if (!held.size) return;
+    const doc = document.documentElement;
+    if (window.scrollY + window.innerHeight < doc.scrollHeight - 2) return;
+    release(Array.from(held).filter(
+      (block) => block.getBoundingClientRect().top < window.innerHeight
+    ));
+  }
+  const checkEnd = () => {
+    if (!endFrame) endFrame = requestAnimationFrame(atEnd);
+  };
+  window.addEventListener('scroll', checkEnd, { passive: true });
+  window.addEventListener('resize', checkEnd);
+  checkEnd();
+
+  // And focus outranks the line: Tab reaches the footer's links long before a
+  // reader has scrolled them up past it, and a focused link must be seen.
+  document.addEventListener('focusin', (event) => {
+    const block = event.target.closest && event.target.closest('[data-reveal]');
+    if (block && held.has(block)) release([block]);
   });
 })();
