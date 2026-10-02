@@ -20,7 +20,7 @@ Two readers in equal measure, and neither outranks the other.
 
 ## Product Purpose
 
-A working collection of interface components, made by hand and returned to:
+A working collection of interface components, returned to and reworked:
 one component per study, built in Figma and code, each folder standing on its
 own. The collection is never finished; a study is reworked when there is
 something better to do with it, and the set grows a study at a time.

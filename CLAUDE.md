@@ -1436,7 +1436,7 @@ do not move instead, Exploring, Stack and Each study, and not moving was all
 they had going for them: one repeated the headline, one only made sense to
 someone who had read these rules, and the stack stopped being the whole story
 once studies began getting React adapters. So below the rule is the lede and
-nothing else, broken by hand at its comma, since a fixed-size image has no
+nothing else, broken by hand at its colon, since a fixed-size image has no
 width to reflow into. The domain is not on it either: every unfurl prints it
 under the card already.
 
