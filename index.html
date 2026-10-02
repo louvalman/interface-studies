@@ -229,6 +229,16 @@
       </a>
       </div>
       </div>
+      <!-- The site mark's field drawn as a line: the dots of the mark in a row
+         across the page, sized along a wave, with the accent peak drifting
+         slowly through it while the rail does. It is the masthead's edge — it
+         sits in the gap that used to separate the masthead from the rail —
+         and the one place on the page the mark is more than 24px. index.js
+         draws the dots to the width; decoration, so hidden from a reader. -->
+      <div class="head__rule" aria-hidden="true" data-head-rule data-reveal>
+        <svg class="head__rule-base"></svg>
+        <svg class="head__rule-peak"></svg>
+      </div>
     </header>
 
     <section class="rail" id="studies" tabindex="-1">

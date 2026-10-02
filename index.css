@@ -561,7 +561,61 @@ body.is-locked {
    read as one of the rail's controls and the top felt cramped where it
    should have ended. */
 .head {
-  padding: var(--bar-top) var(--gutter) clamp(2.25rem, 3.8vw, 3.5rem);
+  /* The bottom of the masthead's spacing is shared with the rule below: the
+     gap to the rail was 56px at 1470, and the rule takes its middle — 22, 12,
+     22 — so the page is no taller for it. */
+  padding: var(--bar-top) var(--gutter) clamp(1rem, 1.5vw, 1.375rem);
+}
+
+/* --- the field rule ------------------------------------------------------ */
+
+/* The mark's dots in a row, gutter to gutter: an ink base whose sizes follow
+   a slow wave, and an accent layer of slightly larger dots shown only through
+   a soft window that drifts along it — the raster pulse's travelling peak,
+   drawn as a line. One animated property on one small element. The window
+   rests while the rail does, and does not move at all under reduced motion. */
+.head__rule {
+  position: relative;
+  height: 0.75rem;
+  margin-top: clamp(1rem, 1.5vw, 1.375rem);
+}
+
+.head__rule svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.head__rule-base { color: var(--ink); }
+
+.head__rule-peak {
+  color: var(--accent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 40%, #000 60%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 40%, #000 60%, transparent);
+  -webkit-mask-size: 14% 100%;
+  mask-size: 14% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: 62% 0;
+  mask-position: 62% 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .head__rule-peak {
+    animation: rule-drift 22s ease-in-out infinite alternate;
+    animation-play-state: paused;
+  }
+
+  :root:has(.rail__track.is-drifting) .head__rule-peak {
+    animation-play-state: running;
+  }
+}
+
+@keyframes rule-drift {
+  from { -webkit-mask-position: 0% 0; mask-position: 0% 0; }
+  to   { -webkit-mask-position: 100% 0; mask-position: 100% 0; }
 }
 
 .head__eyebrow {
@@ -3232,6 +3286,7 @@ body.is-locked {
   .head__title { --arrive-at: 0; }
   .head__lede { --arrive-at: 1; }
   .head__figma { --arrive-at: 2; }
+  .head__rule { --arrive-at: 3; }
   .rail__head { --arrive-at: 3; }
   .rail__track { --arrive-at: 4; }
 

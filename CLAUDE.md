@@ -1099,6 +1099,20 @@ runs on under it. Where the window is too narrow for two cards and a lede,
 below about 1100px, the lede keeps 24rem and the headline's column gives way,
 so the band holds without the card edge.
 
+**The masthead ends on the field rule.** The site mark is a field of dots,
+sized by their distance from a centre, the raster pulse read as a still; it
+was the one motif native to the site, and it appeared twice at 24px. Under the
+masthead it is drawn as a line now: the mark's dots across the content width,
+14px apart, sized along a slow wave, with the accent peak drifting through
+them while the rail drifts. It takes the middle of the gap that separated the
+masthead from the rail — 22px, a 12px rule, 22px — so the page is no taller,
+and the first card's title is where it was. The peak is an accent copy of the
+row shown through a soft mask window, one animated `mask-position` on one small
+element; it pauses whenever the rail is not drifting, and under reduced motion
+it rests. index.js draws the dots to the width and redraws on a resize. A 9x9
+field beside the headline was mocked and set aside: it read as a logo lockup,
+repeated the mark just above it, and moved the headline off the card columns.
+
 **Its spacing is one scale, smallest inside and largest at the edge**: 20px
 from the lede to its button, 40px from the mark's line to the headline, 56px
 from the masthead to the rail. It was the other way round, 47px above the
