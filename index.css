@@ -507,6 +507,35 @@ body.is-locked {
   to { opacity: 0; transform: scale(3); }
 }
 
+/* --- skip link -------------------------------------------------------- */
+
+/* Off screen until Tab reaches it, then a filled pill in the corner, in the
+   inverted pair the page uses for "this is what is on". */
+.skip {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 60;
+  padding: 0.6rem 1rem;
+  border-radius: 999px;
+  background: var(--on-ink-bg);
+  color: var(--on-ink-fg);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  translate: 0 -200%;
+}
+
+.skip:focus-visible {
+  translate: none;
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* The skip link's target. It takes focus so the next Tab starts in the rail,
+   and draws no ring of its own: the ring belongs to what is tabbed to next. */
+.rail:focus { outline: none; }
+
 /* --- masthead --------------------------------------------------------- */
 
 /* A band across the top of the page: the mark on the controls' line, then
@@ -2228,7 +2257,10 @@ body.is-locked {
   width: 0.4rem;
   height: 0.4rem;
   border-radius: 50%;
-  background: var(--hairline-strong);
+  /* --muted, not a hairline: a dot is a control, and a control's mark owes
+     3:1 against what it sits on. The hairline was about 1.6:1 in light and
+     2.2:1 in dark on the panel. */
+  background: var(--muted);
   transition:
     background 240ms var(--ease),
     transform 240ms var(--ease);
@@ -2236,8 +2268,11 @@ body.is-locked {
 
 .lightbox__dot:hover::after { background: var(--ink-soft); }
 
-/* No accent here — the marker above supplies it as it passes over. */
-.lightbox__dot[aria-current="true"]::after { background: var(--hairline-strong); }
+/* The current dot in the ink, so it is the current one even while the
+   marker is travelling to the next: it used to share the others' hairline,
+   and mid-travel only the label said which variant was showing. No accent —
+   the marker supplies that as it passes over. */
+.lightbox__dot[aria-current="true"]::after { background: var(--ink); }
 
 .lightbox__dot:focus-visible {
   outline: 2px solid var(--ink);

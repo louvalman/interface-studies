@@ -158,6 +158,7 @@
       'foot.coffee': 'Giv en kop kaffe',
       'foot.backToTop': 'Til toppen',
       'a11y.figmaProfile': 'Figma-profil',
+      'a11y.skip': 'Spring til studierne',
       'a11y.elsewhere': 'Andre steder',
       'a11y.carousel': 'Karrusel',
       'a11y.previous': 'Forrige',
@@ -1782,6 +1783,21 @@
     syncSoon();
   }
 
+  // A card Tab lands on is brought fully into view. The browser's own focus
+  // scroll is "if needed", and a card with a sliver on screen does not count
+  // as needing it: at 1920 Tab stopped on a card at x=1918 with 2px of it
+  // showing. Measured against the read mark on the left, since the gutter is
+  // masked there, and the track's own edge on the right.
+  function bringIntoView(target) {
+    const piece = target.closest && target.closest('.piece');
+    if (!piece || listed()) return;
+    const tr = track.getBoundingClientRect();
+    const r = piece.getBoundingClientRect();
+    const inset = sized().inset;
+    if (r.left >= tr.left + inset - 1 && r.right <= tr.right + 1) return;
+    stepTo(Math.max(0, Math.min(maxScroll(), piece.offsetLeft - inset)));
+  }
+
   function keyRelease() {
     if (!keyed) return;
     keyed = false;
@@ -2509,7 +2525,7 @@
     let keyboard = true;
     try { keyboard = event.target.matches(':focus-visible'); }
     catch (err) { /* older engine: treat focus as deliberate */ }
-    if (keyboard) { driftStop(); keyHold(event.target); }
+    if (keyboard) { driftStop(); keyHold(event.target); bringIntoView(event.target); }
     else driftHold();
   });
 

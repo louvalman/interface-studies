@@ -77,6 +77,9 @@
     </script>
   </head>
   <body>
+    <!-- Ten tab stops sit before the first card: the language, the theme,
+       the Figma button and the rail's own head. The first one skips them. -->
+    <a class="skip" href="#studies" data-i18n="a11y.skip">Skip to the studies</a>
     <!-- The page's two controls, in one cluster at the top-right corner.
 
        Language: every translatable string in this file carries a data-i18n
@@ -130,6 +133,9 @@
       </button>
     </div>
 
+    <!-- The masthead and the rail are the page's content; the controls above
+       and the footer below are not. -->
+    <main id="main">
     <header class="head" id="top">
       <!-- The site mark, on the controls' own line: the page's bar, with the
          name at the left and the settings in the corner. It sat above the
@@ -225,7 +231,7 @@
       </div>
     </header>
 
-    <section class="rail">
+    <section class="rail" id="studies" tabindex="-1">
       <!-- One line: the count and the type filter on the left, the carousel
          controls and the view switch on the right. On a phone it is two rows
          of the same four things - see index.css. -->
@@ -238,6 +244,31 @@
           <span class="rail__count-one" data-i18n="rail.study">study</span>
           <span class="rail__count-many" data-i18n="rail.studies">studies</span>
         </p>
+      <!-- Before the carousel controls in the markup, as it is on screen: Tab
+         followed the markup across the head right, then left, then right again
+         while the grid placed the filter beside the count. -->
+      <!-- Type filter: one small control rather than a row of chips. The
+         chips were a menu's worth of pills in the one line that introduces
+         the rail, and they read as the page's navigation. This is the icon
+         and the current choice, over a native select, so the phone's own
+         picker, the keyboard and a screen reader all come with it.
+
+         The options are written by index.js from the types the cards actually
+         declare, so a study of a new type needs nothing added here. It reads
+         the same `type.*` key the card's badge carries — the type is stated
+         once per card and this is not a second place to state it. -->
+      <label class="rail__filter" data-rail-filter hidden>
+        <svg class="rail__filter-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true" focusable="false">
+          <path d="M2 4h12M4.5 8h7M7 12h2" stroke-linecap="round" />
+        </svg>
+        <span class="rail__filter-value" data-rail-filter-value aria-hidden="true"></span>
+        <select
+          class="rail__filter-select"
+          data-rail-filter-select
+          data-i18n-aria="a11y.filter"
+          aria-label="Filter by type"></select>
+      </label>
+
         <nav
           class="rail__nav"
           data-i18n-aria="a11y.carousel"
@@ -313,28 +344,6 @@
             </svg>
           </button>
         </nav>
-
-      <!-- Type filter: one small control rather than a row of chips. The
-         chips were a menu's worth of pills in the one line that introduces
-         the rail, and they read as the page's navigation. This is the icon
-         and the current choice, over a native select, so the phone's own
-         picker, the keyboard and a screen reader all come with it.
-
-         The options are written by index.js from the types the cards actually
-         declare, so a study of a new type needs nothing added here. It reads
-         the same `type.*` key the card's badge carries — the type is stated
-         once per card and this is not a second place to state it. -->
-      <label class="rail__filter" data-rail-filter hidden>
-        <svg class="rail__filter-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true" focusable="false">
-          <path d="M2 4h12M4.5 8h7M7 12h2" stroke-linecap="round" />
-        </svg>
-        <span class="rail__filter-value" data-rail-filter-value aria-hidden="true"></span>
-        <select
-          class="rail__filter-select"
-          data-rail-filter-select
-          data-i18n-aria="a11y.filter"
-          aria-label="Filter by type"></select>
-      </label>
 
       <!-- Rail or list. Its own grid area, rightmost, so hiding the carousel
          controls in the list does not move the switch out from under the
@@ -1210,6 +1219,8 @@
 
       <div class="rail__progress" data-rail-progress data-reveal></div>
     </section>
+
+    </main>
 
     <footer class="foot">
       <!-- The page closes on the shape it opened with: a statement on the left,

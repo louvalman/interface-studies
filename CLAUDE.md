@@ -1277,7 +1277,12 @@ puts the loop back without moving anything on screen. Keyboard only, because
 keyboard focus has already stopped the drift for good, and a drifting rail
 needs the recycle. Checked by focusing every card in file order on a rotated
 rail, both ways — not with real Tab presses, which a hidden automation tab
-does not receive.
+does not receive. Later checked with real Tab presses in a rendering headless
+browser: 01 to 08 in order at 1920 and 1470, and out to the footer after the
+last. A card Tab lands on is also brought fully into view (`bringIntoView`):
+the browser's own focus scroll is "if needed", and a card with a sliver
+showing does not count, so at 1920 Tab stopped on a card with 2px of it on
+screen.
 
 The pointer path still steps itself, through `stepTo`, and keeps the old
 arithmetic. There is nothing native to defer to there: the drag is scripted from
@@ -1324,6 +1329,12 @@ for a panel that still has to scroll. Measured in a rendering headless
 browser with touch: 0.61 at 375x667 and 0.57 at 320x700 in Danish, 0.74 at
 390x844 with the note, every link inside the panel; 320x568 still scrolls, at
 0.43, with the links held in view.
+
+**The variant dots are controls, and are drawn as ones.** Inactive dots are
+`--muted`, 5.68:1 in light and 5.13:1 in dark on the panel; they were the
+hairline, about 1.6:1 and 2.2:1, under the 3:1 a control's mark owes. The
+current dot is the ink, so it is the current one even while the countdown
+marker is travelling to the next; it used to share the others' colour.
 
 **In landscape from 48rem, quick look sits side by side**: the preview on the
 left at the panel's full height, and the title, the variants, the note and the
@@ -1999,6 +2010,15 @@ Two rather than one for the loop's sake, not the look's: the ring needs its
 length to keep looping on a wide screen (see the ceiling above), and with one
 slot a 2560px window stopped looping and lost its drift. When a study lands,
 replace the slot whose month it was, and move the other on a month.
+
+**The page has a `<main>`, and a skip link to it.** The masthead and the rail
+are the content; the controls above and the footer below are not. Ten tab
+stops sit before the first card — the language, the theme, the Figma button
+and the rail's own head — so the first stop is "Skip to the studies", hidden
+until it is focused, which moves focus to the rail. The rail takes that focus
+without a ring of its own; the ring belongs to what is tabbed to next. In the
+rail's head the filter comes before the carousel controls in the markup, as
+it does on screen: Tab used to run right, left, then right again.
 
 The rail's head is one line — `.rail__head` — with where you are and what you
 are looking at on the left, the count and the type filter, and how to move and
