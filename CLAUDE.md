@@ -1117,22 +1117,12 @@ runs on under it. Where the window is too narrow for two cards and a lede,
 below about 1100px, the lede keeps 24rem and the headline's column gives way,
 so the band holds without the card edge.
 
-**The masthead ends on the field rule.** The site mark is a field of dots,
-sized by their distance from a centre, the raster pulse read as a still; it
-was the one motif native to the site, and it appeared twice at 24px. Under the
-masthead it is drawn as a line now: the mark's dots across the content width,
-14px apart, sized along a slow wave, with the accent peak drifting through
-them while the rail drifts. It is kept quiet — 0.8 to 2px dots at 0.12 to 0.42
-of the ink, the peak half a pixel larger at 0.85 of the accent — because it is
-the masthead's edge rather than a second thing to read; at the first sizes,
-up to 2.9px and 0.8 of the ink, it competed with the headline. It takes the middle of the gap that separated the
-masthead from the rail — 22px, a 12px rule, 22px — so the page is no taller,
-and the first card's title is where it was. The peak is an accent copy of the
-row shown through a soft mask window, one animated `mask-position` on one small
-element; it pauses whenever the rail is not drifting, and under reduced motion
-it rests. index.js draws the dots to the width and redraws on a resize. A 9x9
-field beside the headline was mocked and set aside: it read as a logo lockup,
-repeated the mark just above it, and moved the headline off the card columns.
+**The masthead had a field rule for a day, and it came out.** The site mark's
+dots drawn as a line between the masthead and the rail, sized along a wave
+with an accent peak drifting through them. Quietened once, it still did not
+work: a third thing between the lede and the cards that neither belonged to
+the masthead nor introduced the rail, and the gap it sat in was doing the
+job better empty. The masthead's bottom padding went back to what it was.
 
 **Its spacing is one scale, smallest inside and largest at the edge**: 20px
 from the lede to its button, 40px from the mark's line to the headline, 56px
@@ -1603,8 +1593,8 @@ row of mono facts, set like a fact, and read as one: the file is half of what
 the site counts as success, and a mono 13px value under the lede was where the
 eye went last. So it is filled, in the accent, which on this page means "this
 leaves the site", 44px tall on every pointer, beside the lede where the band
-puts it above the fold at every width. `--on-accent` is its text, 5.37:1 on
-the light fill and 7.86 on the dark, and `--accent-hover` its hover.
+puts it above the fold at every width. `--on-accent` is its text, 5.00:1 on
+the light fill and 7.23 on the dark, and `--accent-hover` its hover.
 
 **The Figma mark is beside it now.** It was kept out of the meta row because a
 brand glyph would have made one fact a different kind of object from the facts
@@ -2178,36 +2168,40 @@ it changes, so the language switch and the pause buttons' state labels carry
 it with them and there is no second string to keep in step. A control that
 shows its words — the filter, EN/DA, quick look's chip on hover — needs none.
 
-### The accent is French blue, and it is used sparingly
+### The accent is vermilion, and it is used sparingly
 
-`--accent` is `#495bd6` in light and `#8ea5fe` in dark, a blue turned toward
-violet. It was a burnt orange, `#ac512d`, which on the flat page read as brown,
-and the reason is worth knowing before choosing another: the accent is text
-("Open study", quick look's links) as well as the Figma button's fill, so in
-light it has to clear 4.5:1 on near-white, which caps its lightness. Under that
-cap an orange, an ochre or a yellow-green can reach about half the chroma a
-blue or a violet can — measured at 5:1 on the page, 0.11 to 0.14 against 0.25 —
-so a warm accent here is a dull one by construction. A warm and bright accent
-needs two tokens, a bright fill with dark text and a darker shade for text, and
-the text shade is the brown again.
+`--accent` is `#c43d16` in light and `#f2845e` in dark. It was a burnt orange,
+`#ac512d`, which on the flat page read as brown, and the reason is worth
+knowing before choosing another: the accent is text ("Open study", quick
+look's links) as well as the Figma button's fill, so in light it has to clear
+4.5:1 on near-white, which caps its lightness. Under that cap an orange, an
+ochre or a yellow-green can reach about half the chroma a blue or a violet can
+— measured at 5:1 on the page, 0.11 to 0.14 against 0.25 — so a warm accent
+here starts duller than a cool one. Vermilion is the way out of that inside
+one token: pushed toward red, where a warm hue keeps the most colour at that
+lightness, and as light as the floor allows. A blue was tried, French blue
+`#495bd6`, and was on the page for a day; the warmth was the site's, and the
+blue made it read as someone else's.
 
-The hue was also chosen against the rail: the studies carry acid green, petrol,
-brick red, pink and an instrument green, and no study is blue, so the page's
-colour is not one of the work's. The numbers: 5.46:1 on the page, 5.00 on the
-well, 5.60 on `--surface`, and `--on-accent` 5.37 on the fill; in dark 7.93 on
-the page, 7.37 on the panel, and 7.86 for the button's text.
+What it costs: the bento's tiles carry a brick red, and the accent is in the
+same family, so the page's colour sits nearer one study's than it would in
+blue. A brighter warm accent than this needs two tokens, a bright fill with
+dark text and a darker shade for text, and the text shade is the brown again.
+
+The numbers: 5.09:1 on the page, 4.66 on the well, 5.22 on `--surface`, and
+`--on-accent` 5.00 on the fill; in dark 7.29 on the page, 6.77 on the panel,
+and 7.23 for the button's text. Nothing sets accent text on the well.
 
 It means "this is the way on" — the Figma button, links, the focus ring, the
-mark's core and the field rule's peak — and it has one job of its own: the
-rail's progress fill, the one line of colour that runs the width of the page
-and moves with it. Hovers that only acknowledge a pointer go to the ink, not
-the accent, so the colour stays rare enough to mean something. `favicon.svg`
-and `og.html` carry their own copies of it, and so does every demo page, as
-`--demo-accent`: there it is only ever the underline under the page's links,
-never their text, 5.00:1 on the default ground and 4.49 on the liquid-glass
-toolbar's stone in light, 7.9 in dark on both. The inked plate's demo is the
-exception and keeps its acid green, which is that study's ink rather than the
-site's.
+mark's core — and it has one job of its own: the rail's progress fill, the
+one line of colour that runs the width of the page and moves with it. Hovers
+that only acknowledge a pointer go to the ink, not the accent, so the colour
+stays rare enough to mean something. `favicon.svg` and `og.html` carry their
+own copies of it, and so does every demo page, as `--demo-accent`: there it
+is only ever the underline under the page's links, never their text, 4.66:1
+on the default ground and 4.18 on the liquid-glass toolbar's stone in light,
+7.3 in dark on both. The inked plate's demo is the exception and keeps its
+acid green, which is that study's ink rather than the site's.
 
 ### The site is set in Mona Sans and Fragment Mono
 

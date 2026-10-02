@@ -20,9 +20,10 @@ Two readers in equal measure, and neither outranks the other.
 
 ## Product Purpose
 
-An open notebook of interaction and aesthetics: one component per study,
-its decisions written down, built in Figma and code, each folder standing on
-its own.
+A working collection of interface components, made by hand and returned to:
+one component per study, built in Figma and code, each folder standing on its
+own. The collection is never finished; a study is reworked when there is
+something better to do with it, and the set grows a study at a time.
 
 Success is two things, of roughly equal weight:
 
@@ -35,14 +36,19 @@ Success is two things, of roughly equal weight:
 
 ## Positioning
 
-A notebook rather than a library or a gallery. The study is the product: the
-design and the component, in code and in Figma. What a neighbouring component
-collection could not truthfully claim: each study exists as both code and a
-matching Figma page, is a folder that keeps working when copied out alone — no
-shared code, no dependencies, no build step — and writes down the decisions
-behind it (`notes.md`, rendered on its demo page). The decisions back the work
-up and show the ability to make them; they are not the product, and reading
-them is not a goal in itself.
+A working collection rather than a library or a notebook. The component is
+the product: the UI itself, its look and how it behaves, in code and in Figma.
+Unlike a library it is not a kit to install, and every piece in it is made
+to be looked at as well as used; unlike a notebook it is not about the
+writing. What a neighbouring component collection could not truthfully claim:
+each study exists as both code and a matching Figma page, and is a folder that
+keeps working when copied out alone — no shared code, no dependencies, no
+build step.
+
+Each study also writes down the decisions behind it (`notes.md`, rendered on
+its demo page). That record is a byproduct of making the component, not the
+point of it: it backs the work up and shows the ability to make the
+decisions, and reading it is not a goal in itself.
 
 ## Operating Context
 
@@ -92,9 +98,9 @@ them is not a goal in itself.
 
 ## Product Principles
 
-1. **The study is the product.** The component and its design lead every
-   surface; the decisions are there for whoever wants the why, and back the
-   work up rather than stand in front of it.
+1. **The component is the product.** The component and its design lead
+   every surface; the decisions are a byproduct, there for whoever wants the
+   why, and back the work up rather than stand in front of it.
 2. **Isolation is the promise.** Anything that makes one folder depend on
    another, or on the index, breaks the thing the site claims.
 3. **Two media, one study.** Code and Figma are equal halves; each should
