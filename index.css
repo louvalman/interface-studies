@@ -2915,6 +2915,40 @@ body.is-locked {
   .lightbox__foot { padding: 0.7rem 1rem 0.9rem; }
 }
 
+/* A phone held upright: the note gives way to the component and the
+   actions — three lines of it, the rest being the card's own note a tap
+   away — and the links are held at the panel's foot, so a panel that still
+   has to scroll never scrolls them out of reach. index.js keeps the panel
+   at full width here rather than narrowing it to the preview. */
+@media (max-width: 30rem) {
+  .lightbox__note {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    overflow: hidden;
+  }
+
+  .lightbox__foot {
+    position: sticky;
+    bottom: 0;
+    z-index: 1;
+    background: var(--surface);
+  }
+
+  /* Seven 32px touch dots and the pause want 306px, and at 375 the row has
+     303: 6px between dots wrapped it onto a second line, 40px of height the
+     preview did not get. */
+  .lightbox__dots { gap: 0.25rem; }
+}
+
+/* And on a short phone the note goes: it is the note on the card that was
+   just tapped, and here its three lines are the difference between the
+   component shown smaller than its own card and shown larger. */
+@media (max-width: 30rem) and (max-height: 45rem) {
+  .lightbox__note { display: none; }
+}
+
 /* --- touch targets ------------------------------------------------------ */
 
 /* A pointer that cannot hover is a finger, and a finger has no pixel to aim

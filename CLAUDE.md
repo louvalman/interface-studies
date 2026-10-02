@@ -1311,6 +1311,20 @@ lines. An outlined accent pill was tried for "Open study" and sat badly beside
 two text links; a filled one would have read as the Figma file's button. Every
 link keeps a 24px target whatever its size.
 
+**On a phone held upright, quick look gives the room to the component.** The
+stacked panel used to narrow itself to the scaled preview, and on a 375x667
+phone that put it on its 288px floor: the note ran seven lines, the preview
+fell to 0.43, smaller than the card that opened it, and "Open study", Figma
+and GitHub were all below the panel's edge. Below 30rem now the panel keeps
+the full width the overlay gives it, the variant dots sit 4px apart so seven
+32px dots and the pause fit one row (6px wrapped them, 3px over), the note is
+three lines, and on a phone under 45rem tall it is not shown at all — it is
+the note on the card just tapped. The links stay at the panel's foot, sticky,
+for a panel that still has to scroll. Measured in a rendering headless
+browser with touch: 0.61 at 375x667 and 0.57 at 320x700 in Danish, 0.74 at
+390x844 with the note, every link inside the panel; 320x568 still scrolls, at
+0.43, with the links held in view.
+
 **In landscape from 48rem, quick look sits side by side**: the preview on the
 left at the panel's full height, and the title, the variants, the note and the
 links in a 20rem column beside it. Stacked, the bar above and the footer below

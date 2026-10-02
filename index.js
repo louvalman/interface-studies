@@ -2980,6 +2980,12 @@
     // scale is worked out from the room the overlay has, less that column —
     // not measured off a stage whose size would be the answer.
     const sideBySide = window.matchMedia('(min-width: 48rem) and (orientation: landscape)');
+    // A phone held upright. The panel keeps the full width the overlay gives
+    // it there rather than narrowing to the scaled preview: narrowed to its
+    // 288px floor at 375x667, a long note took the height, the preview fell to
+    // 0.43 — smaller than the card that opened it — and "Open study", Figma
+    // and GitHub were all below the panel's edge.
+    const narrow = window.matchMedia('(max-width: 30rem)');
     const bar = box.querySelector('.lightbox__bar');
 
     function fitStage() {
@@ -3006,6 +3012,17 @@
 
       // Measure against the panel's natural width first.
       panel.style.width = '';
+
+      if (narrow.matches) {
+        lightboxScale = Math.max(0, Math.min(
+          stage.clientWidth / previewW,
+          stage.clientHeight / previewH,
+          1
+        ));
+        box.style.setProperty('--lightbox-scale', lightboxScale.toFixed(4));
+        tellScale(frame, lightboxScale);
+        return;
+      }
 
       // Whatever width the overlay actually has to give — the floor can never
       // exceed it, or the panel would push past the viewport it is centred in.
