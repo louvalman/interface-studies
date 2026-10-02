@@ -2202,7 +2202,12 @@ mark's core and the field rule's peak — and it has one job of its own: the
 rail's progress fill, the one line of colour that runs the width of the page
 and moves with it. Hovers that only acknowledge a pointer go to the ink, not
 the accent, so the colour stays rare enough to mean something. `favicon.svg`
-and `og.html` carry their own copies of it.
+and `og.html` carry their own copies of it, and so does every demo page, as
+`--demo-accent`: there it is only ever the underline under the page's links,
+never their text, 5.00:1 on the default ground and 4.49 on the liquid-glass
+toolbar's stone in light, 7.9 in dark on both. The inked plate's demo is the
+exception and keeps its acid green, which is that study's ink rather than the
+site's.
 
 ### The site is set in Mona Sans and Fragment Mono
 
