@@ -895,7 +895,7 @@ light page moved rather than the well, which is pinned to every folder's
 frames read as recesses in it. `--surface` went to `#ffffff` to stay above the
 page, and `--chip-bg` in light became a recess too, a 4.5% ink tint, because
 paper-white at 0.72 on a flat page is no fill at all. Every text token clears
-the floor by more than it did: `--muted` 5.78 on the page, the accent 5.16.
+the floor by more than it did: `--muted` 5.78 on the page.
 
 If a ground ever wants texture or light again, the wash is the part to argue
 for, and it brings the banding back with it: dither that with noise at one
@@ -1122,7 +1122,10 @@ sized by their distance from a centre, the raster pulse read as a still; it
 was the one motif native to the site, and it appeared twice at 24px. Under the
 masthead it is drawn as a line now: the mark's dots across the content width,
 14px apart, sized along a slow wave, with the accent peak drifting through
-them while the rail drifts. It takes the middle of the gap that separated the
+them while the rail drifts. It is kept quiet — 0.8 to 2px dots at 0.12 to 0.42
+of the ink, the peak half a pixel larger at 0.85 of the accent — because it is
+the masthead's edge rather than a second thing to read; at the first sizes,
+up to 2.9px and 0.8 of the ink, it competed with the headline. It takes the middle of the gap that separated the
 masthead from the rail — 22px, a 12px rule, 22px — so the page is no taller,
 and the first card's title is where it was. The peak is an accent copy of the
 row shown through a soft mask window, one animated `mask-position` on one small
@@ -1600,8 +1603,8 @@ row of mono facts, set like a fact, and read as one: the file is half of what
 the site counts as success, and a mono 13px value under the lede was where the
 eye went last. So it is filled, in the accent, which on this page means "this
 leaves the site", 44px tall on every pointer, beside the lede where the band
-puts it above the fold at every width. `--on-accent` is its text, 5.07:1 on
-the light fill and 6.66 on the dark, and `--accent-hover` its hover.
+puts it above the fold at every width. `--on-accent` is its text, 5.37:1 on
+the light fill and 7.86 on the dark, and `--accent-hover` its hover.
 
 **The Figma mark is beside it now.** It was kept out of the meta row because a
 brand glyph would have made one fact a different kind of object from the facts
@@ -2174,6 +2177,32 @@ and quick look's close and pause. The tooltip is the button's own
 it changes, so the language switch and the pause buttons' state labels carry
 it with them and there is no second string to keep in step. A control that
 shows its words — the filter, EN/DA, quick look's chip on hover — needs none.
+
+### The accent is French blue, and it is used sparingly
+
+`--accent` is `#495bd6` in light and `#8ea5fe` in dark, a blue turned toward
+violet. It was a burnt orange, `#ac512d`, which on the flat page read as brown,
+and the reason is worth knowing before choosing another: the accent is text
+("Open study", quick look's links) as well as the Figma button's fill, so in
+light it has to clear 4.5:1 on near-white, which caps its lightness. Under that
+cap an orange, an ochre or a yellow-green can reach about half the chroma a
+blue or a violet can — measured at 5:1 on the page, 0.11 to 0.14 against 0.25 —
+so a warm accent here is a dull one by construction. A warm and bright accent
+needs two tokens, a bright fill with dark text and a darker shade for text, and
+the text shade is the brown again.
+
+The hue was also chosen against the rail: the studies carry acid green, petrol,
+brick red, pink and an instrument green, and no study is blue, so the page's
+colour is not one of the work's. The numbers: 5.46:1 on the page, 5.00 on the
+well, 5.60 on `--surface`, and `--on-accent` 5.37 on the fill; in dark 7.93 on
+the page, 7.37 on the panel, and 7.86 for the button's text.
+
+It means "this is the way on" — the Figma button, links, the focus ring, the
+mark's core and the field rule's peak — and it has one job of its own: the
+rail's progress fill, the one line of colour that runs the width of the page
+and moves with it. Hovers that only acknowledge a pointer go to the ink, not
+the accent, so the colour stays rare enough to mean something. `favicon.svg`
+and `og.html` carry their own copies of it.
 
 ### The site is set in Mona Sans and Fragment Mono
 

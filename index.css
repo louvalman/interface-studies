@@ -50,11 +50,17 @@
   --note: #61625f;
   --hairline: rgba(23, 24, 26, 0.1);
   --hairline-strong: rgba(23, 24, 26, 0.22);
-  --accent: #ac512d;
-  /* The masthead's Figma button: text on the accent fill, 5.07:1, and the
-     fill a step darker on hover, 6.09. */
+  /* French blue: a blue turned toward violet, the warm side of blue. It was
+     a burnt orange, #ac512d, and on the flat page it read as brown: under the
+     lightness that small text on near-white allows, an orange can reach only
+     about half the chroma a blue can, so a warm accent here is a dull one.
+     5.46:1 on the page, 5.00 on the well, 5.60 on --surface; no study on the
+     rail is blue, so the page's own colour is not one of the work's. */
+  --accent: #495bd6;
+  /* The masthead's Figma button: text on the accent fill, 5.37:1, and the
+     fill a step darker on hover, 6.88. */
   --on-accent: #fbfaf8;
-  --accent-hover: #9a4726;
+  --accent-hover: #3b4bbd;
 
   /* The page's ground is --paper and nothing over it: no grain, no wash.
      It carried both for a while, a fractal-noise film and two corner lights,
@@ -79,7 +85,9 @@
   --on-ink-bg: var(--ink);
   --on-ink-fg: var(--paper);
 
-  --progress: var(--ink);
+  /* The rail's progress fill is the accent: the one line of colour that
+     runs the width of the page, and it moves with the rail. */
+  --progress: var(--accent);
   --scrim: rgba(23, 24, 26, 0.42);
   --shimmer: rgba(23, 24, 26, 0.05);
   --shadow-card: 0 1px 2px rgba(23, 24, 26, 0.04);
@@ -174,10 +182,11 @@
   --note: #9a9995;
   --hairline: rgba(233, 232, 228, 0.11);
   --hairline-strong: rgba(233, 232, 228, 0.26);
-  /* Lifted off #ac512d, which is a 3:1 burnt orange against this ground. */
-  --accent: #e08453;
-  --on-accent: #131417;      /* 6.66:1 on the fill */
-  --accent-hover: #e8956a;   /* 7.84 */
+  /* The same hue lifted for this ground: 7.93:1 on the page, 7.37 on the
+     panel. */
+  --accent: #8ea5fe;
+  --on-accent: #131417;      /* 7.86:1 on the fill */
+  --accent-hover: #a7b8ff;   /* 9.60 */
 
   --chip-bg: rgba(30, 32, 36, 0.72);
   /* Quick look still sits on a thumbnail, so it inverts with the page rather
@@ -190,7 +199,7 @@
   --on-ink-bg: #dedcd6;
   --on-ink-fg: #131417;
 
-  --progress: rgba(233, 232, 228, 0.72);
+  --progress: var(--accent);
   --scrim: rgba(6, 7, 9, 0.72);
   --shimmer: rgba(233, 232, 228, 0.06);
   /* Deeper and softer than the light pair. A shadow on a dark ground does
@@ -2970,7 +2979,7 @@ body.is-locked {
 }
 
 .foot__coffee:hover,
-.foot__coffee:active { color: var(--accent); }
+.foot__coffee:active { color: var(--ink); }
 
 .foot__coffee:focus-visible {
   outline: 2px solid var(--ink);
@@ -3013,7 +3022,7 @@ body.is-locked {
   transition: color 240ms var(--ease);
 }
 
-.foot__top:hover { color: var(--accent); }
+.foot__top:hover { color: var(--ink); }
 
 .foot__top:focus-visible {
   outline: 2px solid var(--ink);

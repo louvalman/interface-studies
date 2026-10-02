@@ -3795,7 +3795,9 @@ function withParam(src, key, value) {
   // width, 14px apart, sized along a wave — redrawn when the width changes,
   // since the count of dots is the width's. Two layers of the same row: the
   // base in the ink, and the accent a little larger, shown through the
-  // drifting window index.css animates.
+  // drifting window index.css animates. Kept quiet: it is the masthead's
+  // edge, not a second headline, so the base runs 0.8-2px at 0.12-0.42 of
+  // the ink and the peak only half a pixel larger, at 0.85 of the accent.
   const rule = document.querySelector('[data-head-rule]');
   let ruleWidth = 0;
   function drawRule() {
@@ -3813,11 +3815,11 @@ function withParam(src, key, value) {
       const t = i / (n - 1);
       const wave = (Math.sin(t * Math.PI * 5 - 1.2) + 1) / 2;
       const x = (gap / 2 + i * span).toFixed(1);
-      const r = 1 + wave * 1.9;
+      const r = 0.8 + wave * 1.2;
       base += '<circle cx="' + x + '" cy="' + h / 2 + '" r="' + r.toFixed(2)
-        + '" fill="currentColor" opacity="' + (0.3 + wave * 0.5).toFixed(2) + '"/>';
-      peak += '<circle cx="' + x + '" cy="' + h / 2 + '" r="' + Math.min(r + 1.6, h / 2).toFixed(2)
-        + '" fill="currentColor"/>';
+        + '" fill="currentColor" opacity="' + (0.12 + wave * 0.3).toFixed(2) + '"/>';
+      peak += '<circle cx="' + x + '" cy="' + h / 2 + '" r="' + Math.min(r + 0.5, h / 2).toFixed(2)
+        + '" fill="currentColor" opacity="0.85"/>';
     }
     const box = '0 0 ' + w + ' ' + h;
     rule.querySelector('.head__rule-base').setAttribute('viewBox', box);
