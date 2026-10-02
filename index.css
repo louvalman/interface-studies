@@ -547,11 +547,17 @@ body.is-locked {
      It only fires where a word cannot fit a line on its own, so a title that
      hyphenates or fits is untouched. */
   overflow-wrap: break-word;
-  font-size: clamp(2rem, 4vw, 3.25rem);
+  /* A sentence, not a slogan: at the old 52px and 18ch the headline ran to
+     four lines in the band and put the first card's title under the fold of
+     a 1470x802 laptop, at y=851. At 40px it is three lines in the band's
+     two-card column, beside a lede that is taller anyway, and the title is
+     where it was, at 777. 28ch only binds below 64rem, where the headline
+     has the page's whole width. */
+  font-size: clamp(2rem, 2.8vw, 2.5rem);
   font-weight: 600;
   line-height: 1.04;
   letter-spacing: -0.03em;
-  max-width: 18ch;
+  max-width: 28ch;
   text-wrap: balance;
 }
 

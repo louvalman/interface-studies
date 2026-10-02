@@ -80,7 +80,8 @@ decisions, and reading it is not a goal in itself.
 ## Brand Commitments
 
 - Name: Interface Studies. Author byline: louval (Louis Dyrhauge).
-- Masthead line: "Exploring interaction and aesthetics."
+- Masthead line: "A working collection of components, exploring interaction
+  and aesthetics."
 - Voice: declarative and precise, reasoning stated alongside the decision,
   measured numbers over adjectives. No disclaimers arguing with charges
   nobody made.

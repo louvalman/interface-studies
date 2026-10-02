@@ -70,7 +70,8 @@ function withParam(src, key, value) {
       // where a Danish reader would break the word, and needing no
       // hyphenation dictionary, which is what `hyphens: auto` would be
       // waiting on.
-      'head.title': 'Udforskning af interaktion og æstetik.',
+      'head.title': 'En løbende samling af komponenter, der udforsker interaktion '
+        + 'og æstetik.',
       'head.lede': 'Én komponent pr. studie, bygget i Figma og kode, så lille, '
         + 'at den er til at gennemskue.',
       'head.ledeHint': 'Hold musen over et kort for at afspille det, tag et '
