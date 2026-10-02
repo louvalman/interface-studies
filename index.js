@@ -17,6 +17,8 @@
 //                         scale: n }
 //   parent -> preview   { source: 'interface-studies', type: 'preview:theme',
 //                         theme: 'light' | 'dark' }
+//   parent -> preview   { source: 'interface-studies', type: 'preview:lang',
+//                         lang: 'en' | 'da' }
 //   parent -> preview   { source: 'interface-studies', type: 'preview:pause',
 //                         paused: bool, reason: 'gesture'|'offscreen'|'drift'|'' }
 //   preview -> parent   { source: 'interface-studies', type: 'preview:ready',
@@ -34,6 +36,18 @@
 //
 // A preview that ignores all of it still renders correctly; it just doesn't
 // move, and quick look shows it without dots.
+
+// A preview's src carries the page's theme and its language as query
+// parameters, and the two modules that write them run apart: each sets its
+// own and keeps the other's. The theme used to rewrite the whole query, which
+// was fine while it was the only thing in it.
+function withParam(src, key, value) {
+  const at = src.indexOf('?');
+  const path = at === -1 ? src : src.slice(0, at);
+  const params = new URLSearchParams(at === -1 ? '' : src.slice(at + 1));
+  params.set(key, value);
+  return path + '?' + params.toString();
+}
 
 // --- language ------------------------------------------------------------
 //
@@ -232,6 +246,27 @@
     syncLinks();
   });
 
+  // The previews are told too, the way the theme module tells them: on the
+  // src they are loaded with, and over the channel if they are already up.
+  // A study whose folder carries its sample copy in both languages switches
+  // it; the rest ignore the message and keep the copy they were written with.
+  function tellPreviewsLang(lang) {
+    document.querySelectorAll('[data-preview]').forEach((frame) => {
+      const src = frame.getAttribute('data-src');
+      if (src) frame.setAttribute('data-src', withParam(src, 'lang', lang));
+    });
+    document.querySelectorAll('[data-preview], [data-lightbox-frame]').forEach((frame) => {
+      const live = frame.getAttribute('src');
+      if (!live || live === 'about:blank') return;
+      try {
+        frame.contentWindow.postMessage(
+          { source: 'interface-studies', type: 'preview:lang', lang: lang },
+          '*'
+        );
+      } catch (err) { /* not loaded yet: the ready re-send catches it */ }
+    });
+  }
+
   function apply(lang) {
     const table = COPY[lang];
     current = lang;
@@ -254,6 +289,7 @@
     });
 
     document.documentElement.lang = lang;
+    tellPreviewsLang(lang);
     buttons.forEach((b) => {
       b.setAttribute('aria-pressed', b.dataset.lang === lang ? 'true' : 'false');
     });
@@ -407,7 +443,7 @@
   function tellPreviews(theme) {
     document.querySelectorAll('[data-preview]').forEach((frame) => {
       const src = frame.getAttribute('data-src');
-      if (src) frame.setAttribute('data-src', src.split('?')[0] + '?theme=' + theme);
+      if (src) frame.setAttribute('data-src', withParam(src, 'theme', theme));
     });
 
     document.querySelectorAll('[data-preview], [data-lightbox-frame]').forEach((frame) => {
@@ -503,8 +539,8 @@
 
   // Every card in the file, and the cards the rail is currently working with.
   // The filter takes cards out of the second without touching the first, so
-  // the rail renumbers and re-counts around what is left while the masthead
-  // and the footer go on stating how many studies there are.
+  // the rail re-counts around what is left while the footer goes on stating
+  // how many studies there are, and the cards keep their numbers.
   const allPieces = () => Array.from(track.querySelectorAll('[data-piece]'));
   const real = () =>
     pieces().filter(
@@ -558,8 +594,12 @@
   // something the DOM order already says, and every study added above an
   // existing one silently invalidated all the numbers below it. Run once: the
   // list is static, and sync() is on the scroll path.
+  // A card's number is its place in the whole set, newest first, and the
+  // filter does not change it: numbered from what the rail was showing, the
+  // inked plate was 04 with every type and 01 under "Card", and a catalogue
+  // number that moves is not one.
   function number() {
-    real().forEach((piece, n) => {
+    allPieces().forEach((piece, n) => {
       const out = piece.querySelector('.piece__no');
       if (out) out.textContent = pad(n + 1);
     });
@@ -779,6 +819,7 @@
     // ready message is the one moment a preview is known to be listening.
     tellScale(piece.querySelector('[data-preview]'), cardScale());
     tellTheme(piece.querySelector('[data-preview]'));
+    tellLang(piece.querySelector('[data-preview]'));
     // Including the pause, and for the same reason. A document that has just
     // announced itself is holding none of the state the index thinks it is —
     // markReady would return early on a card that is already ready and never
@@ -839,6 +880,19 @@
         : 'light';
     frame.contentWindow.postMessage(
       { source: CHANNEL, type: 'preview:theme', theme: theme },
+      '*'
+    );
+  }
+
+  // The language, re-stated at the same moment and for the same reason as the
+  // theme: a document loading when the switch happened was handed the old one
+  // on its src and missed the message. <html lang> is where the language
+  // module has already resolved the choice. A preview whose folder has not
+  // translated its sample copy ignores it.
+  function tellLang(frame) {
+    if (!frame || !frame.contentWindow) return;
+    frame.contentWindow.postMessage(
+      { source: CHANNEL, type: 'preview:lang', lang: document.documentElement.lang === 'da' ? 'da' : 'en' },
       '*'
     );
   }
@@ -1357,7 +1411,7 @@
 
     renderFilterValue();
 
-    // The rail is a different length now: renumber it, put it back at the
+    // The rail is a different length now: number it, put it back at the
     // start, rebuild the row the loop cycles through, and let sync() redo the
     // count and the progress. Filtering to a type small enough that the row no
     // longer covers the viewport takes the loop and the drift with it, which
@@ -1479,7 +1533,34 @@
       // count as the reader having taken it, for good.
       if (!listed()) driftStop();
       applyFilter();
+      writeFilterUrl();
     });
+  }
+
+  // The choice is kept in the address, ?type=card, so a narrowed rail can be
+  // linked to or bookmarked; "All" takes the parameter off. Written with
+  // replaceState, as the language and the theme are, so it is not a step in
+  // the back button's history.
+  function writeFilterUrl() {
+    try {
+      const url = new URL(location.href);
+      if (filterType === FILTER_ALL) url.searchParams.delete('type');
+      else url.searchParams.set('type', filterType);
+      history.replaceState(history.state, '', url);
+    } catch (err) { /* file:// can refuse replaceState */ }
+  }
+
+  // And read back at boot. A type no card declares is ignored rather than
+  // leaving the rail filtered down to nothing.
+  function readFilterUrl() {
+    if (!filterSelect) return;
+    const asked = new URLSearchParams(location.search).get('type');
+    if (!asked || asked === filterType) return;
+    const known = Array.from(filterSelect.options).some((o) => o.value === asked);
+    if (!known) return;
+    filterType = asked;
+    filterSelect.value = asked;
+    applyFilter();
   }
 
   // The options carry card labels, so they are rewritten with everything
@@ -3190,6 +3271,7 @@
       if (box.hidden || event.source !== frame.contentWindow) return;
       tellScale(frame, lightboxScale);
       tellTheme(frame);
+      tellLang(frame);
       buildDots(data.variants);
       playForTouch();
     });
@@ -3213,7 +3295,10 @@
     function fillFrom(piece) {
       const link = piece.querySelector('.piece__link');
       if (!link) return;
-      slugOut.textContent = text(piece.querySelector('.piece__slug'));
+      // The card's date line, as the card has it: the date and the type.
+      const typeOut = text(piece.querySelector('.piece__type'));
+      slugOut.textContent = text(piece.querySelector('.piece__slug'))
+        + (typeOut ? ' · ' + typeOut : '');
       titleOut.textContent = text(link);
       noteOut.textContent = text(piece.querySelector('[data-note]'));
       // Already carries ?lang= when the card links do.
@@ -3596,6 +3681,9 @@
   // is built from. The first recycle puts a card's worth of row to the left of
   // the newest study, which is where the rail rests.
   rebuildRing();
+  // A ?type= in the address narrows the rail once it has been built, so the
+  // filter starts from the same row a click on it would.
+  readFilterUrl();
   sync();
 
   // The head script may already have put the page in the list; this labels the

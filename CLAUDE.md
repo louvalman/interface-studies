@@ -335,8 +335,9 @@ it fails over `file://`, where each document gets an opaque origin. Edit the
 one, edit the other.
 
 The decision prose stays in the language `notes.md` was written in. It is a
-record, not page copy — the same reason component sample copy is left alone by
-the language switch. Only the labels around it (`Decisions`, `Type`,
+record, not page copy — and unlike a component's sample copy, which a study
+may carry in both languages (see **A component's sample copy can follow the
+language**), it is not translated at all. Only the labels around it (`Decisions`, `Type`,
 `Inspiration`) carry `data-i18n`.
 
 A `notes.md` that has grown past the contract's 2–5 bullets renders the bullets
@@ -420,6 +421,7 @@ position:
 { source: 'interface-studies', type: 'preview:variant', index: n }
 { source: 'interface-studies', type: 'preview:scale', scale: n }
 { source: 'interface-studies', type: 'preview:theme', theme: 'light' | 'dark' }
+{ source: 'interface-studies', type: 'preview:lang', lang: 'en' | 'da' }
 { source: 'interface-studies', type: 'preview:pause', paused: true | false,
   reason: 'gesture' | 'offscreen' | 'drift' | '' }
 
@@ -559,6 +561,12 @@ preview to make up the difference would be the thumbnail reaching into the
 component, which is the rule this whole contract keeps. A study in that
 position picks a resting variant that does not need the help — see that
 folder's `notes.md`.
+
+`preview:lang` says which language the index is in, `'en'` or `'da'`. It
+arrives as `?lang=` on the src, as this message on a switch, and again on
+`preview:ready`, for the same three reasons the theme does. A preview that has
+not translated its sample copy ignores it; one that has re-words its component
+in place — see **A component's sample copy can follow the language**.
 
 `preview:key` is the fifth, and it goes the other way — preview to index. An
 iframe is its own document: keys pressed inside it fire against that document
@@ -1467,8 +1475,26 @@ shared module, because the folder has to survive being copied out. The index
 appends `?lang=` to the link that opens a demo, and the demo's back link hands
 the choice back; `localStorage` is the secondary channel, because over `file://`
 each document gets its own opaque origin and does not share it. `_template/`
-holds the block to copy. Translate the page's own prose only — component sample
-copy and class-name hints stay as they are.
+holds the block to copy. Translate the page's own prose, and the component's
+sample copy where the study carries it in both languages — see below.
+Class-name hints stay as they are.
+
+**A component's sample copy can follow the language, and the goal is that every
+study's does.** It used to be a rule that sample copy stays as written, and a
+study written in Danish showed Danish on the English page: two reviewers took
+the inked plate's "Bølgelængder" and "Samdrift på tværs af teams." for strings
+someone forgot to translate. Now English is the markup's and a study may carry
+a Danish set beside it. The demo page marks each sample string with a
+`data-i18n` key under `sample.*` and puts the Danish in its own table, like
+the rest of its prose. The preview takes the language the way it takes the
+theme — `?lang=` on its src, `preview:lang` if the index is switched with it on
+screen, and re-stated on `preview:ready` — and re-words the component without
+redrawing it; the variant names it reports to quick look follow too. The index
+writes `theme` and `lang` into a preview's src one parameter at a time, so
+neither overwrites the other. The inked plate is the first study to do it;
+the others keep their copy as written until each is given its Danish, one
+folder at a time, and `_template/` carries both halves for a new study. The
+Figma file's copy of a study is not reached by any of this.
 
 **The applier reads and writes `innerHTML`, not `textContent`, and every
 folder's copy does.** A demo page's prose wants markup the sentence needs — a
@@ -2049,6 +2075,11 @@ its column, or on a phone the narrower of two sharing a column stretches to the
 other's width. The grid restacks with `grid-template-areas`, so nothing moves in
 the DOM.
 
+The chosen type is kept in the address as `?type=card`, written with
+`replaceState` as the language and the theme are, and read back once the rail
+has been built, so a narrowed rail can be linked to; "All" takes it off, and a
+type no card declares is ignored rather than filtering the rail to nothing.
+
 The type filter is an icon and the current choice, laid over a native
 `<select>`. The select covers the whole control and is invisible, so it is what
 is clicked, tabbed to and read out, and a phone opens its own picker; the
@@ -2138,6 +2169,11 @@ way and left them over the component the rest of the time. Moving the type to
 the bottom line beside quick look was tried, and was worse — 58% and 66% —
 because those components reach further down their frames than up them.
 
+The number is the card's place in the whole set and does not change under the
+filter — numbered from what the rail was showing, the inked plate was 04 with
+every type and 01 under "Card", which is not a catalogue number. Quick look's
+date line carries the type too, as the card's does.
+
 So the type and the number are on the card's meta line now, with the date:
 "21 SEPT 2026 · AESTHETIC", and the number at the line's far end like a
 catalogue number. Quick look is the one chip left on a thumbnail. The type's
@@ -2178,7 +2214,11 @@ functional text is held to, the chips and EN/DA among them, which are
 controls.
 
 `--muted`, the quietest text on the page, is measured against the ground it
-does worst on rather than the one it was picked on. In dark it was 4.51:1 on
+does worst on rather than the one it was picked on. In dark it is the note's tone now,
+`#9a9995`, 6.51:1 on the page and 6.05 on the quick-look panel: `#8d8c88`
+cleared the floor by computed colour at 5.52, but sampled against the rendered
+grain it was about 4.7, and 4.0 at the grain's darkest pixels — inside the
+floor's headroom rather than above it. In dark it was 4.51:1 on
 the page and 4.19 on `--surface`, the quick-look panel, so that panel's slug
 and variant name were under the floor. It is `#8d8c88` there now, 5.13 on the
 panel, and `#65645f` in light, 5.30 on `--well`. Both keep the headroom small
@@ -2384,6 +2424,13 @@ built against an original design started from no one else's interface — and it
 calls the thing an `Inspiration` line, which is what the files call it. It said
 "source" for a while, a second word for something already named, in the one
 place a reader is being sent to go and look at it.
+
+**The colophon stands on the rail's columns too.** From 64rem the facts
+start where the third card does, the edge the masthead's lede and the band's
+text share, and the list keeps its 26rem measure. Pushed to the far right it
+left about 960px empty between the columns at 1920 and lined up with nothing.
+The byline's name is not a link: the GitHub circle in the handles is the same
+profile, and two stops for one place was one too many.
 
 The meta list is four rows and each says something the others do not: what the
 page is set in, what the studies are made of, what types they cover, and how
