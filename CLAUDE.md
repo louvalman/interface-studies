@@ -2089,6 +2089,19 @@ its column, or on a phone the narrower of two sharing a column stretches to the
 other's width. The grid restacks with `grid-template-areas`, so nothing moves in
 the DOM.
 
+**And by technique.** The type is what a study is; a reader lifting one
+technique filters by what it is built with, and "CSS-only" could only be
+inferred from a missing JS mark. Each card carries `data-tech`, by hand like
+its type — `css-only`, `svg`, `webgl`, `web-audio`, `view-transitions`,
+`container-queries`, `backdrop-filter`, `tokens`, the last for a study whose
+custom properties set what it does rather than only how it looks. index.js
+writes them as a mono line under the card's note, each tag whole so a line
+breaks between tags and never inside one, and the filter offers them as a
+"Technique" group under the types, with counts, its values prefixed `tech:`.
+The labels are in index.js, English in `FILTER_EN` and Danish in the language
+table, so a new tag needs both. A technique goes in the address as
+`?tech=webgl` the way a type goes in as `?type=`; the two are exclusive.
+
 The chosen type is kept in the address as `?type=card`, written with
 `replaceState` as the language and the theme are, and read back once the rail
 has been built, so a narrowed rail can be linked to; "All" takes it off, and a
