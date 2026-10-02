@@ -54,7 +54,7 @@
          a study folder makes: a second copy, and no coupling to something that
          is free to change for its own reasons. */
       :root {
-        --paper: #f5f4f1;
+        --paper: #fdfcfa;
         --ink: #17181a;
         --ink-soft: #55565a;
         --muted: #65645f;
@@ -82,20 +82,14 @@
         -webkit-font-smoothing: antialiased;
       }
 
-      /* The masthead's own ground: the same two radials over paper, with their
-         vertical extents re-cast against 630px rather than a viewport. The
-         percentages differ from index.css for that reason — the same ellipse
-         on a much shorter box is a different ellipse. */
+      /* The masthead's own ground: paper, flat, as on the index. */
       .card {
         width: 1200px;
         height: 630px;
         padding: 80px;
         display: flex;
         flex-direction: column;
-        background:
-          radial-gradient(58% 76% at 12% 0%, rgba(180, 85, 47, 0.07), transparent 68%),
-          radial-gradient(46% 63% at 92% 4%, rgba(78, 110, 190, 0.06), transparent 70%),
-          var(--paper);
+        background: var(--paper);
       }
 
       .eyebrow {

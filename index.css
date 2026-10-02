@@ -18,8 +18,12 @@
 :root {
   color-scheme: light;
 
-  --paper: #f5f4f1;
-  --surface: #fbfaf8;
+  /* Flat, and lighter than the well, so a card frame reads as a recess in
+     the page: #f3f2ef in #fdfcfa is 3.02 OK ΔE, against dark's 3.43. The page
+     was #f5f4f1 under a grain film, 0.6 from the well, and the frame's edge
+     was the grain stopping at it rather than any step in tone. */
+  --paper: #fdfcfa;
+  --surface: #ffffff;
   /* The ground a thumbnail arrives on, and the one the card frame and its
      skeleton are painted in so the handover is not a step. It is the
      preview contract's `--preview-ground`, repeated here as a literal for
@@ -30,7 +34,7 @@
 
      It was --surface until it was measured. In dark the two are the same
      value and the handover was already seamless; in light --surface is
-     #fbfaf8 against a #f3f2ef ground, so every card lightened for the
+     lighter than the #f3f2ef ground, so every card lightened for the
      length of its skeleton and dropped 2.4 OKL the moment its preview
      landed. --surface keeps its other work — the quick-look panel, the
      rail buttons — where being the page's raised surface is the point. */
@@ -39,7 +43,7 @@
   --ink-soft: #55565a;
   /* The quietest text the page sets, so it is measured against the ground it
      does worst on rather than the one it was picked on: 5.30:1 on --well,
-     5.39 on --paper. It was #6c6b67, which cleared 4.5 by a quarter of a
+     5.78 on --paper. It was #6c6b67, which cleared 4.5 by a quarter of a
      point on the well — the headroom CLAUDE.md asks small mono type to keep,
      and this is all 11px mono. */
   --muted: #65645f;
@@ -52,51 +56,22 @@
   --on-accent: #fbfaf8;
   --accent-hover: #9a4726;
 
-  /* The page's ground: a wash of two corner lights over the base, and a grain
-     film over both. Each theme draws the same noise at the scale its ground
-     can hold, and the two differ in more than alpha.
-
-     The speckle is dark in both. On ink that is light tooth against the
-     ground and a single pixel of it is plainly visible, which is why the dark
-     tile is fine — baseFrequency 0.8, a feature about a pixel across. On
-     paper the same tile disappears: a one-pixel dark speck on an off-white
-     ground is below what the eye resolves at reading distance, so a thousand
-     of them average into a flat tint and the page reads as slightly grey
-     rather than as textured. So the paper's grain is the same drawing at
-     twice the wavelength — baseFrequency 0.4 on a 320px tile, a feature about
-     two pixels across — which survives the averaging and reads as tooth.
-     Measured, not guessed: sampled at two CSS pixels, the paper's grain
-     carries 1.72 against the ink's 2.12 at 1x, and 1.60 against 1.62 at 2x.
-
-     Alpha differs too, and the other way round from what that suggests: 0.21
-     on paper against 0.18 on ink, because a dark speck on a dark ground shows
-     more of itself than one on paper does. It was 0.26 for a day, matched to
-     the ink's amplitude measured at 1x — and on a 2x screen, where the coarse
-     tile keeps more of itself than the fine one does, that put the paper's
-     grain above the ink's. The rule is that it never exceeds it at the density
-     the reader is on, which is this.
-
-     On this side the grain is only texture. The dark theme's is also doing a
-     second job — an 8-bit wash across two thousand pixels bands on ink, and
-     fine noise dithers the rings out — and a wash on paper has nowhere near
-     that problem.
-
-     --page-base is --paper, lightened by the seven units of luminance the
-     grain takes back out of it, so the page still renders at --paper. Re-measure
-     it if the alpha above moves: the two are one setting in two places. Only
-     the body's ground reads it: everywhere else --paper means the colour the
-     page ends up, not the colour it starts from. */
-  --page-base: #fcfbf8;
-  --page-wash:
-    radial-gradient(58% 46% at 12% 0%, rgba(180, 85, 47, 0.07), transparent 68%),
-    radial-gradient(46% 38% at 92% 4%, rgba(78, 110, 190, 0.06), transparent 70%);
-  --page-grain:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.4' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='320' height='320' filter='url(%23n)' opacity='0.21'/%3E%3C/svg%3E");
+  /* The page's ground is --paper and nothing over it: no grain, no wash.
+     It carried both for a while, a fractal-noise film and two corner lights,
+     and the pair is the background half the portfolios of the moment share.
+     The index is a mount for eight studies that each bring a material of
+     their own — a plotter grid, a lit stone, a shader field, a dot raster —
+     and a textured page was a ninth, the only one that was not a study.
+     Dropping the wash also drops the reason the dark grain existed: a
+     gradient across two thousand pixels bands in 8-bit colour, and the noise
+     was dithering it. With no gradient there is nothing to band. */
 
   /* Chips. --chip-bg is the one that sits on the page (the language and theme
-     controls); --chip-over-preview-strong is quick look's, the one chip that
+     controls), and in light it is a recess like the card frames, a step
+     darker than the page — it was paper-white at 0.72, which on a flat
+     #fdfcfa page is no fill at all; --chip-over-preview-strong is quick look's, the one chip that
      sits on a thumbnail, which is why it is near-opaque. */
-  --chip-bg: rgba(251, 250, 248, 0.72);
+  --chip-bg: rgba(23, 24, 26, 0.045);
   --chip-over-preview-strong: rgba(251, 250, 248, 0.92);
 
   /* The inverted surface: the filter while it narrows the rail, and the view
@@ -181,12 +156,8 @@
      from the other end — so the ink can stay off-white without the page
      turning blue under it.
 
-     A dark ground of this size bands: the wash below is a gradient across
-     2000-odd pixels with nowhere near enough steps to draw it, and 8-bit
-     colour puts visible rings in the corner light. The grain film is what
-     fixes it — a fractal-noise tile at an alpha low enough to read as paper
-     rather than as texture, which breaks the banding by dithering it. It is
-     also, not coincidentally, what makes the surface look matte. */
+     Flat, like the light side: the matte has to come from the palette, and
+     the palette was built for it. */
   --paper: #121316;
   --surface: #191b1e;
   /* The dark rail's `--preview-ground`. Equal to --surface here, which is
@@ -195,9 +166,9 @@
   --ink: #e9e8e4;
   --ink-soft: #a4a39f;
   /* 6.05:1 on --surface, the quick-look panel, and 6.51 on the page — the
-     note's tone, so the grain under it can darken the ground and still leave
-     5.5. It was #8d8c88, 5.52 by computed colour but about 4.7 against the
-     rendered grain and 4.0 at its darkest pixels; before that #7e7d79, which
+     note's tone. It was raised to this from #8d8c88 while a grain film could
+     darken the pixels under it to 4.0; the grain has gone and the value
+     stays, as the headroom 11px mono wants. Before that #7e7d79, which
      failed on the panel at 4.19. */
   --muted: #9a9995;
   --note: #9a9995;
@@ -207,17 +178,6 @@
   --accent: #e08453;
   --on-accent: #131417;      /* 6.66:1 on the fill */
   --accent-hover: #e8956a;   /* 7.84 */
-
-  /* No compensation on this side: the dark palette was picked with the grain
-     already over it, and a dark speckle on a dark ground barely moves it. */
-  --page-base: var(--paper);
-  --page-wash:
-    radial-gradient(58% 46% at 12% 0%, rgba(224, 132, 83, 0.07), transparent 68%),
-    radial-gradient(46% 38% at 92% 4%, rgba(108, 140, 220, 0.055), transparent 70%);
-  /* Fine, and staying fine: a pixel of dark speck reads on ink, and the
-     banding this also has to dither needs the high frequencies. */
-  --page-grain:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.18'/%3E%3C/svg%3E");
 
   --chip-bg: rgba(30, 32, 36, 0.72);
   /* Quick look still sits on a thumbnail, so it inverts with the page rather
@@ -250,11 +210,7 @@ html { scroll-behavior: smooth; }
 body {
   margin: 0;
   min-height: 100vh;
-  /* Grain over wash over ground. The grain tiles at its own size; the wash
-     has no background-size of its own, so it covers. */
-  background-color: var(--page-base);
-  background-image: var(--page-grain), var(--page-wash);
-  background-attachment: fixed;
+  background: var(--paper);
   color: var(--ink);
   font-family: var(--sans);
   -webkit-font-smoothing: antialiased;
