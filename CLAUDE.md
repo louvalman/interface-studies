@@ -1072,9 +1072,10 @@ page always had room for, rather than above the headline as a label saying the
 site's name a second time. `--bar-top` is the cluster's inset and `--bar-h`
 its height, and the mark takes both, so the two centre on each other without
 either being positioned against the other. Below 23.25rem the two no longer fit
-side by side and the mark takes its own line under the cluster, which stays in
-the corner at every width for the reasons given beside that rule in
-`index.css`.
+side by side, and the name steps out of sight while the mark stays on the line
+alone; the name is still read out. It took its own line under the cluster for
+a while, 63px of a 700px phone's first screen. The cluster stays in the corner
+at every width for the reasons given beside that rule in `index.css`.
 
 **From 64rem the masthead is a band**: the headline at the left on two lines,
 and beside it the lede and the Figma button, above a full-width rail. It was a
@@ -2072,8 +2073,13 @@ mark runs by itself, so it spent three lines on what the screen showed, and
 its "tap quick look to run a card" had stopped matching what a card does.
 Measured at 390x844, the first card's title went from y=881, under the fold,
 to y=775, and to y=754 once the date moved under the title. Under 360px the
-one line does not fit — 6px over at 320 in Danish —
-and the head goes back to two rows. A narrow window with a mouse keeps the
+one line does not fit with the count in it — 6px over at 320 in Danish — so on
+a touch screen the count steps aside there, the filter's "All · 8" and the
+footer both stating it, and the head stays one line rather than two rows with
+the pause alone on the first. With the mark back on the controls' line, the
+first card's thumbnail starts at y=461 at 320x700 rather than 579; its title
+is still under the fold there, and reaching it would cost the lede or the
+Figma button. A narrow window with a mouse keeps the
 two-row head with every control, because one row wants 470px of the 342 at
 390. The gaps tighten
 there rather than the buttons shrinking: at 320 in Danish, "Studie 01 / 08" and

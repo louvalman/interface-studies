@@ -792,17 +792,21 @@ body.is-locked {
   .head__lede [data-lede-hint] { display: none; }
 }
 
-/* Under 360px the one line does not fit: at 320 in Danish the count, the
-   filter's "Alle", the pause and the switch ran the page 6px wide. The head
-   goes back to two rows there — the previous and next buttons stay gone. */
+/* Under 360px the one line does not fit with the count in it: at 320 in
+   Danish the count, the filter's "Alle", the pause and the switch ran the page
+   6px wide. It went to two rows for a while, the pause alone on the first and
+   128px of a small phone's first screen; the count steps aside instead, since
+   the filter's "All · 8" and the footer both state it, and the head stays one
+   line. */
 @media (max-width: 22.49rem) and (hover: none) {
   .rail__head {
     grid-template-columns: auto minmax(0, 1fr) auto;
     grid-template-areas:
-      "count . nav"
-      "filter . view"
+      "filter nav view"
       "cols cols cols";
   }
+
+  .rail__count { display: none; }
 }
 
 /* Rail or list: two buttons in one pill. Pressed is filled, as the filter is
@@ -3083,8 +3087,12 @@ body.is-locked {
    Mono and the cluster comes to 130px at touch size by the touch block's own
    numbers, so with the gutters and a gap they want 371px, and below that the
    name would run under EN — measured at 320, it did. A change of face moves
-   this: re-measure the mark and set the query to match. The mark takes its own line under
-   the cluster instead, with the air it had there before the two shared one.
+   this: re-measure the mark and set the query to match. Below it the name
+   steps out of sight and the mark stays on the line, alone: it took its own
+   line under the cluster for a while, 63px of a 700px phone's first screen
+   spent on a word the page's title, its footer and the tab already say. The
+   name is still read out — it is hidden from the eye, not from a screen
+   reader.
 
    The cluster itself stays in the corner at every width. Controls at the
    top right is a convention strong enough that a reader who wants one looks
@@ -3093,7 +3101,14 @@ body.is-locked {
    international one, or someone arriving to judge the work needs to know up
    front. A setting can be moved down the page; that cannot. */
 @media (max-width: 23.25rem) {
-  .head { padding-top: calc(var(--bar-top) + var(--bar-h) + 1.25rem); }
+  .head__name {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
 }
 
 @media (max-width: 40rem) {
