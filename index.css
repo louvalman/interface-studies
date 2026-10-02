@@ -507,6 +507,35 @@ body.is-locked {
   to { opacity: 0; transform: scale(3); }
 }
 
+/* --- skip link -------------------------------------------------------- */
+
+/* Off screen until Tab reaches it, then a filled pill in the corner, in the
+   inverted pair the page uses for "this is what is on". */
+.skip {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 60;
+  padding: 0.6rem 1rem;
+  border-radius: 999px;
+  background: var(--on-ink-bg);
+  color: var(--on-ink-fg);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  translate: 0 -200%;
+}
+
+.skip:focus-visible {
+  translate: none;
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* The skip link's target. It takes focus so the next Tab starts in the rail,
+   and draws no ring of its own: the ring belongs to what is tabbed to next. */
+.rail:focus { outline: none; }
+
 /* --- masthead --------------------------------------------------------- */
 
 /* A band across the top of the page: the mark on the controls' line, then
@@ -1482,11 +1511,6 @@ body.is-locked {
 }
 
 .piece__cta {
-  /* auto, not a fixed step: it takes up whatever the shorter note left over,
-     which is what lines the row up. The 0.6rem is the floor, for the card that
-     happens to be the tallest and has nothing spare. */
-  margin-top: auto;
-  padding-top: 0.6rem;
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
@@ -1601,26 +1625,32 @@ body.is-locked {
 /* Hidden in the rail: the column heads. */
 .rail__cols { display: none; }
 
-/* What a study comes in, on the rail as well as in the list: the marks sit at
-   the far end of the "Open study" line, where the card ends. They were the
-   list's alone for a while, so a card on the rail said nothing of Figma,
-   which every study has and which is half of what the site counts. Placed
-   against the body rather than laid out in it, so the call to action keeps
-   the row it lines up on across the rail. */
+/* What a study comes in, on the rail as well as in the list: the marks follow
+   the card's own "Open study" on its line, after a short hairline that says
+   they are a label of the study rather than more of the link. They sat at
+   the card's far edge for a while, and there they were 32px from the next
+   card's "Open study" and 94-182px from their own, so they read as the
+   neighbour's. */
 .piece__stack { display: none; }
 
-.piece__body { position: relative; }
+.piece__actions {
+  /* auto, not a fixed step: it takes up whatever the shorter note left over,
+     which is what lines the row up across the rail. The 0.6rem is the floor,
+     for the card that happens to be the tallest and has nothing spare. */
+  margin-top: auto;
+  padding-top: 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
 
 :root:not([data-view="list"]) .piece__stack {
-  position: absolute;
-  right: 0.125rem;
-  bottom: 0;
   display: flex;
   align-items: center;
   gap: 0.375rem;
-  height: 1.3125rem;
   margin: 0;
-  padding: 0;
+  padding: 0 0 0 0.75rem;
+  border-left: 1px solid var(--hairline-strong);
   list-style: none;
   color: var(--muted);
 }
@@ -1711,7 +1741,8 @@ body.is-locked {
 
 :root[data-view="list"] .piece__frame,
 :root[data-view="list"] .piece__body,
-:root[data-view="list"] .piece__meta { display: contents; }
+:root[data-view="list"] .piece__meta,
+:root[data-view="list"] .piece__actions { display: contents; }
 
 .js[data-view="list"] .piece__frame::after { content: none; }
 
@@ -2226,7 +2257,10 @@ body.is-locked {
   width: 0.4rem;
   height: 0.4rem;
   border-radius: 50%;
-  background: var(--hairline-strong);
+  /* --muted, not a hairline: a dot is a control, and a control's mark owes
+     3:1 against what it sits on. The hairline was about 1.6:1 in light and
+     2.2:1 in dark on the panel. */
+  background: var(--muted);
   transition:
     background 240ms var(--ease),
     transform 240ms var(--ease);
@@ -2234,8 +2268,11 @@ body.is-locked {
 
 .lightbox__dot:hover::after { background: var(--ink-soft); }
 
-/* No accent here — the marker above supplies it as it passes over. */
-.lightbox__dot[aria-current="true"]::after { background: var(--hairline-strong); }
+/* The current dot in the ink, so it is the current one even while the
+   marker is travelling to the next: it used to share the others' hairline,
+   and mid-travel only the label said which variant was showing. No accent —
+   the marker supplies that as it passes over. */
+.lightbox__dot[aria-current="true"]::after { background: var(--ink); }
 
 .lightbox__dot:focus-visible {
   outline: 2px solid var(--ink);
@@ -2493,9 +2530,11 @@ body.is-locked {
   font-weight: 600;
   line-height: 1.08;
   letter-spacing: -0.025em;
-  max-width: 16ch;
-  text-wrap: balance;
 }
+
+/* "in Figma." on a line of its own, the part of the sentence that answers
+   which half of the set this is. */
+.foot__invite-title-tail { display: block; }
 
 /* The shape of a study's page in the Figma file, drawn in the page's own
    hairlines: a row per part, its name in the mono and its boards as quiet
@@ -2579,6 +2618,16 @@ body.is-locked {
 .foot__invite-link {
   margin-top: 0.75rem;
   font-size: 1rem;
+}
+
+/* The file's own mark in front of the label, so the band's one ask reads as
+   the Figma file rather than as one more footer link — it shares its style
+   with the GitHub link below and needed something of its own that was not a
+   second filled button. */
+.foot__link-mark {
+  width: 0.95rem;
+  height: 0.95rem;
+  flex: none;
 }
 
 .foot__invite-text {
@@ -2913,6 +2962,40 @@ body.is-locked {
   .lightbox__variants { padding: 0.55rem 1rem; }
 
   .lightbox__foot { padding: 0.7rem 1rem 0.9rem; }
+}
+
+/* A phone held upright: the note gives way to the component and the
+   actions — three lines of it, the rest being the card's own note a tap
+   away — and the links are held at the panel's foot, so a panel that still
+   has to scroll never scrolls them out of reach. index.js keeps the panel
+   at full width here rather than narrowing it to the preview. */
+@media (max-width: 30rem) {
+  .lightbox__note {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    overflow: hidden;
+  }
+
+  .lightbox__foot {
+    position: sticky;
+    bottom: 0;
+    z-index: 1;
+    background: var(--surface);
+  }
+
+  /* Seven 32px touch dots and the pause want 306px, and at 375 the row has
+     303: 6px between dots wrapped it onto a second line, 40px of height the
+     preview did not get. */
+  .lightbox__dots { gap: 0.25rem; }
+}
+
+/* And on a short phone the note goes: it is the note on the card that was
+   just tapped, and here its three lines are the difference between the
+   component shown smaller than its own card and shown larger. */
+@media (max-width: 30rem) and (max-height: 45rem) {
+  .lightbox__note { display: none; }
 }
 
 /* --- touch targets ------------------------------------------------------ */

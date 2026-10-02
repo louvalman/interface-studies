@@ -77,6 +77,9 @@
     </script>
   </head>
   <body>
+    <!-- Ten tab stops sit before the first card: the language, the theme,
+       the Figma button and the rail's own head. The first one skips them. -->
+    <a class="skip" href="#studies" data-i18n="a11y.skip">Skip to the studies</a>
     <!-- The page's two controls, in one cluster at the top-right corner.
 
        Language: every translatable string in this file carries a data-i18n
@@ -130,6 +133,9 @@
       </button>
     </div>
 
+    <!-- The masthead and the rail are the page's content; the controls above
+       and the footer below are not. -->
+    <main id="main">
     <header class="head" id="top">
       <!-- The site mark, on the controls' own line: the page's bar, with the
          name at the left and the settings in the corner. It sat above the
@@ -225,7 +231,7 @@
       </div>
     </header>
 
-    <section class="rail">
+    <section class="rail" id="studies" tabindex="-1">
       <!-- One line: the count and the type filter on the left, the carousel
          controls and the view switch on the right. On a phone it is two rows
          of the same four things - see index.css. -->
@@ -238,6 +244,31 @@
           <span class="rail__count-one" data-i18n="rail.study">study</span>
           <span class="rail__count-many" data-i18n="rail.studies">studies</span>
         </p>
+      <!-- Before the carousel controls in the markup, as it is on screen: Tab
+         followed the markup across the head right, then left, then right again
+         while the grid placed the filter beside the count. -->
+      <!-- Type filter: one small control rather than a row of chips. The
+         chips were a menu's worth of pills in the one line that introduces
+         the rail, and they read as the page's navigation. This is the icon
+         and the current choice, over a native select, so the phone's own
+         picker, the keyboard and a screen reader all come with it.
+
+         The options are written by index.js from the types the cards actually
+         declare, so a study of a new type needs nothing added here. It reads
+         the same `type.*` key the card's badge carries — the type is stated
+         once per card and this is not a second place to state it. -->
+      <label class="rail__filter" data-rail-filter hidden>
+        <svg class="rail__filter-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true" focusable="false">
+          <path d="M2 4h12M4.5 8h7M7 12h2" stroke-linecap="round" />
+        </svg>
+        <span class="rail__filter-value" data-rail-filter-value aria-hidden="true"></span>
+        <select
+          class="rail__filter-select"
+          data-rail-filter-select
+          data-i18n-aria="a11y.filter"
+          aria-label="Filter by type"></select>
+      </label>
+
         <nav
           class="rail__nav"
           data-i18n-aria="a11y.carousel"
@@ -313,28 +344,6 @@
             </svg>
           </button>
         </nav>
-
-      <!-- Type filter: one small control rather than a row of chips. The
-         chips were a menu's worth of pills in the one line that introduces
-         the rail, and they read as the page's navigation. This is the icon
-         and the current choice, over a native select, so the phone's own
-         picker, the keyboard and a screen reader all come with it.
-
-         The options are written by index.js from the types the cards actually
-         declare, so a study of a new type needs nothing added here. It reads
-         the same `type.*` key the card's badge carries — the type is stated
-         once per card and this is not a second place to state it. -->
-      <label class="rail__filter" data-rail-filter hidden>
-        <svg class="rail__filter-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true" focusable="false">
-          <path d="M2 4h12M4.5 8h7M7 12h2" stroke-linecap="round" />
-        </svg>
-        <span class="rail__filter-value" data-rail-filter-value aria-hidden="true"></span>
-        <select
-          class="rail__filter-select"
-          data-rail-filter-select
-          data-i18n-aria="a11y.filter"
-          aria-label="Filter by type"></select>
-      </label>
 
       <!-- Rail or list. Its own grid area, rightmost, so hiding the carousel
          controls in the list does not move the switch out from under the
@@ -471,32 +480,34 @@
               declared band, which is what puts a guaranteed contrast ratio
               under the type.
             </p>
-            <ul
-              class="piece__stack"
-              data-i18n-aria="a11y.stack"
-              aria-label="Available in">
-              <li class="piece__code" data-code="html" title="HTML">HTML</li>
-              <li class="piece__code" data-code="css" title="CSS">CSS</li>
-              <li class="piece__code" data-code="js" title="JavaScript">JavaScript</li>
-              <li class="piece__code" data-code="react" title="React">React</li>
-              <li class="piece__code" data-code="figma" title="Figma">Figma</li>
-            </ul>
-            <span class="piece__cta" aria-hidden="true">
-              <span class="piece__cta-text" data-i18n="cta.openStudy">
-                Open study
+            <div class="piece__actions">
+              <span class="piece__cta" aria-hidden="true">
+                <span class="piece__cta-text" data-i18n="cta.openStudy">
+                  Open study
+                </span>
+                <svg
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.4"
+                  aria-hidden="true">
+                  <path
+                    d="M3 8h10M9 4l4 4-4 4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
               </span>
-              <svg
-                viewBox="0 0 16 16"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.4"
-                aria-hidden="true">
-                <path
-                  d="M3 8h10M9 4l4 4-4 4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round" />
-              </svg>
-            </span>
+              <ul
+                class="piece__stack"
+                data-i18n-aria="a11y.stack"
+                aria-label="Available in">
+                <li class="piece__code" data-code="html" title="HTML">HTML</li>
+                <li class="piece__code" data-code="css" title="CSS">CSS</li>
+                <li class="piece__code" data-code="js" title="JavaScript">JavaScript</li>
+                <li class="piece__code" data-code="react" title="React">React</li>
+                <li class="piece__code" data-code="figma" title="Figma">Figma</li>
+              </ul>
+            </div>
           </div>
           <button
             class="piece__expand"
@@ -562,31 +573,33 @@
               those numbers rather than played from files, the reverb
               included. It ships silent, and draws everything it says.
             </p>
-            <ul
-              class="piece__stack"
-              data-i18n-aria="a11y.stack"
-              aria-label="Available in">
-              <li class="piece__code" data-code="html" title="HTML">HTML</li>
-              <li class="piece__code" data-code="css" title="CSS">CSS</li>
-              <li class="piece__code" data-code="js" title="JavaScript">JavaScript</li>
-              <li class="piece__code" data-code="figma" title="Figma">Figma</li>
-            </ul>
-            <span class="piece__cta" aria-hidden="true">
-              <span class="piece__cta-text" data-i18n="cta.openStudy">
-                Open study
+            <div class="piece__actions">
+              <span class="piece__cta" aria-hidden="true">
+                <span class="piece__cta-text" data-i18n="cta.openStudy">
+                  Open study
+                </span>
+                <svg
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.4"
+                  aria-hidden="true">
+                  <path
+                    d="M3 8h10M9 4l4 4-4 4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
               </span>
-              <svg
-                viewBox="0 0 16 16"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.4"
-                aria-hidden="true">
-                <path
-                  d="M3 8h10M9 4l4 4-4 4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round" />
-              </svg>
-            </span>
+              <ul
+                class="piece__stack"
+                data-i18n-aria="a11y.stack"
+                aria-label="Available in">
+                <li class="piece__code" data-code="html" title="HTML">HTML</li>
+                <li class="piece__code" data-code="css" title="CSS">CSS</li>
+                <li class="piece__code" data-code="js" title="JavaScript">JavaScript</li>
+                <li class="piece__code" data-code="figma" title="Figma">Figma</li>
+              </ul>
+            </div>
           </div>
           <button
             class="piece__expand"
@@ -652,31 +665,33 @@
               for the slot it lands in rather than for the modifier it was
               given, and opening one re-packs the board around it.
             </p>
-            <ul
-              class="piece__stack"
-              data-i18n-aria="a11y.stack"
-              aria-label="Available in">
-              <li class="piece__code" data-code="html" title="HTML">HTML</li>
-              <li class="piece__code" data-code="css" title="CSS">CSS</li>
-              <li class="piece__code" data-code="js" title="JavaScript">JavaScript</li>
-              <li class="piece__code" data-code="figma" title="Figma">Figma</li>
-            </ul>
-            <span class="piece__cta" aria-hidden="true">
-              <span class="piece__cta-text" data-i18n="cta.openStudy">
-                Open study
+            <div class="piece__actions">
+              <span class="piece__cta" aria-hidden="true">
+                <span class="piece__cta-text" data-i18n="cta.openStudy">
+                  Open study
+                </span>
+                <svg
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.4"
+                  aria-hidden="true">
+                  <path
+                    d="M3 8h10M9 4l4 4-4 4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
               </span>
-              <svg
-                viewBox="0 0 16 16"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.4"
-                aria-hidden="true">
-                <path
-                  d="M3 8h10M9 4l4 4-4 4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round" />
-              </svg>
-            </span>
+              <ul
+                class="piece__stack"
+                data-i18n-aria="a11y.stack"
+                aria-label="Available in">
+                <li class="piece__code" data-code="html" title="HTML">HTML</li>
+                <li class="piece__code" data-code="css" title="CSS">CSS</li>
+                <li class="piece__code" data-code="js" title="JavaScript">JavaScript</li>
+                <li class="piece__code" data-code="figma" title="Figma">Figma</li>
+              </ul>
+            </div>
           </div>
           <button
             class="piece__expand"
@@ -742,30 +757,32 @@
               load in pure CSS: every path declares a length of 1, so one
               keyframe pair draws all of them without measuring any.
             </p>
-            <ul
-              class="piece__stack"
-              data-i18n-aria="a11y.stack"
-              aria-label="Available in">
-              <li class="piece__code" data-code="html" title="HTML">HTML</li>
-              <li class="piece__code" data-code="css" title="CSS">CSS</li>
-              <li class="piece__code" data-code="figma" title="Figma">Figma</li>
-            </ul>
-            <span class="piece__cta" aria-hidden="true">
-              <span class="piece__cta-text" data-i18n="cta.openStudy">
-                Open study
+            <div class="piece__actions">
+              <span class="piece__cta" aria-hidden="true">
+                <span class="piece__cta-text" data-i18n="cta.openStudy">
+                  Open study
+                </span>
+                <svg
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.4"
+                  aria-hidden="true">
+                  <path
+                    d="M3 8h10M9 4l4 4-4 4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
               </span>
-              <svg
-                viewBox="0 0 16 16"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.4"
-                aria-hidden="true">
-                <path
-                  d="M3 8h10M9 4l4 4-4 4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round" />
-              </svg>
-            </span>
+              <ul
+                class="piece__stack"
+                data-i18n-aria="a11y.stack"
+                aria-label="Available in">
+                <li class="piece__code" data-code="html" title="HTML">HTML</li>
+                <li class="piece__code" data-code="css" title="CSS">CSS</li>
+                <li class="piece__code" data-code="figma" title="Figma">Figma</li>
+              </ul>
+            </div>
           </div>
           <button
             class="piece__expand"
@@ -831,30 +848,32 @@
               belongs to the pattern, which of two tones it takes, and where it
               sits in the pulse travelling through the field.
             </p>
-            <ul
-              class="piece__stack"
-              data-i18n-aria="a11y.stack"
-              aria-label="Available in">
-              <li class="piece__code" data-code="html" title="HTML">HTML</li>
-              <li class="piece__code" data-code="css" title="CSS">CSS</li>
-              <li class="piece__code" data-code="figma" title="Figma">Figma</li>
-            </ul>
-            <span class="piece__cta" aria-hidden="true">
-              <span class="piece__cta-text" data-i18n="cta.openStudy">
-                Open study
+            <div class="piece__actions">
+              <span class="piece__cta" aria-hidden="true">
+                <span class="piece__cta-text" data-i18n="cta.openStudy">
+                  Open study
+                </span>
+                <svg
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.4"
+                  aria-hidden="true">
+                  <path
+                    d="M3 8h10M9 4l4 4-4 4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
               </span>
-              <svg
-                viewBox="0 0 16 16"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.4"
-                aria-hidden="true">
-                <path
-                  d="M3 8h10M9 4l4 4-4 4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round" />
-              </svg>
-            </span>
+              <ul
+                class="piece__stack"
+                data-i18n-aria="a11y.stack"
+                aria-label="Available in">
+                <li class="piece__code" data-code="html" title="HTML">HTML</li>
+                <li class="piece__code" data-code="css" title="CSS">CSS</li>
+                <li class="piece__code" data-code="figma" title="Figma">Figma</li>
+              </ul>
+            </div>
           </div>
           <button
             class="piece__expand"
@@ -922,30 +941,32 @@
               silhouette then puts the fill inside a block of type, its treads
               landing on the same lines.
             </p>
-            <ul
-              class="piece__stack"
-              data-i18n-aria="a11y.stack"
-              aria-label="Available in">
-              <li class="piece__code" data-code="html" title="HTML">HTML</li>
-              <li class="piece__code" data-code="css" title="CSS">CSS</li>
-              <li class="piece__code" data-code="figma" title="Figma">Figma</li>
-            </ul>
-            <span class="piece__cta" aria-hidden="true">
-              <span class="piece__cta-text" data-i18n="cta.openStudy">
-                Open study
+            <div class="piece__actions">
+              <span class="piece__cta" aria-hidden="true">
+                <span class="piece__cta-text" data-i18n="cta.openStudy">
+                  Open study
+                </span>
+                <svg
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.4"
+                  aria-hidden="true">
+                  <path
+                    d="M3 8h10M9 4l4 4-4 4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
               </span>
-              <svg
-                viewBox="0 0 16 16"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.4"
-                aria-hidden="true">
-                <path
-                  d="M3 8h10M9 4l4 4-4 4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round" />
-              </svg>
-            </span>
+              <ul
+                class="piece__stack"
+                data-i18n-aria="a11y.stack"
+                aria-label="Available in">
+                <li class="piece__code" data-code="html" title="HTML">HTML</li>
+                <li class="piece__code" data-code="css" title="CSS">CSS</li>
+                <li class="piece__code" data-code="figma" title="Figma">Figma</li>
+              </ul>
+            </div>
           </div>
           <button
             class="piece__expand"
@@ -1010,30 +1031,32 @@
               the resting label up ahead of it. Takes any content; a map variant
               adds contour rings and a pulsing pin.
             </p>
-            <ul
-              class="piece__stack"
-              data-i18n-aria="a11y.stack"
-              aria-label="Available in">
-              <li class="piece__code" data-code="html" title="HTML">HTML</li>
-              <li class="piece__code" data-code="css" title="CSS">CSS</li>
-              <li class="piece__code" data-code="figma" title="Figma">Figma</li>
-            </ul>
-            <span class="piece__cta" aria-hidden="true">
-              <span class="piece__cta-text" data-i18n="cta.openStudy">
-                Open study
+            <div class="piece__actions">
+              <span class="piece__cta" aria-hidden="true">
+                <span class="piece__cta-text" data-i18n="cta.openStudy">
+                  Open study
+                </span>
+                <svg
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.4"
+                  aria-hidden="true">
+                  <path
+                    d="M3 8h10M9 4l4 4-4 4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
               </span>
-              <svg
-                viewBox="0 0 16 16"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.4"
-                aria-hidden="true">
-                <path
-                  d="M3 8h10M9 4l4 4-4 4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round" />
-              </svg>
-            </span>
+              <ul
+                class="piece__stack"
+                data-i18n-aria="a11y.stack"
+                aria-label="Available in">
+                <li class="piece__code" data-code="html" title="HTML">HTML</li>
+                <li class="piece__code" data-code="css" title="CSS">CSS</li>
+                <li class="piece__code" data-code="figma" title="Figma">Figma</li>
+              </ul>
+            </div>
           </div>
           <button
             class="piece__expand"
@@ -1100,31 +1123,33 @@
               single recipe: the selected item opens into a labelled pill,
               search into a field, the log into a panel.
             </p>
-            <ul
-              class="piece__stack"
-              data-i18n-aria="a11y.stack"
-              aria-label="Available in">
-              <li class="piece__code" data-code="html" title="HTML">HTML</li>
-              <li class="piece__code" data-code="css" title="CSS">CSS</li>
-              <li class="piece__code" data-code="js" title="JavaScript">JavaScript</li>
-              <li class="piece__code" data-code="figma" title="Figma">Figma</li>
-            </ul>
-            <span class="piece__cta" aria-hidden="true">
-              <span class="piece__cta-text" data-i18n="cta.openStudy">
-                Open study
+            <div class="piece__actions">
+              <span class="piece__cta" aria-hidden="true">
+                <span class="piece__cta-text" data-i18n="cta.openStudy">
+                  Open study
+                </span>
+                <svg
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.4"
+                  aria-hidden="true">
+                  <path
+                    d="M3 8h10M9 4l4 4-4 4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
               </span>
-              <svg
-                viewBox="0 0 16 16"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.4"
-                aria-hidden="true">
-                <path
-                  d="M3 8h10M9 4l4 4-4 4"
-                  stroke-linecap="round"
-                  stroke-linejoin="round" />
-              </svg>
-            </span>
+              <ul
+                class="piece__stack"
+                data-i18n-aria="a11y.stack"
+                aria-label="Available in">
+                <li class="piece__code" data-code="html" title="HTML">HTML</li>
+                <li class="piece__code" data-code="css" title="CSS">CSS</li>
+                <li class="piece__code" data-code="js" title="JavaScript">JavaScript</li>
+                <li class="piece__code" data-code="figma" title="Figma">Figma</li>
+              </ul>
+            </div>
           </div>
           <button
             class="piece__expand"
@@ -1195,6 +1220,8 @@
       <div class="rail__progress" data-rail-progress data-reveal></div>
     </section>
 
+    </main>
+
     <footer class="foot">
       <!-- The page closes on the shape it opened with: a statement on the left,
          and beside it the Figma file, the same button the masthead carries.
@@ -1203,8 +1230,12 @@
          end of the page is where a next step is looked for. -->
       <div class="foot__invite" data-reveal>
         <div class="foot__invite-lead">
-          <h2 class="foot__invite-title" data-i18n="foot.inviteTitle">
-            Take the set with you.
+          <!-- Two parts so the break is where the sentence turns: it does not
+             fit the drawing's width on one line, and balanced it broke after
+             "with". -->
+          <h2 class="foot__invite-title">
+            <span data-i18n="foot.inviteTitle">Take the set with you,</span>
+            <span class="foot__invite-title-tail" data-i18n="foot.inviteTitleTail">in Figma.</span>
           </h2>
           <!-- What the file holds, drawn rather than named: the shape every
              study's page in it shares, a Start here frame and then four
@@ -1256,6 +1287,10 @@
             href="https://www.figma.com/community/file/1683607518896928224/interface-studies"
             target="_blank"
             rel="noopener noreferrer">
+            <svg class="foot__link-mark" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false">
+              <path d="M8 .5H5.5a2.5 2.5 0 0 0 0 5H8zM8 5.5H5.5a2.5 2.5 0 0 0 0 5H8zM8 10.5H5.5a2.5 2.5 0 0 0 0 5H8zM8 .5h2.5a2.5 2.5 0 0 1 0 5H8z" />
+              <circle cx="10.5" cy="8" r="2.5" />
+            </svg>
             <span data-i18n="foot.getFile">Get the file on Figma Community</span>
             <svg class="foot__link-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false">
               <path d="M4 12 12 4M6 4h6v6" stroke-linecap="round" stroke-linejoin="round" />

@@ -1277,7 +1277,12 @@ puts the loop back without moving anything on screen. Keyboard only, because
 keyboard focus has already stopped the drift for good, and a drifting rail
 needs the recycle. Checked by focusing every card in file order on a rotated
 rail, both ways — not with real Tab presses, which a hidden automation tab
-does not receive.
+does not receive. Later checked with real Tab presses in a rendering headless
+browser: 01 to 08 in order at 1920 and 1470, and out to the footer after the
+last. A card Tab lands on is also brought fully into view (`bringIntoView`):
+the browser's own focus scroll is "if needed", and a card with a sliver
+showing does not count, so at 1920 Tab stopped on a card with 2px of it on
+screen.
 
 The pointer path still steps itself, through `stepTo`, and keeps the old
 arithmetic. There is nothing native to defer to there: the drag is scripted from
@@ -1310,6 +1315,26 @@ of the site and, on a narrow panel, split the Figma and GitHub pair across two
 lines. An outlined accent pill was tried for "Open study" and sat badly beside
 two text links; a filled one would have read as the Figma file's button. Every
 link keeps a 24px target whatever its size.
+
+**On a phone held upright, quick look gives the room to the component.** The
+stacked panel used to narrow itself to the scaled preview, and on a 375x667
+phone that put it on its 288px floor: the note ran seven lines, the preview
+fell to 0.43, smaller than the card that opened it, and "Open study", Figma
+and GitHub were all below the panel's edge. Below 30rem now the panel keeps
+the full width the overlay gives it, the variant dots sit 4px apart so seven
+32px dots and the pause fit one row (6px wrapped them, 3px over), the note is
+three lines, and on a phone under 45rem tall it is not shown at all — it is
+the note on the card just tapped. The links stay at the panel's foot, sticky,
+for a panel that still has to scroll. Measured in a rendering headless
+browser with touch: 0.61 at 375x667 and 0.57 at 320x700 in Danish, 0.74 at
+390x844 with the note, every link inside the panel; 320x568 still scrolls, at
+0.43, with the links held in view.
+
+**The variant dots are controls, and are drawn as ones.** Inactive dots are
+`--muted`, 5.68:1 in light and 5.13:1 in dark on the panel; they were the
+hairline, about 1.6:1 and 2.2:1, under the 3:1 a control's mark owes. The
+current dot is the ink, so it is the current one even while the countdown
+marker is travelling to the next; it used to share the others' colour.
 
 **In landscape from 48rem, quick look sits side by side**: the preview on the
 left at the panel's full height, and the title, the variants, the note and the
@@ -1526,7 +1551,7 @@ goes before the words do. The footer's mark labels a handle, which is a
 different thing, so the two are not the same use twice.
 
 **The page closes on it too, but not with the same button.** The footer opens
-on a band that mirrors the masthead's: "Take the set with you." over a drawing
+on a band that mirrors the masthead's: "Take the set with you, in Figma." over a drawing
 of what the file holds, and beside the drawing a sentence and a link, "Get
 the file on Figma Community ↗", set as the footer sets its links. Someone who
 has read down past the rail has seen the studies, and the end of a page is
@@ -1534,7 +1559,11 @@ where a next step is looked for; the footer used to end on credits, with
 nothing asked. It carried a copy of the masthead's filled button for a while,
 same pill and same words, and the pair at the top and the bottom of a short
 page read as a template rather than as an ask — so `.figma-btn` is the
-masthead's alone, and a hairline under the band hands over to the colophon.
+masthead's alone, and a hairline under the band hands over to the colophon. The link carries the
+Figma mark in front of its label, and the heading names Figma: a round-four
+review found the band's one ask had become its quietest element, set exactly
+like the GitHub link below it, under a heading that did not say which half of
+the set it meant.
 
 **And it draws what the file holds rather than only naming it.** Under the
 band's title is the shape every study's page in the file shares, built in the
@@ -1982,6 +2011,15 @@ length to keep looping on a wide screen (see the ceiling above), and with one
 slot a 2560px window stopped looping and lost its drift. When a study lands,
 replace the slot whose month it was, and move the other on a month.
 
+**The page has a `<main>`, and a skip link to it.** The masthead and the rail
+are the content; the controls above and the footer below are not. Ten tab
+stops sit before the first card — the language, the theme, the Figma button
+and the rail's own head — so the first stop is "Skip to the studies", hidden
+until it is focused, which moves focus to the rail. The rail takes that focus
+without a ring of its own; the ring belongs to what is tabbed to next. In the
+rail's head the filter comes before the carousel controls in the markup, as
+it does on screen: Tab used to run right, left, then right again.
+
 The rail's head is one line — `.rail__head` — with where you are and what you
 are looking at on the left, the count and the type filter, and how to move and
 how to see it on the right, the carousel controls and the rail/list switch. It
@@ -2231,9 +2269,13 @@ in the markup for a screen reader and the tooltip. It is what a study comes
 is inside its JS. Figma is on it for every study, after the code — every study has a page
 in the file, and code and Figma are the two halves PRODUCT.md names. It used to
 be the list's alone and to leave Figma off, so a card on the rail said nothing
-about the half of success that is the file. The rail shows the marks too, at
-the far end of the "Open study" line, positioned against the card's body so
-the call to action keeps the row it lines up on. A study that gains a `component.js` or an adapter gains the
+about the half of success that is the file. The rail shows the marks too, on
+the "Open study" line right after the link, past a short hairline that says
+they label the study rather than extend the link. They sat at the card's far
+edge first, and a reviewer measured them 32px from the next card's "Open
+study" and 94-182px from their own: they read as the neighbour's. The link and
+the marks share a `.piece__actions` row, which the list lays out of the way
+with `display: contents`. A study that gains a `component.js` or an adapter gains the
 mark on its card in the same change, the way a change of type is made in two
 places. The index cannot list a folder's files over `file://`, so there is no
 way to derive it — the same wall the type runs into.
@@ -2255,6 +2297,18 @@ screen is not something CSS can ask. A batch that lands together runs from
 zero in the authored order with the gaps closed, so the footer reached a
 minute in plays the same sequence it would have at load. The footer's mark
 waits with it: its one pass used to run at load, below the fold, for nobody.
+
+Two more things let a held block go, because the line can be unreachable.
+**The end of the page:** a block whose top is below the line when the page can
+scroll no further would wait for a scroll that never comes. On 1920x1080 the
+footer's bar stopped at 993 against a line at 972, on 1440x900 at 813 against
+810, and the byline, the tip jar and back to top were never shown. So when the
+page is at its end, whatever is on screen counts as reached. **Focus:** a
+block that receives keyboard focus is let go at once, since Tab reaches the
+footer's links long before a reader scrolls them past the line, and a focused
+link must be seen. Both were found by a reviewer in a rendering headless
+browser and reproduced there; a hidden automation tab never fires the
+observer at all, so it could not have shown either.
 
 Four details are load-bearing, and each is the obvious choice going wrong:
 

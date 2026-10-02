@@ -133,7 +133,8 @@
       'ghost.est': 'Forventet start',
       'ghost.month.oct': 'oktober',
       'ghost.month.nov': 'november',
-      'foot.inviteTitle': 'Tag samlingen med dig.',
+      'foot.inviteTitle': 'Tag samlingen med dig,',
+      'foot.inviteTitleTail': 'i Figma.',
       'a11y.filePage': 'En studies side i Figma-filen: en Start here-ramme, '
         + 'derefter fire kapitler, The idea, The design, In use og The build.',
       'foot.getFile': 'Hent filen på Figma Community',
@@ -157,6 +158,7 @@
       'foot.coffee': 'Giv en kop kaffe',
       'foot.backToTop': 'Til toppen',
       'a11y.figmaProfile': 'Figma-profil',
+      'a11y.skip': 'Spring til studierne',
       'a11y.elsewhere': 'Andre steder',
       'a11y.carousel': 'Karrusel',
       'a11y.previous': 'Forrige',
@@ -1781,6 +1783,21 @@
     syncSoon();
   }
 
+  // A card Tab lands on is brought fully into view. The browser's own focus
+  // scroll is "if needed", and a card with a sliver on screen does not count
+  // as needing it: at 1920 Tab stopped on a card at x=1918 with 2px of it
+  // showing. Measured against the read mark on the left, since the gutter is
+  // masked there, and the track's own edge on the right.
+  function bringIntoView(target) {
+    const piece = target.closest && target.closest('.piece');
+    if (!piece || listed()) return;
+    const tr = track.getBoundingClientRect();
+    const r = piece.getBoundingClientRect();
+    const inset = sized().inset;
+    if (r.left >= tr.left + inset - 1 && r.right <= tr.right + 1) return;
+    stepTo(Math.max(0, Math.min(maxScroll(), piece.offsetLeft - inset)));
+  }
+
   function keyRelease() {
     if (!keyed) return;
     keyed = false;
@@ -2508,7 +2525,7 @@
     let keyboard = true;
     try { keyboard = event.target.matches(':focus-visible'); }
     catch (err) { /* older engine: treat focus as deliberate */ }
-    if (keyboard) { driftStop(); keyHold(event.target); }
+    if (keyboard) { driftStop(); keyHold(event.target); bringIntoView(event.target); }
     else driftHold();
   });
 
@@ -2980,6 +2997,12 @@
     // scale is worked out from the room the overlay has, less that column —
     // not measured off a stage whose size would be the answer.
     const sideBySide = window.matchMedia('(min-width: 48rem) and (orientation: landscape)');
+    // A phone held upright. The panel keeps the full width the overlay gives
+    // it there rather than narrowing to the scaled preview: narrowed to its
+    // 288px floor at 375x667, a long note took the height, the preview fell to
+    // 0.43 — smaller than the card that opened it — and "Open study", Figma
+    // and GitHub were all below the panel's edge.
+    const narrow = window.matchMedia('(max-width: 30rem)');
     const bar = box.querySelector('.lightbox__bar');
 
     function fitStage() {
@@ -3006,6 +3029,17 @@
 
       // Measure against the panel's natural width first.
       panel.style.width = '';
+
+      if (narrow.matches) {
+        lightboxScale = Math.max(0, Math.min(
+          stage.clientWidth / previewW,
+          stage.clientHeight / previewH,
+          1
+        ));
+        box.style.setProperty('--lightbox-scale', lightboxScale.toFixed(4));
+        tellScale(frame, lightboxScale);
+        return;
+      }
 
       // Whatever width the overlay actually has to give — the floor can never
       // exceed it, or the panel would push past the viewport it is centred in.
@@ -3647,9 +3681,13 @@
   //
   // So the footer reached on a desktop arrives as brand, rows and bar, a beat
   // apart from the moment it is seen; on a phone each arrives as it is reached.
-  const seen = new IntersectionObserver(
-    (entries) => {
-      const landed = entries.filter((e) => e.isIntersecting).map((e) => e.target);
+  // Blocks still waiting. Three things let one go, and each goes through
+  // release(): crossing the line, the page running out before the line can be
+  // reached, and keyboard focus arriving inside it.
+  const held = new Set();
+
+  function release(blocks) {
+      const landed = blocks.filter((block) => held.has(block));
       if (!landed.length) return;
 
       const bySlot = new Map();
@@ -3665,6 +3703,7 @@
           const group = bySlot.get(at);
           const steps = Math.max(...group.map(span));
           group.forEach((block) => {
+            held.delete(block);
             seen.unobserve(block);
             block.style.setProperty('--arrive-lead', '0ms');
             block.style.setProperty('--arrive-at', String(cursor));
@@ -3673,6 +3712,11 @@
           });
           cursor += steps;
         });
+  }
+
+  const seen = new IntersectionObserver(
+    (entries) => {
+      release(entries.filter((e) => e.isIntersecting).map((e) => e.target));
     },
     { rootMargin: '0px 0px ' + -Math.round((1 - REVEAL_LINE) * 100) + '% 0px' }
   );
@@ -3686,6 +3730,37 @@
       return;
     }
     block.classList.add('is-held');
+    held.add(block);
     seen.observe(block);
+  });
+
+  // The line is unreachable at the end of a page. A block whose top sits below
+  // it when the page can scroll no further would wait for a scroll that never
+  // comes: on a 1920x1080 screen the footer's bar stopped at 993 against a
+  // line at 972, and on 1440x900 at 813 against 810, so the byline, the tip jar
+  // and back to top were never shown at all. At the end of the page, whatever
+  // is on screen has been reached.
+  let endFrame = 0;
+  function atEnd() {
+    endFrame = 0;
+    if (!held.size) return;
+    const doc = document.documentElement;
+    if (window.scrollY + window.innerHeight < doc.scrollHeight - 2) return;
+    release(Array.from(held).filter(
+      (block) => block.getBoundingClientRect().top < window.innerHeight
+    ));
+  }
+  const checkEnd = () => {
+    if (!endFrame) endFrame = requestAnimationFrame(atEnd);
+  };
+  window.addEventListener('scroll', checkEnd, { passive: true });
+  window.addEventListener('resize', checkEnd);
+  checkEnd();
+
+  // And focus outranks the line: Tab reaches the footer's links long before a
+  // reader has scrolled them up past it, and a focused link must be seen.
+  document.addEventListener('focusin', (event) => {
+    const block = event.target.closest && event.target.closest('[data-reveal]');
+    if (block && held.has(block)) release([block]);
   });
 })();
