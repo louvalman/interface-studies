@@ -194,10 +194,12 @@
   --well: #191b1e;
   --ink: #e9e8e4;
   --ink-soft: #a4a39f;
-  /* 5.13:1 on --surface, the quick-look panel, and 5.52 on the page. It was
-     #7e7d79, which passed on the page at 4.51 and failed on the panel at
-     4.19 — the panel's slug and variant label were under the floor. */
-  --muted: #8d8c88;
+  /* 6.05:1 on --surface, the quick-look panel, and 6.51 on the page — the
+     note's tone, so the grain under it can darken the ground and still leave
+     5.5. It was #8d8c88, 5.52 by computed colour but about 4.7 against the
+     rendered grain and 4.0 at its darkest pixels; before that #7e7d79, which
+     failed on the panel at 4.19. */
+  --muted: #9a9995;
   --note: #9a9995;
   --hairline: rgba(233, 232, 228, 0.11);
   --hairline-strong: rgba(233, 232, 228, 0.26);
@@ -1844,7 +1846,8 @@ body.is-locked {
 
 :root[data-view="list"] .piece__note {
   grid-area: note;
-  max-width: 62ch;
+  /* About 70 characters a line at this size; 62ch ran 85 and more. */
+  max-width: 52ch;
   font-size: 0.8125rem;
   line-height: 1.5;
   display: -webkit-box;

@@ -2138,6 +2138,11 @@ way and left them over the component the rest of the time. Moving the type to
 the bottom line beside quick look was tried, and was worse — 58% and 66% —
 because those components reach further down their frames than up them.
 
+The number is the card's place in the whole set and does not change under the
+filter — numbered from what the rail was showing, the inked plate was 04 with
+every type and 01 under "Card", which is not a catalogue number. Quick look's
+date line carries the type too, as the card's does.
+
 So the type and the number are on the card's meta line now, with the date:
 "21 SEPT 2026 · AESTHETIC", and the number at the line's far end like a
 catalogue number. Quick look is the one chip left on a thumbnail. The type's
@@ -2178,7 +2183,11 @@ functional text is held to, the chips and EN/DA among them, which are
 controls.
 
 `--muted`, the quietest text on the page, is measured against the ground it
-does worst on rather than the one it was picked on. In dark it was 4.51:1 on
+does worst on rather than the one it was picked on. In dark it is the note's tone now,
+`#9a9995`, 6.51:1 on the page and 6.05 on the quick-look panel: `#8d8c88`
+cleared the floor by computed colour at 5.52, but sampled against the rendered
+grain it was about 4.7, and 4.0 at the grain's darkest pixels — inside the
+floor's headroom rather than above it. In dark it was 4.51:1 on
 the page and 4.19 on `--surface`, the quick-look panel, so that panel's slug
 and variant name were under the floor. It is `#8d8c88` there now, 5.13 on the
 panel, and `#65645f` in light, 5.30 on `--well`. Both keep the headroom small
