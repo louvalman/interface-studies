@@ -1540,7 +1540,7 @@ goes before the words do. The footer's mark labels a handle, which is a
 different thing, so the two are not the same use twice.
 
 **The page closes on it too, but not with the same button.** The footer opens
-on a band that mirrors the masthead's: "Take the set with you." over a drawing
+on a band that mirrors the masthead's: "Take the set with you, in Figma." over a drawing
 of what the file holds, and beside the drawing a sentence and a link, "Get
 the file on Figma Community ↗", set as the footer sets its links. Someone who
 has read down past the rail has seen the studies, and the end of a page is
@@ -1548,7 +1548,11 @@ where a next step is looked for; the footer used to end on credits, with
 nothing asked. It carried a copy of the masthead's filled button for a while,
 same pill and same words, and the pair at the top and the bottom of a short
 page read as a template rather than as an ask — so `.figma-btn` is the
-masthead's alone, and a hairline under the band hands over to the colophon.
+masthead's alone, and a hairline under the band hands over to the colophon. The link carries the
+Figma mark in front of its label, and the heading names Figma: a round-four
+review found the band's one ask had become its quietest element, set exactly
+like the GitHub link below it, under a heading that did not say which half of
+the set it meant.
 
 **And it draws what the file holds rather than only naming it.** Under the
 band's title is the shape every study's page in the file shares, built in the

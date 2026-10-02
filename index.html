@@ -1219,8 +1219,12 @@
          end of the page is where a next step is looked for. -->
       <div class="foot__invite" data-reveal>
         <div class="foot__invite-lead">
-          <h2 class="foot__invite-title" data-i18n="foot.inviteTitle">
-            Take the set with you.
+          <!-- Two parts so the break is where the sentence turns: it does not
+             fit the drawing's width on one line, and balanced it broke after
+             "with". -->
+          <h2 class="foot__invite-title">
+            <span data-i18n="foot.inviteTitle">Take the set with you,</span>
+            <span class="foot__invite-title-tail" data-i18n="foot.inviteTitleTail">in Figma.</span>
           </h2>
           <!-- What the file holds, drawn rather than named: the shape every
              study's page in it shares, a Start here frame and then four
@@ -1272,6 +1276,10 @@
             href="https://www.figma.com/community/file/1683607518896928224/interface-studies"
             target="_blank"
             rel="noopener noreferrer">
+            <svg class="foot__link-mark" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" focusable="false">
+              <path d="M8 .5H5.5a2.5 2.5 0 0 0 0 5H8zM8 5.5H5.5a2.5 2.5 0 0 0 0 5H8zM8 10.5H5.5a2.5 2.5 0 0 0 0 5H8zM8 .5h2.5a2.5 2.5 0 0 1 0 5H8z" />
+              <circle cx="10.5" cy="8" r="2.5" />
+            </svg>
             <span data-i18n="foot.getFile">Get the file on Figma Community</span>
             <svg class="foot__link-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false">
               <path d="M4 12 12 4M6 4h6v6" stroke-linecap="round" stroke-linejoin="round" />

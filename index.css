@@ -2495,9 +2495,11 @@ body.is-locked {
   font-weight: 600;
   line-height: 1.08;
   letter-spacing: -0.025em;
-  max-width: 16ch;
-  text-wrap: balance;
 }
+
+/* "in Figma." on a line of its own, the part of the sentence that answers
+   which half of the set this is. */
+.foot__invite-title-tail { display: block; }
 
 /* The shape of a study's page in the Figma file, drawn in the page's own
    hairlines: a row per part, its name in the mono and its boards as quiet
@@ -2581,6 +2583,16 @@ body.is-locked {
 .foot__invite-link {
   margin-top: 0.75rem;
   font-size: 1rem;
+}
+
+/* The file's own mark in front of the label, so the band's one ask reads as
+   the Figma file rather than as one more footer link — it shares its style
+   with the GitHub link below and needed something of its own that was not a
+   second filled button. */
+.foot__link-mark {
+  width: 0.95rem;
+  height: 0.95rem;
+  flex: none;
 }
 
 .foot__invite-text {

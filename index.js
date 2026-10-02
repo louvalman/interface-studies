@@ -133,7 +133,8 @@
       'ghost.est': 'Forventet start',
       'ghost.month.oct': 'oktober',
       'ghost.month.nov': 'november',
-      'foot.inviteTitle': 'Tag samlingen med dig.',
+      'foot.inviteTitle': 'Tag samlingen med dig,',
+      'foot.inviteTitleTail': 'i Figma.',
       'a11y.filePage': 'En studies side i Figma-filen: en Start here-ramme, '
         + 'derefter fire kapitler, The idea, The design, In use og The build.',
       'foot.getFile': 'Hent filen på Figma Community',
