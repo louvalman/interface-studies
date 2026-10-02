@@ -1,7 +1,7 @@
 # Interface studies
 
-Exploring interaction and aesthetics. A working collection of components: one
-per study, in Figma and code.
+Exploring interaction and aesthetics. One component per study, built in Figma
+and code, small enough to stay legible.
 
 Browse it at [interface-studies.pages.dev](https://interface-studies.pages.dev),
 or open `index.html` locally; each card opens that folder's `demo.html`. The
