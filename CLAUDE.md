@@ -1095,7 +1095,7 @@ alone; the name is still read out. It took its own line under the cluster for
 a while, 63px of a 700px phone's first screen. The cluster stays in the corner
 at every width for the reasons given beside that rule in `index.css`.
 
-**From 64rem the masthead is a band**: the headline at the left on two lines,
+**From 64rem the masthead is a band**: the headline at the left on three lines,
 and beside it the lede and the Figma button, above a full-width rail. It was a
 column one card wide beside the rail for a while, and that is worth knowing
 before trying it again. It put 95% of the first card on screen at 1470x802, and
@@ -1116,6 +1116,16 @@ meeting. They are top-aligned now: the lede starts on the headline's line and
 runs on under it. Where the window is too narrow for two cards and a lede,
 below about 1100px, the lede keeps 24rem and the headline's column gives way,
 so the band holds without the card edge.
+
+**The headline is a sentence about what the site is.** "A working
+collection of components, exploring interaction and aesthetics." It was the
+second half alone for a while, which said what the work was about and not
+what it was. At twice the length it is set at 40px rather than 52, so it is
+three lines in the band's two-card column rather than four; at four, the
+first card's title went to y=851 on a 1470x802 laptop, under the fold. On a
+390 phone it is four lines, and the title is 67px lower than it was — already
+under the fold there before. `og.html` sets it at 60px and 24ch for the same
+reason.
 
 **The masthead had a field rule for a day, and it came out.** The site mark's
 dots drawn as a line between the masthead and the rail, sized along a wave
@@ -2219,7 +2229,8 @@ index are measured off text. Re-measure them when a face changes:
   line — 181px in Fragment Mono, so the query is 23.25rem;
 - the rail head's count beside the carousel buttons at 320, which fits with
   4px to spare in Danish;
-- the headline's line count in the band, two from 360px up in both languages;
+- the headline's line count in the band — three at 1470, two at 1920, in
+  both languages, at 40px — which is what keeps the first card's title at 777;
 - `og.png`, re-rendered from `og.html`, which carries its own copy of the pair.
 
 The demo pages followed, as a sweep of the identity kind: each folder's own
