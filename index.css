@@ -2684,6 +2684,23 @@ body.is-locked {
   align-items: start;
 }
 
+/* On the rail's columns from 64rem, as the masthead and the band above are:
+   the facts start where the third card does. Pushed to the far right they
+   left about 960px empty between the two columns at 1920, and lined up with
+   nothing else on the page. */
+@media (min-width: 64rem) {
+  .foot__main {
+    grid-template-columns:
+      minmax(0, calc(var(--card-w) * 2 + var(--rail-gap)))
+      minmax(min(24rem, 100%), 1fr);
+    column-gap: var(--rail-gap);
+  }
+
+  /* The same column as the bands above, so the edge is shared at every
+     width; the list itself keeps the measure it had. */
+  .foot__meta { max-width: 26rem; }
+}
+
 .foot__mark {
   margin: 0 0 1rem;
   display: flex;
@@ -2849,24 +2866,9 @@ body.is-locked {
 
 /* The one link in the footer bar that is a name rather than a control, so
    it is underlined rather than left to hover to announce itself. */
-.foot__author {
-  color: var(--ink);
-  text-decoration: none;
-  border-bottom: 1px solid var(--hairline);
-  transition: color 240ms var(--ease), border-color 240ms var(--ease);
-}
-
-.foot__author:hover,
-.foot__author:active {
-  color: var(--accent);
-  border-bottom-color: var(--accent);
-}
-
-.foot__author:focus-visible {
-  outline: 2px solid var(--ink);
-  outline-offset: 3px;
-  border-radius: 0.2rem;
-}
+/* The name, not a link: the GitHub circle in the handles is the profile, and
+   the byline linking the same page was a second stop for one place. */
+.foot__author { color: var(--ink); }
 
 /* Byline and tip jar share the bar's left end, so the bar still reads as two
    things rather than three spread across it. Wraps rather than shrinking,

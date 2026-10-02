@@ -1533,7 +1533,34 @@ function withParam(src, key, value) {
       // count as the reader having taken it, for good.
       if (!listed()) driftStop();
       applyFilter();
+      writeFilterUrl();
     });
+  }
+
+  // The choice is kept in the address, ?type=card, so a narrowed rail can be
+  // linked to or bookmarked; "All" takes the parameter off. Written with
+  // replaceState, as the language and the theme are, so it is not a step in
+  // the back button's history.
+  function writeFilterUrl() {
+    try {
+      const url = new URL(location.href);
+      if (filterType === FILTER_ALL) url.searchParams.delete('type');
+      else url.searchParams.set('type', filterType);
+      history.replaceState(history.state, '', url);
+    } catch (err) { /* file:// can refuse replaceState */ }
+  }
+
+  // And read back at boot. A type no card declares is ignored rather than
+  // leaving the rail filtered down to nothing.
+  function readFilterUrl() {
+    if (!filterSelect) return;
+    const asked = new URLSearchParams(location.search).get('type');
+    if (!asked || asked === filterType) return;
+    const known = Array.from(filterSelect.options).some((o) => o.value === asked);
+    if (!known) return;
+    filterType = asked;
+    filterSelect.value = asked;
+    applyFilter();
   }
 
   // The options carry card labels, so they are rewritten with everything
@@ -3654,6 +3681,9 @@ function withParam(src, key, value) {
   // is built from. The first recycle puts a card's worth of row to the left of
   // the newest study, which is where the rail rests.
   rebuildRing();
+  // A ?type= in the address narrows the rail once it has been built, so the
+  // filter starts from the same row a click on it would.
+  readFilterUrl();
   sync();
 
   // The head script may already have put the page in the list; this labels the

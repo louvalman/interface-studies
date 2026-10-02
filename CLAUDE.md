@@ -2075,6 +2075,11 @@ its column, or on a phone the narrower of two sharing a column stretches to the
 other's width. The grid restacks with `grid-template-areas`, so nothing moves in
 the DOM.
 
+The chosen type is kept in the address as `?type=card`, written with
+`replaceState` as the language and the theme are, and read back once the rail
+has been built, so a narrowed rail can be linked to; "All" takes it off, and a
+type no card declares is ignored rather than filtering the rail to nothing.
+
 The type filter is an icon and the current choice, laid over a native
 `<select>`. The select covers the whole control and is invisible, so it is what
 is clicked, tabbed to and read out, and a phone opens its own picker; the
@@ -2419,6 +2424,13 @@ built against an original design started from no one else's interface — and it
 calls the thing an `Inspiration` line, which is what the files call it. It said
 "source" for a while, a second word for something already named, in the one
 place a reader is being sent to go and look at it.
+
+**The colophon stands on the rail's columns too.** From 64rem the facts
+start where the third card does, the edge the masthead's lede and the band's
+text share, and the list keeps its 26rem measure. Pushed to the far right it
+left about 960px empty between the columns at 1920 and lined up with nothing.
+The byline's name is not a link: the GitHub circle in the handles is the same
+profile, and two stops for one place was one too many.
 
 The meta list is four rows and each says something the others do not: what the
 page is set in, what the studies are made of, what types they cover, and how
