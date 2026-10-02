@@ -50,17 +50,15 @@
   --note: #61625f;
   --hairline: rgba(23, 24, 26, 0.1);
   --hairline-strong: rgba(23, 24, 26, 0.22);
-  /* French blue: a blue turned toward violet, the warm side of blue. It was
-     a burnt orange, #ac512d, and on the flat page it read as brown: under the
-     lightness that small text on near-white allows, an orange can reach only
-     about half the chroma a blue can, so a warm accent here is a dull one.
-     5.46:1 on the page, 5.00 on the well, 5.60 on --surface; no study on the
-     rail is blue, so the page's own colour is not one of the work's. */
-  --accent: #495bd6;
-  /* The masthead's Figma button: text on the accent fill, 5.37:1, and the
-     fill a step darker on hover, 6.88. */
+  /* Vermilion: the warmest accent that still reads as a colour at text
+     contrast. It was a burnt orange, #ac512d, which on the flat page read as
+     brown; this is the same family pushed toward red and as bright as 5:1 on
+     near-white allows. 5.09:1 on the page, 5.22 on --surface. */
+  --accent: #c43d16;
+  /* The masthead's Figma button: text on the accent fill, 5.00:1, and the
+     fill a step darker on hover, 6.36. */
   --on-accent: #fbfaf8;
-  --accent-hover: #3b4bbd;
+  --accent-hover: #a8340f;
 
   /* The page's ground is --paper and nothing over it: no grain, no wash.
      It carried both for a while, a fractal-noise film and two corner lights,
@@ -182,11 +180,11 @@
   --note: #9a9995;
   --hairline: rgba(233, 232, 228, 0.11);
   --hairline-strong: rgba(233, 232, 228, 0.26);
-  /* The same hue lifted for this ground: 7.93:1 on the page, 7.37 on the
+  /* The same hue lifted for this ground: 7.29:1 on the page, 6.77 on the
      panel. */
-  --accent: #8ea5fe;
-  --on-accent: #131417;      /* 7.86:1 on the fill */
-  --accent-hover: #a7b8ff;   /* 9.60 */
+  --accent: #f2845e;
+  --on-accent: #131417;      /* 7.23:1 on the fill */
+  --accent-hover: #f59a7b;   /* 8.59 */
 
   --chip-bg: rgba(30, 32, 36, 0.72);
   /* Quick look still sits on a thumbnail, so it inverts with the page rather
@@ -526,61 +524,7 @@ body.is-locked {
    read as one of the rail's controls and the top felt cramped where it
    should have ended. */
 .head {
-  /* The bottom of the masthead's spacing is shared with the rule below: the
-     gap to the rail was 56px at 1470, and the rule takes its middle — 22, 12,
-     22 — so the page is no taller for it. */
-  padding: var(--bar-top) var(--gutter) clamp(1rem, 1.5vw, 1.375rem);
-}
-
-/* --- the field rule ------------------------------------------------------ */
-
-/* The mark's dots in a row, gutter to gutter: an ink base whose sizes follow
-   a slow wave, and an accent layer of slightly larger dots shown only through
-   a soft window that drifts along it — the raster pulse's travelling peak,
-   drawn as a line. One animated property on one small element. The window
-   rests while the rail does, and does not move at all under reduced motion. */
-.head__rule {
-  position: relative;
-  height: 0.75rem;
-  margin-top: clamp(1rem, 1.5vw, 1.375rem);
-}
-
-.head__rule svg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-}
-
-.head__rule-base { color: var(--ink); }
-
-.head__rule-peak {
-  color: var(--accent);
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 40%, #000 60%, transparent);
-  mask-image: linear-gradient(90deg, transparent, #000 40%, #000 60%, transparent);
-  -webkit-mask-size: 14% 100%;
-  mask-size: 14% 100%;
-  -webkit-mask-repeat: no-repeat;
-  mask-repeat: no-repeat;
-  -webkit-mask-position: 62% 0;
-  mask-position: 62% 0;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .head__rule-peak {
-    animation: rule-drift 22s ease-in-out infinite alternate;
-    animation-play-state: paused;
-  }
-
-  :root:has(.rail__track.is-drifting) .head__rule-peak {
-    animation-play-state: running;
-  }
-}
-
-@keyframes rule-drift {
-  from { -webkit-mask-position: 0% 0; mask-position: 0% 0; }
-  to   { -webkit-mask-position: 100% 0; mask-position: 100% 0; }
+  padding: var(--bar-top) var(--gutter) clamp(2.25rem, 3.8vw, 3.5rem);
 }
 
 .head__eyebrow {
@@ -3251,7 +3195,6 @@ body.is-locked {
   .head__title { --arrive-at: 0; }
   .head__lede { --arrive-at: 1; }
   .head__figma { --arrive-at: 2; }
-  .head__rule { --arrive-at: 3; }
   .rail__head { --arrive-at: 3; }
   .rail__track { --arrive-at: 4; }
 
