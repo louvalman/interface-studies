@@ -879,9 +879,27 @@ and `localStorage` is the secondary channel. Only an explicit choice travels —
 a theme resolved from the system is not a choice, and the other end would
 resolve it the same way anyway.
 
-The matte part is the grain: the dark ground is a wash across two thousand
-pixels, which 8-bit colour cannot draw without ringing. A fractal-noise tile at
-a low alpha dithers the banding out, and reads as paper rather than as texture.
+The index's ground is flat in both themes: `--paper` and nothing over it. It
+carried a fractal-noise grain over two corner washes for a while, and the pair
+is the background half the portfolios of the moment share. The index is a
+mount for studies that each bring a material of their own, and a textured page
+was one more material, the only one that was not a study. Dropping the wash
+also dropped the grain's second job — dithering the rings an 8-bit gradient
+leaves across two thousand dark pixels — since with no gradient there is
+nothing to band.
+
+The grain was also, unnoticed, the light card's edge: `--paper` sat 0.6 OK ΔE
+from `--well`, and the frame read because the texture stopped at it. So the
+light page moved rather than the well, which is pinned to every folder's
+`--preview-ground`: `#fdfcfa`, 3.02 from the well against dark's 3.43, and the
+frames read as recesses in it. `--surface` went to `#ffffff` to stay above the
+page, and `--chip-bg` in light became a recess too, a 4.5% ink tint, because
+paper-white at 0.72 on a flat page is no fill at all. Every text token clears
+the floor by more than it did: `--muted` 5.78 on the page, the accent 5.16.
+
+If a ground ever wants texture or light again, the wash is the part to argue
+for, and it brings the banding back with it: dither that with noise at one
+code value, not with a visible film.
 
 ## JavaScript
 
@@ -1457,7 +1475,7 @@ dark — because this stylesheet cannot reach into a framed document to ask. The
 card frame and its loading skeleton are painted in it, so the skeleton dissolves
 into the thumbnail rather than stepping to it. It was `--surface` until it was
 measured: in dark the two are the same value and nothing showed, but in light
-`--surface` is `#fbfaf8` against that `#f3f2ef` ground, so every card sat 2.4
+`--surface` was `#fbfaf8` against that `#f3f2ef` ground, so every card sat 2.4
 OKL light for the length of its skeleton and dropped the moment its preview
 landed. `--surface` keeps the work where being the page's raised surface is the
 point — the quick-look panel, the rail buttons.
@@ -2218,7 +2236,8 @@ does worst on rather than the one it was picked on. In dark it is the note's ton
 `#9a9995`, 6.51:1 on the page and 6.05 on the quick-look panel: `#8d8c88`
 cleared the floor by computed colour at 5.52, but sampled against the rendered
 grain it was about 4.7, and 4.0 at the grain's darkest pixels — inside the
-floor's headroom rather than above it. In dark it was 4.51:1 on
+floor's headroom rather than above it. The grain has since gone and the value
+stayed, as headroom. In dark it was 4.51:1 on
 the page and 4.19 on `--surface`, the quick-look panel, so that panel's slug
 and variant name were under the floor. It is `#8d8c88` there now, 5.13 on the
 panel, and `#65645f` in light, 5.30 on `--well`. Both keep the headroom small
