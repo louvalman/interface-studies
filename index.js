@@ -164,24 +164,18 @@ function withParam(src, key, value) {
       'foot.getFile': 'Hent filen på Figma Community',
       'foot.inviteText': 'Hvert studie er også tegnet i Figma-filen, en side '
         + 'hver, med sine varianter og sin bevægelse, klar til at duplikere.',
+      'foot.blurb': 'Hvert studie er en mappe, der står for sig selv, i HTML, '
+        + 'CSS og JS uden afhængigheder. Kopiér en ud, og den virker videre.',
       'foot.source': 'Kildekoden ligger på GitHub',
       'foot.star': 'Giv den en stjerne der, hvis du kan bruge den.',
-      'foot.blurb': 'Hvert studie er en mappe, der står for sig selv: sin egen '
-        + 'markup, sit eget stylesheet, sine egne tokens og, hvor der er brug '
-        + 'for det, sit eget script. Kopiér en ud, og den virker videre.',
-      'foot.inspiration': 'Nogle studier tager udgangspunkt i en grænseflade '
-        + 'set andre steder. Når de gør, står linket på Inspiration-linjen '
-        + 'sidst i mappens notes.md; er designet originalt, står det der i '
-        + 'stedet.',
-      'foot.typefaces': 'Skrifttyper',
-      'foot.stack': 'Stack',
-      'foot.stackVal': 'HTML, CSS og JS, ingen afhængigheder',
-      'foot.types': 'Typer',
-      'foot.studies': 'Studier',
+      'foot.setIn': 'Sat med',
+      'foot.and': 'og',
       'foot.builtBy': 'Bygget af',
       'foot.coffee': 'Giv en kop kaffe',
       'foot.backToTop': 'Til toppen',
+      'a11y.githubProfile': 'GitHub-profil',
       'a11y.figmaProfile': 'Figma-profil',
+      'a11y.xProfile': 'X-profil',
       'a11y.skip': 'Spring til studierne',
       'a11y.elsewhere': 'Andre steder',
       'a11y.carousel': 'Karrusel',
@@ -541,8 +535,6 @@ function withParam(src, key, value) {
   const driftBtn = document.querySelector('[data-rail-drift]');
   const progress = document.querySelector('[data-rail-progress]');
   const totalOut = document.getElementById('rail-total');
-  const footCount = document.getElementById('foot-count');
-  const footTypes = document.getElementById('foot-types');
   const ledeHint = document.querySelector('[data-lede-hint]');
 
   const pieces = () => Array.from(track.children);
@@ -1494,10 +1486,9 @@ function withParam(src, key, value) {
   }
 
   // How many cards of each type, and the order the types are listed in:
-  // commonest first, alphabetical where two are level. Two places read it —
-  // the filter's options and the footer's Types row — and a row that ordered
-  // them differently from the filter above would read as a different set of
-  // things.
+  // commonest first, alphabetical where two are level, for the filter's
+  // options. The footer used to list them too, in the same order; the filter
+  // is where a reader takes them from, so it no longer does.
   function typeCounts() {
     const counts = new Map();
     allPieces().forEach((piece) => {
@@ -1512,19 +1503,6 @@ function withParam(src, key, value) {
       const d = counts.get(b) - counts.get(a);
       return d !== 0 ? d : a.localeCompare(b);
     });
-  }
-
-  // The footer says what the set covers. It reads the badges rather than
-  // holding a list of its own, so the types are declared once per card and
-  // nowhere else — and it counts what exists rather than what the rail is
-  // showing, which is the same split the Studies row beneath it keeps: a
-  // filter narrowing the rail to one type is not four types ceasing to exist.
-  function renderFootTypes() {
-    if (!footTypes) return;
-    const order = typeOrder(typeCounts());
-    footTypes.textContent = order.length
-      ? order.map(typeLabel).join(' \u00b7 ')
-      : '\u2014';
   }
 
   const labelFor = (type) =>
@@ -1705,9 +1683,6 @@ function withParam(src, key, value) {
     }
     renderFilterValue();
     renderTech();
-    // Same strings, further down the page: the footer's Types row is the card
-    // badges too, so it turns over with them rather than carrying its own.
-    renderFootTypes();
   });
 
   // --- rail -------------------------------------------------------------
@@ -2155,19 +2130,16 @@ function withParam(src, key, value) {
   function sync() {
     const max = maxScroll();
 
-    // The rail counts what it is showing; the footer counts what exists.
-    // Filtering to one type does not mean four studies stopped being written.
-    // A count, not a position: "8 studies", unpadded, the same in both views.
-    // It used to read "Study 04 / 08" off the read mark, which on a drifting
-    // rail was a number changing by itself, and needed the card's own chip
-    // filled to say which card it meant.
+    // The rail counts what it is showing, and the filter's "All" what
+    // exists. A count, not a position: "8 studies", unpadded, the same in
+    // both views. It used to read "Study 04 / 08" off the read mark, which on
+    // a drifting rail was a number changing by itself, and needed the card's
+    // own chip filled to say which card it meant.
     const count = real().length;
-    const total = allPieces().length;
     if (totalOut) {
       totalOut.textContent = String(count);
       totalOut.parentNode.classList.toggle('is-one', count === 1);
     }
-    if (footCount) footCount.textContent = String(total);
 
 
     syncVisibility();
@@ -3797,7 +3769,6 @@ function withParam(src, key, value) {
   renderDates(document.documentElement.lang);
   buildFilter();   // after order(), so the options count a settled rail
   renderTech();
-  renderFootTypes();
   number();
 
   // After order(), which is the last thing that touches the DOM order the ring

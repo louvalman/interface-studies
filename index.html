@@ -1311,29 +1311,39 @@
         </div>
       </div>
 
+      <!-- Below the band, two things and a bottom line. The site mark, and
+         beside it what a study is and where its source lives; then the
+         credits, the handles, the tip jar and the way back up.
+
+         It was a spec sheet for a while — a brand column beside mono keys on
+         hairlines (Typefaces, Stack, Types, Studies) — and then a paragraph
+         of prose that said all of it as sentences, which was too much text
+         for the end of a page. What is here now is what nothing else on the
+         page says: the count and the types are the rail's head and its
+         filter, and where a study started is the Inspiration row on its own
+         demo page. -->
       <div class="foot__main">
-        <div class="foot__brand" data-reveal>
-          <p class="foot__mark">
-            <!-- The site mark: the field favicon.svg draws, minus the tile — the page
-               is already that ground. A dot's size falls with its distance from the
-               centre, which is the reference's own `phase` read as a still frame: the
-               corners sit furthest out and so are smallest, and the mark is a burst
-               rather than a dice face. Three tiers evenly stepped rather than scaled
-               straight off the radius — linear on the radius puts the edge and corner
-               dots within half a pixel of each other at the size this actually renders.
-               Three lines of three, so the source reads as the field it draws. -->
-            <svg class="logo" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-              <circle class="logo__wave" cx="12" cy="12" r="3.7" />
-              <circle class="logo__dot" cx="3.5" cy="3.5" r="2.15" /><circle class="logo__dot" cx="12" cy="3.5" r="2.95" /><circle class="logo__dot" cx="20.5" cy="3.5" r="2.15" />
-              <circle class="logo__dot" cx="3.5" cy="12" r="2.95" /><circle class="logo__core" cx="12" cy="12" r="3.7" /><circle class="logo__dot" cx="20.5" cy="12" r="2.95" />
-              <circle class="logo__dot" cx="3.5" cy="20.5" r="2.15" /><circle class="logo__dot" cx="12" cy="20.5" r="2.95" /><circle class="logo__dot" cx="20.5" cy="20.5" r="2.15" />
-            </svg>
-            Interface Studies
-          </p>
+        <p class="foot__mark" data-reveal>
+          <!-- The site mark: the field favicon.svg draws, minus the tile — the page
+             is already that ground. A dot's size falls with its distance from the
+             centre, which is the reference's own `phase` read as a still frame: the
+             corners sit furthest out and so are smallest, and the mark is a burst
+             rather than a dice face. Three tiers evenly stepped rather than scaled
+             straight off the radius — linear on the radius puts the edge and corner
+             dots within half a pixel of each other at the size this actually renders.
+             Three lines of three, so the source reads as the field it draws. -->
+          <svg class="logo" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <circle class="logo__wave" cx="12" cy="12" r="3.7" />
+            <circle class="logo__dot" cx="3.5" cy="3.5" r="2.15" /><circle class="logo__dot" cx="12" cy="3.5" r="2.95" /><circle class="logo__dot" cx="20.5" cy="3.5" r="2.15" />
+            <circle class="logo__dot" cx="3.5" cy="12" r="2.95" /><circle class="logo__core" cx="12" cy="12" r="3.7" /><circle class="logo__dot" cx="20.5" cy="12" r="2.95" />
+            <circle class="logo__dot" cx="3.5" cy="20.5" r="2.15" /><circle class="logo__dot" cx="12" cy="20.5" r="2.95" /><circle class="logo__dot" cx="20.5" cy="20.5" r="2.15" />
+          </svg>
+          Interface Studies
+        </p>
+        <div class="foot__text" data-reveal>
           <p class="foot__blurb" data-i18n="foot.blurb">
-            Every study is a folder that stands on its own: its own markup,
-            its own stylesheet, its own tokens, and its own script where it
-            needs one. Copy one out and it keeps working.
+            Every study is a folder that stands on its own, in HTML, CSS and
+            JS with no dependencies. Copy one out and it keeps working.
           </p>
 
           <!-- Where to copy one out from. The repository is public, and this
@@ -1357,103 +1367,23 @@
             <span class="foot__source-star" data-i18n="foot.star">Star it there if it is useful to you.</span>
           </p>
 
-          <!-- Where the studies came from. It sits down here rather than
-             in the masthead because it is provenance, not a pitch: the
-             folders carry it, and the folders are where someone checking
-             would look.
-
-             It states the practice and stops there. The earlier version
-             ended "none is a copy of one", which is the disclaimer CLAUDE.md
-             tells every notes.md not to write — it argues with a charge
-             nobody made, and it spends the footer's last paragraph on the
-             references rather than on the studies. It also said "source",
-             which is a second word for something the files already call
-             Inspiration. -->
-          <p class="foot__note" data-i18n="foot.inspiration">
-            Some studies start from an interface seen elsewhere. Where one
-            does, the Inspiration line at the end of its notes.md carries the
-            link; where the design is original, that line says so.
+          <!-- Each face named in itself: the one small thing a credit for
+             type can show rather than say. -->
+          <p class="foot__faces">
+            <span data-i18n="foot.setIn">Set in</span>
+            <span class="foot__face">Mona Sans</span>
+            <span data-i18n="foot.and">and</span>
+            <span class="foot__face foot__face--mono">Fragment Mono</span>
           </p>
-
-          <!-- Handles live here and nowhere else. -->
-          <nav
-            class="foot__social"
-            data-i18n-aria="a11y.elsewhere"
-            aria-label="Elsewhere">
-            <a
-              class="foot__icon"
-              href="https://github.com/louvalman"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="GitHub">
-              <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-                <path
-                  d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8Z" />
-              </svg>
-            </a>
-            <a
-              class="foot__icon"
-              href="https://x.com/LouisDyrhauge"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="X">
-              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path
-                  d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-              </svg>
-            </a>
-            <a
-              class="foot__icon"
-              href="https://www.figma.com/@louval"
-              target="_blank"
-              rel="noopener noreferrer"
-              data-i18n-aria="a11y.figmaProfile"
-              aria-label="Figma profile">
-              <!-- The mark drawn solid rather than in its five colours, the
-                 way the other two are: at 0.95rem a gap between the shapes
-                 is half a pixel and mushes, so the silhouette is what
-                 survives the size. -->
-              <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-                <path
-                  d="M8 .5H5.5a2.5 2.5 0 0 0 0 5H8zM8 5.5H5.5a2.5 2.5 0 0 0 0 5H8zM8 10.5H5.5a2.5 2.5 0 0 0 0 5H8zM8 .5h2.5a2.5 2.5 0 0 1 0 5H8z" />
-                <circle cx="10.5" cy="8" r="2.5" />
-              </svg>
-            </a>
-          </nav>
         </div>
-
-        <dl class="foot__meta" data-reveal="each">
-          <div class="foot__row">
-            <dt class="foot__key" data-i18n="foot.typefaces">Typefaces</dt>
-            <dd class="foot__val">Mona Sans &middot; Fragment Mono</dd>
-          </div>
-          <div class="foot__row">
-            <dt class="foot__key" data-i18n="foot.stack">Stack</dt>
-            <dd class="foot__val" data-i18n="foot.stackVal">
-              HTML, CSS and JS, no dependencies
-            </dd>
-          </div>
-          <!-- What the set covers, not just how much of it there is. The
-             values are written by index.js off the cards' own type badges,
-             so a study of a new type needs nothing added here — the same
-             single declaration the filter reads. -->
-          <div class="foot__row">
-            <dt class="foot__key" data-i18n="foot.types">Types</dt>
-            <dd class="foot__val" id="foot-types">&mdash;</dd>
-          </div>
-          <div class="foot__row">
-            <dt class="foot__key" data-i18n="foot.studies">Studies</dt>
-            <dd class="foot__val" id="foot-count">&mdash;</dd>
-          </div>
-        </dl>
       </div>
 
+      <!-- The bottom line: who made it and where else they are on the left,
+         the tip jar and the way back up on the right. The handles are words,
+         set like the other links down here, not a row of icon circles; each
+         is named as a profile, so a screen reader does not hear GitHub as a
+         second copy of the repository link above, or Figma as the file. -->
       <div class="foot__bar" data-reveal>
-        <!-- The byline and the tip jar are one group, so the bar keeps its two
-           ends: credits on the left, the control on the right. The coffee link
-           is not in foot__social above — that row is handles, and a tip jar is
-           not one — and it is labelled rather than an icon on its own, because
-           a cup with no word beside it could be anything. -->
         <div class="foot__credit">
           <p class="foot__line">
             <span data-i18n="foot.builtBy">Built by</span>
@@ -1461,6 +1391,34 @@
             <span aria-hidden="true">&middot;</span>
             2026
           </p>
+          <nav
+            class="foot__handles"
+            data-i18n-aria="a11y.elsewhere"
+            aria-label="Elsewhere">
+            <a
+              class="foot__handle"
+              href="https://github.com/louvalman"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-i18n-aria="a11y.githubProfile"
+              aria-label="GitHub profile">GitHub</a>
+            <a
+              class="foot__handle"
+              href="https://www.figma.com/@louval"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-i18n-aria="a11y.figmaProfile"
+              aria-label="Figma profile">Figma</a>
+            <a
+              class="foot__handle"
+              href="https://x.com/LouisDyrhauge"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-i18n-aria="a11y.xProfile"
+              aria-label="X profile">X</a>
+          </nav>
+        </div>
+        <div class="foot__actions">
           <a
             class="foot__coffee"
             href="https://buymeacoffee.com/Ou2jLyzlVg"
@@ -1480,21 +1438,21 @@
             </svg>
             <span data-i18n="foot.coffee">Buy me a coffee</span>
           </a>
+          <a class="foot__top" href="#top">
+            <span data-i18n="foot.backToTop">Back to top</span>
+            <svg
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.4"
+              aria-hidden="true">
+              <path
+                d="M8 13V3M3.5 7.5 8 3l4.5 4.5"
+                stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+          </a>
         </div>
-        <a class="foot__top" href="#top">
-          <span data-i18n="foot.backToTop">Back to top</span>
-          <svg
-            viewBox="0 0 16 16"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.4"
-            aria-hidden="true">
-            <path
-              d="M8 13V3M3.5 7.5 8 3l4.5 4.5"
-              stroke-linecap="round"
-              stroke-linejoin="round" />
-          </svg>
-        </a>
       </div>
     </footer>
 
