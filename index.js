@@ -164,8 +164,8 @@ function withParam(src, key, value) {
       'foot.getFile': 'Hent filen på Figma Community',
       'foot.inviteText': 'Hvert studie er også tegnet i Figma-filen, en side '
         + 'hver, med sine varianter og sin bevægelse, klar til at duplikere.',
-      'foot.blurb': 'Hvert studie er en mappe, der står for sig selv, i HTML, '
-        + 'CSS og JS uden afhængigheder. Kopiér en ud, og den virker videre.',
+      'foot.blurb': 'Kopiér en studiemappe ud, og den virker videre for sig '
+        + 'selv: HTML, CSS og JS, uden afhængigheder.',
       'foot.source': 'Kildekoden ligger på GitHub',
       'foot.star': 'Giv den en stjerne der, hvis du kan bruge den.',
       'foot.setIn': 'Sat med',
