@@ -2507,9 +2507,10 @@ stays is whether anything else on the page already says it:
   that study's `Inspiration` row, which is the record; a sentence down here
   pointing at it was a second statement of the practice, on a page that
   links every study.
-- **What a study is stays**, once and positively: "a folder that stands on its
-  own, in HTML, CSS and JS with no dependencies. Copy one out and it keeps
-  working." It was three negations for a while — "no shared stylesheet, no
+- **What a study is stays**, once and positively: "Copy any study's folder out
+  and it keeps working on its own: HTML, CSS and JS, with no dependencies." It
+  opens on the action rather than on "Every study", which is how the band's
+  sentence above it already opens. It was three negations for a while — "no shared stylesheet, no
   build step, no dependency on this page" — beside a `Stack` row saying the
   middle one again as a fact. "No dependencies" is the same fact as a reader
   meets it, and it stays true as the React adapters arrive, because an adapter
