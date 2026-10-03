@@ -1311,18 +1311,18 @@
         </div>
       </div>
 
-      <!-- The colophon, set the way a book sets the last thing in it: the
-         printer's mark, and beside it one paragraph saying what the set is,
-         what it is made of and where it lives, with a sign-off under it.
+      <!-- Below the band, two things and a bottom line. The site mark, and
+         beside it what a study is and where its source lives; then the
+         credits, the handles, the tip jar and the way back up.
 
-         It was a brand column (the mark, a blurb, a row of icon circles)
-         beside a spec sheet of mono keys on hairlines, over a bar of "Built
-         by · year" and "Back to top". Each of those is a pattern the footers
-         of the moment share, and together they said nothing only this site
-         could say. The facts are all still here, each said once and as a
-         sentence; the handles are words in the sign-off rather than circles,
-         and the counts are still written from the cards. -->
-      <div class="foot__colophon">
+         It was a spec sheet for a while — a brand column beside mono keys on
+         hairlines (Typefaces, Stack, Types, Studies) — and then a paragraph
+         of prose that said all of it as sentences, which was too much text
+         for the end of a page. What is here now is what nothing else on the
+         page says: the count and the types are the rail's head and its
+         filter, and where a study started is the Inspiration row on its own
+         demo page. -->
+      <div class="foot__main">
         <p class="foot__mark" data-reveal>
           <!-- The site mark: the field favicon.svg draws, minus the tile — the page
              is already that ground. A dot's size falls with its distance from the
@@ -1340,90 +1340,118 @@
           </svg>
           Interface Studies
         </p>
-        <div class="foot__text">
-          <p class="foot__prose" data-reveal>
-            <!-- The set, counted from the cards' own badges and said in words
-               by index.js. Without script it falls back to the headline's
-               claim, so the paragraph still opens on something true. -->
-            <span class="foot__set" id="foot-set">A working collection of components.</span>
-            <span data-i18n="foot.folder">Each is a folder that stands on its
-            own, in HTML, CSS and JS with no dependencies: copy one out and it
-            keeps working.</span>
-            <!-- The repository is public, and this link is the one place its
-               address is written: quick look reads it from here to link each
-               study's own folder. The ask for a star is the rest of the
-               sentence rather than a modal in front of it — a reader who
-               clicks through to GitHub has already decided to go, and the
-               star button is where the link lands. -->
-            <span data-i18n="foot.source">The source is on</span>
+        <div class="foot__text" data-reveal>
+          <p class="foot__blurb" data-i18n="foot.blurb">
+            Every study is a folder that stands on its own, in HTML, CSS and
+            JS with no dependencies. Copy one out and it keeps working.
+          </p>
+
+          <!-- Where to copy one out from. The repository is public, and this
+             link is the one place its address is written: quick look reads
+             it from here to link each study's own folder. The ask for a star
+             is a line beside the link rather than a modal in front of it — a
+             reader who clicked through to GitHub has already decided to go,
+             and the star button is where the link lands. -->
+          <p class="foot__source">
             <a
-              class="foot__ref"
+              class="foot__link foot__source-link"
               href="https://github.com/louvalman/interface-studies"
               target="_blank"
               rel="noopener noreferrer"
-              data-repo>GitHub</a><span data-i18n="foot.star">; star it there
-            if it is useful to you.</span>
-            <!-- Provenance, stated as the practice and nothing more: no "none
-               is a copy", which is the disclaimer CLAUDE.md tells every
-               notes.md not to write. -->
-            <span data-i18n="foot.inspiration">Some studies start from an
-            interface seen elsewhere, and where one does, the Inspiration line
-            at the end of its <code>notes.md</code> carries the link.</span>
-            <!-- Each face named in itself, the one small thing a colophon can
-               show rather than say. -->
-            <span data-i18n="foot.setIn">Set in <span class="foot__face">Mona
-            Sans</span> and <span class="foot__face foot__face--mono">Fragment
-            Mono</span>.</span>
+              data-repo>
+              <span data-i18n="foot.source">The source is on GitHub</span>
+              <svg class="foot__link-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true" focusable="false">
+                <path d="M4 12 12 4M6 4h6v6" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </a>
+            <span class="foot__source-star" data-i18n="foot.star">Star it there if it is useful to you.</span>
           </p>
 
-          <!-- The byline, the handles and the tip jar, as one line of running
-             text. The handles are named "GitHub profile" and so on, so a
-             screen reader does not hear the profile as a second copy of the
-             repository link above it, or the Figma profile as the file. -->
-          <p class="foot__sign" data-reveal>
+          <!-- Each face named in itself: the one small thing a credit for
+             type can show rather than say. -->
+          <p class="foot__faces">
+            <span data-i18n="foot.setIn">Set in</span>
+            <span class="foot__face">Mona Sans</span>
+            <span data-i18n="foot.and">and</span>
+            <span class="foot__face foot__face--mono">Fragment Mono</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- The bottom line: who made it and where else they are on the left,
+         the tip jar and the way back up on the right. The handles are words,
+         set like the other links down here, not a row of icon circles; each
+         is named as a profile, so a screen reader does not hear GitHub as a
+         second copy of the repository link above, or Figma as the file. -->
+      <div class="foot__bar" data-reveal>
+        <div class="foot__credit">
+          <p class="foot__line">
             <span data-i18n="foot.builtBy">Built by</span>
-            <span class="foot__author">louval</span>, 2026.
-            <span data-i18n="foot.alsoOn">Also on</span>
+            <span class="foot__author">louval</span>
+            <span aria-hidden="true">&middot;</span>
+            2026
+          </p>
+          <nav
+            class="foot__handles"
+            data-i18n-aria="a11y.elsewhere"
+            aria-label="Elsewhere">
             <a
-              class="foot__ref"
+              class="foot__handle"
               href="https://github.com/louvalman"
               target="_blank"
               rel="noopener noreferrer"
               data-i18n-aria="a11y.githubProfile"
-              aria-label="GitHub profile">GitHub</a>,
+              aria-label="GitHub profile">GitHub</a>
             <a
-              class="foot__ref"
+              class="foot__handle"
               href="https://www.figma.com/@louval"
               target="_blank"
               rel="noopener noreferrer"
               data-i18n-aria="a11y.figmaProfile"
               aria-label="Figma profile">Figma</a>
-            <span data-i18n="foot.and">and</span>
             <a
-              class="foot__ref"
+              class="foot__handle"
               href="https://x.com/LouisDyrhauge"
               target="_blank"
               rel="noopener noreferrer"
               data-i18n-aria="a11y.xProfile"
-              aria-label="X profile">X</a>.
-            <a
-              class="foot__ref foot__coffee"
-              href="https://buymeacoffee.com/Ou2jLyzlVg"
-              target="_blank"
-              rel="noopener noreferrer"><svg
-                viewBox="0 0 16 16"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.3"
+              aria-label="X profile">X</a>
+          </nav>
+        </div>
+        <div class="foot__actions">
+          <a
+            class="foot__coffee"
+            href="https://buymeacoffee.com/Ou2jLyzlVg"
+            target="_blank"
+            rel="noopener noreferrer">
+            <svg
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true">
+              <path d="M2.5 6.5h9v4a3 3 0 0 1-3 3h-3a3 3 0 0 1-3-3z" />
+              <path d="M11.5 7.5h1.25a1.75 1.75 0 0 1 0 3.5H11.5" />
+              <path class="foot__steam" d="M5 4V2.5M8 4V2.5M11 4V2.5" />
+            </svg>
+            <span data-i18n="foot.coffee">Buy me a coffee</span>
+          </a>
+          <a class="foot__top" href="#top">
+            <span data-i18n="foot.backToTop">Back to top</span>
+            <svg
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.4"
+              aria-hidden="true">
+              <path
+                d="M8 13V3M3.5 7.5 8 3l4.5 4.5"
                 stroke-linecap="round"
-                stroke-linejoin="round"
-                aria-hidden="true"
-                focusable="false">
-                <path d="M2.5 6.5h9v4a3 3 0 0 1-3 3h-3a3 3 0 0 1-3-3z" />
-                <path d="M11.5 7.5h1.25a1.75 1.75 0 0 1 0 3.5H11.5" />
-                <path class="foot__steam" d="M5 4V2.5M8 4V2.5M11 4V2.5" />
-              </svg><span data-i18n="foot.coffee">Buy me a coffee</span></a>
-          </p>
+                stroke-linejoin="round" />
+            </svg>
+          </a>
         </div>
       </div>
     </footer>

@@ -164,24 +164,20 @@ function withParam(src, key, value) {
       'foot.getFile': 'Hent filen på Figma Community',
       'foot.inviteText': 'Hvert studie er også tegnet i Figma-filen, en side '
         + 'hver, med sine varianter og sin bevægelse, klar til at duplikere.',
-      'foot.folder': 'Hvert studie er en mappe, der står for sig selv, i '
-        + 'HTML, CSS og JS uden afhængigheder: kopiér en ud, og den virker '
-        + 'videre.',
-      'foot.source': 'Kildekoden ligger på',
-      'foot.star': '; giv den en stjerne der, hvis du kan bruge den.',
-      'foot.inspiration': 'Nogle studier tager udgangspunkt i en grænseflade '
-        + 'set andre steder, og når et gør, står linket på Inspiration-linjen '
-        + 'sidst i mappens <code>notes.md</code>.',
-      'foot.setIn': 'Sat med <span class="foot__face">Mona Sans</span> og '
-        + '<span class="foot__face foot__face--mono">Fragment Mono</span>.',
-      'foot.builtBy': 'Bygget af',
-      'foot.alsoOn': 'Også på',
+      'foot.blurb': 'Hvert studie er en mappe, der står for sig selv, i HTML, '
+        + 'CSS og JS uden afhængigheder. Kopiér en ud, og den virker videre.',
+      'foot.source': 'Kildekoden ligger på GitHub',
+      'foot.star': 'Giv den en stjerne der, hvis du kan bruge den.',
+      'foot.setIn': 'Sat med',
       'foot.and': 'og',
+      'foot.builtBy': 'Bygget af',
       'foot.coffee': 'Giv en kop kaffe',
+      'foot.backToTop': 'Til toppen',
       'a11y.githubProfile': 'GitHub-profil',
       'a11y.figmaProfile': 'Figma-profil',
       'a11y.xProfile': 'X-profil',
       'a11y.skip': 'Spring til studierne',
+      'a11y.elsewhere': 'Andre steder',
       'a11y.carousel': 'Karrusel',
       'a11y.previous': 'Forrige',
       'a11y.next': 'Næste',
@@ -217,17 +213,10 @@ function withParam(src, key, value) {
     document.querySelectorAll('[data-i18n], [data-i18n-aria], [data-i18n-title]')
   );
 
-  // Markup, not text, in both directions. The footer's colophon is prose, and
-  // a sentence in it wants a <code> round a file name or a face set in
-  // itself; textContent would capture the English already flattened and strip
-  // that markup on the first apply, whatever the language. It is safe here
-  // because every string it sets is a literal in this file or in the page:
-  // nothing from a URL, a field or a fetch reaches it. Links stay in the
-  // markup, between keyed spans, so no address is written into the table.
   const english = new Map();
   nodes.forEach((el) => {
     english.set(el, {
-      html: el.innerHTML,
+      text: el.textContent,
       aria: el.getAttribute('aria-label'),
       title: el.getAttribute('title')
     });
@@ -293,7 +282,7 @@ function withParam(src, key, value) {
       const titleKey = el.getAttribute('data-i18n-title');
 
       if (textKey) {
-        el.innerHTML = table && table[textKey] ? table[textKey] : base.html;
+        el.textContent = table && table[textKey] ? table[textKey] : base.text;
       }
       if (ariaKey) {
         el.setAttribute('aria-label', table && table[ariaKey] ? table[ariaKey] : base.aria);
@@ -546,7 +535,6 @@ function withParam(src, key, value) {
   const driftBtn = document.querySelector('[data-rail-drift]');
   const progress = document.querySelector('[data-rail-progress]');
   const totalOut = document.getElementById('rail-total');
-  const footSet = document.getElementById('foot-set');
   const ledeHint = document.querySelector('[data-lede-hint]');
 
   const pieces = () => Array.from(track.children);
@@ -1498,10 +1486,9 @@ function withParam(src, key, value) {
   }
 
   // How many cards of each type, and the order the types are listed in:
-  // commonest first, alphabetical where two are level. Two places read it —
-  // the filter's options and the footer's colophon — and a sentence that
-  // ordered them differently from the filter above would read as a different
-  // set of things.
+  // commonest first, alphabetical where two are level, for the filter's
+  // options. The footer used to list them too, in the same order; the filter
+  // is where a reader takes them from, so it no longer does.
   function typeCounts() {
     const counts = new Map();
     allPieces().forEach((piece) => {
@@ -1516,76 +1503,6 @@ function withParam(src, key, value) {
       const d = counts.get(b) - counts.get(a);
       return d !== 0 ? d : a.localeCompare(b);
     });
-  }
-
-  // The colophon opens on the set: "Eight studies so far: three aesthetics,
-  // three cards, a layout and a navigation." It reads the badges rather than
-  // holding a list of its own, so the types are declared once per card and
-  // nowhere else, and it counts what exists rather than what the rail is
-  // showing: a filter narrowing the rail to one type is not the other three
-  // ceasing to exist. Written at boot and on a language switch, never from
-  // sync(), because the set does not change while the page is open.
-  //
-  // In words, because it is a sentence: "8 studies" in running prose reads
-  // as a field someone filled in. The words are grammar rather than copy —
-  // a noun, its plural and, for one of a thing, the article its gender takes
-  // in Danish — so both languages sit here together rather than in the
-  // table. A type missing from them reads as its badge, and past twelve the
-  // count is a figure.
-  const SET_WORDS = {
-    en: {
-      numbers: ['no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven',
-        'eight', 'nine', 'ten', 'eleven', 'twelve'],
-      study: ['study', 'studies', 'one'],
-      types: {
-        aesthetic: ['aesthetic', 'aesthetics', 'an'],
-        button: ['button', 'buttons', 'a'],
-        card: ['card', 'cards', 'a'],
-        layout: ['layout', 'layouts', 'a'],
-        navigation: ['navigation', 'navigations', 'a']
-      },
-      and: 'and',
-      soFar: 'so far'
-    },
-    da: {
-      numbers: ['ingen', 'en', 'to', 'tre', 'fire', 'fem', 'seks', 'syv',
-        'otte', 'ni', 'ti', 'elleve', 'tolv'],
-      study: ['studie', 'studier', '\u00e9t'],
-      types: {
-        aesthetic: ['\u00e6stetik', '\u00e6stetikker', 'en'],
-        button: ['knap', 'knapper', 'en'],
-        card: ['kort', 'kort', 'et'],
-        layout: ['layout', 'layouts', 'et'],
-        navigation: ['navigation', 'navigationer', 'en']
-      },
-      and: 'og',
-      soFar: 'indtil videre'
-    }
-  };
-
-  function renderFootSet() {
-    if (!footSet) return;
-    const total = allPieces().length;
-    if (!total) return;
-    const words = SET_WORDS[document.documentElement.lang] || SET_WORDS.en;
-
-    const counted = (n, noun) => n === 1
-      ? noun[2] + ' ' + noun[0]
-      : (n < words.numbers.length ? words.numbers[n] : String(n)) + ' ' + noun[1];
-
-    const counts = typeCounts();
-    const parts = typeOrder(counts).map((type) => {
-      const label = typeLabel(type).toLowerCase();
-      const noun = words.types[type] || [label, label, words.numbers[1]];
-      return counted(counts.get(type), noun);
-    });
-    const list = parts.length > 1
-      ? parts.slice(0, -1).join(', ') + ' ' + words.and + ' ' + parts[parts.length - 1]
-      : parts.join('');
-
-    const lead = counted(total, words.study) + ' ' + words.soFar;
-    footSet.textContent = lead.charAt(0).toUpperCase() + lead.slice(1)
-      + (list ? ': ' + list : '') + '.';
   }
 
   const labelFor = (type) =>
@@ -1766,9 +1683,6 @@ function withParam(src, key, value) {
     }
     renderFilterValue();
     renderTech();
-    // Same strings, further down the page: the colophon's count is the card
-    // badges too, so it turns over with them rather than carrying its own.
-    renderFootSet();
   });
 
   // --- rail -------------------------------------------------------------
@@ -2216,13 +2130,11 @@ function withParam(src, key, value) {
   function sync() {
     const max = maxScroll();
 
-    // The rail counts what it is showing; the footer counts what exists, at
-    // boot, in renderFootSet. Filtering to one type does not mean four
-    // studies stopped being written. A count, not a position: "8 studies",
-    // unpadded, the same in both views. It used to read "Study 04 / 08" off
-    // the read mark, which on a drifting rail was a number changing by
-    // itself, and needed the card's own chip filled to say which card it
-    // meant.
+    // The rail counts what it is showing, and the filter's "All" what
+    // exists. A count, not a position: "8 studies", unpadded, the same in
+    // both views. It used to read "Study 04 / 08" off the read mark, which on
+    // a drifting rail was a number changing by itself, and needed the card's
+    // own chip filled to say which card it meant.
     const count = real().length;
     if (totalOut) {
       totalOut.textContent = String(count);
@@ -3857,7 +3769,6 @@ function withParam(src, key, value) {
   renderDates(document.documentElement.lang);
   buildFilter();   // after order(), so the options count a settled rail
   renderTech();
-  renderFootSet();
   number();
 
   // After order(), which is the last thing that touches the DOM order the ring

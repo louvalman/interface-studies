@@ -210,6 +210,10 @@
 
 * { box-sizing: border-box; }
 
+/* For the footer's back-to-top link. The reduced-motion block below turns
+   it off again. */
+html { scroll-behavior: smooth; }
+
 body {
   margin: 0;
   min-height: 100vh;
@@ -2733,14 +2737,11 @@ body.is-locked {
   flex: none;
 }
 
-/* The colophon: the printer's mark, and beside it a paragraph and a
-   sign-off. It replaced a brand column, a spec sheet of mono keys on
-   hairlines and a credits bar, the footer half the portfolios of the moment
-   share; the facts are the same ones, said once each, as sentences. Stacked
-   below 64rem, the mark over the text. */
-.foot__colophon {
-  --colophon-size: 0.9375rem;
-  --colophon-leading: 1.65;
+/* The site mark, and beside it what a study is and where its source lives.
+   Stacked below 64rem, the mark over the text. */
+.foot__main {
+  --foot-text-size: 0.9375rem;
+  --foot-text-leading: 1.6;
 
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -2748,11 +2749,12 @@ body.is-locked {
 }
 
 /* On the rail's columns from 64rem, as the masthead and the band above are:
-   the paragraph starts where the third card does, the edge the masthead's
-   lede and the band's sentence share, and the mark stands at the gutter
-   where the band's title does. */
+   the text starts where the third card does, the edge the masthead's lede and
+   the band's sentence share, and the mark stands at the gutter where the
+   band's title does. Pushed to the far right, a list here once left about
+   960px empty between the columns at 1920 and lined up with nothing. */
 @media (min-width: 64rem) {
-  .foot__colophon {
+  .foot__main {
     grid-template-columns:
       minmax(0, calc(var(--card-w) * 2 + var(--rail-gap)))
       minmax(min(24rem, 100%), 1fr);
@@ -2761,12 +2763,12 @@ body.is-locked {
   }
 }
 
-/* One line of the paragraph tall, with the mark and the name centred in it,
-   so beside the text the device sits level with its first line whatever the
-   two faces' metrics are. */
+/* One line of the text tall, with the mark and the name centred in it, so
+   beside the text it sits level with the first line whatever the two faces'
+   metrics are. */
 .foot__mark {
   margin: 0;
-  min-height: calc(var(--colophon-size) * var(--colophon-leading));
+  min-height: calc(var(--foot-text-size) * var(--foot-text-leading));
   display: flex;
   align-items: center;
   gap: 0.7rem;
@@ -2777,59 +2779,113 @@ body.is-locked {
   color: var(--ink);
 }
 
-.foot__prose {
+.foot__blurb {
   margin: 0;
-  max-width: 60ch;
-  font-size: var(--colophon-size);
-  line-height: var(--colophon-leading);
+  max-width: 50ch;
+  text-wrap: pretty;
+  font-size: var(--foot-text-size);
+  line-height: var(--foot-text-leading);
   color: var(--ink-soft);
 }
 
-/* The count leads in the ink, a step up from the rest: it is the one fact
-   in the paragraph that changes, and the thing the colophon is about. */
-.foot__set { color: var(--ink); }
+/* Where to copy a study out from. A link in prose, so set as the page sets
+   links in prose — the text's own ink, underlined in the accent — with the
+   arrow that says it leaves the site. The star line beside it is quieter:
+   it asks, and it is not the link. */
+.foot__source {
+  margin: 0.75rem 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.75rem;
+  font-size: var(--foot-text-size);
+  line-height: var(--foot-text-leading);
+}
+
+.foot__source-star {
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
+/* A step quieter again: a credit, found by someone looking for it. */
+.foot__faces {
+  margin: 1rem 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--muted);
+}
 
 .foot__face {
   white-space: nowrap;
   color: var(--ink);
 }
 
-.foot__prose code,
 .foot__face--mono {
   font-family: var(--mono);
   font-size: 0.875em;
 }
 
-/* A step quieter than the paragraph: the byline is a fact about the set,
-   not part of what it is. 13px on a 24px line, so each link in it sits in a
-   row as tall as the target it needs. */
-.foot__sign {
-  margin: 1rem 0 0;
-  max-width: 60ch;
-  font-size: 0.8125rem;
-  line-height: 1.85;
+.foot__bar {
+  margin-top: clamp(2rem, 4vw, 3rem);
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--hairline);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem 1.5rem;
+}
+
+/* Credits on the left: the byline and, beside it, where else to find the
+   person who made this. Wraps rather than shrinking, because the byline is
+   set in mono at a size that has no give. */
+.foot__credit,
+.foot__actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem 1.25rem;
+}
+
+.foot__line {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
   color: var(--muted);
 }
 
+/* The name, not a link: the GitHub handle beside it is the same profile, and
+   the byline linking it too would be a second stop for one place. */
 .foot__author { color: var(--ink); }
 
-/* Links in running text: the band's treatment, without the box. Inline, so
-   a link wraps with the sentence rather than jumping a line whole. */
-.foot__ref {
-  position: relative;
-  color: var(--ink);
-  text-decoration: underline;
-  text-decoration-color: var(--accent);
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.3em;
-  transition: text-decoration-thickness 200ms var(--ease);
+.foot__handles {
+  display: flex;
+  gap: 0.25rem 1rem;
 }
 
-/* Never narrower or shorter than 24px to a pointer. Inline links in a
-   sentence are exempt from WCAG 2.5.8, but "X" is one letter: centred on the
-   word, the hit area grows a short link to the floor and leaves a long one
-   as it is, and the space round "and" keeps it clear of "Figma". */
-.foot__ref::after {
+/* The handles, the tip jar and the way back up share one treatment: the
+   sans at 13px in the quiet grey, turning to the ink on a pointer. */
+.foot__handle,
+.foot__coffee,
+.foot__top {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 1.5rem;
+  text-decoration: none;
+  font-family: var(--sans);
+  font-size: 0.8125rem;
+  color: var(--muted);
+  transition: color 240ms var(--ease);
+}
+
+.foot__handle { position: relative; }
+
+/* Never narrower than 24px to a pointer, which "X" otherwise would be: the
+   hit area grows round the word instead of the word's box, so the row keeps
+   even gaps and a short handle is as easy to reach as a long one. */
+.foot__handle::after {
   content: "";
   position: absolute;
   left: 50%;
@@ -2839,23 +2895,26 @@ body.is-locked {
   translate: -50% -50%;
 }
 
-.foot__ref:hover { text-decoration-thickness: 2px; }
+.foot__coffee { gap: 0.5rem; }
+.foot__top { gap: 0.45rem; }
 
-.foot__ref:focus-visible {
+.foot__handle:hover,
+.foot__handle:active,
+.foot__coffee:hover,
+.foot__coffee:active,
+.foot__top:hover { color: var(--ink); }
+
+.foot__handle:focus-visible,
+.foot__coffee:focus-visible,
+.foot__top:focus-visible {
   outline: 2px solid var(--ink);
-  outline-offset: 2px;
-  border-radius: 2px;
+  outline-offset: 4px;
+  border-radius: 0.25rem;
 }
 
-/* The cup leads the label and stays with it: the underline is the label's,
-   since a decoration is not drawn under an icon. */
-.foot__coffee { white-space: nowrap; }
-
 .foot__coffee svg {
-  width: 1.1em;
-  height: 1.1em;
-  margin-right: 0.35em;
-  vertical-align: -0.2em;
+  width: 0.95rem;
+  height: 0.95rem;
   overflow: visible;
 }
 
@@ -2875,6 +2934,14 @@ body.is-locked {
   opacity: 1;
   transform: translateY(-1.5px);
 }
+
+.foot__top svg {
+  width: 0.8rem;
+  height: 0.8rem;
+  transition: transform 320ms var(--ease);
+}
+
+.foot__top:hover svg { transform: translateY(-3px); }
 
 /* --- short viewports ---------------------------------------------------- */
 
@@ -2996,6 +3063,11 @@ body.is-locked {
 }
 
 @media (max-width: 40rem) {
+  .foot__bar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
   :root {
     --card-w: 16.5rem;         /* 264px */
     --preview-scale: 0.55;     /* 264 / 480 */
@@ -3086,8 +3158,8 @@ body.is-locked {
   /* On a screen tall enough to show it at load, the footer comes last. */
   .foot__invite { --arrive-at: 7; }
   .foot__mark { --arrive-at: 8; }
-  .foot__prose { --arrive-at: 9; }
-  .foot__sign { --arrive-at: 10; }
+  .foot__text { --arrive-at: 9; }
+  .foot__bar { --arrive-at: 10; }
 
   /* Recycling moves cards with flex order and never in the DOM, so child
      order is the order on screen at load, and the stagger can be read off
