@@ -1592,11 +1592,11 @@ rules do not reach it, since it is not a study.
 ### Figma is on the page as a file and as a profile, and they are not the same link
 
 The button in the masthead is the companion file on Figma Community, and so is
-the link closing the footer's band. The circle in the footer's handles nav is
-the profile, and is named "Figma profile" so a screen reader does not hear it
-as a second copy of the file button a few stops earlier. One is where this set is also
-drawn; the other is that the person has an account, which is what that nav is
-for — the same test that keeps the tip jar out of it.
+the link closing the footer's band. The word "Figma" in the colophon's
+sign-off is the profile, and is named "Figma profile" so a screen reader does
+not hear it as a second copy of the file a few stops earlier. One is where this
+set is also drawn; the other is that the person has an account, which is what
+the sign-off's handles are for.
 
 **It is a button, and the masthead's only one.** It began as a value in a meta
 row of mono facts, set like a fact, and read as one: the file is half of what
@@ -1609,8 +1609,9 @@ the light fill and 7.23 on the dark, and `--accent-hover` its hover.
 **The Figma mark is beside it now.** It was kept out of the meta row because a
 brand glyph would have made one fact a different kind of object from the facts
 around it. A button is a different kind of object, and the mark says where it
-goes before the words do. The footer's mark labels a handle, which is a
-different thing, so the two are not the same use twice.
+goes before the words do. The band's link carries it too, because that is the
+same file; the footer's handles are words, so no glyph on the page stands for
+the profile.
 
 **The page closes on it too, but not with the same button.** The footer opens
 on a band that mirrors the masthead's: "Take the set with you, in Figma." over a drawing
@@ -2284,10 +2285,11 @@ the dates, the footer's keys, and also every action: "Open demo", quick look's
 links, the quick-look chip, the footer's coffee and back-to-top links. Eleven
 pixels of letter-spaced capitals in nine roles, until no one of them read as
 the thing to do, and the critique called the frame generic for it. So the
-line is drawn by role: facts and labels — dates, counts, types, numbers, EN/DA,
-the footer's keys — stay mono; actions are set in the sans, the way the
-masthead's Figma button already was. "Open study" and quick look's links are
-14px at 600 in the accent, the chip 12px, the footer's links 13px.
+line is drawn by role: facts and labels — dates, counts, types, numbers, EN/DA
+— stay mono; actions are set in the sans, the way the masthead's Figma button
+already was. "Open study" and quick look's links are 14px at 600 in the accent,
+the chip 12px, the footer's sign-off 13px. The footer's keys have since gone,
+with the spec sheet they labelled; see **The footer is a colophon**.
 
 A card's date sits under its title rather than above it as a kicker, which it
 had been since the September design without anyone choosing it: the name is
@@ -2425,7 +2427,7 @@ The masthead, the rail and the footer rise into place in reading order as the
 page opens — the mark's pulse first, then the headline, the lede, the Figma
 button, the rail's head, each card a beat apart and the rule drawn under them. A block
 carries `data-reveal`; `data-reveal="each"` staggers its children instead,
-which is how the cards and the footer's rows arrive as rows. The order is a
+which is how the cards arrive as a row. The order is a
 slot per block in index.css's arrival section, and it is written there and
 nowhere else. A new study's card needs nothing: the track is the block.
 
@@ -2474,78 +2476,130 @@ runs a side with and without it: median 16.7ms and p95 33.3ms either way
 unthrottled, and at 4x the runs overlap — 30 to 33 frames rendered against 31
 to 39 — because what the load spends is the previews booting, not this.
 
-### The footer says each thing once, and says none of it twice
+### The footer is a colophon, and says each thing once
 
-A closing band, then two paragraphs and a meta list: the invitation to the
-Figma file (see **Figma is on the page as a file and as a profile**), what a
-folder is, where a study started, and the facts about the set.
+A closing band, then a colophon: the invitation to the Figma file (see
+**Figma is on the page as a file and as a profile**), then the site mark and,
+beside it, one paragraph saying what the set is, what it is made of, where its
+source lives, where a study started and what it is set in, with a line under it
+signing it off.
 
-**The blurb states the self-containment positively and once.** It was three
-negations for a while — "no shared stylesheet, no build step, no dependency on
-this page" — and the middle one was repeated verbatim one column to the right,
-where the `Stack` row said it as a fact. A claim stated as what it is not, next
-to the same claim stated as what it is, is the page arguing with itself in two
-registers.
+**It was a spec sheet, and that was the generic part.** Below the band it used
+to be three objects the footers of the moment share: a brand column (the mark,
+a blurb, a row of icon circles), a list of mono keys on hairlines (Typefaces,
+Stack, Types, Studies), and a bar of "Built by · 2026" with "Back to top" at
+its far end. Set beside a screenshot of someone else's footer, the list was
+the same object as theirs, letter-spaced keys on the left and values on the
+right with a hairline between the rows, and nothing in the three said anything
+only this site could. The band above was already this site's; the colophon
+under it was the part any site could have had. So it is set the way a book sets
+the last thing in it: the printer's mark, and a paragraph. A contents page of
+every study, number, title, type and month, was the other direction considered,
+and the prose was chosen.
 
-The `Stack` row says `HTML, CSS and JS, no dependencies`. It used to say
-`vanilla JS, no build step`, which was true and spoke to someone who already
-knew why those mattered; "no dependencies" is the same fact as a reader meets
-it, and it is what "lightweight" means when it has to be checkable. It stays
-true as the React adapters arrive, because an adapter is a wrapper for an app
-that already has React and the component inside it still depends on nothing.
-It does not name React: one study of eight has an adapter so far, and a row
-of facts is not the place for one that is only true of a few.
+**Every fact the rows held is still said, once, as a sentence.** The paragraph
+opens on the set, "Eight studies so far: three aesthetics, three cards, a layout
+and a navigation.", in the ink, a step up from the rest of it, because it is the
+fact the colophon is about. `renderFootSet` writes it from the cards' badges
+through the filter's own `typeCounts`/`typeOrder`, so the types come
+commonest-first in the filter's order — a sentence ordering them differently
+would read as a different set of things — and it counts what exists rather than
+what the rail is showing. It is written at boot and on `lang:change`, never from
+`sync()`: the set does not change while the page is open, and `sync()` is on the
+scroll path. Without script the span keeps the headline's claim, "A working
+collection of components.", so the paragraph still opens on something true.
 
-**The blurb says where to copy one out from.** "Copy one out and it keeps
-working" used to stop there, with nothing on the page linking the repository;
-the GitHub icon in the handles is the profile. The line under it links the
-repository, and quick look links each study's own folder,
-`…/tree/main/<folder>`, as "Open on GitHub". It sits beside "Open in Figma",
-set alike and grouped so the pair wraps as one: the study's two other homes,
-of equal weight, after "Open study".
-The address is written once, on the footer link's `data-repo`, and quick look
-reads it from there; the folder is the first segment of the card's own link.
+**The count is in words**, because it is prose, and "8 studies" in a sentence
+reads as a field someone filled in. The words are grammar rather than copy — a
+noun, its plural and, for one of a thing, the article its gender takes in
+Danish, "et kort" against "en knap" — so both languages sit together in
+`SET_WORDS` beside the renderer rather than in the table. Past twelve the count
+is a figure, and a type missing from it reads as its badge; all five valid
+types are in it. The rail's head keeps its figure, "8 studies", because that
+is a label and not a sentence.
 
-The ask for a star is a line beside that link — "Star it there if it is useful
-to you." — not a modal in front of it. A reader who has clicked through to
-GitHub has already decided to go, a modal is a thing to dismiss on the way,
-and the star button is where the link lands. Stars are not one of the two
-things PRODUCT.md counts as success; if they become one, that is where it is
-written down.
+**The paragraph keeps the decisions the rows and the blurb had made**, each in
+the clause that took over from them:
 
-**The disclaimer rule binds here too.** It is written above for `notes.md` and
-it is the same rule: this paragraph ended "none is a copy of one", which argues
-with a charge nobody made, in the footer's last paragraph, about the references
-rather than about the studies. It states the practice and stops.
+- **Self-containment, stated positively and once**: "a folder that stands on
+  its own, in HTML, CSS and JS with no dependencies: copy one out and it keeps
+  working." The blurb was three negations for a while — "no shared stylesheet,
+  no build step, no dependency on this page" — beside a `Stack` row saying the
+  middle one again as a fact, which is the page arguing with itself in two
+  registers. The row then said `vanilla JS, no build step`, true and spoken to
+  someone who already knew why those mattered; "no dependencies" is the same
+  fact as a reader meets it, and what "lightweight" means when it has to be
+  checkable. It stays true as the React adapters arrive, because an adapter is
+  a wrapper for an app that already has React and the component inside it
+  depends on nothing, and it does not name React, which is true of only a few.
+- **Where to copy one out from**: "The source is on GitHub", and the link is
+  the repository. Its address is written once, on that link's `data-repo`, and
+  quick look reads it from there to link each study's own folder,
+  `…/tree/main/<folder>`, as "Open on GitHub", beside "Open in Figma", set
+  alike and grouped so the pair wraps as one, after "Open study". The folder is
+  the first segment of the card's own link.
+- **The ask for a star is the rest of that sentence** — "star it there if it is
+  useful to you" — not a modal in front of it. A reader who has clicked through
+  to GitHub has already decided to go, a modal is a thing to dismiss on the
+  way, and the star button is where the link lands. Stars are not one of the
+  two things PRODUCT.md counts as success; if they become one, that is where it
+  is written down.
+- **Where a study started, under the disclaimer rule**, which is written above
+  for `notes.md` and binds here too. This clause once ended "none is a copy of
+  one", which argues with a charge nobody made, in the footer, about the
+  references rather than about the studies. It states the practice and stops.
+  It says *some* studies, because a study built against an original design
+  started from no one else's interface, and it calls the thing an `Inspiration`
+  line, which is what the files call it — it said "source" for a while, a
+  second word for something already named.
+- **What it is set in**: "Set in Mona Sans and Fragment Mono", each face set in
+  itself, the one small thing a colophon can show rather than say.
 
-It also says *some* studies rather than every one of them, because a study
-built against an original design started from no one else's interface — and it
-calls the thing an `Inspiration` line, which is what the files call it. It said
-"source" for a while, a second word for something already named, in the one
-place a reader is being sent to go and look at it.
+**The handles are words in the sign-off, not circles.** "Built by louval, 2026.
+Also on GitHub, Figma and X.", then the tip jar with its cup, whose steam rises
+on hover and on `:active`. Each handle is named "GitHub profile", "Figma
+profile" and "X profile", so a screen reader does not hear the profile as a
+second copy of the repository link a sentence earlier, or the Figma profile as
+the file. The byline's name is not a link, because the profile is three words
+on. "Back to top" went with the bar, and `html`'s smooth scrolling went with
+it, because it existed for that link alone: the one in-page jump left is the
+skip link, and a skip link should jump.
 
-**The colophon stands on the rail's columns too.** From 64rem the facts
-start where the third card does, the edge the masthead's lede and the band's
-text share, and the list keeps its 26rem measure. Pushed to the far right it
-left about 960px empty between the columns at 1920 and lined up with nothing.
-The byline's name is not a link: the GitHub circle in the handles is the same
-profile, and two stops for one place was one too many.
+**Its links are inline, and the short ones are grown.** `.foot__ref` is the
+band's link without the box: the ink, underlined in the accent, and no arrow —
+five arrows across two lines of prose were noise, and the band's one ask keeps
+its arrow. Inline so a link wraps with its sentence. Links in a sentence are
+exempt from WCAG 2.5.8, but "X" is one letter, 9px wide, so an `::after`
+centred on each link grows it to 24px and leaves the longer ones as they are;
+the space round "and" keeps it clear of "Figma". The sign-off is 13px on a
+1.85 line, a 24px row. Measured at 390 with touch: every link in it takes a
+tap 11px either side of its centre, "X" included.
 
-The meta list is four rows and each says something the others do not: what the
-page is set in, what the studies are made of, what types they cover, and how
-many there are. The last two are written from the cards, so neither is a number
-anyone keeps by hand. The count is written plainly, "8" and not "08", like the
-rail's "8 studies": it is a quantity, and padded it read as an ID. The cards'
-own numbers keep their padding, because those are positions in a set.
+**It stands on the rail's columns, as the band above does.** From 64rem the
+paragraph starts where the third card does, the edge the masthead's lede and
+the band's sentence share, at a 60ch measure, and the mark stands at the
+gutter where the band's title does. The mark's box is one line of the
+paragraph tall with its contents centred in it, so it sits level with the
+first line whatever the two faces' metrics are. Below 64rem the mark sits over
+the text. A brand column beside a list pushed to the far right used to leave
+about 960px empty between them at 1920 and line up with nothing.
 
-The `Types` row reads the same badges the filter does, through the same
-`typeCounts`/`typeOrder`, so both list them commonest-first in the same order —
-a row ordering them differently from the filter's options would read as a
-different set of things. It is written once at boot and again on `lang:change`,
-never from `sync()`: the set of types is static, and `sync()` is on the scroll
-path. And like the `Studies` count beside it, it counts what exists rather than
-what the rail is showing, so narrowing the rail to one type is not the other
-three ceasing to exist.
+**The index's translator writes markup now.** A sentence in the colophon
+carries a `<code>` round `notes.md` and a face set in itself, and
+`textContent` would have captured the English already flattened and stripped
+both on the first apply, whatever the language — the trap the demo pages fell
+into with their own `<code>`. So `index.js` captures and writes `innerHTML`,
+as every demo page does, and for the same reason it is safe there: every
+string it sets is a literal in the file or the page. The links stay in the
+markup, between keyed spans, so no address is written into the table.
+
+Measured by computed colour against the page: the count and the links 17.33:1
+light and 15.15 dark, the paragraph 7.15 and 7.36, the sign-off, the quietest
+tone, 5.78 and 6.51. Tab runs from the band's link to the repository, the three
+profiles and the tip jar, and leaves the page. A language round trip restores
+the paragraph's markup exactly. With motion on, every block is held below the
+fold and arrives by the end of the page at 1920x1080, 1440x900, 390x844 and
+320x700, and nothing scrolls sideways at 320.
 
 ### The type is stated twice, and that is the best available
 
@@ -2561,7 +2615,7 @@ So: two places, checked by hand, and the filter reads the one that is already
 there rather than introducing a third. If this ever gets a build step, this is
 the first thing to derive.
 
-Two places, however many things read them. The footer's `Types` row is a second
+Two places, however many things read them. The footer's colophon is a second
 reader of the badge, not a third declaration, which is why it needed nothing
 added to it — and it is the test of whether that rule is holding: anything new
 that wants to know a study's type reads the badge, and a change that has it
