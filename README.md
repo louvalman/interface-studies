@@ -32,7 +32,7 @@ from an interface seen elsewhere, and a line saying so where the design is
 original.
 
 A seventh file, `component.js`, is allowed where the study depends on the
-interaction or where CSS genuinely cannot do the job — four studies have one.
+interaction or where CSS genuinely cannot do the job — five studies have one.
 The component still works without it: script enhances, it does not constitute.
 
 A study may also carry `component.react.jsx`, the component as a standalone

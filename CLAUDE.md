@@ -31,11 +31,12 @@ Every study lives in its own folder, named `YYYY-MM-slug`:
 it is generated from the three component files and is the one place in a
 study a framework may appear. See **A React adapter, generated** below.
 
-`ref.png` is the one that may be missing, and three folders go without it.
-Two are original designs with nothing to reference, and the detail reveal was
-inspired by a post that was never captured, so its `Inspiration:` link is the
-record. Where a reference exists it is a working record rather than part of
-the study, so a folder can also go without it deliberately:
+`ref.png` is the one that may be missing, and four folders go without it.
+Two are original designs with nothing to reference, and two started from a
+page that was never captured — the detail reveal from a post, the mode dial
+from a product page — so each `Inspiration:` link is the record. Where a
+reference exists it is a working record rather than part of the study, so a
+folder can also go without it deliberately:
 `2026-09-raster-pulse`'s carried a whole brand and is gitignored and purged,
 leaving five files. The `Inspiration:` line at the bottom of a `notes.md` is
 where provenance lives either way.
@@ -850,7 +851,7 @@ dark theme and it declares `:root[data-theme="light"]` instead. The attribute
 selects either way.
 
 So is the ground itself, but there is a default and `_template/` carries it:
-`#f3f2ef` light, `#121316` dark, which is what three of the five studies use. A
+`#f3f2ef` light, `#121316` dark, which is what seven of the nine studies use. A
 study may depart from it — the inked plate's ink, the liquid-glass toolbar's
 warm stone for the cross-lit stage it needs — and a departure is a decision that
 says so in that folder's `notes.md`. What is not allowed is a third thing: the
@@ -1160,7 +1161,7 @@ stacks above the rail; the original masthead showed 27% of the card at 1470,
 title nowhere.
 
 The masthead no longer carries a date. "Latest 2026 · 09" was written from the
-newest card, and while every study is from one month it said nothing the cards
+newest card, and while every study was from one month it said nothing the cards
 did not.
 
 A touch release is the platform's, end to end — its momentum, its snap, its
@@ -1293,13 +1294,15 @@ set off, so "Start the carousel again" was wrong in exactly the state where the
 control matters most, and the word carried nothing a reader needed in the other.
 
 The rail loops, and so drifts, while the row can cover the viewport with a card
-to spare: `client <= (ring - 2) * step`, which with ten in the ring — eight
-studies and two forthcoming slots — and a 336px card is 2912px. The 288px card a short window gets lowers that ceiling, which is
-one reason it is keyed to height: the wide screens that would reach it are
-tall ones, and keep the 336px card. Past that it is finite and the drift control hides itself — the one
-case documented under `loopable()`, and the ceiling rises by a card with every
-study added. A wider screen than that needs a wider card, and the pair to keep
-in step is `--card-w` and `--preview-scale`.
+to spare: `client <= (ring - 2) * step`, which with eleven in the ring — nine
+studies and two forthcoming slots — and a 336px card is 3276px, nine steps of
+336 and the 28px gap. The 288px card a short window gets lowers that ceiling,
+to 2844px, which is one reason it is keyed to height: the wide screens that
+would reach it are tall ones, and keep the 336px card. Past that it is finite
+and the drift control hides itself — the one case documented under
+`loopable()`, and the ceiling rises by a card with every study added. A wider
+screen than that needs a wider card, and the pair to keep in step is `--card-w`
+and `--preview-scale`.
 
 **When the control is missing, those are the two reasons**, and they are worth
 telling apart before looking anywhere else: the row is too short to loop, or
@@ -1455,7 +1458,7 @@ off the read mark for a while, and nothing said which card that was, with the
 drift moving and the gutter fading, so the counted card's number chip was
 filled to tie the two together. That made two things changing by themselves
 on a rail that already drifts, to say what the progress rule under the cards
-and the cards' own numbers already said. Both went: the head says "8 studies",
+and the cards' own numbers already said. Both went: the head says "9 studies",
 unpadded, in both views and in the same place, "1 study" when the filter
 leaves one, and no card is painted for being at the mark. `.is-active` still
 marks it, for the preview that plays on touch. Lifting or outlining the card
@@ -1527,10 +1530,11 @@ theme — `?lang=` on its src, `preview:lang` if the index is switched with it o
 screen, and re-stated on `preview:ready` — and re-words the component without
 redrawing it; the variant names it reports to quick look follow too. The index
 writes `theme` and `lang` into a preview's src one parameter at a time, so
-neither overwrites the other. The inked plate is the first study to do it;
-the others keep their copy as written until each is given its Danish, one
-folder at a time, and `_template/` carries both halves for a new study. The
-Figma file's copy of a study is not reached by any of this.
+neither overwrites the other. The inked plate is the first study to do it, and
+the mode dial was born with it; the others keep their copy as written until
+each is given its Danish, one folder at a time, and `_template/` carries both
+halves for a new study. The Figma file's copy of a study is not reached by any
+of this.
 
 **The applier reads and writes `innerHTML`, not `textContent`, and every
 folder's copy does.** A demo page's prose wants markup the sentence needs — a
@@ -1552,8 +1556,11 @@ The card list is hand-maintained in `index.html`. Adding a study means
 adding one `<article class="piece">` block to it, pointing at the new folder's
 `demo.html` and `preview.html`, and carrying a `data-date` — `index.js` sorts
 the rail by that, newest first, so where the block is pasted does not matter.
-Leave the `piece__no` em dash alone too: the number is written from the card's
-position once the rail is sorted. Both used to be typed in, and both were a
+For a while it did: mandatory snap held the card that was first before the
+sort, so a block pasted anywhere but first booted the rail a card off, and
+`order()` now returns the row to its start after moving it. Leave the
+`piece__no` em dash alone too: the number is written from the card's position
+once the rail is sorted. Both used to be typed in, and both were a
 second source of truth for something already stated once — a card added at the
 front invalidated every number below it, and two sessions adding one at the
 same time left the order to whichever way the merge fell. Without a `data-date`
@@ -1651,12 +1658,12 @@ card links the Figma file** below.
 
 ### A study's page in the file reads as a document
 
-Each study has a page in the Figma file, and every page has the same shape, so
-someone moving between studies knows where to look before they have read
-anything. The shape belongs to the page, not to the study. What a study builds,
-which boards it needs, what they show and how they sit inside a chapter, and how
-its demo page is laid out, all stay its own decisions; this only says which
-chapter a board goes in.
+Each study has a page in the Figma file once it is drawn there, and every page
+has the same shape, so someone moving between studies knows where to look
+before they have read anything. The shape belongs to the page, not to the
+study. What a study builds, which boards it needs, what they show and how they
+sit inside a chapter, and how its demo page is laid out, all stay its own
+decisions; this only says which chapter a board goes in.
 
 A page opens on a `Start here` frame: the study's name, a kicker
 (`2026-09 · CARD · STUDY`), a summary taken from the opening of `notes.md`,
@@ -1729,21 +1736,22 @@ which is where the file is fetched from.
 
 `data-figma` on the `<article class="piece">` block is the companion Figma
 file's Community listing, and quick look draws an `Open in Figma` link beside
-`Open study` where a card carries one. Every study has one. It stays optional
-because a study can land before it is in the file: no attribute, no link, and
-nothing else reads it. The link opens in a new tab and takes neither `?lang=`
-nor `?theme=` — Figma resolves neither, and the choice is this site's rather
-than something to hand to another one.
+`Open study` where a card carries one. Every study in the file has one. It
+stays optional because a study can land before it is in the file: no attribute,
+no link, and nothing else reads it. `2026-10-mode-dial` is that case until it
+is drawn into the file and the listing is published. The link opens in a new
+tab and takes neither `?lang=` nor `?theme=` — Figma resolves neither, and the
+choice is this site's rather than something to hand to another one.
 
 **Every link goes to the Community listing, never the working file.** The
 listing is where the set is duplicated and liked, and both are counted there
 and nowhere else; a visitor sent to the working file can look through all of it
-without ever arriving at the listing. For a while the cards did link the working
-file, by `?node-id=`, which opens on the study's own page — and that is what this
-gives up. The listing is a page about the file rather than the file, with no
-address for a page inside it, so every card and every kicker carries the same
-URL the masthead does. If a listing ever gets per-page addresses, those are
-what these values become.
+without ever arriving at the listing. For a while the cards did link the
+working file, by `?node-id=`, which opens on the study's own page — and that is
+what this gives up. The listing is a page about the file rather than the file,
+with no address for a page inside it, so every card and every kicker that links
+the file carries the same URL the masthead does. If a listing ever gets
+per-page addresses, those are what these values become.
 
 The listing shows the file as it was last published, not as it is. A study
 drawn into the file reaches the listing when an update is published there, so
@@ -1767,8 +1775,10 @@ reads as one.
 It is a link, so it is set the way the page sets links rather than the way the
 kicker sets its values: the lede's tone, underlined in the accent. The kicker's
 own grey is muted text and a link is a control, which the contrast rule does not
-let muted text be — on the inked plate's light page that grey is 4.45:1, and on
-most of the others its dark theme clears the floor by a third of a point. The
+let muted text be — on the inked plate's light page that grey was 4.45:1 until
+it was raised to 5.32, and across the pages it clears the floor by 0.35 to 1.6
+in both themes, which is headroom for a muted tone and none to spare for a
+control. The
 lede's tone measures 5.72 to 9.60 across every page in both themes. The accent
 is the underline and not the text because as text it does not clear 4.5:1 at
 11px on every ground. An `::after` stretches the hit area to 24px tall without
@@ -1782,20 +1792,22 @@ kicker wraps, the pair moves to the next line together rather than leaving
 GitHub on a line of its own. That is at 320 on every page and at 390 on the
 toolbar's, which has `NAVIGATION` in it: "2026-09 · Card ·" and then
 "Figma ↗ · GitHub ↗". The kicker held one line at 320 with the Figma link
-alone; it costs a line there now. Like the canonical URL, the address is
-absolute and the folder's own, and `_template/` carries it as
+alone; it costs a line there now. A study not yet in the file carries
+GitHub alone, and the `·` between the two goes with Figma — the mode dial's
+kicker holds one line at 320 that way. Like the canonical URL,
+the address is absolute and the folder's own, and `_template/` carries it as
 `YYYY-MM-slug` to be filled in with the folder's name.
 
-The URL is written on every card and in every kicker rather than once in the
-folder's `notes.md`, which is the opposite of where the `Inspiration:` line
-sits, and the reason is the wall the type already runs into: the index cannot
-read a `notes.md` over `file://`, so a declaration in the folder would have to
-be copied onto the card anyway. So it is repeated and kept in step by hand,
-the way the kicker's type already is, and a folder copied out carries the link
-in its demo page the way it carries its canonical URL. If the Figma file ever
-becomes part of what a study *is* rather than a companion to it, the line
-belongs in `notes.md` and the card and the kicker become its copies, the way
-`type:` already works.
+The URL is written on each card and in each kicker that has one rather than
+once in the folder's `notes.md`, which is the opposite of where the
+`Inspiration:` line sits, and the reason is the wall the type already runs
+into: the index cannot read a `notes.md` over `file://`, so a declaration in
+the folder would have to be copied onto the card anyway. So it is repeated and
+kept in step by hand, the way the kicker's type already is, and a folder copied
+out carries the link in its demo page the way it carries its canonical URL. If
+the Figma file ever becomes part of what a study *is* rather than a companion
+to it, the line belongs in `notes.md` and the card and the kicker become its
+copies, the way `type:` already works.
 
 The preview iframe carries its path in `data-src`, not `src`. Every card on the
 page is a live component — which is the point, and also what it costs: one
@@ -2110,7 +2122,7 @@ its "tap quick look to run a card" had stopped matching what a card does.
 Measured at 390x844, the first card's title went from y=881, under the fold,
 to y=775, and to y=754 once the date moved under the title. Under 360px the
 one line does not fit with the count in it — 6px over at 320 in Danish — so on
-a touch screen the count steps aside there, the filter's "All · 8" stating
+a touch screen the count steps aside there, the filter's "All · 9" stating
 it, and the head stays one line rather than two rows with
 the pause alone on the first. With the mark back on the controls' line, the
 first card's thumbnail starts at y=461 at 320x700 rather than 579; its title
@@ -2129,8 +2141,9 @@ the DOM.
 technique filters by what it is built with, and "CSS-only" could only be
 inferred from a missing JS mark. Each card carries `data-tech`, by hand like
 its type — `css-only`, `svg`, `webgl`, `web-audio`, `view-transitions`,
-`container-queries`, `backdrop-filter`, `tokens`, the last for a study whose
-custom properties set what it does rather than only how it looks. index.js
+`container-queries`, `backdrop-filter`, `tokens`, for a study whose custom
+properties set what it does rather than only how it looks, and `css-trig`, for
+one that places things with `sin()` and `cos()` in its stylesheet. index.js
 writes them as a mono line under the card's note, each tag whole so a line
 breaks between tags and never inside one, and the filter offers them as a
 "Technique" group under the types, with counts, its values prefixed `tech:`.
@@ -2169,7 +2182,7 @@ Filtering hides cards with a class rather than the `hidden` attribute — `.piec
 sets its own `display`, and the warning about `[hidden]` in the preview contract
 applies here for the same reason. The rail counts what it is showing and the
 filter's "All" counts what exists — the masthead and the footer state neither,
-because the rail's own "8 studies" is where a reader takes the total from.
+because the rail's own "9 studies" is where a reader takes the total from.
 
 **A control that is only an icon has a tooltip**, `data-tip` on the button:
 the theme toggle, the rail's pause, previous and next, the rail/list switch,
@@ -2396,7 +2409,7 @@ rail is a rail, each at the one place it is asked:
   whole track and the sideways test would call all of them on screen. The
   page's own scroll runs `syncVisibility`, coalesced onto the frame.
 
-The count reads "8 studies" here as on the rail, now that neither reports a
+The count reads "9 studies" here as on the rail, now that neither reports a
 read position. The
 track loses its tab stop, since a list is read with the page's keys, and is
 labelled "Study list"; `renderNav` owns that label and runs after the language
@@ -2408,9 +2421,10 @@ module, so a switch of language keeps it.
 each entry as a mask from Simple Icons, keyed on `data-code`, with the name left
 in the markup for a screen reader and the tooltip. It is what a study comes
 *in*, not what it is made of, which is why the shader's WebGL is not on it: that
-is inside its JS. Figma is on it for every study, after the code — every study has a page
-in the file, and code and Figma are the two halves PRODUCT.md names. It used to
-be the list's alone and to leave Figma off, so a card on the rail said nothing
+is inside its JS. Figma is on it for every study in the file, after the code —
+code and Figma are the two halves PRODUCT.md names — and joins a new study's
+card when its page is published, with its `data-figma`. It used to be the
+list's alone and to leave Figma off, so a card on the rail said nothing
 about the half of success that is the file. The rail shows the marks too, on
 the "Open study" line right after the link, past a short hairline that says
 they label the study rather than extend the link. They sat at the card's far
@@ -2500,8 +2514,8 @@ bottom line into the paragraph, which was the part that had been working.
 So the split came back and the text came out. What decides whether a fact
 stays is whether anything else on the page already says it:
 
-- **The count and the types went.** The rail's head says "8 studies", the
-  filter says "All · 8" and lists every type with its count. The footer said
+- **The count and the types went.** The rail's head says "9 studies", the
+  filter says "All · 9" and lists every type with its count. The footer said
   it a third time, and for a while in words.
 - **Where a study started went.** Every demo page's Decisions block ends on
   that study's `Inspiration` row, which is the record; a sentence down here

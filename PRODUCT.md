@@ -57,8 +57,8 @@ decisions, and reading it is not a goal in itself.
 - The index is a rail of live component previews; a card runs in place,
   opens a full-size quick look with its variants, or links to the study's
   demo page.
-- Each study has a companion page in the Figma Community file, laid out in
-  the same four chapters on every page.
+- Each study has, or gets once it is published, a companion page in the
+  Figma Community file, laid out in the same four chapters on every page.
 - Bilingual, English and Danish; light and dark themes. Both choices travel
   in links between the index and demo pages.
 
@@ -91,10 +91,10 @@ decisions, and reading it is not a goal in itself.
 
 ## Evidence on Hand
 
-- Eight studies (`2026-09-*` folders), each with `notes.md`, a demo page and a
-  live preview.
-- The Figma Community file linked above; `og.png` social card rendered from
-  `og.html`.
+- Nine studies (`2026-09-*` and `2026-10-*` folders), each with `notes.md`, a
+  demo page and a live preview.
+- The Figma Community file linked above, holding eight of them; `og.png`
+  social card rendered from `og.html`.
 - No testimonials, usage figures, download counts or press. Do not invent any.
 
 ## Product Principles

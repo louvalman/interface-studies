@@ -236,11 +236,11 @@
          controls and the view switch on the right. On a phone it is two rows
          of the same four things - see index.css. -->
       <div class="rail__head" data-reveal>
-        <!-- How many studies the rail is showing, "8 studies", in both views.
+        <!-- How many studies the rail is showing, "9 studies", in both views.
            The noun is in the markup in both numbers and index.css shows one;
            index.js writes the number and says which. -->
         <p class="rail__count">
-          <span id="rail-total">8</span>
+          <span id="rail-total">9</span>
           <span class="rail__count-one" data-i18n="rail.study">study</span>
           <span class="rail__count-many" data-i18n="rail.studies">studies</span>
         </p>
@@ -426,8 +426,8 @@
          has a generated adapter, and figma for every study in the file.
          data-tech is what it is built with, by hand too, from the tags
          index.js labels: css-only, svg, webgl, web-audio, view-transitions,
-         container-queries, backdrop-filter, tokens. A new tag needs its label
-         adding to FILTER_EN and to the Danish table in index.js.
+         container-queries, backdrop-filter, tokens, css-trig. A new tag needs
+         its label adding to FILTER_EN and to the Danish table in index.js.
          data-figma is the companion file's Community listing — the listing
          rather than the working file, because the listing is where a visitor
          duplicates it. It has no address for a page inside it, so every card
@@ -442,6 +442,96 @@
         role="region"
         data-i18n-aria="a11y.railRegion"
         aria-label="Study carousel">
+        <article
+          class="piece"
+          data-tech="css-trig container-queries svg web-audio"
+          data-piece
+          data-date="2026-10-13T09:00">
+          <div class="piece__frame">
+            <div class="piece__thumb">
+              <iframe
+                class="piece__preview"
+                data-src="2026-10-mode-dial/preview.html"
+                loading="lazy"
+                scrolling="no"
+                tabindex="-1"
+                aria-hidden="true"
+                data-preview></iframe>
+            </div>
+          </div>
+          <div class="piece__body">
+            <h2 class="piece__title">
+              <a
+                class="piece__link"
+                href="2026-10-mode-dial/demo.html"
+                data-lang-link="2026-10-mode-dial/demo.html"
+                data-i18n="piece.modeDial.title">
+                Mode dial
+              </a>
+            </h2>
+            <p class="piece__meta">
+              <span class="piece__slug">2026 &middot; 10</span>
+              <span class="piece__type" data-i18n="type.navigation">Navigation</span>
+              <span class="piece__no">&mdash;</span>
+            </p>
+            <p
+              class="piece__note"
+              data-note
+              data-i18n="piece.modeDial.note">
+              A selector you turn rather than tap: a knurled charcoal dial in a
+              cloth-dotted plate, its choices brought one detent at a time under
+              a mark that never moves.
+            </p>
+            <div class="piece__actions">
+              <span class="piece__cta" aria-hidden="true">
+                <span class="piece__cta-text" data-i18n="cta.openStudy">
+                  Open study
+                </span>
+                <svg
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.4"
+                  aria-hidden="true">
+                  <path
+                    d="M3 8h10M9 4l4 4-4 4"
+                    stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
+              </span>
+              <ul
+                class="piece__stack"
+                data-i18n-aria="a11y.stack"
+                aria-label="Available in">
+                <li class="piece__code" data-code="html" title="HTML">HTML</li>
+                <li class="piece__code" data-code="css" title="CSS">CSS</li>
+                <li class="piece__code" data-code="js" title="JavaScript">JavaScript</li>
+              </ul>
+            </div>
+          </div>
+          <button
+            class="piece__expand"
+            type="button"
+            data-expand
+            data-i18n-aria="cta.quickLookModeDial"
+            aria-label="Quick look: Mode dial">
+            <svg
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.4"
+              aria-hidden="true">
+              <path
+                d="M6 2H2v4M10 14h4v-4M14 6V2h-4M2 10v4h4"
+                stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+            <span class="piece__expand-text" data-i18n="cta.quickLook">
+              Quick look
+            </span>
+          </button>
+        </article>
+
         <article
           class="piece"
           data-tech="webgl tokens"
@@ -1202,7 +1292,7 @@
           <div class="piece__frame">
             <span class="piece__ghost-when">
               <span class="piece__ghost-est" data-i18n="ghost.est">Est. start</span>
-              <span class="piece__ghost-month" data-i18n="ghost.month.oct">October</span>
+              <span class="piece__ghost-month" data-i18n="ghost.month.nov">November</span>
               <span class="piece__ghost-year">2026</span>
             </span>
           </div>
@@ -1217,7 +1307,7 @@
           <div class="piece__frame">
             <span class="piece__ghost-when">
               <span class="piece__ghost-est" data-i18n="ghost.est">Est. start</span>
-              <span class="piece__ghost-month" data-i18n="ghost.month.nov">November</span>
+              <span class="piece__ghost-month" data-i18n="ghost.month.dec">December</span>
               <span class="piece__ghost-year">2026</span>
             </span>
           </div>

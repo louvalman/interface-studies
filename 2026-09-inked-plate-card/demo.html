@@ -46,7 +46,10 @@
       --demo-ground: #101418;
       --demo-grid: rgba(232, 235, 228, 0.05);
       --demo-fg: #e8ebe4;
-      --demo-dim: #7f8892;
+      /* #7f8892 was 4.28:1 for the inactive EN/DA button on the chip, a
+         control under the floor; this is 4.63 there, 5.12 on the back and
+         replay chips and 5.57 on the ground. */
+      --demo-dim: #858e98;
       --demo-accent: #c8ef4a;
       --demo-soft: rgba(232, 235, 228, 0.78);
       --demo-chip: rgba(232, 235, 228, 0.08);
@@ -71,7 +74,12 @@
       --demo-grid: rgba(20, 23, 28, 0.05);
       --demo-fg: #14171c;
       --demo-soft: rgba(20, 23, 28, 0.78);
-      --demo-dim: #6b7078;
+      /* #6b7078 was under the floor everywhere it was used: 4.45:1 on the
+         paper, 4.11 on the back and replay chips and 3.95 for the inactive
+         EN/DA button. This is 5.32, 4.92 and 4.72 by computed colour — a
+         step past the least that clears, because the language chip blurs
+         the plotter grid under it and the rendered chip reads darker. */
+      --demo-dim: #5f646c;
       --demo-accent: #6d8c12;
       --demo-chip: rgba(20, 23, 28, 0.06);
       --demo-line: rgba(20, 23, 28, 0.14);

@@ -97,6 +97,13 @@ function withParam(src, key, value) {
       'tech.container-queries': 'Container queries',
       'tech.backdrop-filter': 'Backdrop-filter',
       'tech.tokens': 'Design-tokens',
+      'tech.css-trig': 'CSS-trigonometri',
+      'piece.modeDial.title': 'Drejevælger',
+      'piece.modeDial.note': 'En vælger man drejer i stedet for at trykke '
+        + 'på: et riflet, koksgråt hjul i en plade med prikket stof, '
+        + 'hvor valgene føres ét hak ad gangen ind under et '
+        + 'mærke, der aldrig flytter sig.',
+      'cta.quickLookModeDial': 'Hurtigt kig: Drejevælger',
       'piece.liquidGlassToolbar.title': 'Liquid glass toolbar',
       'piece.liquidGlassToolbar.note': 'Én glasflade der skifter form, i seks '
         + 'materialer fra én opskrift: det valgte punkt folder sig ud til en '
@@ -155,8 +162,8 @@ function withParam(src, key, value) {
       'cta.quickLookOf': 'Hurtigt kig: Kort med detaljepanel',
       'ghost.title': 'Kommende studie',
       'ghost.est': 'Forventet start',
-      'ghost.month.oct': 'oktober',
       'ghost.month.nov': 'november',
+      'ghost.month.dec': 'december',
       'foot.inviteTitle': 'Tag samlingen med dig,',
       'foot.inviteTitleTail': 'i Figma.',
       'a11y.filePage': 'En studies side i Figma-filen: en Start here-ramme, '
@@ -589,6 +596,10 @@ function withParam(src, key, value) {
     // and the three keep the order they are written in.
     const ghost = track.querySelector('.piece--ghost');
     sorted.forEach((piece) => track.insertBefore(piece, ghost));
+    // Mandatory snap re-snaps to the card that was first before the move, so
+    // the ring would take its home from a position one card too far. Back to
+    // the start of the row, which is where the newest card now is.
+    track.scrollLeft = 0;
   }
 
   // Card numbers are positional, so they are written from the list rather than
@@ -976,7 +987,10 @@ function withParam(src, key, value) {
 
     try {
       const doc = frame.contentDocument;
-      if (doc && doc.readyState === 'complete') markReady(piece);
+      // A frame whose src has not been set yet still holds about:blank, which
+      // reports complete. Marking ready on it spends the one re-tell of
+      // `active` on a document that is about to be replaced.
+      if (doc && doc.readyState === 'complete' && doc.URL !== 'about:blank') markReady(piece);
     } catch (err) {
       /* opaque origin — fall through to the backstop */
     }
@@ -1417,7 +1431,8 @@ function withParam(src, key, value) {
     'tech.view-transitions': 'View Transitions',
     'tech.container-queries': 'Container queries',
     'tech.backdrop-filter': 'Backdrop filter',
-    'tech.tokens': 'Design tokens'
+    'tech.tokens': 'Design tokens',
+    'tech.css-trig': 'CSS trig'
   };
 
   // A study's techniques, by hand on its card as data-tech, the way its type
@@ -2131,7 +2146,7 @@ function withParam(src, key, value) {
     const max = maxScroll();
 
     // The rail counts what it is showing, and the filter's "All" what
-    // exists. A count, not a position: "8 studies", unpadded, the same in
+    // exists. A count, not a position: "9 studies", unpadded, the same in
     // both views. It used to read "Study 04 / 08" off the read mark, which on
     // a drifting rail was a number changing by itself, and needed the card's
     // own chip filled to say which card it meant.
