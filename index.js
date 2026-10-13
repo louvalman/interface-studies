@@ -596,6 +596,10 @@ function withParam(src, key, value) {
     // and the three keep the order they are written in.
     const ghost = track.querySelector('.piece--ghost');
     sorted.forEach((piece) => track.insertBefore(piece, ghost));
+    // Mandatory snap re-snaps to the card that was first before the move, so
+    // the ring would take its home from a position one card too far. Back to
+    // the start of the row, which is where the newest card now is.
+    track.scrollLeft = 0;
   }
 
   // Card numbers are positional, so they are written from the list rather than
@@ -983,7 +987,10 @@ function withParam(src, key, value) {
 
     try {
       const doc = frame.contentDocument;
-      if (doc && doc.readyState === 'complete') markReady(piece);
+      // A frame whose src has not been set yet still holds about:blank, which
+      // reports complete. Marking ready on it spends the one re-tell of
+      // `active` on a document that is about to be replaced.
+      if (doc && doc.readyState === 'complete' && doc.URL !== 'about:blank') markReady(piece);
     } catch (err) {
       /* opaque origin — fall through to the backstop */
     }
