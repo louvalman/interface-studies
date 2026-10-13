@@ -1,0 +1,116 @@
+<!--
+  Mode dial: the default instance, names round the arc, a set of views.
+
+  The root is a <form>, so same-named radio groups in separate instances never
+  join, and the centre key has a no-script path (it submits GET). Options are
+  written in clockwise order, from 3 to 8 of them; DOM order is their position.
+
+  Parts are included or left out by their presence, never hidden with
+  `hidden`. Every optional part is shown below, so the contract is complete:
+    - the engraving, drawn only under .mode-dial--curled
+    - an icon per option, drawn only under .mode-dial--icons
+    - the centre key and its status line, which turn on browse and commit
+    - the display, which takes aria-describedby on every input
+  Leave out what an instance does not use.
+
+  Ids: one letter per instance on a page (-a-, -b-, …): one arc per instance
+  and one readout line per option. component.js re-keys an id only if it
+  collides with another on the page.
+
+  Modifiers: .mode-dial--icons, .mode-dial--curled (wins if both are set).
+  The radio `name` is what the form submits: view, range, kit.
+-->
+
+<form class="mode-dial">
+  <fieldset class="mode-dial__set">
+    <legend class="mode-dial__legend">View</legend>
+    <div class="mode-dial__deck">
+      <div class="mode-dial__dial">
+        <span class="mode-dial__index" aria-hidden="true"></span>
+
+        <div class="mode-dial__face">
+          <span class="mode-dial__knurl" aria-hidden="true"></span>
+          <span class="mode-dial__plate" aria-hidden="true"></span>
+          <span class="mode-dial__light" aria-hidden="true"></span>
+
+          <!-- OPTIONAL — drawn only under .mode-dial--curled. One <text> per
+               option, same order, same words. Ids carry the instance letter. -->
+          <svg class="mode-dial__engraving" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+            <path class="mode-dial__arc" id="mode-dial-a-arc" d="M50 77a27 27 0 1 1 0-54a27 27 0 1 1 0 54"/>
+            <g class="mode-dial__words">
+              <text class="mode-dial__engraved" text-anchor="middle"><textPath href="#mode-dial-a-arc" startOffset="50%">Grid</textPath></text>
+              <text class="mode-dial__engraved" text-anchor="middle"><textPath href="#mode-dial-a-arc" startOffset="50%">List</textPath></text>
+              <text class="mode-dial__engraved" text-anchor="middle"><textPath href="#mode-dial-a-arc" startOffset="50%">Board</textPath></text>
+              <text class="mode-dial__engraved" text-anchor="middle"><textPath href="#mode-dial-a-arc" startOffset="50%">Timeline</textPath></text>
+              <text class="mode-dial__engraved" text-anchor="middle"><textPath href="#mode-dial-a-arc" startOffset="50%">Map</textPath></text>
+              <text class="mode-dial__engraved" text-anchor="middle"><textPath href="#mode-dial-a-arc" startOffset="50%">Calendar</textPath></text>
+            </g>
+          </svg>
+
+          <div class="mode-dial__options">
+            <!-- aria-describedby only when the display is present -->
+            <label class="mode-dial__option">
+              <input class="mode-dial__input" type="radio" name="view" value="grid" checked aria-describedby="mode-dial-a-grid">
+              <!-- OPTIONAL icon: drawn only under .mode-dial--icons -->
+              <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 4.5h6v6h-6zM13.5 4.5h6v6h-6zM4.5 13.5h6v6h-6zM13.5 13.5h6v6h-6z"/></svg>
+              <span class="mode-dial__name">Grid</span>
+            </label>
+            <label class="mode-dial__option">
+              <input class="mode-dial__input" type="radio" name="view" value="list" aria-describedby="mode-dial-a-list">
+              <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 6.5h15M4.5 12h15M4.5 17.5h15"/></svg>
+              <span class="mode-dial__name">List</span>
+            </label>
+            <label class="mode-dial__option">
+              <input class="mode-dial__input" type="radio" name="view" value="board" aria-describedby="mode-dial-a-board">
+              <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 4.5h4v15h-4zM10 4.5h4v10h-4zM15.5 4.5h4v12.5h-4z"/></svg>
+              <span class="mode-dial__name">Board</span>
+            </label>
+            <label class="mode-dial__option">
+              <input class="mode-dial__input" type="radio" name="view" value="timeline" aria-describedby="mode-dial-a-timeline">
+              <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3.5 12h17M7 8.5v7M12 8.5v7M17 8.5v7"/></svg>
+              <span class="mode-dial__name">Timeline</span>
+            </label>
+            <label class="mode-dial__option">
+              <input class="mode-dial__input" type="radio" name="view" value="map" aria-describedby="mode-dial-a-map">
+              <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20.5s-6-5.2-6-10a6 6 0 0 1 12 0c0 4.8-6 10-6 10zM12 12a1.75 1.75 0 1 0 0-3.5 1.75 1.75 0 0 0 0 3.5z"/></svg>
+              <span class="mode-dial__name">Map</span>
+            </label>
+            <label class="mode-dial__option">
+              <input class="mode-dial__input" type="radio" name="view" value="calendar" aria-describedby="mode-dial-a-calendar">
+              <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 6h15v13.5h-15zM4.5 10h15M8.5 3.5v4M15.5 3.5v4"/></svg>
+              <span class="mode-dial__name">Calendar</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- OPTIONAL centre key. Its presence turns on browse/commit: checked is
+             pending, :default is committed. Does not turn. -->
+        <button class="mode-dial__commit" type="submit"><span class="mode-dial__commit-label">Set</span></button>
+      </div>
+
+      <!-- OPTIONAL display. aria-hidden; each input's aria-describedby points
+           at its own readout line, so it is still heard. -->
+      <div class="mode-dial__display" aria-hidden="true">
+        <p class="mode-dial__caption">View</p>
+        <p class="mode-dial__tags">
+          <span class="mode-dial__tag mode-dial__tag--current">Current</span>
+          <span class="mode-dial__tag mode-dial__tag--preview">Preview</span>
+          <span class="mode-dial__tag mode-dial__tag--pending">Pending</span>
+        </p>
+        <ol class="mode-dial__readouts">
+          <li class="mode-dial__readout"><span class="mode-dial__readout-name">Grid</span> <span class="mode-dial__readout-line" id="mode-dial-a-grid">Everything at a glance</span></li>
+          <li class="mode-dial__readout"><span class="mode-dial__readout-name">List</span> <span class="mode-dial__readout-line" id="mode-dial-a-list">One row per project</span></li>
+          <li class="mode-dial__readout"><span class="mode-dial__readout-name">Board</span> <span class="mode-dial__readout-line" id="mode-dial-a-board">Sorted by stage</span></li>
+          <li class="mode-dial__readout"><span class="mode-dial__readout-name">Timeline</span> <span class="mode-dial__readout-line" id="mode-dial-a-timeline">In the order they happened</span></li>
+          <li class="mode-dial__readout"><span class="mode-dial__readout-name">Map</span> <span class="mode-dial__readout-line" id="mode-dial-a-map">Where they were made</span></li>
+          <li class="mode-dial__readout"><span class="mode-dial__readout-name">Calendar</span> <span class="mode-dial__readout-line" id="mode-dial-a-calendar">By the day they're due</span></li>
+        </ol>
+        <span class="mode-dial__ticks"></span>
+      </div>
+    </div>
+  </fieldset>
+
+  <!-- OPTIONAL, only with the centre key: visually hidden live region; script
+       writes the value at commit. -->
+  <p class="mode-dial__status" role="status" aria-atomic="true"><span class="mode-dial__status-lead">Set:</span> <span class="mode-dial__status-value"></span></p>
+</form>

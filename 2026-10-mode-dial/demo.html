@@ -1,0 +1,1888 @@
+<!doctype html>
+<!--
+  The demo page. Everything page-level lives here and only here: background,
+  centering, font loading, and 2-3 states of the component.
+
+  This page links component.css. It never redefines it — no rule below may
+  target a component class. Demo styles are scoped to .demo* only.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mode dial &mdash; Interface Studies</title>
+
+  <!-- Font loading is the demo's job, never the component's. The page's own
+       faces are the site's pair, Mona Sans for its prose and Fragment Mono for
+       its labels. The dial sets its lettering in Mona Sans at 75% width and
+       its tooltips and display in Fragment Mono, so the pair is loaded with
+       Mona Sans's width axis as well as its weights: without wdth the browser
+       has no condensed cut to pick and synthesises nothing, and the engraved
+       names come out at full width. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fragment+Mono&family=Mona+Sans:wdth,wght@75..125,400..700&display=swap">
+
+  <!-- Page chrome, like the back link: goes stale if this folder is copied
+       out on its own, and nothing else breaks when it does. -->
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="canonical" href="https://interface-studies.pages.dev/2026-10-mode-dial/demo.html">
+
+  <!-- What a link to this page looks like when it is pasted somewhere. The
+     card image is the index's, one level up — the same place this page
+     already takes its favicon and its back link from, so it goes stale in
+     exactly the same way and no worse. A copied-out folder loses the
+     picture and keeps the title and the sentence. -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Interface Studies" />
+  <meta property="og:url" content="https://interface-studies.pages.dev/2026-10-mode-dial/demo.html" />
+  <meta property="og:title" content="Mode dial &mdash; Interface Studies" />
+  <meta property="og:description" content="A selector you turn: choices round a knurled dial set in a cloth-dotted plate, carried one detent at a time under a mark that never moves. Underneath, it is a radio group." />
+  <meta property="og:image" content="../og.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <link rel="stylesheet" href="component.css">
+
+  <style>
+    /* Page scaffolding only. Nothing here may name a component class. */
+    /* Matches the index's --gutter exactly. The pages are separate documents
+       with no shared stylesheet, so the value is repeated rather than shared —
+       but it has to be the same number, or the language control and the
+       content edge shift on every trip between them. */
+    :root {
+      --demo-gutter: clamp(1.5rem, 6vw, 6rem);
+
+      /* The page's own palette, and the only place a colour is written. Every
+         rule below reads a token, so the dark block underneath is this same
+         list with different values — not a second set of rules. The component
+         is not in it: component.css owns its colours in both themes, and this
+         page never reaches into them.
+
+         Three text tiers, not five: the greys this page had drifted a couple of
+         percent apart for no reason anyone could name. */
+      /* The repo's default demo ground. A study may depart from it — the
+         inked plate is ink by authorship, the liquid-glass toolbar is a warm
+         stone its cross-lit stage needs — but a departure is a decision, and
+         it says so in that folder's notes.md. This pair is what you keep
+         until you have one.
+
+         It was #ddd9d0 / #161512, which was neither the default nor a
+         departure: ~7.6 ΔE off the ground three of the five studies share,
+         noticeably darker, and with nothing written down saying why. Every
+         new study was being born on a ground no study used. */
+      --demo-ground: #f3f2ef;
+      --demo-fg: #1c1812;
+      --demo-soft: #4a453d;
+      --demo-dim: #605a51;
+      --demo-accent: #c43d16;
+      --demo-chip: rgba(255, 255, 255, 0.72);
+      --demo-chip-soft: rgba(255, 255, 255, 0.6);
+      --demo-chip-hover: #fff;
+      --demo-line: rgba(28, 24, 18, 0.14);
+      --demo-fill: rgba(28, 24, 18, 0.07);
+    }
+
+    :root[data-theme="dark"] {
+      /* Matte: a warm graphite with no pure black under it and off-white ink on
+         top, the same construction the index uses. The component keeps its own
+         ground and sits on this as a lit plate, which is what it does on the
+         index cards too. */
+      --demo-ground: #121316;
+      --demo-fg: #eae8e3;
+      --demo-soft: #a8a49c;
+      --demo-dim: #86827a;
+      --demo-accent: #f2845e;
+      --demo-chip: rgba(36, 34, 30, 0.72);
+      --demo-chip-soft: rgba(36, 34, 30, 0.6);
+      --demo-chip-hover: #2a2823;
+      --demo-line: rgba(234, 232, 227, 0.14);
+      --demo-fill: rgba(234, 232, 227, 0.07);
+    }
+
+    body {
+      margin: 0;
+      box-sizing: border-box;
+      padding: clamp(2.5rem, 6vw, 5rem) var(--demo-gutter) 6rem;
+      background: var(--demo-ground);
+      color: var(--demo-fg);
+      font-family: "Mona Sans", system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Left-aligned at the gutter, not centred — the index hangs its masthead
+       and rail off the same edge, and a centred column here would step the
+       content inwards on every navigation. */
+    .demo {
+      max-width: 78rem;
+    }
+
+    /* Back to the index. Page chrome — the component never depends on it. */
+    /* Aligned to the page's own padding, so it sits on the same edge as the
+       content rather than floating inside the margin. */
+    /* Language and theme, in one cluster on the page's own edge. Absolute,
+       not fixed: both are picked once and neither has any reason to ride
+       the viewport down the page. */
+    .demo__controls {
+      position: absolute;
+      top: clamp(1.25rem, 3vw, 2.25rem);
+      right: var(--demo-gutter);
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .demo__lang {
+      display: flex;
+      align-items: center;
+      gap: 0.1rem;
+      padding: 0.2rem 0.35rem;
+      border-radius: 999px;
+      background: var(--demo-chip);
+    }
+
+    .demo__lang-btn {
+      padding: 0.35em 0.5em;
+      border: 0;
+      background: transparent;
+      color: var(--demo-dim);
+      font-family: "Fragment Mono", ui-monospace, monospace;
+      font-size: 0.625rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: color 240ms ease;
+    }
+
+    .demo__lang-btn:hover { color: var(--demo-fg); }
+
+    .demo__lang-btn[aria-pressed="true"] {
+      color: var(--demo-fg);
+      text-decoration: underline;
+      text-decoration-color: var(--demo-accent);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 0.4em;
+    }
+
+    .demo__lang-btn:focus-visible {
+      outline: 2px solid var(--demo-fg);
+      outline-offset: 2px;
+      border-radius: 0.25rem;
+    }
+
+    .demo__lang-sep {
+      width: 1px;
+      height: 0.7rem;
+      background: var(--demo-line);
+    }
+
+    /* --- theme toggle ---------------------------------------------------
+       The index's control, carried here rather than shared: this folder has
+       to survive being copied out, so the page owns its own copy the way it
+       owns its own language table. It offers the state it would move to. */
+    .demo__theme {
+      flex: none;
+      width: 1.85rem;
+      height: 1.85rem;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      background: var(--demo-chip);
+      color: var(--demo-dim);
+      cursor: pointer;
+      transition: color 240ms ease, background 240ms ease;
+    }
+
+    .demo__theme:hover { color: var(--demo-fg); }
+
+    .demo__theme:focus-visible {
+      outline: 2px solid var(--demo-fg);
+      outline-offset: 2px;
+    }
+
+    .demo__theme-icon {
+      width: 0.95rem;
+      height: 0.95rem;
+      overflow: visible;
+    }
+
+    /* One shape for both states: a disc with a bite out of it and a ring of
+       rays. Dark slides the bite off the disc and turns the rays in, so the
+       moon becomes the sun rather than being swapped for it. */
+    .demo__theme-cut {
+      fill: #000;
+      transform-box: fill-box;
+      transform-origin: center;
+      transform: translate(30%, -30%);
+      transition: transform 520ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .demo__theme-disc {
+      fill: currentColor;
+      transform-box: fill-box;
+      transform-origin: center;
+      transition: transform 520ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .demo__theme-rays {
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      transform-box: fill-box;
+      transform-origin: center;
+      opacity: 0;
+      transform: scale(0.55) rotate(-45deg);
+      transition:
+        opacity 320ms cubic-bezier(0.16, 1, 0.3, 1),
+        transform 520ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    :root[data-theme="dark"] .demo__theme-cut { transform: translate(125%, -125%); }
+    :root[data-theme="dark"] .demo__theme-disc { transform: scale(0.74); }
+    :root[data-theme="dark"] .demo__theme-rays { opacity: 1; transform: scale(1) rotate(0deg); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .demo__theme-cut,
+      .demo__theme-disc,
+      .demo__theme-rays { transition: none; }
+    }
+
+
+    .demo__back {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: clamp(1.75rem, 3vw, 2.5rem);
+      padding: 0.5rem 0.9rem 0.5rem 0.75rem;
+      border: 1px solid var(--demo-line);
+      border-radius: 999px;
+      background: var(--demo-chip-soft);
+      font-family: "Fragment Mono", ui-monospace, monospace;
+      font-size: 0.6875rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--demo-soft);
+      text-decoration: none;
+    }
+
+    .demo__back:hover { background: var(--demo-chip-hover); }
+
+    .demo__back:focus-visible {
+      outline: 2px solid var(--demo-fg);
+      outline-offset: 3px;
+    }
+
+    .demo__back svg { width: 0.85rem; height: 0.85rem; }
+
+    /* --- groups -----------------------------------------------------------
+       Four, in the order the study argues: how a choice is labelled, what a
+       display adds, what a key in the middle adds, and the same dial at two
+       sizes. Each opens on a title and one sentence, so the page can be read
+       down its left edge without opening a single dial. */
+    .demo__group {
+      padding-top: clamp(2.5rem, 5vw, 3.5rem);
+      margin-top: clamp(2.5rem, 5vw, 3.5rem);
+      border-top: 1px solid var(--demo-line);
+    }
+
+    .demo__group:first-of-type {
+      padding-top: 0;
+      margin-top: 0;
+      border-top: 0;
+    }
+
+    .demo__group-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0.5rem 1rem;
+      margin-bottom: clamp(1.75rem, 3vw, 2.25rem);
+    }
+
+    .demo__group-title {
+      margin: 0;
+      font-size: 1.0625rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    .demo__group-note {
+      margin: 0;
+      max-width: 58ch;
+      font-size: 0.875rem;
+      line-height: 1.55;
+      color: var(--demo-soft);
+    }
+
+    /* A wrapping flex row, left at the gutter. The states are uneven — a dial
+       on its own is 21rem, a dial with its display 36rem, the large one 29rem —
+       so nothing is centred: a wrapped remainder centred under a row of
+       different widths reads as a mistake rather than as a decision. */
+    .demo__grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: clamp(2.5rem, 5vw, 3.5rem) clamp(2rem, 3vw, 2.5rem);
+    }
+
+    /* Two dials of different sizes hang from the same line rather than
+       standing on one: stretched, the small one would sit at the foot of
+       the large one with a tall gap under its caption. */
+    .demo__grid--top { align-items: flex-start; }
+
+    /* Capped at the root's own width — 21rem at the default size — so a state
+       never grows past the dial it holds, and based a little under it, so
+       two still share a row on a tablet's 42rem column, the dial giving up a
+       few pixels rather than half the page standing empty beside one. It may
+       still shrink, which is what passes a phone's column down to the dial's
+       own max-width. */
+    .demo__state {
+      flex: 1 1 19rem;
+      min-width: 0;
+      display: grid;
+      /* The pair that keeps a demo off a phone's horizontal scrollbar: the
+         cell is capped at its column, and the column is told it may shrink
+         below its content. Without the second line an implicit `auto` track
+         takes its max-content width and overflows anyway. */
+      grid-template-columns: minmax(0, 1fr);
+      /* Caption, hint, dial. States in a row stretch to the tallest, and the
+         spare height goes to the hint's row, so a caption that wraps to a
+         second line in one state does not drop that state's dial below its
+         neighbour's: dials of one size share a top edge in either
+         language. */
+      grid-template-rows: auto 1fr auto;
+      gap: 0.85rem;
+      justify-items: start;
+      max-width: min(100%, 21rem);
+    }
+
+    /* A dial with its display is 36rem, and two of them want 74.5rem with
+       the gap, which a 1280 laptop's column does not have — at 36rem each
+       they stacked there and left half the page empty beside them. So the
+       pair keeps a row down to 30rem each and grows back to the dial's own
+       width; the deck gives the difference out of its two tracks, and below
+       30rem the dial's own container query stacks the display under it. */
+    .demo__state--screen {
+      flex: 1 1 30rem;
+      max-width: min(100%, 36rem);
+    }
+
+    /* The large dial is its own width, 29rem with the deck, and gives way
+       only to a narrower column. */
+    .demo__state--large {
+      flex: 0 1 29rem;
+      max-width: 100%;
+    }
+
+    /* What the state is, in the page's prose: the name of it in the ink and
+       what it shows in the lede's tone. */
+    .demo__caption {
+      margin: 0;
+      max-width: 44ch;
+      font-size: 0.875rem;
+      line-height: 1.55;
+      color: var(--demo-soft);
+    }
+
+    .demo__caption strong {
+      font-weight: 600;
+      color: var(--demo-fg);
+    }
+
+    /* The modifier or token that makes the state, for someone lifting it.
+       Code, so it stays as written in both languages. */
+    .demo__hint {
+      align-self: start;
+      margin: -0.25rem 0 0.5rem;
+      padding: 0.3em 0.6em;
+      border-radius: 0.35rem;
+      background: var(--demo-fill);
+      font-family: "Fragment Mono", ui-monospace, monospace;
+      font-size: 0.6875rem;
+      line-height: 1.5;
+      color: var(--demo-soft);
+      overflow-wrap: anywhere;
+    }
+
+    /* --- touch targets --- */
+
+    /* No hover means a finger, and a finger cannot aim at a 10px label. The
+       page's own controls grow; the component is not touched. Duplicated in
+       every demo page on purpose — no shared stylesheet, so a folder copied
+       out on its own takes this with it. */
+    @media (hover: none) {
+      .demo__lang-btn {
+        display: grid;
+        place-items: center;
+        min-width: 2.25rem;
+        min-height: 2.25rem;
+      }
+
+      .demo__theme {
+        width: 2.25rem;
+        height: 2.25rem;
+      }
+
+      .demo__back { min-height: 2.75rem; }
+    }
+
+    /* --- intro and decisions --------------------------------------------
+       Both are required on every demo page. The heading is what a reader
+       arriving from the index lands on; the decisions block is notes.md
+       rendered — the type, the origin, and the decisions the build captures,
+       which is the part of the folder actually worth lifting and the one thing
+       the site used to keep to itself.
+
+       Kept in step with notes.md by hand, like the language table below it:
+       there is no build step to read the file, and fetching it fails over
+       file://, where each document gets an opaque origin. Leave the decision
+       prose in the language notes.md was written in — it is a record, not page
+       copy, the same reason component sample copy is left alone. Only the
+       labels around it carry data-i18n. */
+    .demo__intro {
+      max-width: 46rem;
+      margin-bottom: clamp(2.5rem, 6vw, 4rem);
+    }
+
+    .demo__kicker {
+      margin: 0 0 0.75rem;
+      font-family: "Fragment Mono", ui-monospace, monospace;
+      font-size: 0.6875rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--demo-dim);
+    }
+
+    /* The companion Figma file's Community listing, and the one link in this
+       line. It takes the lede's tone rather than the kicker's: the kicker's grey is a
+       muted value, and a link is a control, which muted text may not be. It
+       is underlined in the accent, the way this page marks every link, since
+       the accent as text does not clear 4.5:1 at 11px on every ground. The
+       ::after widens the hit area to 24px tall without moving the line. */
+    /* The study's two other homes, kept together: where the kicker wraps on a
+       narrow screen, the pair goes to the next line as one rather than leaving
+       GitHub on a line of its own. */
+    .demo__kicker-links { white-space: nowrap; }
+
+    .demo__kicker-link {
+      position: relative;
+      color: var(--demo-soft);
+      text-decoration: underline;
+      text-decoration-color: var(--demo-accent);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 0.35em;
+      white-space: nowrap;
+    }
+
+    .demo__kicker-link::after {
+      content: "";
+      position: absolute;
+      inset: -0.375rem -0.25rem;
+    }
+
+    .demo__kicker-link:hover { color: var(--demo-fg); }
+
+    .demo__kicker-link:focus-visible {
+      outline: 2px solid var(--demo-fg);
+      outline-offset: 3px;
+      border-radius: 0.2rem;
+    }
+
+    .demo__kicker-link svg {
+      width: 0.8em;
+      height: 0.8em;
+      margin-left: 0.2em;
+      vertical-align: -0.05em;
+    }
+
+    .demo__heading {
+      margin: 0;
+      font-size: clamp(1.75rem, 4vw, 2.75rem);
+      font-weight: 600;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+    }
+
+    .demo__lede {
+      margin: 1.25rem 0 0;
+      max-width: 52ch;
+      font-size: 1.0625rem;
+      line-height: 1.6;
+      color: var(--demo-soft);
+    }
+
+    .demo__notes {
+      margin-top: clamp(3.5rem, 8vw, 6rem);
+      padding-top: clamp(2rem, 4vw, 3rem);
+      border-top: 1px solid var(--demo-line);
+      /* Prose measure, not the page's. */
+      max-width: 42rem;
+    }
+
+    .demo__notes-title {
+      margin: 0;
+      font-size: 1.125rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    /* The disclosure row. `list-style: none` kills the marker in Firefox and
+       Chrome; the ::-webkit- rule is still needed for Safari. */
+    .demo__notes-summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.25rem 0 0.75rem;
+      cursor: pointer;
+      list-style: none;
+    }
+
+    .demo__notes-summary::-webkit-details-marker { display: none; }
+
+    .demo__notes-summary:focus-visible {
+      outline: 2px solid var(--demo-fg);
+      outline-offset: 4px;
+      border-radius: 0.25rem;
+    }
+
+    .demo__notes-chevron {
+      flex: none;
+      width: 1rem;
+      height: 1rem;
+      color: var(--demo-dim);
+      transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .demo__notes-summary:hover .demo__notes-chevron { color: var(--demo-fg); }
+
+    .demo__notes[open] .demo__notes-chevron { transform: rotate(180deg); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .demo__notes-chevron { transition: none; }
+    }
+
+    /* Touch: the row is the target, and it has to be one you can hit. */
+    @media (hover: none) {
+      .demo__notes-summary { min-height: 2.75rem; }
+    }
+
+    .demo__notes-body { padding-bottom: 0.5rem; }
+
+    .demo__notes-meta {
+      margin: 0.75rem 0 0;
+      display: grid;
+      gap: 0.6rem;
+    }
+
+    .demo__notes-row {
+      display: grid;
+      grid-template-columns: 4.5rem minmax(0, 1fr);
+      gap: 0.9rem;
+      align-items: baseline;
+    }
+
+    .demo__notes-row dt {
+      font-family: "Fragment Mono", ui-monospace, monospace;
+      font-size: 0.625rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--demo-dim);
+    }
+
+    .demo__notes-row dd {
+      margin: 0;
+      font-size: 0.875rem;
+      line-height: 1.5;
+      color: var(--demo-soft);
+      /* A source URL is one unbroken word and the page is 320px wide on a
+         phone: without this it sets the whole column's minimum. */
+      overflow-wrap: anywhere;
+    }
+
+    .demo__notes-lede {
+      margin: 1.75rem 0 0;
+      font-size: 0.9375rem;
+      line-height: 1.7;
+      color: var(--demo-soft);
+    }
+
+    .demo__notes-list {
+      margin: 2.25rem 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 1.75rem;
+    }
+
+    .demo__notes-list > li { display: grid; gap: 0.45rem; }
+
+    .demo__notes-head {
+      margin: 0;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      line-height: 1.45;
+    }
+
+    .demo__notes-list p {
+      margin: 0;
+      font-size: 0.9375rem;
+      line-height: 1.7;
+      color: var(--demo-soft);
+    }
+
+    .demo__notes code {
+      font-family: "Fragment Mono", ui-monospace, monospace;
+      font-size: 0.85em;
+      padding: 0.12em 0.32em;
+      border-radius: 0.25rem;
+      background: var(--demo-fill);
+      overflow-wrap: anywhere;
+    }
+
+    .demo__notes a {
+      color: inherit;
+      text-decoration-color: var(--demo-accent);
+      text-underline-offset: 0.2em;
+    }
+
+    /* The inspiration row, below the decisions rather than above them. */
+    .demo__notes-meta--foot { margin-top: 2.5rem; }
+    .demo__notes-meta--foot + .demo__notes-foot { margin-top: 1.1rem; }
+    /* 'Inspiration' is longer than 'Type' and sets its own column. */
+    .demo__notes-meta--foot .demo__notes-row {
+      grid-template-columns: 6.25rem minmax(0, 1fr);
+    }
+
+    .demo__notes-foot {
+      margin: 2.5rem 0 0;
+      font-family: "Fragment Mono", ui-monospace, monospace;
+      font-size: 0.6875rem;
+      line-height: 1.7;
+      letter-spacing: 0.08em;
+      color: var(--demo-dim);
+    }
+
+    /* --- arrival ----------------------------------------------------------
+       The page arrives once, in reading order, the way the index does: the
+       kicker, the heading and the lede a beat apart, then each block as it is
+       reached, rising a short distance as it fades up. Whatever the first
+       screen does not reach waits to be scrolled to, and so does the
+       component inside it: its own animations are held with its block, so an
+       entrance it makes on load is made where it can be seen rather than
+       below the fold. The script at the foot of the page decides what is held
+       and in what order; the motion is all here.
+
+       data-reveal goes on the page's own blocks — the intro's three lines, a
+       group's head, a state, a stage, the decisions — and never on a
+       component's root, so nothing here names a component class or moves
+       one directly: a component rises inside the block that holds it. The
+       one rule that reaches past a block is the hold, and it names no class
+       either; it is the construction preview.html's pause already uses.
+
+       translate rather than transform, so nothing here takes a transform the
+       page or a component already has. An animation rather than a
+       transition, so html.is-theming's transition list still reaches these
+       blocks during the crossfade. Fill is backwards only, so nothing is left
+       holding a compositing layer once it has landed. And all of it is
+       screen and no-preference: reduced motion gets the page as it was, and
+       print never gets a block held at opacity 0. Copied, not shared, like
+       everything else on this page. */
+    :root {
+      --demo-arrive-rise: 0.75rem;
+      --demo-arrive-dur: 900ms;
+      --demo-arrive-step: 70ms;
+      --demo-arrive-lead: 120ms;
+      --demo-arrive-ease: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes demo-arrive {
+      from { opacity: 0; translate: 0 var(--demo-arrive-rise); }
+    }
+
+    @media screen and (prefers-reduced-motion: no-preference) {
+      /* A block's slot is its place in the order. The intro's lines are 0 to
+         2 and everything else is 3, which is the page without its script;
+         with it, the first screen is re-slotted in reading order and a batch
+         reached later runs from 0. */
+      [data-reveal] {
+        animation: demo-arrive var(--demo-arrive-dur) var(--demo-arrive-ease)
+          calc(var(--demo-arrive-lead) + var(--demo-arrive-at, 3) * var(--demo-arrive-step))
+          backwards;
+      }
+
+      .demo__kicker { --demo-arrive-at: 0; }
+      .demo__heading { --demo-arrive-at: 1; }
+      .demo__lede { --demo-arrive-at: 2; }
+
+      /* Below the fold at boot, until it is reached. animation-name rather
+         than the shorthand, so letting go starts it from the top. */
+      [data-reveal].is-held {
+        opacity: 0;
+        animation-name: none;
+      }
+
+      /* The component waits with its block, paused at wherever it had got
+         to, and picks up when the block is let go. */
+      [data-reveal].is-held *,
+      [data-reveal].is-held *::before,
+      [data-reveal].is-held *::after {
+        animation-play-state: paused !important;
+      }
+
+      /* Once through, never again: an element coming back from display:none
+         starts its animations over. */
+      [data-reveal].has-arrived { animation: none; }
+    }
+
+    /* --- the switch itself ------------------------------------------------
+       Flipping the token block repaints the page in one frame, which reads as
+       a cut rather than as a change of light. The script hangs .is-theming on
+       <html> for the length of the crossfade and takes it off again, so the
+       rule is not on every element for the rest of the session. One class plus
+       a type, so it outranks the page rules it stands in for without
+       !important. */
+    html.is-theming,
+    html.is-theming *,
+    html.is-theming *::before,
+    html.is-theming *::after {
+      transition:
+        background-color 420ms cubic-bezier(0.16, 1, 0.3, 1),
+        background-image 420ms cubic-bezier(0.16, 1, 0.3, 1),
+        border-color 420ms cubic-bezier(0.16, 1, 0.3, 1),
+        box-shadow 420ms cubic-bezier(0.16, 1, 0.3, 1),
+        color 420ms cubic-bezier(0.16, 1, 0.3, 1),
+        fill 420ms cubic-bezier(0.16, 1, 0.3, 1),
+        stroke 420ms cubic-bezier(0.16, 1, 0.3, 1),
+        transform 420ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html.is-theming,
+      html.is-theming *,
+      html.is-theming *::before,
+      html.is-theming *::after { transition-duration: 1ms; }
+    }
+</style>
+
+  <!-- The theme, before the first paint. The toggle and the rest of it are in
+     the script at the foot of the page, but the answer has to be on <html> by
+     the time the stylesheet draws, or a page opened in dark flashes a frame of
+     the other one.
+
+     The query string first, because that is how the index hands the choice
+     over — over file:// each document gets an opaque origin and localStorage
+     does not carry across. Then the stored choice, then the system's. -->
+  <script>
+    try {
+      var q = new URLSearchParams(location.search).get('theme');
+      var t = (q === 'dark' || q === 'light') ? q
+            : localStorage.getItem('interface-studies:theme');
+      if (t !== 'dark' && t !== 'light') {
+        t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      document.documentElement.setAttribute('data-theme', t);
+    } catch (err) { /* private mode: the page keeps the theme in its markup */ }
+  </script>
+</head>
+<body>
+  <div class="demo">
+
+    <!-- Delete alongside the language script below if this study is
+         single-language. -->
+    <div class="demo__controls">
+      <div class="demo__lang" role="group" aria-label="Language">
+        <button class="demo__lang-btn" type="button" data-lang="en" aria-pressed="true">EN</button>
+        <span class="demo__lang-sep" aria-hidden="true"></span>
+        <button class="demo__lang-btn" type="button" data-lang="da" aria-pressed="false">DA</button>
+      </div>
+
+      <button
+        class="demo__theme"
+        type="button"
+        data-theme-toggle
+        aria-pressed="false"
+        data-i18n-aria="a11y.theme"
+        aria-label="Dark mode">
+        <svg class="demo__theme-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <mask id="demo-theme-bite">
+            <rect width="24" height="24" fill="#fff" />
+            <circle class="demo__theme-cut" cx="12" cy="12" r="9" />
+          </mask>
+          <circle class="demo__theme-disc" cx="12" cy="12" r="9" mask="url(#demo-theme-bite)" />
+          <g class="demo__theme-rays">
+            <path d="M12 1v2M12 21v2M3.9 3.9l1.4 1.4M18.7 18.7l1.4 1.4M1 12h2M21 12h2M3.9 20.1l1.4-1.4M18.7 5.3l1.4-1.4" />
+          </g>
+        </svg>
+      </button>
+    </div>
+
+    <a class="demo__back" href="../index.html">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <path d="M10 2 4 8l6 6" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+      <span data-i18n="back">All studies</span>
+    </a>
+
+    <header class="demo__intro">
+      <!-- The kicker's link is the companion Figma file's Community listing,
+           the same URL as the card's data-figma in index.html. A study not
+           yet in the file leaves the link out, and the &middot; before it. -->
+      <p class="demo__kicker" data-reveal>
+        2026-10 &middot; <span data-i18n="type">Navigation</span> &middot;
+        <span class="demo__kicker-links">
+          <!-- Figma ↗ goes back in front of GitHub once the study is published to the Community file -->
+          <a
+            class="demo__kicker-link"
+            href="https://github.com/louvalman/interface-studies/tree/main/2026-10-mode-dial"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-i18n-aria="a11y.github"
+            aria-label="Open on GitHub">GitHub<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true" focusable="false"><path d="M4 12 12 4M6 4h6v6" stroke-linecap="round" stroke-linejoin="round" /></svg></a>
+        </span>
+      </p>
+      <h1 class="demo__heading" data-reveal data-i18n="heading">Mode dial</h1>
+      <p class="demo__lede" data-reveal data-i18n="lede">
+        A selector you turn: choices round a knurled dial set in a cloth-dotted
+        plate, carried one detent at a time under a mark that never moves.
+        Underneath, it is a radio group.
+      </p>
+    </header>
+
+    <!-- data-reveal on each of the page's own blocks, and never on the
+         component's root: it rises inside its state. See the arrival block
+         in the style above. -->
+    <!-- ------------------------------------------------------------------ -->
+    <!-- Eight instances, a to h in page order. Each has its own letter in
+         whatever ids it carries — the arc of a curled dial (c, d), the
+         readout lines of a display (d, e, f) — and a radio name for its
+         context: view, range or kit. Each root is its own form, so
+         same-named groups in two instances never join. Sizes are handed in
+         inline on the root; no rule on this page names a component class. -->
+    <section class="demo__group">
+      <div class="demo__group-head" data-reveal>
+        <h2 class="demo__group-title" data-i18n="group.label">Three ways to label it</h2>
+        <p class="demo__group-note" data-i18n="group.labelNote">The same radio group under each: names that stay upright, icons that say their name when reached for, and words engraved round the arc that turn with it.</p>
+      </div>
+
+      <div class="demo__grid">
+
+        <section class="demo__state" data-reveal>
+          <p class="demo__caption" data-i18n="state.names"><strong>Names</strong> &middot; views for an archive. Arrow keys turn it a detent; the word under the mark is the choice.</p>
+          <p class="demo__hint">.mode-dial</p>
+          <form class="mode-dial">
+            <fieldset class="mode-dial__set">
+              <legend class="mode-dial__legend" data-i18n="sample.view.legend">View</legend>
+              <div class="mode-dial__deck">
+                <div class="mode-dial__dial">
+                  <span class="mode-dial__index" aria-hidden="true"></span>
+                  <div class="mode-dial__face">
+                    <span class="mode-dial__knurl" aria-hidden="true"></span>
+                    <span class="mode-dial__plate" aria-hidden="true"></span>
+                    <span class="mode-dial__light" aria-hidden="true"></span>
+                    <div class="mode-dial__options">
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="view" value="grid" checked>
+                        <span class="mode-dial__name" data-i18n="sample.view.grid">Grid</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="view" value="list">
+                        <span class="mode-dial__name" data-i18n="sample.view.list">List</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="view" value="board">
+                        <span class="mode-dial__name" data-i18n="sample.view.board">Board</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="view" value="timeline">
+                        <span class="mode-dial__name" data-i18n="sample.view.timeline">Timeline</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="view" value="map">
+                        <span class="mode-dial__name" data-i18n="sample.view.map">Map</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="view" value="calendar">
+                        <span class="mode-dial__name" data-i18n="sample.view.calendar">Calendar</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </fieldset>
+          </form>
+        </section>
+
+        <section class="demo__state" data-reveal>
+          <p class="demo__caption" data-i18n="state.icons"><strong>Icons</strong> &middot; the same views. Hover or focus raises the name; on touch the chosen one keeps its name up.</p>
+          <p class="demo__hint">.mode-dial--icons</p>
+          <form class="mode-dial mode-dial--icons">
+            <fieldset class="mode-dial__set">
+              <legend class="mode-dial__legend" data-i18n="sample.view.legend">View</legend>
+              <div class="mode-dial__deck">
+                <div class="mode-dial__dial">
+                  <span class="mode-dial__index" aria-hidden="true"></span>
+                  <div class="mode-dial__face">
+                    <span class="mode-dial__knurl" aria-hidden="true"></span>
+                    <span class="mode-dial__plate" aria-hidden="true"></span>
+                    <span class="mode-dial__light" aria-hidden="true"></span>
+                    <div class="mode-dial__options">
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="view" value="grid">
+                        <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 4.5h6v6h-6zM13.5 4.5h6v6h-6zM4.5 13.5h6v6h-6zM13.5 13.5h6v6h-6z"/></svg>
+                        <span class="mode-dial__name" data-i18n="sample.view.grid">Grid</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="view" value="list">
+                        <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 6.5h15M4.5 12h15M4.5 17.5h15"/></svg>
+                        <span class="mode-dial__name" data-i18n="sample.view.list">List</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="view" value="board" checked>
+                        <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 4.5h4v15h-4zM10 4.5h4v10h-4zM15.5 4.5h4v12.5h-4z"/></svg>
+                        <span class="mode-dial__name" data-i18n="sample.view.board">Board</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="view" value="timeline">
+                        <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3.5 12h17M7 8.5v7M12 8.5v7M17 8.5v7"/></svg>
+                        <span class="mode-dial__name" data-i18n="sample.view.timeline">Timeline</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="view" value="map">
+                        <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20.5s-6-5.2-6-10a6 6 0 0 1 12 0c0 4.8-6 10-6 10zM12 12a1.75 1.75 0 1 0 0-3.5 1.75 1.75 0 0 0 0 3.5z"/></svg>
+                        <span class="mode-dial__name" data-i18n="sample.view.map">Map</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="view" value="calendar">
+                        <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 6h15v13.5h-15zM4.5 10h15M8.5 3.5v4M15.5 3.5v4"/></svg>
+                        <span class="mode-dial__name" data-i18n="sample.view.calendar">Calendar</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </fieldset>
+          </form>
+        </section>
+
+        <section class="demo__state" data-reveal>
+          <p class="demo__caption" data-i18n="state.curled"><strong>Curled text</strong> &middot; a dashboard&rsquo;s time range, Day to All, read clockwise.</p>
+          <p class="demo__hint">.mode-dial--curled</p>
+          <form class="mode-dial mode-dial--curled">
+            <fieldset class="mode-dial__set">
+              <legend class="mode-dial__legend" data-i18n="sample.range.legend">Range</legend>
+              <div class="mode-dial__deck">
+                <div class="mode-dial__dial">
+                  <span class="mode-dial__index" aria-hidden="true"></span>
+                  <div class="mode-dial__face">
+                    <span class="mode-dial__knurl" aria-hidden="true"></span>
+                    <span class="mode-dial__plate" aria-hidden="true"></span>
+                    <span class="mode-dial__light" aria-hidden="true"></span>
+                    <svg class="mode-dial__engraving" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+                      <path class="mode-dial__arc" id="mode-dial-c-arc" d="M50 77a27 27 0 1 1 0-54a27 27 0 1 1 0 54"/>
+                      <g class="mode-dial__words">
+                        <text class="mode-dial__engraved" text-anchor="middle"><textPath href="#mode-dial-c-arc" startOffset="50%" data-i18n="sample.range.day">Day</textPath></text>
+                        <text class="mode-dial__engraved" text-anchor="middle"><textPath href="#mode-dial-c-arc" startOffset="50%" data-i18n="sample.range.week">Week</textPath></text>
+                        <text class="mode-dial__engraved" text-anchor="middle"><textPath href="#mode-dial-c-arc" startOffset="50%" data-i18n="sample.range.month">Month</textPath></text>
+                        <text class="mode-dial__engraved" text-anchor="middle"><textPath href="#mode-dial-c-arc" startOffset="50%" data-i18n="sample.range.quarter">Quarter</textPath></text>
+                        <text class="mode-dial__engraved" text-anchor="middle"><textPath href="#mode-dial-c-arc" startOffset="50%" data-i18n="sample.range.year">Year</textPath></text>
+                        <text class="mode-dial__engraved" text-anchor="middle"><textPath href="#mode-dial-c-arc" startOffset="50%" data-i18n="sample.range.all">All</textPath></text>
+                      </g>
+                    </svg>
+                    <div class="mode-dial__options">
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="range" value="day">
+                        <span class="mode-dial__name" data-i18n="sample.range.day">Day</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="range" value="week" checked>
+                        <span class="mode-dial__name" data-i18n="sample.range.week">Week</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="range" value="month">
+                        <span class="mode-dial__name" data-i18n="sample.range.month">Month</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="range" value="quarter">
+                        <span class="mode-dial__name" data-i18n="sample.range.quarter">Quarter</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="range" value="year">
+                        <span class="mode-dial__name" data-i18n="sample.range.year">Year</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="range" value="all">
+                        <span class="mode-dial__name" data-i18n="sample.range.all">All</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </fieldset>
+          </form>
+        </section>
+
+      </div>
+    </section>
+
+    <!-- ------------------------------------------------------------------ -->
+    <section class="demo__group">
+      <div class="demo__group-head" data-reveal>
+        <h2 class="demo__group-title" data-i18n="group.display">With a display</h2>
+        <p class="demo__group-note" data-i18n="group.displayNote">The display reads what is under the mark, and what is under the pointer before you turn to it.</p>
+      </div>
+
+      <div class="demo__grid">
+
+        <section class="demo__state demo__state--screen" data-reveal>
+          <p class="demo__caption" data-i18n="state.rangeDisplay"><strong>Range</strong> &middot; hover a word to preview its span; turn to apply it.</p>
+          <p class="demo__hint">.mode-dial--curled + __display</p>
+          <form class="mode-dial mode-dial--curled">
+            <fieldset class="mode-dial__set">
+              <legend class="mode-dial__legend" data-i18n="sample.range.legend">Range</legend>
+              <div class="mode-dial__deck">
+                <div class="mode-dial__dial">
+                  <span class="mode-dial__index" aria-hidden="true"></span>
+                  <div class="mode-dial__face">
+                    <span class="mode-dial__knurl" aria-hidden="true"></span>
+                    <span class="mode-dial__plate" aria-hidden="true"></span>
+                    <span class="mode-dial__light" aria-hidden="true"></span>
+                    <svg class="mode-dial__engraving" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+                      <path class="mode-dial__arc" id="mode-dial-d-arc" d="M50 77a27 27 0 1 1 0-54a27 27 0 1 1 0 54"/>
+                      <g class="mode-dial__words">
+                        <text class="mode-dial__engraved" text-anchor="middle"><textPath href="#mode-dial-d-arc" startOffset="50%" data-i18n="sample.range.day">Day</textPath></text>
+                        <text class="mode-dial__engraved" text-anchor="middle"><textPath href="#mode-dial-d-arc" startOffset="50%" data-i18n="sample.range.week">Week</textPath></text>
+                        <text class="mode-dial__engraved" text-anchor="middle"><textPath href="#mode-dial-d-arc" startOffset="50%" data-i18n="sample.range.month">Month</textPath></text>
+                        <text class="mode-dial__engraved" text-anchor="middle"><textPath href="#mode-dial-d-arc" startOffset="50%" data-i18n="sample.range.quarter">Quarter</textPath></text>
+                        <text class="mode-dial__engraved" text-anchor="middle"><textPath href="#mode-dial-d-arc" startOffset="50%" data-i18n="sample.range.year">Year</textPath></text>
+                        <text class="mode-dial__engraved" text-anchor="middle"><textPath href="#mode-dial-d-arc" startOffset="50%" data-i18n="sample.range.all">All</textPath></text>
+                      </g>
+                    </svg>
+                    <div class="mode-dial__options">
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="range" value="day" aria-describedby="mode-dial-d-day">
+                        <span class="mode-dial__name" data-i18n="sample.range.day">Day</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="range" value="week" aria-describedby="mode-dial-d-week">
+                        <span class="mode-dial__name" data-i18n="sample.range.week">Week</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="range" value="month" checked aria-describedby="mode-dial-d-month">
+                        <span class="mode-dial__name" data-i18n="sample.range.month">Month</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="range" value="quarter" aria-describedby="mode-dial-d-quarter">
+                        <span class="mode-dial__name" data-i18n="sample.range.quarter">Quarter</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="range" value="year" aria-describedby="mode-dial-d-year">
+                        <span class="mode-dial__name" data-i18n="sample.range.year">Year</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="range" value="all" aria-describedby="mode-dial-d-all">
+                        <span class="mode-dial__name" data-i18n="sample.range.all">All</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <div class="mode-dial__display" aria-hidden="true">
+                  <p class="mode-dial__caption" data-i18n="sample.range.legend">Range</p>
+                  <p class="mode-dial__tags">
+                    <span class="mode-dial__tag mode-dial__tag--current" data-i18n="sample.tag.current">Current</span>
+                    <span class="mode-dial__tag mode-dial__tag--preview" data-i18n="sample.tag.preview">Preview</span>
+                    <span class="mode-dial__tag mode-dial__tag--pending" data-i18n="sample.tag.pending">Pending</span>
+                  </p>
+                  <ol class="mode-dial__readouts">
+                    <li class="mode-dial__readout"><span class="mode-dial__readout-name" data-i18n="sample.range.day">Day</span> <span class="mode-dial__readout-line" id="mode-dial-d-day" data-i18n="sample.range.dayLine">Today, hour by hour</span></li>
+                    <li class="mode-dial__readout"><span class="mode-dial__readout-name" data-i18n="sample.range.week">Week</span> <span class="mode-dial__readout-line" id="mode-dial-d-week" data-i18n="sample.range.weekLine">Last 7 days</span></li>
+                    <li class="mode-dial__readout"><span class="mode-dial__readout-name" data-i18n="sample.range.month">Month</span> <span class="mode-dial__readout-line" id="mode-dial-d-month" data-i18n="sample.range.monthLine">Last 30 days</span></li>
+                    <li class="mode-dial__readout"><span class="mode-dial__readout-name" data-i18n="sample.range.quarter">Quarter</span> <span class="mode-dial__readout-line" id="mode-dial-d-quarter" data-i18n="sample.range.quarterLine">Last 90 days</span></li>
+                    <li class="mode-dial__readout"><span class="mode-dial__readout-name" data-i18n="sample.range.year">Year</span> <span class="mode-dial__readout-line" id="mode-dial-d-year" data-i18n="sample.range.yearLine">Last 12 months</span></li>
+                    <li class="mode-dial__readout"><span class="mode-dial__readout-name" data-i18n="sample.range.all">All</span> <span class="mode-dial__readout-line" id="mode-dial-d-all" data-i18n="sample.range.allLine">Since the first record</span></li>
+                  </ol>
+                  <span class="mode-dial__ticks"></span>
+                </div>
+              </div>
+            </fieldset>
+          </form>
+        </section>
+
+        <section class="demo__state demo__state--screen" data-reveal>
+          <p class="demo__caption" data-i18n="state.viewsDisplay"><strong>Views</strong> &middot; the screen says what each view is for before you pick it.</p>
+          <p class="demo__hint">.mode-dial--icons + __display</p>
+          <form class="mode-dial mode-dial--icons">
+            <fieldset class="mode-dial__set">
+              <legend class="mode-dial__legend" data-i18n="sample.view.legend">View</legend>
+              <div class="mode-dial__deck">
+                <div class="mode-dial__dial">
+                  <span class="mode-dial__index" aria-hidden="true"></span>
+                  <div class="mode-dial__face">
+                    <span class="mode-dial__knurl" aria-hidden="true"></span>
+                    <span class="mode-dial__plate" aria-hidden="true"></span>
+                    <span class="mode-dial__light" aria-hidden="true"></span>
+                    <div class="mode-dial__options">
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="view" value="grid" aria-describedby="mode-dial-e-grid">
+                        <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 4.5h6v6h-6zM13.5 4.5h6v6h-6zM4.5 13.5h6v6h-6zM13.5 13.5h6v6h-6z"/></svg>
+                        <span class="mode-dial__name" data-i18n="sample.view.grid">Grid</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="view" value="list" aria-describedby="mode-dial-e-list">
+                        <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 6.5h15M4.5 12h15M4.5 17.5h15"/></svg>
+                        <span class="mode-dial__name" data-i18n="sample.view.list">List</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="view" value="board" aria-describedby="mode-dial-e-board">
+                        <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 4.5h4v15h-4zM10 4.5h4v10h-4zM15.5 4.5h4v12.5h-4z"/></svg>
+                        <span class="mode-dial__name" data-i18n="sample.view.board">Board</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="view" value="timeline" checked aria-describedby="mode-dial-e-timeline">
+                        <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3.5 12h17M7 8.5v7M12 8.5v7M17 8.5v7"/></svg>
+                        <span class="mode-dial__name" data-i18n="sample.view.timeline">Timeline</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="view" value="map" aria-describedby="mode-dial-e-map">
+                        <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20.5s-6-5.2-6-10a6 6 0 0 1 12 0c0 4.8-6 10-6 10zM12 12a1.75 1.75 0 1 0 0-3.5 1.75 1.75 0 0 0 0 3.5z"/></svg>
+                        <span class="mode-dial__name" data-i18n="sample.view.map">Map</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="view" value="calendar" aria-describedby="mode-dial-e-calendar">
+                        <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 6h15v13.5h-15zM4.5 10h15M8.5 3.5v4M15.5 3.5v4"/></svg>
+                        <span class="mode-dial__name" data-i18n="sample.view.calendar">Calendar</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <div class="mode-dial__display" aria-hidden="true">
+                  <p class="mode-dial__caption" data-i18n="sample.view.legend">View</p>
+                  <p class="mode-dial__tags">
+                    <span class="mode-dial__tag mode-dial__tag--current" data-i18n="sample.tag.current">Current</span>
+                    <span class="mode-dial__tag mode-dial__tag--preview" data-i18n="sample.tag.preview">Preview</span>
+                    <span class="mode-dial__tag mode-dial__tag--pending" data-i18n="sample.tag.pending">Pending</span>
+                  </p>
+                  <ol class="mode-dial__readouts">
+                    <li class="mode-dial__readout"><span class="mode-dial__readout-name" data-i18n="sample.view.grid">Grid</span> <span class="mode-dial__readout-line" id="mode-dial-e-grid" data-i18n="sample.view.gridLine">Everything at a glance</span></li>
+                    <li class="mode-dial__readout"><span class="mode-dial__readout-name" data-i18n="sample.view.list">List</span> <span class="mode-dial__readout-line" id="mode-dial-e-list" data-i18n="sample.view.listLine">One row per project</span></li>
+                    <li class="mode-dial__readout"><span class="mode-dial__readout-name" data-i18n="sample.view.board">Board</span> <span class="mode-dial__readout-line" id="mode-dial-e-board" data-i18n="sample.view.boardLine">Sorted by stage</span></li>
+                    <li class="mode-dial__readout"><span class="mode-dial__readout-name" data-i18n="sample.view.timeline">Timeline</span> <span class="mode-dial__readout-line" id="mode-dial-e-timeline" data-i18n="sample.view.timelineLine">In the order they happened</span></li>
+                    <li class="mode-dial__readout"><span class="mode-dial__readout-name" data-i18n="sample.view.map">Map</span> <span class="mode-dial__readout-line" id="mode-dial-e-map" data-i18n="sample.view.mapLine">Where they were made</span></li>
+                    <li class="mode-dial__readout"><span class="mode-dial__readout-name" data-i18n="sample.view.calendar">Calendar</span> <span class="mode-dial__readout-line" id="mode-dial-e-calendar" data-i18n="sample.view.calendarLine">By the day they're due</span></li>
+                  </ol>
+                  <span class="mode-dial__ticks"></span>
+                </div>
+              </div>
+            </fieldset>
+          </form>
+        </section>
+
+      </div>
+    </section>
+
+    <!-- ------------------------------------------------------------------ -->
+    <section class="demo__group">
+      <div class="demo__group-head" data-reveal>
+        <h2 class="demo__group-title" data-i18n="group.commit">A key in the middle</h2>
+        <p class="demo__group-note" data-i18n="group.commitNote">For a choice that costs something. Turning browses, the key equips, Escape turns it back.</p>
+      </div>
+
+      <div class="demo__grid">
+
+        <section class="demo__state demo__state--screen" data-reveal>
+          <p class="demo__caption" data-i18n="state.kit"><strong>Kit</strong> &middot; a game&rsquo;s item wheel. The mark is what you are looking at; the pip is what you are holding.</p>
+          <p class="demo__hint">.mode-dial--icons + __display + __commit</p>
+          <form class="mode-dial mode-dial--icons">
+            <fieldset class="mode-dial__set">
+              <legend class="mode-dial__legend" data-i18n="sample.kit.legend">Kit</legend>
+              <div class="mode-dial__deck">
+                <div class="mode-dial__dial">
+                  <span class="mode-dial__index" aria-hidden="true"></span>
+                  <div class="mode-dial__face">
+                    <span class="mode-dial__knurl" aria-hidden="true"></span>
+                    <span class="mode-dial__plate" aria-hidden="true"></span>
+                    <span class="mode-dial__light" aria-hidden="true"></span>
+                    <div class="mode-dial__options">
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="kit" value="lantern" aria-describedby="mode-dial-f-lantern">
+                        <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.5 3.5h5M8 6.5h8v13H8zM12 10c-1.6 1.9-1.6 3.6 0 4.8 1.6-1.2 1.6-2.9 0-4.8z"/></svg>
+                        <span class="mode-dial__name" data-i18n="sample.kit.lantern">Lantern</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="kit" value="rope" checked aria-describedby="mode-dial-f-rope">
+                        <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4.5a7.5 7.5 0 1 0 0 15 7.5 7.5 0 0 0 0-15zM12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM12 11.25a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5z"/></svg>
+                        <span class="mode-dial__name" data-i18n="sample.kit.rope">Rope</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="kit" value="compass" aria-describedby="mode-dial-f-compass">
+                        <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4a8 8 0 1 0 0 16 8 8 0 0 0 0-16zM15 9l-1.8 4.2L9 15l1.8-4.2z"/></svg>
+                        <span class="mode-dial__name" data-i18n="sample.kit.compass">Compass</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="kit" value="flare" aria-describedby="mode-dial-f-flare">
+                        <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3.5v4M12 16.5v4M3.5 12h4M16.5 12h4M6 6l2.8 2.8M15.2 15.2L18 18M18 6l-2.8 2.8M8.8 15.2L6 18"/></svg>
+                        <span class="mode-dial__name" data-i18n="sample.kit.flare">Flare</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="kit" value="net" aria-describedby="mode-dial-f-net">
+                        <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4a8 8 0 1 0 0 16 8 8 0 0 0 0-16zM8 5.1l10.9 10.9M5.1 8L16 18.9M16 5.1L5.1 16M18.9 8L8 18.9"/></svg>
+                        <span class="mode-dial__name" data-i18n="sample.kit.net">Net</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="kit" value="notebook" aria-describedby="mode-dial-f-notebook">
+                        <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7.5 3.5h11v17h-11zM4.5 7h3M4.5 12h3M4.5 17h3M11 8h4.5M11 11.5h4.5"/></svg>
+                        <span class="mode-dial__name" data-i18n="sample.kit.notebook">Notebook</span>
+                      </label>
+                    </div>
+                  </div>
+                  <button class="mode-dial__commit" type="submit"><span class="mode-dial__commit-label" data-i18n="sample.kit.equip">Equip</span></button>
+                </div>
+                <div class="mode-dial__display" aria-hidden="true">
+                  <p class="mode-dial__caption" data-i18n="sample.kit.legend">Kit</p>
+                  <p class="mode-dial__tags">
+                    <span class="mode-dial__tag mode-dial__tag--current" data-i18n="sample.tag.current">Current</span>
+                    <span class="mode-dial__tag mode-dial__tag--preview" data-i18n="sample.tag.preview">Preview</span>
+                    <span class="mode-dial__tag mode-dial__tag--pending" data-i18n="sample.tag.pending">Pending</span>
+                  </p>
+                  <ol class="mode-dial__readouts">
+                    <li class="mode-dial__readout"><span class="mode-dial__readout-name" data-i18n="sample.kit.lantern">Lantern</span> <span class="mode-dial__readout-line" id="mode-dial-f-lantern" data-i18n="sample.kit.lanternLine">Lights 6 m for 30 s. Burns 1 oil.</span></li>
+                    <li class="mode-dial__readout"><span class="mode-dial__readout-name" data-i18n="sample.kit.rope">Rope</span> <span class="mode-dial__readout-line" id="mode-dial-f-rope" data-i18n="sample.kit.ropeLine">Up or down one ledge.</span></li>
+                    <li class="mode-dial__readout"><span class="mode-dial__readout-name" data-i18n="sample.kit.compass">Compass</span> <span class="mode-dial__readout-line" id="mode-dial-f-compass" data-i18n="sample.kit.compassLine">Points to the nearest unvisited site.</span></li>
+                    <li class="mode-dial__readout"><span class="mode-dial__readout-name" data-i18n="sample.kit.flare">Flare</span> <span class="mode-dial__readout-line" id="mode-dial-f-flare" data-i18n="sample.kit.flareLine">Marks your spot for the others. One use.</span></li>
+                    <li class="mode-dial__readout"><span class="mode-dial__readout-name" data-i18n="sample.kit.net">Net</span> <span class="mode-dial__readout-line" id="mode-dial-f-net" data-i18n="sample.kit.netLine">Catches anything small. Slow to pack.</span></li>
+                    <li class="mode-dial__readout"><span class="mode-dial__readout-name" data-i18n="sample.kit.notebook">Notebook</span> <span class="mode-dial__readout-line" id="mode-dial-f-notebook" data-i18n="sample.kit.notebookLine">Records the site. Ends your turn.</span></li>
+                  </ol>
+                  <span class="mode-dial__ticks"></span>
+                </div>
+              </div>
+            </fieldset>
+            <p class="mode-dial__status" role="status" aria-atomic="true"><span class="mode-dial__status-lead" data-i18n="sample.kit.status">Equipped:</span> <span class="mode-dial__status-value"></span></p>
+          </form>
+        </section>
+
+      </div>
+    </section>
+
+    <!-- ------------------------------------------------------------------ -->
+    <section class="demo__group">
+      <div class="demo__group-head" data-reveal>
+        <h2 class="demo__group-title" data-i18n="group.size">At two sizes</h2>
+        <p class="demo__group-note" data-i18n="group.sizeNote">The geometry is a share of the dial and the cloth is in pixels, so a small dial has fewer dots, not smaller ones.</p>
+      </div>
+
+      <div class="demo__grid demo__grid--top">
+
+        <section class="demo__state" data-reveal>
+          <p class="demo__caption" data-i18n="state.compact"><strong>Compact</strong> &middot; 8.5rem, the size it takes beside a search field in a site header.</p>
+          <p class="demo__hint">--mode-dial-size: 8.5rem</p>
+          <form class="mode-dial mode-dial--icons" style="--mode-dial-size: 8.5rem">
+            <fieldset class="mode-dial__set">
+              <legend class="mode-dial__legend" data-i18n="sample.view.legend">View</legend>
+              <div class="mode-dial__deck">
+                <div class="mode-dial__dial">
+                  <span class="mode-dial__index" aria-hidden="true"></span>
+                  <div class="mode-dial__face">
+                    <span class="mode-dial__knurl" aria-hidden="true"></span>
+                    <span class="mode-dial__plate" aria-hidden="true"></span>
+                    <span class="mode-dial__light" aria-hidden="true"></span>
+                    <div class="mode-dial__options">
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="view" value="grid" checked>
+                        <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 4.5h6v6h-6zM13.5 4.5h6v6h-6zM4.5 13.5h6v6h-6zM13.5 13.5h6v6h-6z"/></svg>
+                        <span class="mode-dial__name" data-i18n="sample.view.grid">Grid</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="view" value="list">
+                        <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 6.5h15M4.5 12h15M4.5 17.5h15"/></svg>
+                        <span class="mode-dial__name" data-i18n="sample.view.list">List</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="view" value="board">
+                        <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 4.5h4v15h-4zM10 4.5h4v10h-4zM15.5 4.5h4v12.5h-4z"/></svg>
+                        <span class="mode-dial__name" data-i18n="sample.view.board">Board</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="view" value="timeline">
+                        <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3.5 12h17M7 8.5v7M12 8.5v7M17 8.5v7"/></svg>
+                        <span class="mode-dial__name" data-i18n="sample.view.timeline">Timeline</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="view" value="map">
+                        <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20.5s-6-5.2-6-10a6 6 0 0 1 12 0c0 4.8-6 10-6 10zM12 12a1.75 1.75 0 1 0 0-3.5 1.75 1.75 0 0 0 0 3.5z"/></svg>
+                        <span class="mode-dial__name" data-i18n="sample.view.map">Map</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="view" value="calendar">
+                        <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 6h15v13.5h-15zM4.5 10h15M8.5 3.5v4M15.5 3.5v4"/></svg>
+                        <span class="mode-dial__name" data-i18n="sample.view.calendar">Calendar</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </fieldset>
+          </form>
+        </section>
+
+        <section class="demo__state demo__state--large" data-reveal>
+          <p class="demo__caption" data-i18n="state.large"><strong>Large</strong> &middot; 26rem, a HUD control a thumb can turn; on a phone it takes the column.</p>
+          <p class="demo__hint">--mode-dial-size: 26rem</p>
+          <form class="mode-dial mode-dial--icons" style="--mode-dial-size: 26rem">
+            <fieldset class="mode-dial__set">
+              <legend class="mode-dial__legend" data-i18n="sample.kit.legend">Kit</legend>
+              <div class="mode-dial__deck">
+                <div class="mode-dial__dial">
+                  <span class="mode-dial__index" aria-hidden="true"></span>
+                  <div class="mode-dial__face">
+                    <span class="mode-dial__knurl" aria-hidden="true"></span>
+                    <span class="mode-dial__plate" aria-hidden="true"></span>
+                    <span class="mode-dial__light" aria-hidden="true"></span>
+                    <div class="mode-dial__options">
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="kit" value="lantern">
+                        <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.5 3.5h5M8 6.5h8v13H8zM12 10c-1.6 1.9-1.6 3.6 0 4.8 1.6-1.2 1.6-2.9 0-4.8z"/></svg>
+                        <span class="mode-dial__name" data-i18n="sample.kit.lantern">Lantern</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="kit" value="rope">
+                        <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4.5a7.5 7.5 0 1 0 0 15 7.5 7.5 0 0 0 0-15zM12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM12 11.25a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5z"/></svg>
+                        <span class="mode-dial__name" data-i18n="sample.kit.rope">Rope</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="kit" value="compass" checked>
+                        <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4a8 8 0 1 0 0 16 8 8 0 0 0 0-16zM15 9l-1.8 4.2L9 15l1.8-4.2z"/></svg>
+                        <span class="mode-dial__name" data-i18n="sample.kit.compass">Compass</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="kit" value="flare">
+                        <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3.5v4M12 16.5v4M3.5 12h4M16.5 12h4M6 6l2.8 2.8M15.2 15.2L18 18M18 6l-2.8 2.8M8.8 15.2L6 18"/></svg>
+                        <span class="mode-dial__name" data-i18n="sample.kit.flare">Flare</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="kit" value="net">
+                        <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4a8 8 0 1 0 0 16 8 8 0 0 0 0-16zM8 5.1l10.9 10.9M5.1 8L16 18.9M16 5.1L5.1 16M18.9 8L8 18.9"/></svg>
+                        <span class="mode-dial__name" data-i18n="sample.kit.net">Net</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="kit" value="notebook">
+                        <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7.5 3.5h11v17h-11zM4.5 7h3M4.5 12h3M4.5 17h3M11 8h4.5M11 11.5h4.5"/></svg>
+                        <span class="mode-dial__name" data-i18n="sample.kit.notebook">Notebook</span>
+                      </label>
+                    </div>
+                  </div>
+                  <button class="mode-dial__commit" type="submit"><span class="mode-dial__commit-label" data-i18n="sample.kit.equip">Equip</span></button>
+                </div>
+              </div>
+            </fieldset>
+            <p class="mode-dial__status" role="status" aria-atomic="true"><span class="mode-dial__status-lead" data-i18n="sample.kit.status">Equipped:</span> <span class="mode-dial__status-value"></span></p>
+          </form>
+        </section>
+
+      </div>
+    </section>
+
+    <script src="component.js"></script>
+
+
+    <!-- notes.md, rendered. Type, source, the origin paragraphs and one <li>
+         per decision bullet — the same shape the file has, so the two can be
+         read side by side. Update both together. -->
+    <!-- notes.md, rendered. Closed by default: the states are what the page is
+       for, and the decisions are what you open when you want to know why. A
+       <details> rather than a scripted panel — disclosure is the one thing the
+       element already is, keyboard and screen reader included, and this page
+       has no other reason to carry script. -->
+  <details class="demo__notes" data-reveal>
+    <summary class="demo__notes-summary">
+      <h2 class="demo__notes-title" data-i18n="notes.title">Decisions</h2>
+      <svg class="demo__notes-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+        <path d="M4 6l4 4 4-4" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </summary>
+
+    <div class="demo__notes-body">
+
+        <dl class="demo__notes-meta">
+          <div class="demo__notes-row">
+            <dt data-i18n="notes.type">Type</dt>
+            <dd data-i18n="type">Navigation</dd>
+          </div>
+        </dl>
+
+        <p class="demo__notes-lede">
+          A rotary selector for a mode you stay in. Its choices sit round a
+          knurled charcoal dial set into a cloth-dotted plate, and turning it
+          brings one at a time under a fixed index mark. Underneath it is a
+          radio group in a form, so arrow keys, a screen reader and a server
+          all have it with no script; turning it by dragging is what
+          component.js adds. Three item sets show where it belongs: an
+          archive's views as icons that say their name when reached for, a
+          dashboard's time range engraved round the arc, and a game's kit with
+          a display and a centre key that commits.
+        </p>
+
+        <ol class="demo__notes-list">
+          <li>
+            <h3 class="demo__notes-head">One number turns everything.</h3>
+            <p>Eight <code>:has(… :nth-child(k) &gt; :checked)</code> rules
+              write <code>--mode-dial-sel</code> on the root, and six
+              <code>:nth-child(k):last-child</code> rules write
+              <code>--mode-dial-n</code>. Three parts turn to <code>-(sel +
+              laps·n + drag) · 360deg/n</code> on one transition — the knurl,
+              the engraving and the options layer — and each option sits on
+              that layer at <code>sin()</code>/<code>cos()</code> of <code>i ·
+              360deg/n</code> × 28cqi and turns back by the same angle on the
+              same transition, so names and icons stay upright in lockstep
+              without <code>@property</code>: measured mid-turn, layer 31.49°
+              and option −31.49°. The face that holds them does not turn and
+              is not a stacking context, which is what lets the options layer
+              sit above the centre key, so a tooltip is never drawn under it.
+              The engraved words, the display's readouts and the selected
+              word's weight are arithmetic on <code>i - sel</code>, through
+              <code>color-mix()</code> and <code>max(d, -d)</code>, rather
+              than further ladders.</p>
+          </li>
+          <li>
+            <h3 class="demo__notes-head">A detent is an overshoot, and the wrap is what CSS cannot do.</h3>
+            <p>420ms on <code>linear(0, .42 12%, .8 26%, 1.045 46%, 1.06 52%,
+              .995 72%, 1.003 86%, 1)</code> passes the stop by 6% of the move
+              (3.6° on a six-way dial) and settles; each extra step adds 70ms.
+              Without script, last-to-first spins back the long way (0° to
+              −300°), which reads as an end stop. component.js keeps a winding
+              count (<code>--mode-dial-laps</code>) so every turn takes the
+              near way (0° to +60°), and turns a drag into
+              <code>Math.atan2</code> steps that check the radio as each
+              detent is crossed, 0.6 of a step past it, one detent at a time:
+              a sweep of 3.3 steps fires exactly three <code>change</code>
+              events, so a drag is heard exactly as an arrow key is. A drag
+              starts anywhere on the dial but the key. The knurl is
+              <code>touch-action: none</code>, a full circular drag for a
+              thumb; the rest of the dial is <code>pan-y</code>, because the
+              knurl is 12px wide on a phone and too thin to aim for, so a
+              sideways swipe across the face turns it while a vertical one
+              still scrolls the page — the browser takes that swipe, sends
+              <code>pointercancel</code>, and the dial snaps back to the last
+              detent it reached.</p>
+          </li>
+          <li>
+            <h3 class="demo__notes-head">One light, and it does not turn.</h3>
+            <p><code>--mode-dial-light: 27deg</code>; every shadow, the knurl's
+              conic rim light, the plate's chamfer, the face's soft two-lobed
+              streak, the cloth's bumps and the engraving lip are offset by
+              its <code>sin()</code>/<code>cos()</code>. The light layer sits
+              on the face, which never turns, so the 120 teeth slide through a
+              highlight that stays put. 120 divides by 3, 4, 5, 6 and 8, so
+              every detent lands on a whole tooth. The cloth is on the deck
+              only, in pixels rather than cqi: a 4px quincunx of 1px bumps,
+              each a shade disc with a highlight nudged a quarter-pixel toward
+              the light, so a small dial has fewer dots, not smaller ones. The
+              deck is square without a display, a 24px margin on every side at
+              the default size, and casts a warm three-layer shadow down and
+              to the right.</p>
+          </li>
+          <li>
+            <h3 class="demo__notes-head">Browsing and choosing are two marks.</h3>
+            <p>With the centre key present, the checked radio is the pending
+              choice and <code>:default</code> (the radio carrying the
+              <code>checked</code> attribute) is the committed one: the index
+              goes hollow and the key takes a ring while they differ, and a
+              pip on the face stays with what was committed. Without script
+              the key submits the form as GET (<code>?kit=compass</code>), and
+              so does Enter on a radio in a dial with a key — accepted, since
+              that is the form doing what it says; with no key, Enter does
+              nothing. With script, committing rewrites
+              <code>defaultChecked</code>, Enter on a radio commits, and
+              Escape is <code>form.reset()</code>. The camera has neither a
+              key nor a display; both come from asking what a page or a game
+              needs from the control, and a view or a filter applies as it
+              turns.</p>
+          </li>
+          <li>
+            <h3 class="demo__notes-head">No hover to spend, and nothing muted.</h3>
+            <p>Names rise as tooltips on <code>:hover</code>, on
+              <code>:focus-visible</code> and, under <code>(hover:
+              none)</code>, on <code>:active</code> and on the checked item,
+              always toward the centre with their near edge 6cqi from the
+              icon, so none leaves the face: the farthest corner is at 28cqi
+              of a 240px dial and 35cqi of the 136px one, inside the face's
+              37.4. The paint is <code>#b0ada6</code>, 6.16:1 on the face and
+              4.94 at the brightest point of the fixed streak; the chosen word
+              is <code>#f1efe8</code>, 11.99, and 9.49 on the key. The signal
+              <code>#f0965f</code> — index, focus ring, pending ring, pip,
+              never text — is 6.06 on the face, 4.86 at its brightest, 5.32 on
+              the deck and 4.10 on the key's lit side, against a 3:1 floor.
+              The display is one ink on one glass, <code>#1b1f17</code> on
+              <code>#b3b9a2</code> at 8.27 (6.00 in the bezel's shade),
+              because a second, dimmer ink was the first thing to fall under
+              the floor.</p>
+          </li>
+        </ol>
+
+        <!-- Where it started, last: the block opens on the component, and the
+             lineage is a footnote to it. Same order notes.md has. -->
+        <dl class="demo__notes-meta demo__notes-meta--foot">
+          <div class="demo__notes-row">
+            <dt data-i18n="notes.inspiration">Inspiration</dt>
+            <dd><a href="https://www.fujifilm-x.com/global/products/cameras/x-t50/" target="_blank" rel="noopener noreferrer">fujifilm-x.com/global/products/cameras/x-t50</a>
+              &mdash; the film-simulation dial on its top plate: the knurled
+              rim, the fixed index and the detent. The item set, the
+              lettering and what it selects are this study's own.</dd>
+          </div>
+        </dl>
+
+        <p class="demo__notes-foot">
+          <a href="notes.md">notes.md</a>
+          <span data-i18n="notes.full">&mdash; the full record, including what was tried and dropped</span>
+        </p>
+    </div>
+  </details>
+
+  </div>
+  <!--
+    Language, if this study needs it. Self-contained on purpose: the folder
+    has to survive being copied out, so it carries its own strings rather than
+    sharing a table with the index. The index appends ?lang= to the link that
+    opens this page, and the back link hands the choice back — over file:// each
+    document gets its own opaque origin, so localStorage alone will not carry it.
+
+    Give every translatable node a data-i18n key. This study carries its
+    sample copy in both languages, so every name, engraved word, readout and
+    display string has a sample.* key; class-name hints stay as written, since
+    they are code. Delete the whole block for a single-language study.
+  -->
+  <script>
+  (function () {
+    // Page chrome: the language switch, the theme switch, and the one back
+    // link that hands both of them to the index. Only an explicit choice
+    // travels — a theme resolved from the system is not a choice, and the
+    // index would only resolve it the same way.
+    var back = document.querySelector('.demo__back');
+    var chosenLang = 'en';
+    var chosenTheme = null;
+
+    function syncBack() {
+      if (!back) return;
+      var q = [];
+      if (chosenLang !== 'en') q.push('lang=' + chosenLang);
+      if (chosenTheme) q.push('theme=' + chosenTheme);
+      back.setAttribute('href', '../index.html' + (q.length ? '?' + q.join('&') : ''));
+    }
+
+    (function () {
+      var STORE_KEY = 'interface-studies:lang';
+
+      // The page's prose, and — where the study carries it in both languages —
+      // the component's sample copy too: mark each sample string with a
+      // data-i18n key under sample.*, English in the markup, Danish here. The
+      // inked plate does; until a study does, its sample copy stays as written.
+      var DA = {
+        'a11y.theme': 'M\u00f8rk tilstand',
+        'a11y.figma': '\u00c5bn i Figma',
+        'a11y.github': '\u00c5bn p\u00e5 GitHub',
+        'back': 'Alle studier',
+        'notes.title': 'Beslutninger',
+        'notes.type': 'Type',
+        'notes.inspiration': 'Inspiration',
+        'notes.full': '\u2014 hele optegnelsen, ogs\u00e5 det der blev pr\u00f8vet og forkastet',
+        'type': 'Navigation',
+        'heading': 'Drejevælger',
+        'lede': 'En vælger man drejer: valgene sidder rundt om et riflet hjul i en '
+          + 'plade med prikket stof og føres ét hak ad gangen ind under et mærke, '
+          + 'der aldrig flytter sig. Nedenunder er det en gruppe radioknapper.',
+
+        // The groups and the states' captions.
+        'group.label': 'Tre måder at mærke den på',
+        'group.labelNote': 'Den samme gruppe radioknapper under dem alle: navne der står oprejst, ikoner der siger deres navn når man rækker ud efter dem, og ord graveret langs buen, der drejer med.',
+        'state.names': '<strong>Navne</strong> &middot; visninger til et arkiv. Piletasterne drejer den ét hak; ordet under mærket er valget.',
+        'state.icons': '<strong>Ikoner</strong> &middot; de samme visninger. Hover eller fokus viser navnet; på touch beholder det valgte sit navn fremme.',
+        'state.curled': '<strong>Buet tekst</strong> &middot; et dashboards periode, fra Dag til Alt, læst med uret.',
+        'group.display': 'Med display',
+        'group.displayNote': 'Displayet viser det, der står under mærket, og det, markøren peger på, før du drejer hen til det.',
+        'state.rangeDisplay': '<strong>Periode</strong> &middot; hold markøren over et ord for at se perioden; drej for at bruge den.',
+        'state.viewsDisplay': '<strong>Visninger</strong> &middot; skærmen siger, hvad hver visning er til, før du vælger den.',
+        'group.commit': 'En knap i midten',
+        'group.commitNote': 'Til et valg der koster noget. At dreje er at kigge, knappen tager i brug, og Escape drejer tilbage.',
+        'state.kit': '<strong>Udstyr</strong> &middot; et spils hjul med genstande. Mærket er det, du kigger på; prikken er det, du holder.',
+        'group.size': 'I to størrelser',
+        'group.sizeNote': 'Geometrien er en andel af hjulet, og stoffet er i pixels, så et lille hjul har færre prikker, ikke mindre.',
+        'state.compact': '<strong>Kompakt</strong> &middot; 8,5rem, den størrelse den har ved siden af et søgefelt i et sidehoved.',
+        'state.large': '<strong>Stor</strong> &middot; 26rem, et HUD-greb en tommelfinger kan dreje; på en telefon fylder den kolonnen.',
+
+        // The component's sample copy. Every name, engraved word, readout and
+        // display string carries a sample.* key, and a string shared by several
+        // states shares its key: the legend and the display's caption, the
+        // name on the arc and the name on the screen.
+        'sample.view.legend': 'Visning',
+        'sample.view.grid': 'Gitter',
+        'sample.view.gridLine': 'Alt på én gang',
+        'sample.view.list': 'Liste',
+        'sample.view.listLine': 'Én række pr. projekt',
+        'sample.view.board': 'Tavle',
+        'sample.view.boardLine': 'Sorteret efter fase',
+        'sample.view.timeline': 'Tidslinje',
+        'sample.view.timelineLine': 'I den rækkefølge det skete',
+        'sample.view.map': 'Kort',
+        'sample.view.mapLine': 'Hvor de blev lavet',
+        'sample.view.calendar': 'Kalender',
+        'sample.view.calendarLine': 'Efter afleveringsdag',
+        'sample.range.legend': 'Periode',
+        'sample.range.day': 'Dag',
+        'sample.range.dayLine': 'I dag, time for time',
+        'sample.range.week': 'Uge',
+        'sample.range.weekLine': 'Seneste 7 dage',
+        'sample.range.month': 'Måned',
+        'sample.range.monthLine': 'Seneste 30 dage',
+        'sample.range.quarter': 'Kvartal',
+        'sample.range.quarterLine': 'Seneste 90 dage',
+        'sample.range.year': 'År',
+        'sample.range.yearLine': 'Seneste 12 måneder',
+        'sample.range.all': 'Alt',
+        'sample.range.allLine': 'Siden første registrering',
+        'sample.kit.legend': 'Udstyr',
+        'sample.kit.lantern': 'Lygte',
+        'sample.kit.lanternLine': 'Lyser 6 m op i 30 s. Bruger 1 olie.',
+        'sample.kit.rope': 'Reb',
+        'sample.kit.ropeLine': 'Op eller ned ad én afsats.',
+        'sample.kit.compass': 'Kompas',
+        'sample.kit.compassLine': 'Peger mod nærmeste ubesøgte sted.',
+        'sample.kit.flare': 'Nødblus',
+        'sample.kit.flareLine': 'Viser de andre hvor du er. Én gang.',
+        'sample.kit.net': 'Net',
+        'sample.kit.netLine': 'Fanger alt der er småt. Langsom at pakke.',
+        'sample.kit.notebook': 'Notesbog',
+        'sample.kit.notebookLine': 'Noterer stedet. Afslutter din tur.',
+        'sample.tag.current': 'Aktuel',
+        'sample.tag.preview': 'Kig',
+        'sample.tag.pending': 'Afventer',
+        'sample.kit.equip': 'Brug',
+        'sample.kit.status': 'I brug:',
+        // The key's label for a views or range dial. Not on this page, which
+        // only puts a key on the kit; kept so the set is complete.
+        'sample.commit.set': 'Vælg'
+      };
+
+      var nodes = Array.prototype.slice.call(document.querySelectorAll('[data-i18n]'));
+      var buttons = Array.prototype.slice.call(document.querySelectorAll('[data-lang]'));
+      // Labels that live in an attribute rather than in text — the theme
+      // toggle's is the only one so far. Same table, different setter.
+      var labelled = Array.prototype.slice.call(document.querySelectorAll('[data-i18n-aria]'));
+      var englishLabels = labelled.map(function (el) { return el.getAttribute('aria-label'); });
+      /* innerHTML rather than textContent, on the capture and on the set
+         alike. Several strings in a demo page want markup the sentence needs
+         — a <code> around a token name, a <strong> that numbers a step — and
+         read with textContent the English fallback is captured already
+         flattened, so the first apply() on load strips markup that was in the
+         markup, before anything has been translated. It fails silently and in
+         the one direction nobody checks.
+
+         Safe here in the way innerHTML usually is not: every string it sets
+         is a literal in this file or in the table above it. Nothing from a
+         URL, a field or a fetch reaches this line, and a translation table
+         that took input from any of those would be the problem rather than
+         this assignment. */
+      var english = nodes.map(function (el) { return el.innerHTML; });
+
+      function apply(lang) {
+        var table = lang === 'da' ? DA : null;
+
+        nodes.forEach(function (el, i) {
+          var key = el.getAttribute('data-i18n');
+          el.innerHTML = table && table[key] ? table[key] : english[i];
+        });
+
+        labelled.forEach(function (el, i) {
+          var key = el.getAttribute('data-i18n-aria');
+          el.setAttribute('aria-label', table && table[key] ? table[key] : englishLabels[i]);
+        });
+
+        // The tab follows the heading rather than keeping its own copy of it,
+        // so the study's name is the same string in both places and in both
+        // languages. The <title> in the markup is the no-script fallback.
+        var head = document.querySelector('.demo__heading');
+        if (head) document.title = head.textContent.trim() + ' \u2014 Interface Studies';
+
+        document.documentElement.lang = lang;
+        buttons.forEach(function (b) {
+          b.setAttribute('aria-pressed', b.dataset.lang === lang ? 'true' : 'false');
+        });
+        chosenLang = lang;
+        syncBack();
+
+        try { localStorage.setItem(STORE_KEY, lang); } catch (err) { /* private mode */ }
+      }
+
+      buttons.forEach(function (b) {
+        b.addEventListener('click', function () { apply(b.dataset.lang); });
+      });
+
+      var fromQuery = new URLSearchParams(location.search).get('lang');
+      var stored = null;
+      try { stored = localStorage.getItem(STORE_KEY); } catch (err) { /* private mode */ }
+
+      apply(fromQuery || stored || 'en');
+    })();
+
+    // --- theme -----------------------------------------------------------
+    //
+    // The answer is already on <html> — the head carries the same resolution
+    // so the first paint is not a frame of the wrong theme. This is the
+    // toggle, the state it reports, and the crossfade.
+    //
+    // The stylesheet reads the attribute and nothing else, which is what
+    // keeps the dark palette to one block. The system preference is resolved
+    // here rather than in a media query, so it stays live: until someone
+    // picks a theme, an OS switch with the page open still moves it.
+    (function () {
+      var STORE_KEY = 'interface-studies:theme';
+      var root = document.documentElement;
+      var toggle = document.querySelector('[data-theme-toggle]');
+      if (!toggle) return;
+
+      var media = window.matchMedia
+        ? window.matchMedia('(prefers-color-scheme: dark)')
+        : null;
+
+      var fromQuery = new URLSearchParams(location.search).get('theme');
+      if (fromQuery === 'dark' || fromQuery === 'light') {
+        chosenTheme = fromQuery;
+      } else {
+        try {
+          var stored = localStorage.getItem(STORE_KEY);
+          if (stored === 'dark' || stored === 'light') chosenTheme = stored;
+        } catch (err) { /* private mode */ }
+      }
+
+      function shown() {
+        return chosenTheme || (media && media.matches ? 'dark' : 'light');
+      }
+
+      function paint() {
+        var theme = shown();
+        root.setAttribute('data-theme', theme);
+        toggle.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
+        syncBack();
+      }
+
+      var settle = 0;
+      toggle.addEventListener('click', function () {
+        chosenTheme = shown() === 'dark' ? 'light' : 'dark';
+        try { localStorage.setItem(STORE_KEY, chosenTheme); } catch (err) { /* private mode */ }
+
+        // The crossfade is hung on <html> for its own length and taken off
+        // again, so the rule is not sitting on every element for the rest of
+        // the session.
+        root.classList.add('is-theming');
+        clearTimeout(settle);
+        settle = setTimeout(function () { root.classList.remove('is-theming'); }, 420);
+
+        paint();
+      });
+
+      if (media) {
+        var follow = function () { if (!chosenTheme) paint(); };
+        if (media.addEventListener) media.addEventListener('change', follow);
+        else if (media.addListener) media.addListener(follow);
+      }
+
+      paint();
+    })();
+
+  })();
+  </script>
+
+  <!--
+    Arrival: which blocks wait to be scrolled to, and in what order the rest
+    arrive. The motion is the style block's; this adds the one thing CSS
+    cannot ask, which is whether a block is on screen. A script of its own,
+    last, so that anything failing above it leaves every block to play at
+    load — the page without this, rather than a page with its states held for
+    good. Delete it and the page still arrives, all at once below the intro.
+  -->
+  <script>
+  (function () {
+    var blocks = Array.prototype.slice.call(document.querySelectorAll('[data-reveal]'));
+    if (!blocks.length || !('IntersectionObserver' in window)) return;
+
+    // The held state lives in the same media query, so where it does not
+    // match there is nothing to hold and nothing to let go of.
+    if (!window.matchMedia('screen and (prefers-reduced-motion: no-preference)').matches) return;
+
+    // How far up the viewport a block has to come to count as reached, and
+    // the latest slot anything on the first screen starts at: a tall screen
+    // holding twenty blocks should not keep the last one waiting two seconds.
+    var LINE = 0.9;
+    var LAST = 8;
+
+    function arriving(a) { return /^demo-arrive/.test(a.animationName || ''); }
+
+    function own(block) {
+      return block.getAnimations ? block.getAnimations().filter(arriving) : [];
+    }
+
+    // Still in its delay, so moving its slot moves nothing a reader has seen.
+    // A block already rising keeps the slot it started with: re-slotting it
+    // would snap it back to its first frame.
+    function waiting(block) {
+      return own(block).every(function (a) {
+        return a.currentTime !== null && a.currentTime < a.effect.getTiming().delay;
+      });
+    }
+
+    // Once its entrance is over the animation comes off — see has-arrived.
+    // Cancelled counts as over. Where the browser cannot say, it stays on:
+    // marking it early would cut the entrance off where it stood.
+    function settle(block) {
+      if (!block.getAnimations) return;
+      Promise.allSettled(own(block).map(function (a) { return a.finished; }))
+        .then(function () { block.classList.add('has-arrived'); });
+    }
+
+    function inOrder(list) {
+      return list.sort(function (a, b) {
+        return a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1;
+      });
+    }
+
+    // Everything reached in one scroll is one batch, in reading order from
+    // zero, a step apart — a row of three states side by side arrives as a
+    // row, and the same three stacked on a phone arrive one at a time.
+    var seen = new IntersectionObserver(function (entries) {
+      var landed = entries
+        .filter(function (e) { return e.isIntersecting; })
+        .map(function (e) { return e.target; });
+      inOrder(landed).forEach(function (block, n) {
+        seen.unobserve(block);
+        block.style.setProperty('--demo-arrive-lead', '0ms');
+        block.style.setProperty('--demo-arrive-at', String(Math.min(n, LAST)));
+        block.classList.remove('is-held');
+        settle(block);
+      });
+    }, { rootMargin: '0px 0px -' + Math.round((1 - LINE) * 100) + '% 0px' });
+
+    var line = window.innerHeight * LINE;
+    var first = [];
+
+    blocks.forEach(function (block) {
+      var box = block.getBoundingClientRect();
+      if (box.top < line && box.bottom > 0) {
+        first.push(block);
+        return;
+      }
+      block.classList.add('is-held');
+      seen.observe(block);
+    });
+
+    // The first screen, in reading order. Its animations have been running
+    // since the first paint, which is why only a block still waiting moves.
+    inOrder(first).forEach(function (block, n) {
+      if (waiting(block)) block.style.setProperty('--demo-arrive-at', String(Math.min(n, LAST)));
+      settle(block);
+    });
+  })();
+  </script>
+
+</body>
+</html>

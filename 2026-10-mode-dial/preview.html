@@ -1,0 +1,479 @@
+<!doctype html>
+<!--
+  The thumbnail the landing page iframes: one dial, no captions and no second
+  copy. It links component.css and never redefines it, and component.js
+  boots on it exactly as it does on the demo page.
+
+  It rests on the icons. At the rail's 0.6 an icon is still 12px on screen
+  and a name only appears when it is reached for, so the card shows a dial
+  and not a ring of small type; the engraved words would be 8px there. The
+  other four are quick-look dots: names, curled text, the display, and the
+  centre key with it. All five are the same views set on the same root,
+  because changing the item set means new radios, and new radios mean
+  booting component.js again.
+
+  The same variant rests on both grounds. The deck is the component's own
+  plate, so on the dark rail it sits as a lit plate, which is what it is,
+  and needs nothing moved. Its cast shadow is lost there, and the edge is
+  the plate itself: measured off the rendered card at 0.6, the deck is 11.3
+  OK ΔE from #191b1e along its sides and 13.1 along its lit top edge.
+
+  One token is handed in, on the root: the width the dial has without the
+  display. With the display the component asks for 36rem, the frame has 28
+  inside its padding, and the stacked deck would fill it edge to edge; held
+  at the dial's own width, every variant is the same 336px plate, and the
+  display grows it downward.
+
+  Being looked at turns the dial one detent and lets it back, through the
+  radios, which are the component's API: check the next one and fire
+  `change`, and component.js takes the near way, overshoots and settles.
+  With the centre key that turn is a browse, so the index goes hollow and
+  the key takes its ring until the card is let go. No timer of its own: the
+  turn is the demonstration, and a rotation would bring every rule the
+  inked plate's has to keep.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>2026-10-mode-dial — preview</title>
+
+  <!-- Same font loading as demo.html. Mona Sans with its width axis, for
+       the condensed engraving. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fragment+Mono&family=Mona+Sans:wdth,wght@75..125,400..700&display=swap">
+
+  <link rel="stylesheet" href="component.css">
+
+  <!-- The ground, before the first paint. The index loads this frame with
+     ?theme= on the src, so a thumbnail is never drawn on the wrong one and
+     then corrected. Opened on its own, with no query, it keeps the light
+     ground. -->
+  <script>
+    var theme = new URLSearchParams(location.search).get('theme');
+    if (theme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+  </script>
+
+  <style>
+    /* Thumbnail scaffolding only. Nothing here names a component class. */
+
+    /* The shared ground, and the only colour this page writes: the rail's,
+       not the component's, so it follows the index into dark. Literals
+       repeated in every folder, because the folder has to survive being
+       copied out. Nothing is painted on top of either. */
+    :root { --preview-ground: #f3f2ef; }
+    :root[data-theme="dark"] { --preview-ground: #191b1e; }
+
+    html { background-color: var(--preview-ground); }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      /* The track has to be allowed to shrink for the component's own
+         max-inline-size: 100% to reach the frame. */
+      grid-template-columns: minmax(0, 1fr);
+      place-items: center;
+      padding: 1rem;
+      box-sizing: border-box;
+      background-color: var(--preview-ground);
+      font-family: "Mona Sans", system-ui, sans-serif;
+    }
+
+    /* The index has said the rail is moving, or that this card is off
+       screen: every animation in the document stops until it lands. The dial
+       has none of its own — a turn is a transition, and transitions are left
+       running on purpose — so this is the contract kept rather than work
+       saved. Global, so it reaches the component without naming a class. */
+    :root[data-preview-paused] *,
+    :root[data-preview-paused] *::before,
+    :root[data-preview-paused] *::after {
+      animation-play-state: paused !important;
+    }
+  </style>
+</head>
+<body>
+  <!-- component.html's markup, kept in step by hand: the views set, Grid
+       checked, ids on -p-. The display and the centre key are not here; they
+       are the two templates below, put in and taken out by the variants.
+       --mode-dial-width is the dial's width without the display, so the
+       display stacks under the dial rather than widening the deck. -->
+  <form class="mode-dial mode-dial--icons" style="--mode-dial-width: calc(var(--mode-dial-size) + 3rem)">
+    <fieldset class="mode-dial__set">
+      <legend class="mode-dial__legend">View</legend>
+      <div class="mode-dial__deck">
+        <div class="mode-dial__dial">
+          <span class="mode-dial__index" aria-hidden="true"></span>
+
+          <div class="mode-dial__face">
+            <span class="mode-dial__knurl" aria-hidden="true"></span>
+            <span class="mode-dial__plate" aria-hidden="true"></span>
+            <span class="mode-dial__light" aria-hidden="true"></span>
+
+            <svg class="mode-dial__engraving" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+              <path class="mode-dial__arc" id="mode-dial-p-arc" d="M50 77a27 27 0 1 1 0-54a27 27 0 1 1 0 54"/>
+              <g class="mode-dial__words">
+                <text class="mode-dial__engraved" text-anchor="middle"><textPath href="#mode-dial-p-arc" startOffset="50%">Grid</textPath></text>
+                <text class="mode-dial__engraved" text-anchor="middle"><textPath href="#mode-dial-p-arc" startOffset="50%">List</textPath></text>
+                <text class="mode-dial__engraved" text-anchor="middle"><textPath href="#mode-dial-p-arc" startOffset="50%">Board</textPath></text>
+                <text class="mode-dial__engraved" text-anchor="middle"><textPath href="#mode-dial-p-arc" startOffset="50%">Timeline</textPath></text>
+                <text class="mode-dial__engraved" text-anchor="middle"><textPath href="#mode-dial-p-arc" startOffset="50%">Map</textPath></text>
+                <text class="mode-dial__engraved" text-anchor="middle"><textPath href="#mode-dial-p-arc" startOffset="50%">Calendar</textPath></text>
+              </g>
+            </svg>
+
+            <div class="mode-dial__options">
+              <label class="mode-dial__option">
+                <input class="mode-dial__input" type="radio" name="view" value="grid" checked>
+                <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 4.5h6v6h-6zM13.5 4.5h6v6h-6zM4.5 13.5h6v6h-6zM13.5 13.5h6v6h-6z"/></svg>
+                <span class="mode-dial__name">Grid</span>
+              </label>
+              <label class="mode-dial__option">
+                <input class="mode-dial__input" type="radio" name="view" value="list">
+                <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 6.5h15M4.5 12h15M4.5 17.5h15"/></svg>
+                <span class="mode-dial__name">List</span>
+              </label>
+              <label class="mode-dial__option">
+                <input class="mode-dial__input" type="radio" name="view" value="board">
+                <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 4.5h4v15h-4zM10 4.5h4v10h-4zM15.5 4.5h4v12.5h-4z"/></svg>
+                <span class="mode-dial__name">Board</span>
+              </label>
+              <label class="mode-dial__option">
+                <input class="mode-dial__input" type="radio" name="view" value="timeline">
+                <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3.5 12h17M7 8.5v7M12 8.5v7M17 8.5v7"/></svg>
+                <span class="mode-dial__name">Timeline</span>
+              </label>
+              <label class="mode-dial__option">
+                <input class="mode-dial__input" type="radio" name="view" value="map">
+                <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20.5s-6-5.2-6-10a6 6 0 0 1 12 0c0 4.8-6 10-6 10zM12 12a1.75 1.75 0 1 0 0-3.5 1.75 1.75 0 0 0 0 3.5z"/></svg>
+                <span class="mode-dial__name">Map</span>
+              </label>
+              <label class="mode-dial__option">
+                <input class="mode-dial__input" type="radio" name="view" value="calendar">
+                <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 6h15v13.5h-15zM4.5 10h15M8.5 3.5v4M15.5 3.5v4"/></svg>
+                <span class="mode-dial__name">Calendar</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </fieldset>
+  </form>
+
+  <!-- The display, as component.html has it. Put in after the dial, inside
+       the deck, by the variants that want it; each input then takes
+       aria-describedby on its own readout line. -->
+  <template data-part="display">
+    <div class="mode-dial__display" aria-hidden="true">
+      <p class="mode-dial__caption">View</p>
+      <p class="mode-dial__tags">
+        <span class="mode-dial__tag mode-dial__tag--current">Current</span>
+        <span class="mode-dial__tag mode-dial__tag--preview">Preview</span>
+        <span class="mode-dial__tag mode-dial__tag--pending">Pending</span>
+      </p>
+      <ol class="mode-dial__readouts">
+        <li class="mode-dial__readout"><span class="mode-dial__readout-name">Grid</span> <span class="mode-dial__readout-line" id="mode-dial-p-grid">Everything at a glance</span></li>
+        <li class="mode-dial__readout"><span class="mode-dial__readout-name">List</span> <span class="mode-dial__readout-line" id="mode-dial-p-list">One row per project</span></li>
+        <li class="mode-dial__readout"><span class="mode-dial__readout-name">Board</span> <span class="mode-dial__readout-line" id="mode-dial-p-board">Sorted by stage</span></li>
+        <li class="mode-dial__readout"><span class="mode-dial__readout-name">Timeline</span> <span class="mode-dial__readout-line" id="mode-dial-p-timeline">In the order they happened</span></li>
+        <li class="mode-dial__readout"><span class="mode-dial__readout-name">Map</span> <span class="mode-dial__readout-line" id="mode-dial-p-map">Where they were made</span></li>
+        <li class="mode-dial__readout"><span class="mode-dial__readout-name">Calendar</span> <span class="mode-dial__readout-line" id="mode-dial-p-calendar">By the day they're due</span></li>
+      </ol>
+      <span class="mode-dial__ticks"></span>
+    </div>
+  </template>
+
+  <!-- The centre key and its status line. The key goes at the end of the
+       dial, the status after the fieldset. component.js looks the key up at
+       every event, so putting it in after boot is enough to turn browse and
+       commit on. -->
+  <template data-part="commit">
+    <button class="mode-dial__commit" type="submit"><span class="mode-dial__commit-label">Set</span></button>
+    <p class="mode-dial__status" role="status" aria-atomic="true"><span class="mode-dial__status-lead">Set:</span> <span class="mode-dial__status-value"></span></p>
+  </template>
+
+  <script src="component.js"></script>
+
+  <!--
+    Thumbnail scaffolding only, and inert when this file is opened on its own:
+    nothing is posted unless it is framed, and nothing arrives to act on.
+  -->
+  <script>
+    (function () {
+      var CHANNEL = 'interface-studies';
+      var BASE = 'mode-dial';
+      var root = document.querySelector('.' + BASE);
+      if (!root) return;
+
+      function q(scope, part) { return scope.querySelector('.' + BASE + '__' + part); }
+      function all(scope, part) {
+        return Array.prototype.slice.call(scope.querySelectorAll('.' + BASE + '__' + part));
+      }
+
+      var set = q(root, 'set');
+      var deck = q(root, 'deck');
+      var dial = q(root, 'dial');
+      var inputs = all(root, 'input');
+      // The item keys are the radios' own values, so the order is the
+      // markup's and is written down once.
+      var KEYS = inputs.map(function (input) { return input.value; });
+
+      // The two optional parts, each cloned out of its template once and then
+      // put in and taken out as the same nodes. Re-appending a node that is
+      // already in place would cancel whatever it is transitioning.
+      function part(name) {
+        var tpl = document.querySelector('template[data-part="' + name + '"]');
+        return tpl ? tpl.content.cloneNode(true) : document.createDocumentFragment();
+      }
+      var display = q(part('display'), 'display');
+      var commit = part('commit');
+      var key = q(commit, 'commit');
+      var status = q(commit, 'status');
+
+      // The sample copy, in both languages. English is the markup's, so the
+      // thumbnail is right without script; a Danish page hands its language
+      // in on the src (?lang=) or over the channel (preview:lang), and every
+      // word follows — the names, which are the radios' accessible names, the
+      // engraving, the display, the key — with the variant names quick look
+      // prints under its dots. Nothing is redrawn: replacing nodes would
+      // cancel a turn in flight.
+      var COPY = {
+        en: {
+          grid: 'Grid', list: 'List', board: 'Board',
+          timeline: 'Timeline', map: 'Map', calendar: 'Calendar',
+          gridLine: 'Everything at a glance',
+          listLine: 'One row per project',
+          boardLine: 'Sorted by stage',
+          timelineLine: 'In the order they happened',
+          mapLine: 'Where they were made',
+          calendarLine: 'By the day they\'re due',
+          caption: 'View', current: 'Current', preview: 'Preview', pending: 'Pending',
+          set: 'Set', status: 'Set:',
+          icons: 'Icons with tooltips', names: 'Names', curled: 'Curled text',
+          display: 'With a display', key: 'Centre key'
+        },
+        da: {
+          grid: 'Gitter', list: 'Liste', board: 'Tavle',
+          timeline: 'Tidslinje', map: 'Kort', calendar: 'Kalender',
+          gridLine: 'Alt på én gang',
+          listLine: 'Én række pr. projekt',
+          boardLine: 'Sorteret efter fase',
+          timelineLine: 'I den rækkefølge det skete',
+          mapLine: 'Hvor de blev lavet',
+          calendarLine: 'Efter afleveringsdag',
+          caption: 'Visning', current: 'Aktuel', preview: 'Kig', pending: 'Afventer',
+          set: 'Vælg', status: 'Valgt:',
+          icons: 'Ikoner med tooltips', names: 'Navne', curled: 'Buet tekst',
+          display: 'Med display', key: 'Midterknap'
+        }
+      };
+      var lang = new URLSearchParams(location.search).get('lang') === 'da' ? 'da' : 'en';
+      function t(k) { return (COPY[lang] && COPY[lang][k]) || COPY.en[k]; }
+
+      // The live root, and whichever part is out of the document at the time,
+      // so a part put in after a change of language is already in it.
+      function retext() {
+        var scopes = [root];
+        [display, key, status].forEach(function (node) {
+          if (node && !root.contains(node)) scopes.push(node);
+        });
+        scopes.forEach(function (s) {
+          function put(part, word) {
+            all(s, part).forEach(function (el, i) { el.textContent = word(i); });
+          }
+          put('legend', function () { return t('caption'); });
+          put('caption', function () { return t('caption'); });
+          put('name', function (i) { return t(KEYS[i]); });
+          put('readout-name', function (i) { return t(KEYS[i]); });
+          put('readout-line', function (i) { return t(KEYS[i] + 'Line'); });
+          put('tag--current', function () { return t('current'); });
+          put('tag--preview', function () { return t('preview'); });
+          put('tag--pending', function () { return t('pending'); });
+          put('commit-label', function () { return t('set'); });
+          put('status-lead', function () { return t('status'); });
+          all(s, 'engraved').forEach(function (el, i) {
+            var path = el.querySelector('textPath');
+            if (path) path.textContent = t(KEYS[i]);
+          });
+        });
+        document.documentElement.lang = lang;
+      }
+      if (lang !== 'en') retext();
+
+      // Index 0 is what the card shows. Classes are suffixes on BASE; parts
+      // are the two templates.
+      var VARIANTS = [
+        { id: 'icons', classes: ['--icons'], parts: [] },
+        { id: 'names', classes: [], parts: [] },
+        { id: 'curled', classes: ['--curled'], parts: [] },
+        { id: 'display', classes: ['--icons'], parts: ['display'] },
+        { id: 'key', classes: ['--icons'], parts: ['display', 'commit'] }
+      ];
+
+      function place(node, want, parent, before) {
+        if (!node) return;
+        if (want && node.parentNode !== parent) parent.insertBefore(node, before);
+        else if (!want && node.parentNode) node.parentNode.removeChild(node);
+      }
+
+      function apply(v) {
+        VARIANTS.forEach(function (x) {
+          x.classes.forEach(function (c) { root.classList.remove(BASE + c); });
+        });
+        v.classes.forEach(function (c) { root.classList.add(BASE + c); });
+
+        var withDisplay = v.parts.indexOf('display') >= 0;
+        var withKey = v.parts.indexOf('commit') >= 0;
+        place(display, withDisplay, deck, null);
+        place(key, withKey, dial, null);
+        place(status, withKey, root, set.nextSibling);
+
+        // Heard rather than seen: the display is aria-hidden, and each radio
+        // points at its own line while it is there.
+        var lines = display ? all(display, 'readout-line') : [];
+        inputs.forEach(function (input, i) {
+          if (withDisplay && lines[i]) input.setAttribute('aria-describedby', lines[i].id);
+          else input.removeAttribute('aria-describedby');
+        });
+      }
+
+      // Which variant rests, by ground. The same on both: the deck is the
+      // component's own lit plate, so the dark rail moves nothing. Kept as a
+      // table so that a ground which ever needs a different card says so in
+      // one place, and the rotation below puts it at index 0, where quick
+      // look takes it to be.
+      var REST = { light: 'icons', dark: 'icons' };
+      var stepped = false;
+      function rest() {
+        var dark = document.documentElement.getAttribute('data-theme') === 'dark';
+        var want = REST[dark ? 'dark' : 'light'];
+        for (var n = 0; n < VARIANTS.length; n++) {
+          if (VARIANTS[n].id === want) {
+            if (n > 0) VARIANTS.unshift(VARIANTS.splice(n, 1)[0]);
+            break;
+          }
+        }
+        apply(VARIANTS[0]);
+      }
+      rest();
+
+      // Being looked at: one detent on, and back when let go — through the
+      // radios, so component.js does the turning and takes the near way both
+      // times. Edges only, because the index re-sends `active` after a variant
+      // swap. A reader outranks it for good: once they have pressed or keyed
+      // the dial, wherever they left it is where it stays.
+      var performing = false;
+      var home = 0;
+      var taken = false;
+      root.addEventListener('pointerdown', function () { taken = true; });
+      root.addEventListener('keydown', function () { taken = true; });
+
+      function turnTo(i) {
+        var input = inputs[i];
+        if (!input || input.checked) return;
+        input.checked = true;
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+
+      function checkedIndex() {
+        for (var i = 0; i < inputs.length; i++) if (inputs[i].checked) return i;
+        return 0;
+      }
+
+      // The cloth is in pixels, a 4px pitch of bumps a quarter of it across.
+      // The rail shows this frame at 0.7 or 0.6 and the list at 0.2, so on a
+      // 1x screen the bumps fall under a device pixel and beat against the
+      // grid as moiré. The pitch is restated so it never comes to less than
+      // FLOOR device pixels, and the bumps, derived from it, keep a whole
+      // pixel each. Only upward, inline on the root — the component's own
+      // channel — and read back before anything is written.
+      var FLOOR = 4;
+      var AUTHORED = parseFloat(getComputedStyle(root).getPropertyValue('--' + BASE + '-dot-pitch')) || 0;
+      function setScale(scale) {
+        if (!(scale > 0) || !AUTHORED) return;
+        var pitch = Math.max(AUTHORED, FLOOR / ((window.devicePixelRatio || 1) * scale));
+        root.style.setProperty('--' + BASE + '-dot-pitch', pitch.toFixed(3) + 'px');
+      }
+
+      window.addEventListener('message', function (event) {
+        var data = event.data;
+        if (!data || data.source !== CHANNEL) return;
+
+        if (data.type === 'preview') {
+          var active = data.active === true;
+          if (active === performing || taken) return;
+          performing = active;
+          if (active) {
+            home = checkedIndex();
+            turnTo((home + 1) % inputs.length);
+          } else {
+            turnTo(home);
+          }
+        }
+
+        if (data.type === 'preview:variant') {
+          var v = VARIANTS[data.index];
+          if (v) {
+            stepped = v !== VARIANTS[0];
+            apply(v);
+          }
+        }
+
+        if (data.type === 'preview:scale') {
+          setScale(Number(data.scale));
+        }
+
+        // The dial has no animation to hold, and a turn already under way is
+        // a transition, which is left to settle. `reason` is not read: there
+        // is no timer here for it to govern.
+        if (data.type === 'preview:pause') {
+          if (data.paused === true) {
+            document.documentElement.setAttribute('data-preview-paused', '');
+          } else {
+            document.documentElement.removeAttribute('data-preview-paused');
+          }
+        }
+
+        // Only the ground moves. Re-rested only while at rest, so a card quick
+        // look has stepped somewhere keeps the variant it was asked for.
+        if (data.type === 'preview:theme') {
+          if (data.theme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+          } else {
+            document.documentElement.removeAttribute('data-theme');
+          }
+          if (!stepped) rest();
+        }
+
+        if (data.type === 'preview:lang') {
+          var next = data.lang === 'da' ? 'da' : 'en';
+          if (next !== lang) {
+            lang = next;
+            retext();
+          }
+        }
+      });
+
+      if (window.parent !== window) {
+        // Quick look runs this file with pointer events live, so focus ends up
+        // in here and Escape never reaches the overlay's own handler. It is
+        // handed back — unless the dial has used it first: with the centre key
+        // and a choice pending, Escape turns the dial back, and that press is
+        // the component's, not the overlay's. Only Escape; the arrow keys are
+        // the radio group's.
+        document.addEventListener('keydown', function (event) {
+          if (event.key !== 'Escape' || event.defaultPrevented) return;
+          window.parent.postMessage({ source: CHANNEL, type: 'preview:key', key: 'Escape' }, '*');
+        });
+
+        window.parent.postMessage({
+          source: CHANNEL,
+          type: 'preview:ready',
+          variants: VARIANTS.map(function (v) { return { id: v.id, label: t(v.id) }; })
+        }, '*');
+      }
+    })();
+  </script>
+</body>
+</html>
