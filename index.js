@@ -2146,7 +2146,7 @@ function withParam(src, key, value) {
     const max = maxScroll();
 
     // The rail counts what it is showing, and the filter's "All" what
-    // exists. A count, not a position: "8 studies", unpadded, the same in
+    // exists. A count, not a position: "9 studies", unpadded, the same in
     // both views. It used to read "Study 04 / 08" off the read mark, which on
     // a drifting rail was a number changing by itself, and needed the card's
     // own chip filled to say which card it meant.
