@@ -18,7 +18,9 @@
 
     3. Commit. With a centre key, the checked radio is the one being looked
        at and :default (the `checked` attribute) is the one committed. The
-       key moves `defaultChecked`; Escape is form.reset().
+       key moves `defaultChecked`; Escape is form.reset(). The status line
+       always names what is held, and the key is described by it, so the
+       difference between the two is heard as well as seen.
 
   Without it the component is still the component: arrow keys, clicks and a
   screen reader all work, the key submits the form, and the only things
@@ -82,6 +84,8 @@
     if (sel < 0) sel = 0;
     var laps = 0;
     var lastX = NaN, lastY = NaN, settleX = NaN, settleY = NaN;
+    var settleOn = null;               /* the option a drag let go of */
+    var hushX = NaN, hushY = NaN;
 
     function checkedIndex() {
       for (var i = 0; i < inputs.length; i++) if (inputs[i].checked) return i;
@@ -102,6 +106,18 @@
       return !!(key() && cur && cur !== defaultInput());
     }
 
+    /* `sel` is what this file last saw, and the DOM can move without telling
+       it: a Back navigation restores the checked radio after boot, and a host
+       may set `.checked` with no event. So it is read again in the capture
+       phase, before the radio group's own arrow handling and before the
+       dial's pointerdown. Not on click: a radio is already checked by then. */
+    function resync() {
+      var c = checkedIndex();
+      if (c >= 0) sel = c;
+    }
+    root.addEventListener('keydown', resync, true);
+    root.addEventListener('pointerdown', resync, true);
+
     /* --- 1. the near way round ------------------------------------------ */
 
     function turnTo(next) {
@@ -117,6 +133,7 @@
       root.setAttribute('data-mode-dial-settling', '');
       settleX = lastX;
       settleY = lastY;
+      settleOn = null;
     }
 
     root.addEventListener('change', function (e) {
@@ -128,12 +145,31 @@
       lastX = e.clientX;
       lastY = e.clientY;
       if (root.hasAttribute('data-mode-dial-settling') && (lastX !== settleX || lastY !== settleY)) {
-        root.removeAttribute('data-mode-dial-settling');
+        /* After a drag the grabbed option is still under the pointer, and
+           peeking at it would read the item just left as a preview. It
+           waits until the pointer is off that option. */
+        var on = e.target.closest && e.target.closest('.mode-dial__option');
+        if (!settleOn || on !== settleOn) {
+          root.removeAttribute('data-mode-dial-settling');
+          settleOn = null;
+        }
+      }
+      if (root.hasAttribute('data-mode-dial-hush') && (lastX !== hushX || lastY !== hushY)) {
+        root.removeAttribute('data-mode-dial-hush');
       }
     });
 
     root.addEventListener('pointerleave', function () {
       root.removeAttribute('data-mode-dial-settling');
+      settleOn = null;
+    });
+
+    /* Escape with nothing pending lowers a raised name; the next move of the
+       pointer or of focus raises it again. */
+    root.addEventListener('focusin', function (e) {
+      root.removeAttribute('data-mode-dial-hush');
+      var k = key();
+      if (k && k.contains(e.target)) syncHeld();
     });
 
     /* --- 2. the drag --------------------------------------------------------
@@ -167,6 +203,12 @@
 
     dial.addEventListener('pointermove', function (e) {
       if (!drag || e.pointerId !== drag.id) return;
+      /* Uncaptured, a release off the dial is never heard here. A move with
+         the button up is the first sign of it, and ends the drag. */
+      if (!(e.buttons & 1)) {
+        end({ type: 'pointercancel', pointerId: e.pointerId, target: dial });
+        return;
+      }
       var a = Math.atan2(e.clientY - drag.cy, e.clientX - drag.cx);
       var d = a - drag.prev;
       if (d > Math.PI) d -= 2 * Math.PI;
@@ -185,7 +227,10 @@
     });
 
     /* One detent at a time, however fast the pointer went, so three crossed
-       is three changes. The fraction left over is the drag. */
+       is three changes. The fraction left over is the drag. A disabled stop
+       is passed over, not checked: the next enabled one is taken once the
+       disabled run is crossed by CROSS, and the way back asks the same, so
+       the two thresholds never meet and a held pointer cannot flicker. */
     function frame() {
       raf = 0;
       if (!root.isConnected || !drag || !drag.started) return;
@@ -193,8 +238,12 @@
       var cur = sel + laps * n;
       var moved = null;
       var guard = n * 4;
-      while ((T - cur > CROSS || cur - T > CROSS) && guard--) {
-        var target = cur + (T > cur ? 1 : -1);
+      while (guard--) {
+        var dir = T > cur ? 1 : -1;
+        var dist = 1;
+        while (dist < n && inputs[(((cur + dir * dist) % n) + n) % n].disabled) dist++;
+        if (dist >= n || Math.abs(T - cur) <= dist - 1 + CROSS) break;
+        var target = cur + dir * dist;
         var next = ((target % n) + n) % n;
         inputs[next].checked = true;
         fire(inputs[next], 'input');
@@ -206,7 +255,9 @@
           if (now - buzzed >= BUZZ_MS) { buzzed = now; navigator.vibrate(6); }
         }
       }
-      if (moved) moved.focus({ preventScroll: true });
+      /* Focus follows only if it was already in the dial: a pointer drag
+         from outside it should not leave a keyboard ring behind. */
+      if (moved && root.contains(document.activeElement)) moved.focus({ preventScroll: true });
       root.style.setProperty('--mode-dial-drag', (T - cur).toFixed(4));
     }
 
@@ -234,24 +285,59 @@
       }
       if (raf) { cancelAnimationFrame(raf); raf = 0; }
       drag = null;
-      if (!was.started) return;
       /* Both in one frame, so the detent transition carries the fraction
-         back to the stop. */
+         back to the stop — and both whether or not the drag started, so
+         nothing a lost drag left behind can stick. */
       root.removeAttribute('data-mode-dial-dragging');
       root.style.removeProperty('--mode-dial-drag');
-      if (e.type === 'pointerup') swallowClick();
+      if (!was.started || e.type !== 'pointerup') return;
+      swallowClick();
+      root.setAttribute('data-mode-dial-settling', '');
+      settleX = e.clientX;
+      settleY = e.clientY;
+      var under = document.elementFromPoint(e.clientX, e.clientY);
+      settleOn = under && under.closest && root.contains(under) ? under.closest('.mode-dial__option') : null;
     }
 
     dial.addEventListener('pointerup', end);
     dial.addEventListener('pointercancel', end);
     dial.addEventListener('lostpointercapture', end);
 
-    /* --- 3. commit ------------------------------------------------------- */
+    /* --- 3. commit -------------------------------------------------------
+       The status line names what is held, always, in whatever language the
+       option's name is in now; the key is described by it. Written at boot,
+       at commit and after a cancel, and again whenever the key takes focus,
+       which also covers a key a host puts in after boot. */
+
+    var statusN = 0;
+    function held() {
+      var d = defaultInput();
+      if (!d) return '';
+      var opt = d.closest('.mode-dial__option');
+      var nm = opt && opt.querySelector('.mode-dial__name');
+      return nm ? nm.textContent : d.value;
+    }
+
+    function syncHeld(force) {
+      var st = root.querySelector('.mode-dial__status');
+      var v = root.querySelector('.mode-dial__status-value');
+      var k = key();
+      if (!st || !v || !k) return;
+      if (!st.id) {
+        do { statusN++; } while (document.getElementById('mode-dial-status-' + statusN));
+        st.id = 'mode-dial-status-' + statusN;
+      }
+      k.setAttribute('aria-describedby', st.id);
+      var t = held();
+      if (force || v.textContent !== t) v.textContent = t;
+    }
+    syncHeld();
 
     root.addEventListener('submit', function (e) {
       var k = key();
-      /* No key: nothing here submits, including Enter on a radio. */
-      if (!k) { e.preventDefault(); return; }
+      /* No key: nothing here submits, including Enter on a radio. A disabled
+         key refuses, as it does without script. */
+      if (!k || k.matches(':disabled')) { e.preventDefault(); return; }
       var prev = defaultInput();
       var cur = inputs[checkedIndex()];
       if (cur && cur !== prev) {
@@ -259,10 +345,7 @@
            radio is never left unchecked by a clean dirty flag. */
         inputs.forEach(function (i) { i.defaultChecked = false; });
         cur.defaultChecked = true;
-        var label = cur.closest('.mode-dial__option');
-        var name = label && label.querySelector('.mode-dial__name');
-        var status = root.querySelector('.mode-dial__status-value');
-        if (status) status.textContent = name ? name.textContent : cur.value;
+        syncHeld();
         root.dispatchEvent(new CustomEvent('mode-dial:commit', {
           bubbles: true,
           detail: { name: cur.name, value: cur.value, previous: prev ? prev.value : null }
@@ -281,11 +364,18 @@
         var k = key();
         if (!k) return;
         e.preventDefault();
+        if (k.matches(':disabled')) return;
         if (root.requestSubmit) root.requestSubmit(k);
         else k.click();
       } else if (e.key === 'Escape' && pending()) {
         e.preventDefault();
         root.reset();
+      } else if (e.key === 'Escape') {
+        /* Nothing to cancel: lower the raised name instead, and leave the
+           key unclaimed for whatever the page does with Escape. */
+        root.setAttribute('data-mode-dial-hush', '');
+        hushX = lastX;
+        hushY = lastY;
       }
     });
 
@@ -302,6 +392,7 @@
         var now = inputs[i];
         if (i !== sel) fire(now, 'change');
         if (focused) now.focus({ preventScroll: true });
+        syncHeld(discarded !== null);
         if (discarded !== null) {
           root.dispatchEvent(new CustomEvent('mode-dial:cancel', {
             bubbles: true,

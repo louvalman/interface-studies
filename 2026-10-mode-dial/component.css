@@ -36,6 +36,8 @@
   --mode-dial-hit-min: 24px;
   --mode-dial-hit-max: 44px;
   --mode-dial-tip-reach: 6cqi;                     /* from the option centre to the tooltip's near edge, toward the centre */
+  --mode-dial-tip-side: 3cqi;                      /* further, across only, so a wide word clears its own icon */
+  --mode-dial-tip-radius: 2px;                     /* tooltip and display tags */
   --mode-dial-pip-reach: 7cqi;                     /* committed pip, outward */
   --mode-dial-teeth: 120;
   --mode-dial-width: calc(var(--mode-dial-size) + 3rem);
@@ -97,16 +99,23 @@
   --mode-dial-label-track: .12em;
   --mode-dial-curl-size: 4.6px;                    /* SVG user units = the dial's cqi */
   --mode-dial-curl-track: .14em;
+  --mode-dial-curl-ring: 23cqi;                    /* curled focus ring's inner width: the widest word, and air */
   --mode-dial-icon-size: max(16px, 7cqi);
   --mode-dial-icon-stroke: 1.75;
   --mode-dial-lip: .06em;
   --mode-dial-tip-size: 11px;                      /* tooltip, display caption and tags */
   --mode-dial-key-size: 26cqi;                     /* centre key diameter, in the dial's cqi */
   --mode-dial-key-label: max(11px, 3.6cqi);
+  --mode-dial-key-hi: 16%;                         /* the key's lit rim, as white's share */
+  --mode-dial-key-hi-hover: 22%;
   --mode-dial-screen-name: 1.5rem;
   --mode-dial-screen-line: .8125rem;
   --mode-dial-screen-radius: 6px;
   --mode-dial-screen-pad: .875rem 1rem 1rem;
+  --mode-dial-screen-gap: .625rem 1rem;
+  --mode-dial-tick-h: 6px;
+  --mode-dial-tick-gap: 3px;
+  --mode-dial-tick-mark: 4px;
 
   /* --- motion ---------------------------------------------------------- */
   --mode-dial-turn: 420ms;
@@ -276,7 +285,10 @@
   grid-template-columns: minmax(0, var(--mode-dial-size)) minmax(0, var(--mode-dial-screen-w));
 }
 
-@container mode-dial (inline-size < 30rem) {
+/* 33rem is a 15rem dial, the 14rem display, the deck's padding and the gap:
+   any narrower and the two tracks share the loss, and the curled words fall
+   under 11px, so the display goes under the dial instead. */
+@container mode-dial (inline-size < 33rem) {
   .mode-dial__deck:has(> .mode-dial__display) {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -511,7 +523,10 @@
   font-weight: calc(var(--mode-dial-label-weight) + (var(--mode-dial-label-weight-on) - var(--mode-dial-label-weight)) * var(--mode-dial-on));
   letter-spacing: var(--mode-dial-curl-track);
   text-transform: uppercase;
-  fill: color-mix(in srgb, var(--mode-dial-paint-on) calc(var(--mode-dial-on) * 100%), var(--mode-dial-paint));
+  /* The word under the pointer lifts to the hover paint, as a name does. */
+  --mode-dial-near: calc(1 - min(1, max(var(--mode-dial-i) - var(--mode-dial-show), var(--mode-dial-show) - var(--mode-dial-i))));
+  fill: color-mix(in srgb, var(--mode-dial-paint-on) calc(var(--mode-dial-on) * 100%),
+    color-mix(in srgb, var(--mode-dial-paint-hover) calc(var(--mode-dial-near) * 100%), var(--mode-dial-paint)));
 }
 
 /* --- options ---------------------------------------------------------------
@@ -547,6 +562,24 @@
   pointer-events: auto;
 }
 
+/* Each option turns, so each is a stacking context and a later one paints
+   over an earlier one's name. The one whose name is up is lifted: the
+   choice, and above it the press, the focus and — only where hover is real,
+   since a touch screen leaves it on the last thing tapped — the pointer. */
+.mode-dial__option:has(> .mode-dial__input:checked) {
+  z-index: 1;
+}
+
+.mode-dial__option:is(:active, :has(> .mode-dial__input:focus-visible)) {
+  z-index: 2;
+}
+
+@media (hover: hover) {
+  .mode-dial__option:hover {
+    z-index: 2;
+  }
+}
+
 .mode-dial__input {
   box-sizing: border-box;
   position: absolute;
@@ -569,6 +602,14 @@
 .mode-dial__input:focus-visible {
   outline: 2px solid var(--mode-dial-signal);
   outline-offset: 2px;
+}
+
+/* An engraved word is wider than its hit circle; the ring opens into a
+   stadium round it rather than striking through its ends — sized to the
+   word in the dial's cqi, so it is as wide at 240px as at 288 and still
+   clears the next word round at eight stops. */
+.mode-dial--curled .mode-dial__input:focus-visible {
+  inset: 0 calc((var(--mode-dial-hit) - max(var(--mode-dial-hit), var(--mode-dial-curl-ring) - 4px)) / 2);
 }
 
 /* Names: engraved and paint-filled. The lip is fixed because the names are
@@ -646,7 +687,7 @@
   max-inline-size: none;
   margin: 0;
   padding: .4em .6em .35em;
-  border-radius: 2px;
+  border-radius: var(--mode-dial-tip-radius);
   background: var(--mode-dial-glass);
   color: var(--mode-dial-ink);
   font-family: var(--mode-dial-mono);
@@ -659,12 +700,13 @@
     0 0 0 1px color-mix(in srgb, var(--mode-dial-ink) 50%, transparent),
     calc(.3rem * var(--mode-dial-sx)) calc(.3rem * var(--mode-dial-sy)) .6rem color-mix(in srgb, var(--mode-dial-cast) 45%, transparent);
   /* Toward the centre, and pushed a further half of its own extent along
-     that direction, so its near edge — not its middle — is the reach: a wide
-     word beside a side option clears the icon instead of covering it. */
+     that direction, so its near edge — not its middle — is the reach,
+     measured from the option's centre. Across, it reaches tip-side further,
+     so a wide word beside a side option clears its own icon. */
   --mode-dial-tx: sin(var(--mode-dial-at));
   --mode-dial-ty: cos(var(--mode-dial-at));
   translate:
-    calc(-50% - var(--mode-dial-tx) * var(--mode-dial-tip-reach) - var(--mode-dial-tx) * max(var(--mode-dial-tx), -1 * var(--mode-dial-tx)) * 50%)
+    calc(-50% - var(--mode-dial-tx) * (var(--mode-dial-tip-reach) + var(--mode-dial-tip-side)) - var(--mode-dial-tx) * max(var(--mode-dial-tx), -1 * var(--mode-dial-tx)) * 50%)
     calc(-50% + var(--mode-dial-ty) * var(--mode-dial-tip-reach) + var(--mode-dial-ty) * max(var(--mode-dial-ty), -1 * var(--mode-dial-ty)) * 50%);
   opacity: 0;
   clip-path: inset(50%);
@@ -674,7 +716,7 @@
     translate var(--mode-dial-turn-time) var(--mode-dial-detent);
 }
 
-.mode-dial--icons:not(.mode-dial--curled) .mode-dial__option:has(> .mode-dial__input:focus-visible) .mode-dial__name {
+.mode-dial--icons:not(.mode-dial--curled, [data-mode-dial-hush]) .mode-dial__option:has(> .mode-dial__input:focus-visible) .mode-dial__name {
   opacity: 1;
   clip-path: none;
   transition:
@@ -687,7 +729,82 @@
     color: var(--mode-dial-paint-hover);
   }
 
-  .mode-dial--icons:not(.mode-dial--curled, [data-mode-dial-settling], [data-mode-dial-dragging]) .mode-dial__option:hover .mode-dial__name {
+  /* Hoverable: the raised name takes the pointer, so moving onto it keeps
+     the option hovered and the name up. */
+  .mode-dial--icons:not(.mode-dial--curled, [data-mode-dial-settling], [data-mode-dial-dragging], [data-mode-dial-hush]) .mode-dial__option:hover .mode-dial__name {
+    opacity: 1;
+    clip-path: none;
+    pointer-events: auto;
+    transition:
+      opacity var(--mode-dial-fade),
+      translate var(--mode-dial-turn-time) var(--mode-dial-detent);
+  }
+
+  /* Where the name does not touch its option — on a large dial, or centred
+     on a small one — a strip from the option toward the middle, one hit
+     circle wide, keeps the pointer on the option all the way to the name.
+     No wider: it is lifted with its option, so where it reached over a
+     neighbour's icon it took that icon's clicks. Only while hovered. */
+  .mode-dial--icons:not(.mode-dial--curled, [data-mode-dial-settling], [data-mode-dial-dragging], [data-mode-dial-hush]) .mode-dial__option:hover::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    inline-size: var(--mode-dial-hit);
+    block-size: var(--mode-dial-bridge, calc(var(--mode-dial-tip-reach) + var(--mode-dial-tip-side)));
+    translate: -50% 0;
+    transform-origin: 50% 0;
+    rotate: var(--mode-dial-at);
+  }
+
+  /* With a centre key, the key outranks a name drawn over it. The name is
+     drawn as before, over the key, but what takes the pointer is a stand-in
+     the size of the name with the key's disc cut out of it, so a click on
+     the key is the key's wherever a name lies across it. The disc is found
+     from the name's own placement: the dial's centre, in the name's box. */
+  .mode-dial--icons:not(.mode-dial--curled, [data-mode-dial-settling], [data-mode-dial-dragging], [data-mode-dial-hush]):has(.mode-dial__commit) .mode-dial__option:hover .mode-dial__name {
+    pointer-events: none;
+  }
+
+  .mode-dial--icons:not(.mode-dial--curled, [data-mode-dial-settling], [data-mode-dial-dragging], [data-mode-dial-hush]):has(.mode-dial__commit) .mode-dial__option:hover .mode-dial__name::before {
+    --mode-dial-kx: calc(50% + var(--mode-dial-tx) * max(var(--mode-dial-tx), -1 * var(--mode-dial-tx)) * 50% - var(--mode-dial-tx) * (var(--mode-dial-r) - var(--mode-dial-tip-reach) - var(--mode-dial-tip-side)));
+    --mode-dial-ky: calc(50% - var(--mode-dial-ty) * max(var(--mode-dial-ty), -1 * var(--mode-dial-ty)) * 50% + var(--mode-dial-ty) * (var(--mode-dial-r) - var(--mode-dial-tip-reach)));
+    /* the key and its seam, and the 16-gon drawn round the circle, not in it */
+    --mode-dial-kr: calc((var(--mode-dial-key-size) / 2 + .4cqi) * 1.0196);
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: auto;
+    /* a frame well outside the box round the hole, so no part of the hole
+       falls outside it, where even-odd would fill it in */
+    clip-path: polygon(evenodd,
+      -100cqi -100cqi,
+      calc(100% + 100cqi) -100cqi,
+      calc(100% + 100cqi) calc(100% + 100cqi),
+      -100cqi calc(100% + 100cqi),
+      -100cqi -100cqi,
+      calc(var(--mode-dial-kx) + var(--mode-dial-kr)) var(--mode-dial-ky),
+      calc(var(--mode-dial-kx) + var(--mode-dial-kr) * 0.9239) calc(var(--mode-dial-ky) + var(--mode-dial-kr) * 0.3827),
+      calc(var(--mode-dial-kx) + var(--mode-dial-kr) * 0.7071) calc(var(--mode-dial-ky) + var(--mode-dial-kr) * 0.7071),
+      calc(var(--mode-dial-kx) + var(--mode-dial-kr) * 0.3827) calc(var(--mode-dial-ky) + var(--mode-dial-kr) * 0.9239),
+      var(--mode-dial-kx) calc(var(--mode-dial-ky) + var(--mode-dial-kr)),
+      calc(var(--mode-dial-kx) - var(--mode-dial-kr) * 0.3827) calc(var(--mode-dial-ky) + var(--mode-dial-kr) * 0.9239),
+      calc(var(--mode-dial-kx) - var(--mode-dial-kr) * 0.7071) calc(var(--mode-dial-ky) + var(--mode-dial-kr) * 0.7071),
+      calc(var(--mode-dial-kx) - var(--mode-dial-kr) * 0.9239) calc(var(--mode-dial-ky) + var(--mode-dial-kr) * 0.3827),
+      calc(var(--mode-dial-kx) - var(--mode-dial-kr)) var(--mode-dial-ky),
+      calc(var(--mode-dial-kx) - var(--mode-dial-kr) * 0.9239) calc(var(--mode-dial-ky) - var(--mode-dial-kr) * 0.3827),
+      calc(var(--mode-dial-kx) - var(--mode-dial-kr) * 0.7071) calc(var(--mode-dial-ky) - var(--mode-dial-kr) * 0.7071),
+      calc(var(--mode-dial-kx) - var(--mode-dial-kr) * 0.3827) calc(var(--mode-dial-ky) - var(--mode-dial-kr) * 0.9239),
+      var(--mode-dial-kx) calc(var(--mode-dial-ky) - var(--mode-dial-kr)),
+      calc(var(--mode-dial-kx) + var(--mode-dial-kr) * 0.3827) calc(var(--mode-dial-ky) - var(--mode-dial-kr) * 0.9239),
+      calc(var(--mode-dial-kx) + var(--mode-dial-kr) * 0.7071) calc(var(--mode-dial-ky) - var(--mode-dial-kr) * 0.7071),
+      calc(var(--mode-dial-kx) + var(--mode-dial-kr) * 0.9239) calc(var(--mode-dial-ky) - var(--mode-dial-kr) * 0.3827),
+      calc(var(--mode-dial-kx) + var(--mode-dial-kr)) var(--mode-dial-ky));
+  }
+}
+
+@media (hover: none) {
+  .mode-dial--icons:not(.mode-dial--curled, [data-mode-dial-hush]) .mode-dial__option:is(:active, :has(> .mode-dial__input:checked)) .mode-dial__name {
     opacity: 1;
     clip-path: none;
     transition:
@@ -696,13 +813,34 @@
   }
 }
 
-@media (hover: none) {
-  .mode-dial--icons:not(.mode-dial--curled) .mode-dial__option:is(:active, :has(> .mode-dial__input:checked)) .mode-dial__name {
-    opacity: 1;
-    clip-path: none;
-    transition:
-      opacity var(--mode-dial-fade),
-      translate var(--mode-dial-turn-time) var(--mode-dial-detent);
+/* On a small dial there is no room beside an icon for a word, so the name
+   is shown in the middle of the face, over nothing. Not with a centre key,
+   which is what the middle is for there: a keyed small dial keeps its names
+   at the edge. */
+@container mode-dial-dial (inline-size < 11rem) {
+  .mode-dial--icons:not(.mode-dial--curled, :has(.mode-dial__commit)) .mode-dial__name {
+    translate:
+      calc(-50% - var(--mode-dial-tx) * var(--mode-dial-r))
+      calc(-50% + var(--mode-dial-ty) * var(--mode-dial-r));
+  }
+  /* The bridge reaches the middle, where the name is. */
+  .mode-dial--icons:not(.mode-dial--curled, :has(.mode-dial__commit)) .mode-dial__option {
+    --mode-dial-bridge: var(--mode-dial-r);
+  }
+  /* One place, so one name: the option being pressed, or pointed at, has
+     it, and a focused or chosen one gives way for as long as it does. */
+  .mode-dial--icons:not(.mode-dial--curled, :has(.mode-dial__commit)):has(.mode-dial__option:active) .mode-dial__option:not(:active) .mode-dial__name {
+    opacity: 0;
+    clip-path: inset(50%);
+  }
+}
+
+@media (hover: hover) {
+  @container mode-dial-dial (inline-size < 11rem) {
+    .mode-dial--icons:not(.mode-dial--curled, :has(.mode-dial__commit), [data-mode-dial-settling], [data-mode-dial-dragging]):has(.mode-dial__option:hover) .mode-dial__option:not(:hover) .mode-dial__name {
+      opacity: 0;
+      clip-path: inset(50%);
+    }
   }
 }
 
@@ -752,7 +890,6 @@
    not turn. */
 .mode-dial__commit {
   box-sizing: border-box;
-  --mode-dial-key-hi: 16%;
   --mode-dial-key-ring: 0 0 0 0 transparent;
   position: absolute;
   inset: calc(50cqi - var(--mode-dial-key-size) / 2);
@@ -772,11 +909,11 @@
   color: var(--mode-dial-paint-on);
   font-family: var(--mode-dial-font);
   font-size: var(--mode-dial-key-label);
-  font-weight: 600;
+  font-weight: var(--mode-dial-label-weight);
   font-stretch: var(--mode-dial-label-stretch);
   line-height: 1;
   text-transform: uppercase;
-  letter-spacing: .12em;
+  letter-spacing: var(--mode-dial-label-track);
   box-shadow:
     0 0 0 .4cqi var(--mode-dial-seam),
     var(--mode-dial-key-ring),
@@ -789,7 +926,7 @@
 }
 
 .mode-dial__commit-label {
-  margin-inline-end: -.12em;
+  margin-inline-end: calc(var(--mode-dial-label-track) * -1);
   pointer-events: none;
 }
 
@@ -799,7 +936,7 @@
 
 @media (hover: hover) {
   .mode-dial__commit:hover {
-    --mode-dial-key-hi: 22%;
+    --mode-dial-key-hi: var(--mode-dial-key-hi-hover);
   }
 }
 
@@ -834,7 +971,7 @@
   box-sizing: border-box;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  gap: .625rem 1rem;
+  gap: var(--mode-dial-screen-gap);
   align-content: start;
   align-self: center;
   min-inline-size: 0;
@@ -883,7 +1020,7 @@
   box-sizing: border-box;
   grid-area: 1 / 1;
   padding: .2em .45em .15em;
-  border-radius: 2px;
+  border-radius: var(--mode-dial-tip-radius);
   opacity: 0;
 }
 
@@ -942,7 +1079,7 @@
   margin-block-end: .3rem;
   font-family: var(--mode-dial-font);
   font-size: var(--mode-dial-screen-name);
-  font-weight: 700;
+  font-weight: var(--mode-dial-label-weight-on);
   font-stretch: var(--mode-dial-label-stretch);
   line-height: 1.05;
   letter-spacing: .04em;
@@ -974,12 +1111,12 @@
   position: relative;
   grid-column: 1 / -1;
   display: block;
-  block-size: 6px;
+  block-size: var(--mode-dial-tick-h);
   background:
     repeating-linear-gradient(90deg,
-      var(--mode-dial-ink) 0 calc(100% / var(--mode-dial-n) - 3px),
+      var(--mode-dial-ink) 0 calc(100% / var(--mode-dial-n) - var(--mode-dial-tick-gap)),
       transparent 0 calc(100% / var(--mode-dial-n)))
-    0 100% / calc(100% + 3px) 1px no-repeat;
+    0 100% / calc(100% + var(--mode-dial-tick-gap)) 1px no-repeat;
 }
 
 .mode-dial__ticks::before {
@@ -987,10 +1124,10 @@
   position: absolute;
   left: 0;
   bottom: 0;
-  inline-size: calc((100% + 3px) / var(--mode-dial-n) - 3px);
-  block-size: 4px;
+  inline-size: calc((100% + var(--mode-dial-tick-gap)) / var(--mode-dial-n) - var(--mode-dial-tick-gap));
+  block-size: var(--mode-dial-tick-mark);
   background: var(--mode-dial-ink);
-  translate: calc((100% + 3px) * var(--mode-dial-show)) 0;
+  translate: calc((100% + var(--mode-dial-tick-gap)) * var(--mode-dial-show)) 0;
   transition: translate var(--mode-dial-roll-time) var(--mode-dial-detent);
 }
 
@@ -1005,8 +1142,14 @@
   transition: none;
 }
 
-/* A rule, not a token, so an inline override cannot defeat it. */
+/* A rule, not a token, so an inline override cannot defeat it. The turn
+   time is also zeroed on each option, so the name and the pip inherit 0s
+   whatever the specificity of the rules that move them. */
 @media (prefers-reduced-motion: reduce) {
+  .mode-dial .mode-dial__option {
+    --mode-dial-turn-time: 0s;
+  }
+
   .mode-dial :is(.mode-dial__knurl, .mode-dial__engraving, .mode-dial__options, .mode-dial__option, .mode-dial__name, .mode-dial__ticks),
   .mode-dial .mode-dial__option::after,
   .mode-dial .mode-dial__ticks::before {
@@ -1015,5 +1158,49 @@
 
   .mode-dial .mode-dial__readout {
     transition: opacity 120ms;
+  }
+}
+
+/* Forced colours: every mark here is a background or a shadow, and both are
+   dropped. The index, the pip and the key's edge come back in system colours;
+   pending is a hollow index and a dashed key, as it is a hollow index and a
+   ring otherwise. The pending rule repeats the hollow rule's selector so it
+   outranks it. */
+@media (forced-colors: active) {
+  .mode-dial .mode-dial__index,
+  .mode-dial:has(.mode-dial__commit) .mode-dial__option:has(> .mode-dial__input:default)::after {
+    forced-color-adjust: none;
+    background: Highlight;
+    box-shadow: none;
+  }
+
+  .mode-dial:has(.mode-dial__commit):has(.mode-dial__input:checked:not(:default)) .mode-dial__index {
+    background: Canvas;
+    box-shadow: inset 0 0 0 2px Highlight;
+  }
+
+  .mode-dial__commit {
+    border: 1px solid ButtonText;
+  }
+
+  .mode-dial:has(.mode-dial__input:checked:not(:default)) .mode-dial__commit {
+    border: 2px dashed Highlight;
+  }
+
+  /* SVG keeps its author colours here (preserve-parent-color), so the
+     paints would stay as they are on a ground that is now Canvas: the
+     chosen icon and word, in the lightest paint, would all but vanish. They
+     are handed the system text colour, the chosen one included — the index
+     marks which it is — and the icons lose the drop-shadow lip, which
+     forced colours also leave alone and which reads as a doubled stroke.
+     The second selector matches the checked rule's weight, to outrank it. */
+  .mode-dial .mode-dial__engraved {
+    fill: CanvasText;
+  }
+
+  .mode-dial--icons:not(.mode-dial--curled) .mode-dial__icon,
+  .mode-dial--icons:not(.mode-dial--curled) .mode-dial__option:has(> .mode-dial__input:checked) .mode-dial__icon {
+    color: CanvasText;
+    filter: none;
   }
 }

@@ -92,7 +92,9 @@
       --demo-ground: #121316;
       --demo-fg: #eae8e3;
       --demo-soft: #a8a49c;
-      --demo-dim: #86827a;
+      /* #86827a was 4.36:1 for the inactive EN/DA button on the chip, a
+         control under the floor; this is 4.92 there and 5.47 on the ground. */
+      --demo-dim: #8f8b83;
       --demo-accent: #f2845e;
       --demo-chip: rgba(36, 34, 30, 0.72);
       --demo-chip-soft: rgba(36, 34, 30, 0.6);
@@ -363,8 +365,9 @@
        the gap, which a 1280 laptop's column does not have — at 36rem each
        they stacked there and left half the page empty beside them. So the
        pair keeps a row down to 30rem each and grows back to the dial's own
-       width; the deck gives the difference out of its two tracks, and below
-       30rem the dial's own container query stacks the display under it. */
+       width; the deck gives the difference out of its two tracks down to
+       33rem, and below that the dial's own container query stacks the
+       display under it, before the curled words fall under 11px. */
     .demo__state--screen {
       flex: 1 1 30rem;
       max-width: min(100%, 36rem);
@@ -1427,97 +1430,97 @@
         <ol class="demo__notes-list">
           <li>
             <h3 class="demo__notes-head">One number turns everything.</h3>
-            <p>Eight <code>:has(… :nth-child(k) &gt; :checked)</code> rules
-              write <code>--mode-dial-sel</code> on the root, and six
+            <p>Eight <code>:has(… :nth-child(k) &gt; :checked)</code> rules write
+              <code>--mode-dial-sel</code> on the root, and six
               <code>:nth-child(k):last-child</code> rules write
-              <code>--mode-dial-n</code>. Three parts turn to <code>-(sel +
-              laps·n + drag) · 360deg/n</code> on one transition — the knurl,
-              the engraving and the options layer — and each option sits on
-              that layer at <code>sin()</code>/<code>cos()</code> of <code>i ·
-              360deg/n</code> × 28cqi and turns back by the same angle on the
-              same transition, so names and icons stay upright in lockstep
-              without <code>@property</code>: measured mid-turn, layer 31.49°
-              and option −31.49°. The face that holds them does not turn and
-              is not a stacking context, which is what lets the options layer
-              sit above the centre key, so a tooltip is never drawn under it.
-              The engraved words, the display's readouts and the selected
-              word's weight are arithmetic on <code>i - sel</code>, through
-              <code>color-mix()</code> and <code>max(d, -d)</code>, rather
-              than further ladders.</p>
+              <code>--mode-dial-n</code>. Three parts turn to
+              <code>-(sel + laps·n + drag) · 360deg/n</code> on one transition — the
+              knurl, the engraving and the options layer — and each option sits on
+              that layer at <code>sin()</code>/<code>cos()</code> of
+              <code>i · 360deg/n</code> × 28cqi and turns back by the same angle on
+              the same transition, so names and icons stay upright in lockstep without
+              <code>@property</code>: measured mid-turn, layer −31.47° and option
+              31.47°. The face that holds them does not turn and is not a stacking
+              context, which is what lets the options layer sit above the centre key,
+              so a tooltip is never drawn under it. The engraved words, the display's
+              readouts and the selected word's weight are arithmetic on
+              <code>i - sel</code>, through <code>color-mix()</code> and
+              <code>max(d, -d)</code>, rather than further ladders.</p>
           </li>
           <li>
             <h3 class="demo__notes-head">A detent is an overshoot, and the wrap is what CSS cannot do.</h3>
-            <p>420ms on <code>linear(0, .42 12%, .8 26%, 1.045 46%, 1.06 52%,
-              .995 72%, 1.003 86%, 1)</code> passes the stop by 6% of the move
-              (3.6° on a six-way dial) and settles; each extra step adds 70ms.
-              Without script, last-to-first spins back the long way (0° to
-              −300°), which reads as an end stop. component.js keeps a winding
-              count (<code>--mode-dial-laps</code>) so every turn takes the
-              near way (0° to +60°), and turns a drag into
-              <code>Math.atan2</code> steps that check the radio as each
-              detent is crossed, 0.6 of a step past it, one detent at a time:
-              a sweep of 3.3 steps fires exactly three <code>change</code>
-              events, so a drag is heard exactly as an arrow key is. A drag
-              starts anywhere on the dial but the key. The knurl is
-              <code>touch-action: none</code>, a full circular drag for a
-              thumb; the rest of the dial is <code>pan-y</code>, because the
-              knurl is 12px wide on a phone and too thin to aim for, so a
-              sideways swipe across the face turns it while a vertical one
-              still scrolls the page — the browser takes that swipe, sends
-              <code>pointercancel</code>, and the dial snaps back to the last
-              detent it reached.</p>
+            <p>420ms on
+              <code>linear(0, .42 12%, .8 26%, 1.045 46%, 1.06 52%, .995 72%, 1.003 86%, 1)</code>
+              passes the stop by 6% of the move (3.6° on a six-way dial) and settles;
+              each extra step adds 70ms. Without script, first-to-last spins the long
+              way (0° to −300°), which reads as an end stop; component.js keeps a
+              winding count (<code>--mode-dial-laps</code>) so every turn takes the
+              near way (0° to +60°). It turns a drag into <code>Math.atan2</code>
+              steps that check each radio 0.6 of a step past its detent, one detent at
+              a time, so a sweep of 3.3 steps fires exactly three <code>change</code>
+              events and a drag is heard exactly as an arrow key is. A drag starts
+              anywhere on the dial but the key. The knurl is
+              <code>touch-action: none</code>; the rest of the dial is
+              <code>pan-y</code>, because the knurl is 12px wide on a phone and too
+              thin to aim for, so a sideways swipe across the face turns it while a
+              vertical one still scrolls the page, and the <code>pointercancel</code>
+              that comes with it leaves the dial at the last detent it reached.</p>
           </li>
           <li>
             <h3 class="demo__notes-head">One light, and it does not turn.</h3>
             <p><code>--mode-dial-light: 27deg</code>; every shadow, the knurl's
-              conic rim light, the plate's chamfer, the face's soft two-lobed
-              streak, the cloth's bumps and the engraving lip are offset by
-              its <code>sin()</code>/<code>cos()</code>. The light layer sits
-              on the face, which never turns, so the 120 teeth slide through a
-              highlight that stays put. 120 divides by 3, 4, 5, 6 and 8, so
-              every detent lands on a whole tooth. The cloth is on the deck
-              only, in pixels rather than cqi: a 4px quincunx of 1px bumps,
-              each a shade disc with a highlight nudged a quarter-pixel toward
-              the light, so a small dial has fewer dots, not smaller ones. The
-              deck is square without a display, a 24px margin on every side at
-              the default size, and casts a warm three-layer shadow down and
-              to the right.</p>
+              conic rim light, the plate's chamfer, the face's soft two-lobed streak,
+              the cloth's bumps and the engraving lip are offset by its
+              <code>sin()</code>/<code>cos()</code>. The light layer sits on the face,
+              which never turns, so the 120 teeth slide through a highlight that stays
+              put. 120 divides by 3, 4, 5, 6 and 8, so every detent lands on a whole
+              tooth. The cloth is on the deck only, in pixels rather than cqi: a 4px
+              quincunx of 1px bumps, each a shade disc with a highlight nudged a
+              quarter-pixel toward the light, so a small dial has fewer dots, not
+              smaller ones. The deck is square without a display, a 24px margin on
+              every side at the default size, and casts a warm three-layer shadow down
+              and to the right.</p>
           </li>
           <li>
             <h3 class="demo__notes-head">Browsing and choosing are two marks.</h3>
-            <p>With the centre key present, the checked radio is the pending
-              choice and <code>:default</code> (the radio carrying the
-              <code>checked</code> attribute) is the committed one: the index
-              goes hollow and the key takes a ring while they differ, and a
-              pip on the face stays with what was committed. Without script
-              the key submits the form as GET (<code>?kit=compass</code>), and
-              so does Enter on a radio in a dial with a key — accepted, since
-              that is the form doing what it says; with no key, Enter does
-              nothing. With script, committing rewrites
-              <code>defaultChecked</code>, Enter on a radio commits, and
-              Escape is <code>form.reset()</code>. The camera has neither a
-              key nor a display; both come from asking what a page or a game
-              needs from the control, and a view or a filter applies as it
-              turns.</p>
+            <p>With the centre key present, the checked radio is the pending choice
+              and <code>:default</code> (the radio carrying the <code>checked</code>
+              attribute) is the committed one: the index goes hollow and the key takes
+              a ring while they differ, and a pip on the face stays with what was
+              committed. The marks are heard too: a hidden status line always names
+              what is held, and the key is described by it. Without script the key
+              submits the form as GET (<code>?kit=compass</code>), and so does Enter
+              on a radio in a dial with a key — accepted, since that is the form doing
+              what it says; with no key, Enter does nothing. With script, committing
+              rewrites <code>defaultChecked</code>, Enter on a radio commits, and
+              Escape is <code>form.reset()</code>. The camera has neither a key nor a
+              display; both come from asking what a page or a game needs from the
+              control, and a view or a filter applies as it turns.</p>
           </li>
           <li>
             <h3 class="demo__notes-head">No hover to spend, and nothing muted.</h3>
             <p>Names rise as tooltips on <code>:hover</code>, on
-              <code>:focus-visible</code> and, under <code>(hover:
-              none)</code>, on <code>:active</code> and on the checked item,
-              always toward the centre with their near edge 6cqi from the
-              icon, so none leaves the face: the farthest corner is at 28cqi
-              of a 240px dial and 35cqi of the 136px one, inside the face's
-              37.4. The paint is <code>#b0ada6</code>, 6.16:1 on the face and
-              4.94 at the brightest point of the fixed streak; the chosen word
-              is <code>#f1efe8</code>, 11.99, and 9.49 on the key. The signal
-              <code>#f0965f</code> — index, focus ring, pending ring, pip,
-              never text — is 6.06 on the face, 4.86 at its brightest, 5.32 on
-              the deck and 4.10 on the key's lit side, against a 3:1 floor.
-              The display is one ink on one glass, <code>#1b1f17</code> on
-              <code>#b3b9a2</code> at 8.27 (6.00 in the bezel's shade),
-              because a second, dimmer ink was the first thing to fall under
-              the floor.</p>
+              <code>:focus-visible</code> and, under <code>(hover: none)</code>, on
+              <code>:active</code> and on the checked item. They move toward the
+              centre, the near edge 6cqi from the option's centre and 3cqi further
+              across, so a wide word clears its own icon; under 11rem a dial with no
+              key shows the name in the middle of the face instead, where it covers no
+              other icon. The farthest corner is at 27.9cqi of a 240px dial and
+              31.1cqi of the 136px one, inside the face's 37.4. A raised name holds
+              while the pointer moves onto it, except across a centre key: the key
+              keeps its clicks wherever a name lies over it, so the name gives way as
+              the pointer reaches the key. On the kit dial that is up to half of a
+              side name, measured 0.39 to 0.53 of its area at 240 and 288px, because
+              six names have nowhere else to go inside the face. Escape lowers a name
+              when there is nothing to cancel. The paint is <code>#b0ada6</code>, 6.16:1 on the face
+              and 5.02 at the brightest point of the fixed streak; the chosen word is
+              <code>#f1efe8</code>, 11.99, and 8.2 to 9.1 under the label on the key's
+              gradient. The signal <code>#f0965f</code> — index, focus ring, pending
+              ring, pip, never text — is 6.06 on the face, 4.94 at its brightest, 5.32
+              on the deck and 4.10 on the key's lit side, against a 3:1 floor. The
+              display is one ink on one glass, <code>#1b1f17</code> on
+              <code>#b3b9a2</code> at 8.27 (6.00 in the bezel's shade), because a
+              second, dimmer ink was the first thing to fall under the floor.</p>
           </li>
         </ol>
 
@@ -1527,15 +1530,14 @@
           <div class="demo__notes-row">
             <dt data-i18n="notes.inspiration">Inspiration</dt>
             <dd><a href="https://www.fujifilm-x.com/global/products/cameras/x-t50/" target="_blank" rel="noopener noreferrer">fujifilm-x.com/global/products/cameras/x-t50</a>
-              &mdash; the film-simulation dial on its top plate: the knurled
-              rim, the fixed index and the detent. The item set, the
-              lettering and what it selects are this study's own.</dd>
+              &mdash; the dial on its top plate (the knurled rim, the fixed
+              index, the detent) and the textured covering round it.</dd>
           </div>
         </dl>
 
         <p class="demo__notes-foot">
           <a href="notes.md">notes.md</a>
-          <span data-i18n="notes.full">&mdash; the full record, including what was tried and dropped</span>
+          <span data-i18n="notes.full">&mdash; the same record, as a file</span>
         </p>
     </div>
   </details>
@@ -1586,7 +1588,7 @@
         'notes.title': 'Beslutninger',
         'notes.type': 'Type',
         'notes.inspiration': 'Inspiration',
-        'notes.full': '\u2014 hele optegnelsen, ogs\u00e5 det der blev pr\u00f8vet og forkastet',
+        'notes.full': '\u2014 den samme optegnelse, som fil',
         'type': 'Navigation',
         'heading': 'Drejevælger',
         'lede': 'En vælger man drejer: valgene sidder rundt om et riflet hjul i en '
@@ -1691,6 +1693,17 @@
         nodes.forEach(function (el, i) {
           var key = el.getAttribute('data-i18n');
           el.innerHTML = table && table[key] ? table[key] : english[i];
+        });
+
+        // A kit's status line names what is held, and the name it holds is
+        // the one just reworded: re-read it from the committed option, so
+        // the line is in one language rather than two.
+        Array.prototype.slice.call(document.querySelectorAll('.mode-dial__status-value')).forEach(function (value) {
+          if (!value.textContent) return;
+          var form = value.closest('form');
+          var held = form && form.querySelector('.mode-dial__input:default');
+          var name = held && held.parentNode.querySelector('.mode-dial__name');
+          if (name && value.textContent !== name.textContent) value.textContent = name.textContent;
         });
 
         labelled.forEach(function (el, i) {
