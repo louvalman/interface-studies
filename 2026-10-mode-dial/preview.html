@@ -31,8 +31,8 @@
   rendered card, it is 3.7 OK ΔE from #f3f2ef along the deck's side and 2.4
   along its top, under the 3.9 of the white fill it is meant to outline.
   Restated, as the cloth's pitch is, to never less than one device pixel,
-  it is 6.3 and 5.1. At 2x the authored 1px is already a device pixel and
-  nothing changes.
+  it is 6.3 and 5.1. At 2x the authored 1px is already more than a device
+  pixel and is left alone: 5.4 and 3.8.
 
   Never a sound. The preview hands in no volume, so --mode-dial-click stays
   at the component's 0 and no audio context is ever made — not by the
@@ -434,10 +434,12 @@
       // The plain finish's hairline is its edge on the light ground, and it
       // is 1px: at 0.6 on a 1x screen that is 0.6 of a device pixel, and the
       // line comes out fainter than the white fill it outlines. Restated the
-      // same way, to never less than one device pixel. The token is declared under the plain modifier and nowhere
-      // else, so it is read the first time the plain finish is on, before
-      // anything has been written; the polished finish never reads it, so
-      // the restatement can stay on the root through every variant.
+      // same way, to never less than one device pixel. The token sits in
+      // the component's root block with the other plain-only tokens, and
+      // only the plain finish reads it; it is read here the first time the
+      // plain finish is on, before anything has been written, and since the
+      // polished finish never reads it the restatement can stay on the root
+      // through every variant.
       var HAIR = 0;
       function hairline() {
         if (!HAIR) {

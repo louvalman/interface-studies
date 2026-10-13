@@ -3,7 +3,8 @@
 
   A rotary selector for a mode you stay in. Underneath it is a radio group in
   a <form>: arrow keys, clicks, a screen reader and a server all have it with
-  no script. component.js adds the near-way wrap, the drag and the commit.
+  no script. component.js adds the near-way wrap, the drag, the commit and
+  the feel.
 
   One number turns everything. Eight `:has(… :nth-child(k) > :checked)` rules
   write `--mode-dial-sel` on the root and six `:nth-child(k):last-child` rules
@@ -97,6 +98,15 @@
   --mode-dial-dot-r: calc(var(--mode-dial-dot-pitch) * .25);
   --mode-dial-dot-lit: color-mix(in srgb, var(--mode-dial-gleam) 15%, transparent);
   --mode-dial-dot-shade: color-mix(in srgb, var(--mode-dial-shade) 50%, transparent);
+
+  /* --- plain finish, read only by .mode-dial--plain -------------------- */
+  --mode-dial-rim: #f4f3f0;                        /* the turning ring */
+  --mode-dial-rim-mark: #77746d;                   /* one tick per detent on it */
+  --mode-dial-rim-mark-w: max(.5deg, atan2(1px, 42cqi));     /* a tick's width at the rim, never under one CSS pixel */
+  --mode-dial-rim-mark-soft: max(.3deg, atan2(.6px, 42cqi)); /* each side of a tick, so a thin wedge does not alias */
+  --mode-dial-rim-mark-len: 2.6cqi;                /* in from the rim's outer edge; the rim is 5cqi */
+  --mode-dial-line: #cfccc5;                       /* every hairline */
+  --mode-dial-hairline: 1px;                       /* their width: a thumbnail drawn at 0.6 restates it, or a 1px line falls under a device pixel and is lost */
 
   /* --- type ------------------------------------------------------------ */
   --mode-dial-font: "Mona Sans", "Arial Narrow", "Roboto Condensed", sans-serif;
@@ -965,9 +975,11 @@
   }
 }
 
-/* The key travels: down on the press — a pointer's :active, or Space or
-   Enter held, which script marks with data-mode-dial-press — and for a beat
-   after a commit, then springs back on the release curve, which overshoots. */
+/* The key travels: down on the press — data-mode-dial-press, which script
+   sets from a pointer's down or a held Space or Enter until it comes up, and
+   :active for a page without script, which a touch does not reliably get —
+   and for a beat after a commit, then springs back on the release curve,
+   which overshoots. */
 .mode-dial__commit:active,
 .mode-dial[data-mode-dial-press] .mode-dial__commit,
 .mode-dial[data-mode-dial-set] .mode-dial__commit {
@@ -1180,13 +1192,6 @@
 .mode-dial--plain {
   --mode-dial-deck: #fff;
   --mode-dial-face: #fff;
-  --mode-dial-rim: #f4f3f0;                        /* the turning ring */
-  --mode-dial-rim-mark: #77746d;                   /* one tick per detent on it */
-  --mode-dial-rim-mark-w: .5deg;
-  --mode-dial-rim-mark-soft: .3deg;                /* each side of a tick, so a thin wedge does not alias */
-  --mode-dial-rim-mark-len: 2.6cqi;                /* in from the rim's outer edge; the rim is 5cqi */
-  --mode-dial-line: #cfccc5;                       /* every hairline */
-  --mode-dial-hairline: 1px;                       /* their width: a thumbnail drawn at 0.6 restates it, or a 1px line falls under a device pixel and is lost */
   --mode-dial-paint: #5c5a55;
   --mode-dial-paint-hover: #2b2a27;
   --mode-dial-paint-on: #1b1a18;
@@ -1209,6 +1214,8 @@
   --mode-dial-small-track: 0em;
   --mode-dial-screen-track: 0em;
   --mode-dial-tip-size: 12px;
+  --mode-dial-key-label: var(--mode-dial-label-size); /* the names' size, at the chosen name's weight below */
+  --mode-dial-light: 0deg;                         /* no light to move away from: the key travels straight down */
   /* A lighter, drier tick: plastic rather than the polished dial's metal. */
   --mode-dial-click-pitch: 4200;
   --mode-dial-click-ring: 1.4;
@@ -1278,6 +1285,7 @@
 
 .mode-dial--plain .mode-dial__commit {
   background: var(--mode-dial-cap);
+  font-weight: var(--mode-dial-label-weight-on);
   box-shadow: 0 0 0 var(--mode-dial-hairline) var(--mode-dial-line), var(--mode-dial-key-ring);
 }
 
@@ -1348,6 +1356,11 @@
 
   .mode-dial[data-mode-dial-kick] .mode-dial__index {
     animation: none;
+  }
+
+  /* The key still goes down and comes back, without the spring past rest. */
+  .mode-dial .mode-dial__commit {
+    transition-timing-function: ease-out;
   }
 }
 

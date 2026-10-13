@@ -26,16 +26,18 @@
        the pointer: shown = x - k·sin(2πx)/2π, k = --mode-dial-notch, which
        is slow near a stop and quick between, and continuous when the
        selection flips because f(x) - f(x-1) = 1. Every detent the face
-       passes is a tick, timed to when the eased angle passes it, and a
-       tick is a kick of the index (CSS), a `mode-dial:tick` event, a buzz
-       for touch and pen, and — only if --mode-dial-click is above 0 — a
-       synthesised click. The key clicks on the way down and up.
+       passes is a tick, timed to when the eased angle passes it — read off
+       the running transition, so a turn that interrupts another counts from
+       where the face really is — and a tick is a kick of the index (CSS), a
+       `mode-dial:tick` event, a buzz for touch and pen, and — only if
+       --mode-dial-click is above 0 — a synthesised click. The key clicks on
+       the way down and again as it rises.
 
        Sound only ever follows a trusted input event on this dial: a key,
        a pointer, a click. A host's input.click(), its form.reset() or the
        preview turning the dial is silent, and with the volume at 0 no
-       AudioContext is made. One context per document, made on the first
-       tick that has a volume, and resumed if the browser suspended it.
+       AudioContext is made. One context per document, made in the first
+       gesture that has a volume, and resumed if the browser suspended it.
 
   Without it the component is still the component: arrow keys, clicks and a
   screen reader all work, the key submits the form, and the only things
@@ -70,8 +72,10 @@
     if (!AC) return audio;
     try {
       var ctx = new AC();
-      /* 50ms of white noise, shared by every click: the band-pass shapes it. */
-      var len = Math.max(1, Math.round(ctx.sampleRate * 0.05));
+      /* 210ms of white noise, shared by every click: the band-pass shapes
+         it. The longest decay the token allows, 200ms, and the 10ms margin
+         each sound stops after, so a long tail dies away rather than ends. */
+      var len = Math.max(1, Math.round(ctx.sampleRate * 0.21));
       var buf = ctx.createBuffer(1, len, ctx.sampleRate);
       var d = buf.getChannelData(0);
       for (var i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
@@ -93,7 +97,8 @@
   function jitter() { return 1 + (Math.random() - 0.5) * 0.08; }
 
   /* Noise through a band-pass, up in 1.5ms and down exponentially. A high
-     Q rings; it also passes less, so the gain gives some of that back. */
+     Q rings; it also passes less, so the gain gives some of that back —
+     unclamped, or the volume would stop counting above about .6. */
   function burst(when, freq, q, gain, decay) {
     var ctx = audio.ctx;
     var src = ctx.createBufferSource();
@@ -104,7 +109,7 @@
     f.frequency.value = freq;
     f.Q.value = q;
     g.gain.setValueAtTime(0, when);
-    g.gain.linearRampToValueAtTime(Math.min(1, gain * Math.sqrt(Math.max(1, q) / 2)), when + 0.0015);
+    g.gain.linearRampToValueAtTime(gain * Math.sqrt(Math.max(1, q) / 2), when + 0.0015);
     g.gain.exponentialRampToValueAtTime(0.0001, when + decay);
     src.connect(f);
     f.connect(g);
@@ -163,9 +168,13 @@
     };
   }
 
-  function play(kind, v, delay) {
+  /* A suspended clock plays everything scheduled on it at once when it
+     resumes, so a sound is dropped while it is not running — unless it is
+     played inside its own gesture, the one that is waking it. */
+  function play(kind, v, delay, gesture) {
     if (!v || !audioFor()) return;
     wake();
+    if (!gesture && audio.ctx.state !== 'running') return;
     try { SOUNDS[kind](v, audio.ctx.currentTime + (delay || 0)); } catch (err) { /* a closed context */ }
   }
 
@@ -304,8 +313,11 @@
       var c = { pointer: p };
       cause = c;
       setTimeout(function () { if (cause === c) cause = null; }, 0);
-      /* A suspended context can only be resumed from a gesture. */
+      /* A suspended context can only be resumed from a gesture, and is
+         best made in one: a drag's first tick comes from a frame, not from
+         the press, so the press makes it. */
       if (audio) wake();
+      else if (audio === null && e.type === 'pointerdown' && voiceOf(root)) { audioFor(); wake(); }
     }
     ['keydown', 'keyup', 'pointerdown', 'pointerup', 'click'].forEach(function (t) {
       root.addEventListener(t, note, true);
@@ -386,14 +398,41 @@
     var lastDue = -Infinity;
     var kick = false;
     var buzzed = 0;
+    var lastEmit = -Infinity;          /* when the last tick went out, and at which stop */
+    var lastPos = NaN;
+    var lastDir = 0;                   /* which way the turn that queued it was going */
+
+    /* A turn that runs to its end has settled, and the last tick is history:
+       a turn interrupted mid-way (a held key) fires transitioncancel instead,
+       so it keeps counting on. */
+    var face = root.querySelector('.mode-dial__options');
+    if (face) face.addEventListener('transitionend', function (e) {
+      if (e.target === face && e.propertyName === 'rotate') { lastPos = NaN; lastDir = 0; }
+    });
 
     /* How long this turn takes and how it eases, off the layer that turns.
-       Read after turnTo has written the span, which is what flushes it. */
+       Read after turnTo has written the span, which is what flushes it — and
+       what starts the transition, so the browser can then be asked what it
+       is really doing: where the face starts, which is part way for a turn
+       that interrupts another; how long it takes, which is shorter for one
+       that reverses; and when it began. `run` is false when there is no
+       transition at all, a turn undone inside one frame. */
     function timing() {
       var layer = root.querySelector('.mode-dial__options');
       if (!layer) return { ms: 420, curve: null };
       var cs = getComputedStyle(layer);
-      return { ms: msOf(firstOf(cs.transitionDuration)), curve: curveOf(firstOf(cs.transitionTimingFunction)) };
+      var t = { ms: msOf(firstOf(cs.transitionDuration)), curve: curveOf(firstOf(cs.transitionTimingFunction)) };
+      if (!layer.getAnimations) return t;
+      var run = layer.getAnimations().filter(function (a) { return a.transitionProperty === 'rotate'; }).pop();
+      if (!run) { t.run = false; return t; }
+      var a0 = parseFloat((run.effect.getKeyframes()[0] || {}).rotate);
+      if (!isFinite(a0)) return t;
+      t.run = true;
+      t.at = -a0 / (360 / n);
+      var d = run.effect.getComputedTiming().duration;
+      if (isFinite(d)) t.ms = d;
+      t.start = run.startTime !== null && isFinite(run.startTime) ? run.startTime : NaN;
+      return t;
     }
 
     /* One tick per detent passed. With a timing, each is due when the eased
@@ -401,16 +440,51 @@
     function ticks(turn, t, why, voice) {
       if (voice) { audioFor(); wake(); }
       var now = performance.now();
-      for (var k = 1; k <= turn.span; k++) {
-        var at = 0;
-        if (t) at = t.ms >= 1 ? crossing(t.curve, k / turn.span) * t.ms : (k - 1) * STILL_GAP;
-        var due = Math.max(now + at, lastDue + TICK_GAP);
-        lastDue = due;
-        var pos = turn.from + turn.dir * k;
-        queue.push({ due: due, value: inputs[((pos % n) + n) % n].value, cause: why, voice: voice });
+      if (t && t.ms >= 1 && t.run !== undefined) {
+        /* The turn the browser is running replaces whatever was queued: the
+           ticks of a turn it interrupted are dropped, and the stops counted
+           are the whole ones strictly past where the face is now, the way
+           it is now going. The gap is kept from the last tick heard. */
+        queue.length = 0;
+        lastDue = lastEmit;
+        if (t.run) {
+          var to = turn.from + turn.dir * turn.span;
+          var c = t.at;
+          var dir = to > c ? 1 : -1;
+          var base = isFinite(t.start) ? t.start : now;
+          /* A turn that carries on the way the last tick went counts on
+             from that tick, not from the face: a tick can go out a frame
+             before the face reaches its stop, and the start angle can be a
+             frame old, so counting from the face would tick a stop twice
+             under a held key, where keys can outrun frames and the start
+             angle trails the last tick by more than half a stop. Only until
+             the face settles, though: a tick from a finished turn says
+             nothing about a face a host has since moved. A stop the face is
+             already past is due now. */
+          var past = dir === lastDir && Math.abs(lastPos - c) < 2 ? lastPos : c;
+          var m = dir > 0 ? Math.floor(past + 1e-6) + 1 : Math.ceil(past - 1e-6) - 1;
+          for (; dir > 0 ? m <= to : m >= to; m += dir) {
+            /* For the same reason, the stop just ticked is not ticked again
+               by a turn that starts back across it. */
+            if (m === lastPos && Math.abs(c - m) < 0.25) continue;
+            push(m, base + crossing(t.curve, Math.max(0, (m - c) / (to - c))) * t.ms, why, voice, dir);
+          }
+        }
+      } else {
+        for (var k = 1; k <= turn.span; k++) {
+          var at = 0;
+          if (t) at = t.ms >= 1 ? crossing(t.curve, k / turn.span) * t.ms : (k - 1) * STILL_GAP;
+          push(turn.from + turn.dir * k, now + at, why, voice, turn.dir);
+        }
       }
       queue.sort(function (a, b) { return a.due - b.due; });
       pump();
+    }
+
+    function push(pos, due, why, voice, dir) {
+      due = Math.max(due, lastDue + TICK_GAP);
+      lastDue = due;
+      queue.push({ due: due, pos: pos, value: inputs[((pos % n) + n) % n].value, cause: why, voice: voice, dir: dir });
     }
 
     function pump() {
@@ -430,11 +504,16 @@
     }
 
     function emit(tick) {
+      lastEmit = performance.now();
+      lastDir = tick.dir;
+      lastPos = tick.pos;
       /* Two names for one keyframe set, so each tick starts it over. */
       kick = !kick;
       root.setAttribute('data-mode-dial-kick', kick ? 'a' : 'b');
       buzz(tick.cause, 6);
-      if (tick.cause && tick.voice) play('detent', tick.voice);
+      /* Armed by the gesture, but the volume is read again now: a sound
+         switched off mid-turn is off for the rest of it. */
+      if (tick.cause && tick.voice) play('detent', voiceOf(root));
       root.dispatchEvent(new CustomEvent('mode-dial:tick', {
         bubbles: true,
         detail: { value: tick.value, user: !!tick.cause }
@@ -644,6 +723,9 @@
     }
     syncHeld();
 
+    var setTimer = 0;
+    var owed = false;                  /* a release click waiting for the key to rise */
+
     root.addEventListener('submit', function (e) {
       var k = key();
       /* No key: nothing here submits, including Enter on a radio. A disabled
@@ -662,10 +744,15 @@
           detail: { name: cur.name, value: cur.value, previous: prev ? prev.value : null }
         }));
       }
+      /* The hold always runs SET_MS from the last commit, and the key's
+         release click, if it came up during it, is heard as it rises. */
       root.setAttribute('data-mode-dial-set', '');
-      setTimeout(function () {
+      clearTimeout(setTimer);
+      setTimer = setTimeout(function () {
         if (!root.isConnected) return;
         root.removeAttribute('data-mode-dial-set');
+        if (owed && keyDown === null) play('release', voiceOf(root));
+        owed = false;
       }, SET_MS);
       if (!root.hasAttribute('action')) e.preventDefault();
     });
@@ -690,23 +777,38 @@
       }
     });
 
-    /* The key's travel and its two clicks. A pointer presses it with
-       :active, which CSS already has; Space or Enter on it, or Enter on a
-       radio of a dial with a key, presses it with data-mode-dial-press until
-       the key comes up. The click down and the softer, higher click up are
-       for trusted input only, like every sound here. */
+    /* The key's travel and its two clicks. A pointer on it, Space or Enter
+       on it, or Enter on a radio of a dial with a key, presses it with
+       data-mode-dial-press until the key comes up — a pointer too, because
+       a touch gets :active late or not at all. The click down is heard at
+       once; the softer, higher click up as the key rises, which waits out a
+       commit's hold. Both for trusted input only, like every sound here. */
     var keyDown = null;
 
     function keySound(kind, pointer) {
-      if (kind === 'press') buzz({ pointer: pointer }, 8);
-      play(kind, voiceOf(root));
+      if (kind === 'press') {
+        owed = false;                  /* a second press cancels a release never made */
+        buzz({ pointer: pointer }, 8);
+        play('press', voiceOf(root), 0, true);
+        return;
+      }
+      /* A task on, so the click the release causes has run submit and a
+         commit's hold is known. */
+      setTimeout(function () {
+        if (!root.isConnected) return;
+        if (root.hasAttribute('data-mode-dial-set')) owed = true;
+        else play('release', voiceOf(root), 0, true);
+      }, 0);
     }
 
     root.addEventListener('pointerdown', function (e) {
       var k = key();
       if (!e.isTrusted || !e.isPrimary || e.button !== 0 || !k || !k.contains(e.target) || k.matches(':disabled')) return;
+      /* Already held by Space or Enter: that key's own up releases it. */
+      if (keyDown === ' ' || keyDown === 'Enter') return;
       var id = e.pointerId;
       keyDown = 'pointer';
+      root.setAttribute('data-mode-dial-press', '');
       keySound('press', e.pointerType || 'mouse');
       function up(ev) {
         if (ev.pointerId !== id) return;
@@ -714,6 +816,7 @@
         window.removeEventListener('pointercancel', up, true);
         if (keyDown !== 'pointer') return;
         keyDown = null;
+        root.removeAttribute('data-mode-dial-press');
         if (root.isConnected) keySound('release');
       }
       window.addEventListener('pointerup', up, true);
@@ -730,10 +833,14 @@
       keySound('press', 'key');
     });
 
+    /* Clears a press left behind by anything but a pointer, whose own up
+       releases it: a mouse press moves focus, and that focusout is not the
+       key coming up. */
     function keyUp(sound) {
-      if (keyDown !== ' ' && keyDown !== 'Enter') return;
-      keyDown = null;
+      if (keyDown === 'pointer') return;
       root.removeAttribute('data-mode-dial-press');
+      if (keyDown === null) return;
+      keyDown = null;
       if (sound) keySound('release');
     }
 

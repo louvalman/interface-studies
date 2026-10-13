@@ -124,9 +124,10 @@
     /* Back to the index. Page chrome — the component never depends on it. */
     /* Aligned to the page's own padding, so it sits on the same edge as the
        content rather than floating inside the margin. */
-    /* Language and theme, in one cluster on the page's own edge. Absolute,
-       not fixed: both are picked once and neither has any reason to ride
-       the viewport down the page. */
+    /* Sound, language and theme, in one cluster on the page's own edge.
+       Absolute, not fixed: each is set once a visit (sound starts off on
+       every load) and none needs to ride the viewport down the page. Below
+       30rem it is static; see the next rule. */
     .demo__controls {
       position: absolute;
       top: clamp(1.25rem, 3vw, 2.25rem);
@@ -881,8 +882,6 @@
 <body>
   <div class="demo">
 
-    <!-- Delete alongside the language script below if this study is
-         single-language. -->
     <div class="demo__controls">
       <!-- This study's own: the dial's click is opt-in, and this switch is
            how the page opts in. Its word is its name and aria-pressed its
@@ -896,6 +895,8 @@
         <span class="demo__sound-word" data-i18n="sound">Sound</span>
       </button>
 
+      <!-- Delete this group alongside the language script below if this
+           study is single-language. -->
       <div class="demo__lang" role="group" aria-label="Language">
         <button class="demo__lang-btn" type="button" data-lang="en" aria-pressed="true">EN</button>
         <span class="demo__lang-sep" aria-hidden="true"></span>

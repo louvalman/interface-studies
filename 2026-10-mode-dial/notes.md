@@ -101,9 +101,40 @@ What the bullets above rest on, and what was tried on the way.
 - Timed to the eased angle rather than spread evenly over the turn: the curve
   is read back from the options layer's computed transition (`linear()`
   points, a cubic-bezier or a keyword), and each tick is due when the eased
-  angle first reaches k/span. One arrow step ticks about 185ms after the key
-  (178ms expected); a three-step click at 66, 131 and 250ms (53, 118 and 237
-  expected).
+  angle first reaches k/span. One arrow step ticks 182–184ms after the key; a
+  three-step click at 56, 121 and 240ms. A tick leads the face past its
+  stop by 1–17ms, the frame the transition takes to start once asked for;
+  on a page's first turn, whose transition can start a few frames late, by
+  13–25ms.
+- A turn that interrupts another counts from where the face really is. The
+  running transition says where it starts, how long it takes (a reversal is
+  shorter than the token) and when it began; the ticks still queued for the
+  interrupted turn are dropped, and only whole stops past the face are
+  counted. Clicked two across and back after 60ms, the face gets 0.71 to
+  0.93 of a step and ticks twice, one of them settling home, where it ticked
+  four times. Over 36 keyboard interrupts, 30 tick exactly the stops the face
+  passes and 6 are one out; turn times are unchanged at 420, 490 and 560ms.
+- A turn that carries on the way the last tick went counts on from that
+  tick rather than from the face. A tick can go out a frame before the face
+  reaches its stop and the start angle can be a frame old, so counting from
+  the face ticked a held key's stops twice — 13 or 14 ticks for 12 stops,
+  the extra click 11–14ms after the one before it. Each queued tick carries
+  the direction of the turn that queued it, and a stop the face is already
+  past is due at once. Eight arrows 0 to 120ms apart give eight ticks —
+  180 of 180 runs from 0 to 60ms — within −4 to +17ms of the face; an arrow
+  held at a 25, 33 or 50ms repeat gives 12 ticks for 12 stops in 30 of 30,
+  and 12 clicks with the sound on in 16 of 16. Keys can outrun frames, so the
+  start angle can trail the last tick by more than half a stop, and the
+  window is two stops wide.
+- The last tick is forgotten when a turn runs to its end, at its
+  `transitionend`; an interrupted turn ends in `transitioncancel` and keeps
+  counting on. Kept for good, it miscounted the next turn whenever the face
+  had moved since: after a host set the selection back with no event, the
+  next arrow moved the face a stop with no tick, and a turn out and straight
+  back ticked its settling home after a finished turn one way and not after
+  one the other way. Now both tick as the face does: one arrow after a
+  silent change one tick, two arrows two, and the settling home once,
+  whichever way the turn before it went.
 - No two ticks of one dial closer than 12ms; under reduced motion the turn
   takes 0s and its ticks are 30ms apart, and the index does not kick.
 - An Escape back over two steps gives two ticks. Ticks count detents passed,
@@ -121,20 +152,42 @@ What the bullets above rest on, and what was tried on the way.
   preview's checked-plus-change, all tick in silence. So does a host button
   elsewhere that turns the dial during a real click: the sound is the dial's
   feedback on its own handling.
-- At `--mode-dial-click: 0` no AudioContext is created. The first tick with a
-  volume made exactly one, inside the gesture, and it was running; a second
-  dial on the page shared it. Without Web Audio, nothing happens and nothing
-  throws.
+- At `--mode-dial-click: 0` no AudioContext is created. The first gesture
+  with a volume makes exactly one, inside the gesture, and it was running; a
+  drag's is made on its `pointerdown`, before its first tick, which comes from
+  a frame. A second dial on the page shares it. A tick that comes due while
+  the context is not running is dropped rather than scheduled on a stopped
+  clock, which would play every one of them at once on resume; the key's
+  clicks, played inside their own gesture, are not. The volume is read again
+  at each tick, so switching it off mid-turn silences the rest. Without Web
+  Audio, nothing happens and nothing throws.
 - Detent: white noise through a band-pass, ±4% pitch per tick. Polished, 2600Hz
   at Q 7 over 26ms, which rings like metal; plain, 4200Hz at Q 1.4 over 9ms, a
   dry plastic snap. Key press: a falling sine (120Hz polished, 210Hz plain)
-  and a click at 0.7× the pitch. Release: a quieter click at 1.5×.
+  and a click at 0.7× the pitch. Release: a quieter click at 1.5×. The gain
+  makes up for a narrow band without a cap, so the volume counts all the way:
+  the polished detent peaks at −18.7 dB at .5 and −12.7 at 1, where a cap at
+  1 had held it at −17.2 from .6 up. The noise is 210ms long, the longest
+  decay the token allows plus the 10ms each sound runs on, so a slow tick dies
+  away rather than stopping.
 - Buzzes are 6ms a detent, no closer than 40ms, and 8ms for the key, for touch
   and pen only. A tap two steps across gave two; a touch drag of 2.2 steps gave
   two; keyboard and mouse gave none.
 - The key travels .5cqi and sinks to .97 while pressed, and springs back on
   the release curve. Enter on a radio of a keyed dial presses the key, with the
-  same look and sound.
+  same look and sound. A pointer presses it on `pointerdown` through
+  `data-mode-dial-press`, since a touch gets `:active` late or never: a finger
+  held on the key starts it down 10–15ms after `touchstart` and holds it
+  there for as long as it stays, where it used to go down only after the
+  lift. Under reduced
+  motion it comes back on ease-out, without the spring past rest.
+- The release click is heard as the key rises, not when the finger or key
+  lifts. A commit holds the key down for 180ms, so the click waits for the
+  hold to let go: across mouse, Space, Enter on the key and Enter on a radio,
+  it lands 17–48ms before the first sampled frame of the rise, where it used
+  to come about 200ms before it. A second press inside the hold restarts it
+  and cancels the click the first one owed. A key held by Space or Enter
+  ignores a pointer pressed on it, so mixing the two cannot leave it down.
 
 ### Tooltips, and the key's trade-off
 
@@ -189,10 +242,14 @@ What the bullets above rest on, and what was tried on the way.
   hairline `#cfccc5` is 11.6 OK ΔE against the rail's `#f3f2ef` ground, where
   the white deck alone would be 3.9. On the dark grounds the plate is lit:
   18.58:1 on `#121316`, 17.26 on `#191b1e`.
-- At the rail's 0.6 scale the edge holds at 8.5 ΔE on a 2x screen, and on a
-  1x screen the 1px hairline falls under a device pixel and is lost, back to
-  3.9. The preview restates `--mode-dial-hairline` against its scale, as it
-  does the cloth's pitch: 1.667px there, 8.2 ΔE.
+- Quick look is the only place the plain finish appears below 1:1, never the
+  rail card, at 0.59 on a 320px phone. On a 1x screen at 0.6 the 1px hairline
+  is 0.6 of a device pixel: measured off the rendered preview, it is 3.7 OK ΔE
+  from `#f3f2ef` along the deck's side and 2.4 along its top, under the white
+  fill's 3.9. The preview restates `--mode-dial-hairline` against its scale,
+  as it does the cloth's pitch, to never less than one device pixel (1.667px
+  there), and it is 6.3 and 5.1. At 2x the authored 1px is already more than
+  a device pixel and is left alone: 5.4 and 3.8.
 
 ### Plain, the smaller decisions
 
@@ -203,6 +260,17 @@ What the bullets above rest on, and what was tried on the way.
   the polished one does; a dark one would be a modifier of its own.
 - Names and tooltips stay inside the face at 288 and 240px in both
   languages.
+- The key's word is the names' size at the chosen name's weight, 12.67px/600
+  on a 288px dial and 11px/600 at 240. It had inherited the plain label
+  weight, 400 at 11px, and read weaker than the tooltip above it.
+- The key travels straight down: `--mode-dial-light: 0deg`, since there is no
+  light left to move away from. Pressed, it moves 1.44px down at 288px rather
+  than 0.65px across and 1.28px down; nothing else in the finish reads the
+  light, and the four plain forms at rest are pixel-identical either way.
+- A rim tick is never under one CSS pixel wide:
+  `max(.5deg, atan2(1px, 42cqi))`. The 288 and 416px dials are as they were;
+  on a 136px dial the tick goes from 0.5px, which drew the diagonals as dots,
+  to 1px.
 
 ### Tried and dropped
 
