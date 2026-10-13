@@ -17,8 +17,15 @@
   and one readout line per option. component.js re-keys an id only if it
   collides with another on the page.
 
-  Modifiers: .mode-dial--icons, .mode-dial--curled (wins if both are set).
-  The radio `name` is what the form submits: view, range, kit.
+  Modifiers: .mode-dial--icons, .mode-dial--curled (wins if both are set),
+  and .mode-dial--plain, the same dial with the material taken off, which
+  goes with either or neither. The radio `name` is what the form submits:
+  view, range, kit.
+
+  Sound is off until the root is given a volume, inline or from a stylesheet:
+  style="--mode-dial-click: .4". Every detent passed is also a bubbling
+  `mode-dial:tick` event, detail { value, user }, for a host that wants its
+  own feedback.
 -->
 
 <form class="mode-dial">

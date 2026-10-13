@@ -7,10 +7,15 @@
   It rests on the icons. At the rail's 0.6 an icon is still 12px on screen
   and a name only appears when it is reached for, so the card shows a dial
   and not a ring of small type; the engraved words would be 8px there. The
-  other four are quick-look dots: names, curled text, the display, and the
-  centre key with it. All five are the same views set on the same root,
-  because changing the item set means new radios, and new radios mean
-  booting component.js again.
+  other five are quick-look dots: names, curled text, the display, the
+  centre key with it, and then that same composition in the plain finish,
+  so the last two dots differ by the material and nothing else, and the
+  glass and the key cap are among what goes flat. One plain dot, not two:
+  quick look's row holds six dots from a 360px phone up and a seventh only
+  from 375, and at 320 a sixth wraps, as it does for every study with six.
+  All six are the same views set on the same root, because changing the
+  item set means new radios, and new radios mean booting component.js
+  again.
 
   The same variant rests on both grounds. The deck is the component's own
   plate, so on the dark rail it sits as a lit plate, which is what it is,
@@ -18,11 +23,30 @@
   the plate itself: measured off the rendered card at 0.6, the deck is 11.3
   OK ΔE from #191b1e along its sides and 13.1 along its lit top edge.
 
-  One token is handed in, on the root: the width the dial has without the
-  display. With the display the component asks for 36rem, the frame has 28
-  inside its padding, and the stacked deck would fill it edge to edge; held
-  at the dial's own width, every variant is the same 336px plate, and the
-  display grows it downward.
+  The plain finish is never the resting card, but quick look shows it on
+  both grounds, and below 1:1 on a narrow screen — 0.59 on a 320px phone.
+  On the dark ground its white deck is the plate's own edge, as the
+  polished deck is. On the light one the edge is a hairline, and a 1px line
+  drawn at 0.6 on a 1x screen is 0.6 of a device pixel: measured off the
+  rendered card, it is 3.7 OK ΔE from #f3f2ef along the deck's side and 2.4
+  along its top, under the 3.9 of the white fill it is meant to outline.
+  Restated, as the cloth's pitch is, to never less than one device pixel,
+  it is 6.3 and 5.1. At 2x the authored 1px is already a device pixel and
+  nothing changes.
+
+  Never a sound. The preview hands in no volume, so --mode-dial-click stays
+  at the component's 0 and no audio context is ever made — not by the
+  turns this file makes, which are script and silent anyway, and not when a
+  reader turns the dial or presses its key in quick look. The kick of the
+  dial's index mark and the key's travel are the component's, and stay.
+
+  Every token is handed in inline on the root, the component's own element:
+  the cloth's pitch and the plain hairline, both restated against the
+  scale, and the width the dial has without the display. With the display
+  the component asks for 36rem, the frame has 28 inside its padding, and
+  the stacked deck would fill it edge to edge; held at the dial's own
+  width, every variant is the same 336px plate, and the display grows it
+  downward.
 
   Being looked at turns the dial one detent and lets it back, through the
   radios, which are the component's API: check the next one and fire
@@ -251,7 +275,8 @@
           caption: 'View', current: 'Current', preview: 'Preview', pending: 'Pending',
           set: 'Set', status: 'Set:',
           icons: 'Icons with tooltips', names: 'Names', curled: 'Curled text',
-          display: 'With a display', key: 'Centre key'
+          display: 'With a display', key: 'Centre key',
+          plain: 'Plain'
         },
         da: {
           grid: 'Gitter', list: 'Liste', board: 'Tavle',
@@ -265,7 +290,8 @@
           caption: 'Visning', current: 'Aktuel', preview: 'Kig', pending: 'Afventer',
           set: 'Vælg', status: 'Valgt:',
           icons: 'Ikoner med tooltips', names: 'Navne', curled: 'Buet tekst',
-          display: 'Med display', key: 'Midterknap'
+          display: 'Med display', key: 'Midterknap',
+          plain: 'Enkel'
         }
       };
       var lang = new URLSearchParams(location.search).get('lang') === 'da' ? 'da' : 'en';
@@ -302,13 +328,17 @@
       if (lang !== 'en') retext();
 
       // Index 0 is what the card shows. Classes are suffixes on BASE; parts
-      // are the two templates.
+      // are the two templates. The plain finish is the study's own modifier
+      // and goes on beside the others. It is last, after the variant it is
+      // the plain version of, so quick look's autoplay ends on the same dial
+      // with the material taken off.
       var VARIANTS = [
         { id: 'icons', classes: ['--icons'], parts: [] },
         { id: 'names', classes: [], parts: [] },
         { id: 'curled', classes: ['--curled'], parts: [] },
         { id: 'display', classes: ['--icons'], parts: ['display'] },
-        { id: 'key', classes: ['--icons'], parts: ['display', 'commit'] }
+        { id: 'key', classes: ['--icons'], parts: ['display', 'commit'] },
+        { id: 'plain', classes: ['--plain', '--icons'], parts: ['display', 'commit'] }
       ];
 
       function place(node, want, parent, before) {
@@ -322,6 +352,7 @@
           x.classes.forEach(function (c) { root.classList.remove(BASE + c); });
         });
         v.classes.forEach(function (c) { root.classList.add(BASE + c); });
+        hairline();
 
         var withDisplay = v.parts.indexOf('display') >= 0;
         var withKey = v.parts.indexOf('commit') >= 0;
@@ -390,10 +421,33 @@
       // channel — and read back before anything is written.
       var FLOOR = 4;
       var AUTHORED = parseFloat(getComputedStyle(root).getPropertyValue('--' + BASE + '-dot-pitch')) || 0;
+      var shown = 0;
       function setScale(scale) {
-        if (!(scale > 0) || !AUTHORED) return;
+        if (!(scale > 0)) return;
+        shown = scale;
+        hairline();
+        if (!AUTHORED) return;
         var pitch = Math.max(AUTHORED, FLOOR / ((window.devicePixelRatio || 1) * scale));
         root.style.setProperty('--' + BASE + '-dot-pitch', pitch.toFixed(3) + 'px');
+      }
+
+      // The plain finish's hairline is its edge on the light ground, and it
+      // is 1px: at 0.6 on a 1x screen that is 0.6 of a device pixel, and the
+      // line comes out fainter than the white fill it outlines. Restated the
+      // same way, to never less than one device pixel. The token is declared under the plain modifier and nowhere
+      // else, so it is read the first time the plain finish is on, before
+      // anything has been written; the polished finish never reads it, so
+      // the restatement can stay on the root through every variant.
+      var HAIR = 0;
+      function hairline() {
+        if (!HAIR) {
+          if (!root.classList.contains(BASE + '--plain')) return;
+          HAIR = parseFloat(getComputedStyle(root).getPropertyValue('--' + BASE + '-hairline')) || 0;
+          if (!HAIR) return;
+        }
+        if (!(shown > 0)) return;
+        var width = Math.max(HAIR, 1 / ((window.devicePixelRatio || 1) * shown));
+        root.style.setProperty('--' + BASE + '-hairline', width.toFixed(3) + 'px');
       }
 
       window.addEventListener('message', function (event) {

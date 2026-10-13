@@ -20,6 +20,15 @@
   Supported: 3 to 8 options, written in clockwise order. 120 teeth divide
   evenly for every count but 7, which is supported and lands between teeth.
 
+  Two finishes on one mechanism: the polished one by default, and
+  .mode-dial--plain, which takes the material off — flat fills, hairlines,
+  system type, a tick per detent — and composes with every other modifier.
+
+  The feel is tokens too, read by component.js when it needs them: the drag's
+  detent curve (--mode-dial-notch), the index's kick per detent passed, the
+  key's travel, and an opt-in click (--mode-dial-click, a volume from 0 to 1;
+  at 0 no audio is ever started). Set them on the root like any other.
+
   Rules (see CLAUDE.md): BEM on `.mode-dial`, no global selectors, no font
   loading, every tunable in the block below. Re-theme it from outside by
   setting these properties on the root itself.
@@ -116,6 +125,9 @@
   --mode-dial-tick-h: 6px;
   --mode-dial-tick-gap: 3px;
   --mode-dial-tick-mark: 4px;
+  --mode-dial-label-case: uppercase;               /* names, engraving, key, display */
+  --mode-dial-small-track: .08em;                  /* tooltip, display caption and tags */
+  --mode-dial-screen-track: .04em;                 /* the display's large name */
 
   /* --- motion ---------------------------------------------------------- */
   --mode-dial-turn: 420ms;
@@ -128,6 +140,18 @@
   --mode-dial-fade: 140ms;
   --mode-dial-roll: .5rem;
   --mode-dial-roll-time: 220ms;
+  --mode-dial-key-travel: .5cqi;                   /* how far the key goes down, away from the light */
+  --mode-dial-key-sink: .97;                       /* and how much smaller it is there */
+  --mode-dial-kick: .7cqi;                         /* the index dips this far as a detent is passed */
+  --mode-dial-kick-time: 120ms;
+
+  /* --- feel: read by component.js, at the moment it needs them ---------- */
+  --mode-dial-notch: .6;                           /* drag detent curve: 0 follows the pointer, 1 is the most notched (read at drag start) */
+  --mode-dial-click: 0;                            /* sound volume, 0..1; 0 is silence, and no audio is ever started */
+  --mode-dial-click-pitch: 2600;                   /* Hz: the centre of the detent tick's noise band */
+  --mode-dial-click-ring: 7;                       /* that band's Q: high rings like metal, low is a dry plastic snap */
+  --mode-dial-click-decay: 26;                     /* ms for the tick to die away */
+  --mode-dial-key-thump: 120;                      /* Hz: the body of the key's press */
   /* -------------------------------------------------------------------- */
 
   display: block;
@@ -522,7 +546,7 @@
   font-stretch: var(--mode-dial-label-stretch);
   font-weight: calc(var(--mode-dial-label-weight) + (var(--mode-dial-label-weight-on) - var(--mode-dial-label-weight)) * var(--mode-dial-on));
   letter-spacing: var(--mode-dial-curl-track);
-  text-transform: uppercase;
+  text-transform: var(--mode-dial-label-case);
   /* The word under the pointer lifts to the hover paint, as a name does. */
   --mode-dial-near: calc(1 - min(1, max(var(--mode-dial-i) - var(--mode-dial-show), var(--mode-dial-show) - var(--mode-dial-i))));
   fill: color-mix(in srgb, var(--mode-dial-paint-on) calc(var(--mode-dial-on) * 100%),
@@ -622,7 +646,7 @@
   font-weight: var(--mode-dial-label-weight);
   font-stretch: var(--mode-dial-label-stretch);
   line-height: 1;
-  text-transform: uppercase;
+  text-transform: var(--mode-dial-label-case);
   letter-spacing: var(--mode-dial-label-track);
   /* the tracking trails the last letter; this gives it back so the word
      centres on its slot */
@@ -694,7 +718,7 @@
   font-size: var(--mode-dial-tip-size);
   font-weight: 400;
   font-stretch: normal;
-  letter-spacing: .08em;
+  letter-spacing: var(--mode-dial-small-track);
   text-shadow: none;
   box-shadow:
     0 0 0 1px color-mix(in srgb, var(--mode-dial-ink) 50%, transparent),
@@ -912,7 +936,7 @@
   font-weight: var(--mode-dial-label-weight);
   font-stretch: var(--mode-dial-label-stretch);
   line-height: 1;
-  text-transform: uppercase;
+  text-transform: var(--mode-dial-label-case);
   letter-spacing: var(--mode-dial-label-track);
   box-shadow:
     0 0 0 .4cqi var(--mode-dial-seam),
@@ -922,7 +946,8 @@
     inset calc(-.6cqi * var(--mode-dial-sx)) calc(-.6cqi * var(--mode-dial-sy)) 1cqi color-mix(in srgb, var(--mode-dial-shade) 40%, transparent);
   transition:
     box-shadow var(--mode-dial-release) var(--mode-dial-release-ease),
-    translate var(--mode-dial-release) var(--mode-dial-release-ease);
+    translate var(--mode-dial-release) var(--mode-dial-release-ease),
+    scale var(--mode-dial-release) var(--mode-dial-release-ease);
 }
 
 .mode-dial__commit-label {
@@ -940,9 +965,14 @@
   }
 }
 
+/* The key travels: down on the press — a pointer's :active, or Space or
+   Enter held, which script marks with data-mode-dial-press — and for a beat
+   after a commit, then springs back on the release curve, which overshoots. */
 .mode-dial__commit:active,
+.mode-dial[data-mode-dial-press] .mode-dial__commit,
 .mode-dial[data-mode-dial-set] .mode-dial__commit {
-  translate: calc(.3cqi * var(--mode-dial-sx)) calc(.3cqi * var(--mode-dial-sy));
+  translate: calc(var(--mode-dial-key-travel) * var(--mode-dial-sx)) calc(var(--mode-dial-key-travel) * var(--mode-dial-sy));
+  scale: var(--mode-dial-key-sink);
   background: radial-gradient(circle at calc(50% + 18% * var(--mode-dial-sx)) calc(50% + 18% * var(--mode-dial-sy)),
     var(--mode-dial-cap-lit), var(--mode-dial-cap) 60%, var(--mode-dial-cap-low));
   box-shadow:
@@ -1000,8 +1030,8 @@
   margin: 0;
   font-size: var(--mode-dial-tip-size);
   line-height: 1.2;
-  letter-spacing: .08em;
-  text-transform: uppercase;
+  letter-spacing: var(--mode-dial-small-track);
+  text-transform: var(--mode-dial-label-case);
 }
 
 .mode-dial__caption {
@@ -1082,8 +1112,8 @@
   font-weight: var(--mode-dial-label-weight-on);
   font-stretch: var(--mode-dial-label-stretch);
   line-height: 1.05;
-  letter-spacing: .04em;
-  text-transform: uppercase;
+  letter-spacing: var(--mode-dial-screen-track);
+  text-transform: var(--mode-dial-label-case);
   text-decoration-thickness: 1px;
   text-underline-offset: .14em;
 }
@@ -1131,6 +1161,162 @@
   transition: translate var(--mode-dial-roll-time) var(--mode-dial-detent);
 }
 
+/* --- the plain finish ----------------------------------------------------------
+   The same dial with the material taken off: one modifier that re-declares
+   the palette and the type, and switches the surface recipes off. What goes
+   is the cloth, the 120 teeth and their rim light, the chamfer and the
+   streak, every cast shadow and bevel, the engraving lip and the glass.
+   What stays is everything that says something: the index, the turning,
+   the chosen weight, the hollow index and the key's ring while a choice is
+   pending, the pip, the focus rings and the tooltips. The rim still shows it
+   turns, with one tick per detent rather than a tooth per three degrees.
+   Geometry, state and script are untouched, so it composes with every other
+   modifier and part.
+
+   Its own light palette, because the component owns its colours. The signal
+   is darker than the polished one, which is about 2:1 on white: #cf5a22 is
+   4.09:1 on the face and the deck. The hairline is the plate's edge on a
+   light ground, and the lit plate's on a dark one. */
+.mode-dial--plain {
+  --mode-dial-deck: #fff;
+  --mode-dial-face: #fff;
+  --mode-dial-rim: #f4f3f0;                        /* the turning ring */
+  --mode-dial-rim-mark: #77746d;                   /* one tick per detent on it */
+  --mode-dial-rim-mark-w: .5deg;
+  --mode-dial-rim-mark-soft: .3deg;                /* each side of a tick, so a thin wedge does not alias */
+  --mode-dial-rim-mark-len: 2.6cqi;                /* in from the rim's outer edge; the rim is 5cqi */
+  --mode-dial-line: #cfccc5;                       /* every hairline */
+  --mode-dial-hairline: 1px;                       /* their width: a thumbnail drawn at 0.6 restates it, or a 1px line falls under a device pixel and is lost */
+  --mode-dial-paint: #5c5a55;
+  --mode-dial-paint-hover: #2b2a27;
+  --mode-dial-paint-on: #1b1a18;
+  --mode-dial-signal: #cf5a22;
+  --mode-dial-cap: #fff;                           /* the key at rest */
+  --mode-dial-cap-lit: #f5f4f1;                    /* under a pointer */
+  --mode-dial-cap-low: #ecebe6;                    /* pressed */
+  --mode-dial-glass: #f7f6f3;                      /* the display and the tooltip */
+  --mode-dial-ink: #1d1c1a;
+  --mode-dial-deck-radius: min(1rem, 6cqi);
+  --mode-dial-tip-radius: 4px;
+  --mode-dial-font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mode-dial-mono: var(--mode-dial-font);
+  --mode-dial-label-stretch: 100%;
+  --mode-dial-label-weight: 400;
+  --mode-dial-label-weight-on: 600;
+  --mode-dial-label-track: 0em;
+  --mode-dial-label-case: none;
+  --mode-dial-curl-track: .02em;
+  --mode-dial-small-track: 0em;
+  --mode-dial-screen-track: 0em;
+  --mode-dial-tip-size: 12px;
+  /* A lighter, drier tick: plastic rather than the polished dial's metal. */
+  --mode-dial-click-pitch: 4200;
+  --mode-dial-click-ring: 1.4;
+  --mode-dial-click-decay: 9;
+  --mode-dial-key-thump: 210;
+}
+
+.mode-dial--plain .mode-dial__deck,
+.mode-dial--plain .mode-dial__display {
+  background-image: none;
+  box-shadow: inset 0 0 0 var(--mode-dial-hairline) var(--mode-dial-line);
+}
+
+.mode-dial--plain .mode-dial__dial::before,
+.mode-dial--plain .mode-dial__plate::before,
+.mode-dial--plain .mode-dial__light {
+  display: none;
+}
+
+/* The rim's fill and its outer edge are on the disc that does not turn. A
+   turned box is snapped to the pixel grid before it is turned, which moves
+   its circle by up to a pixel as the dial goes round: hidden in the
+   polished dial's dark seam, plain as day against a hairline. So only the
+   ticks turn. */
+.mode-dial--plain .mode-dial__dial::after {
+  background: var(--mode-dial-rim);
+  box-shadow: 0 0 0 var(--mode-dial-hairline) var(--mode-dial-line);
+}
+
+.mode-dial--plain .mode-dial__index {
+  box-shadow: none;
+}
+
+/* A tick at each detent's angle, so the one under the index is the chosen
+   one at rest, masked to the rim's outer band. */
+.mode-dial--plain .mode-dial__knurl {
+  background: repeating-conic-gradient(
+    from calc(var(--mode-dial-rim-mark-w) / -2 - var(--mode-dial-rim-mark-soft)),
+    transparent 0deg,
+    var(--mode-dial-rim-mark) var(--mode-dial-rim-mark-soft),
+    var(--mode-dial-rim-mark) calc(var(--mode-dial-rim-mark-soft) + var(--mode-dial-rim-mark-w)),
+    transparent calc(var(--mode-dial-rim-mark-soft) * 2 + var(--mode-dial-rim-mark-w)),
+    transparent var(--mode-dial-step));
+  -webkit-mask: radial-gradient(closest-side, transparent calc(100% - var(--mode-dial-rim-mark-len)), #000 calc(100% - var(--mode-dial-rim-mark-len)));
+  mask: radial-gradient(closest-side, transparent calc(100% - var(--mode-dial-rim-mark-len)), #000 calc(100% - var(--mode-dial-rim-mark-len)));
+}
+
+.mode-dial--plain .mode-dial__plate {
+  box-shadow: 0 0 0 var(--mode-dial-hairline) var(--mode-dial-line);
+}
+
+.mode-dial--plain .mode-dial__name {
+  text-shadow: none;
+}
+
+.mode-dial--plain.mode-dial--icons:not(.mode-dial--curled) .mode-dial__icon {
+  filter: none;
+}
+
+.mode-dial--plain.mode-dial--icons:not(.mode-dial--curled) .mode-dial__name {
+  box-shadow: 0 0 0 var(--mode-dial-hairline) var(--mode-dial-line);
+}
+
+.mode-dial--plain:has(.mode-dial__commit) .mode-dial__option:has(> .mode-dial__input:default)::after {
+  box-shadow: none;
+}
+
+.mode-dial--plain .mode-dial__commit {
+  background: var(--mode-dial-cap);
+  box-shadow: 0 0 0 var(--mode-dial-hairline) var(--mode-dial-line), var(--mode-dial-key-ring);
+}
+
+@media (hover: hover) {
+  .mode-dial--plain .mode-dial__commit:hover {
+    background: var(--mode-dial-cap-lit);
+  }
+}
+
+.mode-dial--plain .mode-dial__commit:active,
+.mode-dial--plain[data-mode-dial-press] .mode-dial__commit,
+.mode-dial--plain[data-mode-dial-set] .mode-dial__commit {
+  background: var(--mode-dial-cap-low);
+  box-shadow: 0 0 0 var(--mode-dial-hairline) var(--mode-dial-line), var(--mode-dial-key-ring);
+}
+
+/* --- the kick ------------------------------------------------------------------
+   Each detent passed dips the index and lets it back. Script restarts it by
+   swapping between two keyframes that are the same, since an animation only
+   starts over when its name changes. It starts and ends at rest, so a page
+   that pauses animations leaves the index where it belongs. */
+@keyframes mode-dial-kick-a {
+  0%, 100% { translate: -50% 0; }
+  30% { translate: -50% var(--mode-dial-kick); }
+}
+
+@keyframes mode-dial-kick-b {
+  0%, 100% { translate: -50% 0; }
+  30% { translate: -50% var(--mode-dial-kick); }
+}
+
+.mode-dial[data-mode-dial-kick="a"] .mode-dial__index {
+  animation: mode-dial-kick-a var(--mode-dial-kick-time) ease-out;
+}
+
+.mode-dial[data-mode-dial-kick="b"] .mode-dial__index {
+  animation: mode-dial-kick-b var(--mode-dial-kick-time) ease-out;
+}
+
 /* --- states ------------------------------------------------------------------ */
 
 /* While a drag holds the dial, nothing eases: the angle is the pointer's. */
@@ -1158,6 +1344,10 @@
 
   .mode-dial .mode-dial__readout {
     transition: opacity 120ms;
+  }
+
+  .mode-dial[data-mode-dial-kick] .mode-dial__index {
+    animation: none;
   }
 }
 

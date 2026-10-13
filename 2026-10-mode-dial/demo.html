@@ -18,7 +18,8 @@
        its tooltips and display in Fragment Mono, so the pair is loaded with
        Mona Sans's width axis as well as its weights: without wdth the browser
        has no condensed cut to pick and synthesises nothing, and the engraved
-       names come out at full width. -->
+       names come out at full width. The plain finish asks for the system's
+       own face, which needs nothing loaded. -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fragment+Mono&family=Mona+Sans:wdth,wght@75..125,400..700&display=swap">
@@ -134,6 +135,19 @@
       display: flex;
       align-items: center;
       gap: 0.4rem;
+    }
+
+    /* With the sound switch the cluster is three controls wide, and on a
+       phone it and the back link no longer fit one line: at 390 they
+       overlapped by 16px, at 320 by 86. So below 30rem the cluster takes a
+       line of its own, still at the right edge and still the first thing
+       on the page, and the back link starts under it. */
+    @media (max-width: 30rem) {
+      .demo__controls {
+        position: static;
+        justify-content: flex-end;
+        margin: calc(clamp(1.25rem, 3vw, 2.25rem) - clamp(2.5rem, 6vw, 5rem)) 0 1rem;
+      }
     }
 
     .demo__lang {
@@ -253,6 +267,73 @@
       .demo__theme-rays { transition: none; }
     }
 
+    /* --- sound ------------------------------------------------------------
+       The dial's click is opt-in, and this is where this page opts in: a
+       switch that hands --mode-dial-click inline to every dial's root and
+       takes it out again. Off on every load and never stored, because a page
+       that makes a noise should be asked each time. It says its word rather
+       than being an icon alone, since nothing else on the page says there is
+       a sound to switch on. Hidden until the script finds Web Audio: without
+       either there is nothing for it to do. [hidden] is restated because the
+       rule below gives the button a display. */
+    .demo__sound {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45em;
+      height: 1.85rem;
+      padding: 0 0.75rem 0 0.6rem;
+      border: 0;
+      border-radius: 999px;
+      background: var(--demo-chip);
+      color: var(--demo-dim);
+      font-family: "Fragment Mono", ui-monospace, monospace;
+      font-size: 0.625rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: color 240ms ease;
+    }
+
+    .demo__sound[hidden] { display: none; }
+
+    .demo__sound:hover { color: var(--demo-fg); }
+
+    .demo__sound:focus-visible {
+      outline: 2px solid var(--demo-fg);
+      outline-offset: 2px;
+    }
+
+    .demo__sound[aria-pressed="true"] { color: var(--demo-fg); }
+
+    .demo__sound[aria-pressed="true"] .demo__sound-word {
+      text-decoration: underline;
+      text-decoration-color: var(--demo-accent);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 0.4em;
+    }
+
+    .demo__sound-icon {
+      flex: none;
+      width: 0.95rem;
+      height: 0.95rem;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* Off is a speaker and a cross; on, the cross goes and the waves come. */
+    .demo__sound-waves { opacity: 0; transition: opacity 200ms ease; }
+    .demo__sound-mute { transition: opacity 200ms ease; }
+    .demo__sound[aria-pressed="true"] .demo__sound-waves { opacity: 1; }
+    .demo__sound[aria-pressed="true"] .demo__sound-mute { opacity: 0; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .demo__sound-waves,
+      .demo__sound-mute { transition: none; }
+    }
+
 
     .demo__back {
       display: inline-flex;
@@ -281,9 +362,9 @@
     .demo__back svg { width: 0.85rem; height: 0.85rem; }
 
     /* --- groups -----------------------------------------------------------
-       Four, in the order the study argues: how a choice is labelled, what a
-       display adds, what a key in the middle adds, and the same dial at two
-       sizes. Each opens on a title and one sentence, so the page can be read
+       Five, in the order the study argues: how a choice is labelled, what a
+       display adds, what a key in the middle adds, the same dial at two
+       sizes, and the same dial with its material taken off. Each opens on a title and one sentence, so the page can be read
        down its left edge without opening a single dial. */
     .demo__group {
       padding-top: clamp(2.5rem, 5vw, 3.5rem);
@@ -334,6 +415,10 @@
        standing on one: stretched, the small one would sit at the foot of
        the large one with a tall gap under its caption. */
     .demo__grid--top { align-items: flex-start; }
+
+    /* A group set in two rows, each its own grid, keeps the grid's row gap
+       between them. */
+    .demo__grid + .demo__grid { margin-top: clamp(2.5rem, 5vw, 3.5rem); }
 
     /* Capped at the root's own width — 21rem at the default size — so a state
        never grows past the dial it holds, and based a little under it, so
@@ -428,6 +513,8 @@
         width: 2.25rem;
         height: 2.25rem;
       }
+
+      .demo__sound { height: 2.25rem; }
 
       .demo__back { min-height: 2.75rem; }
     }
@@ -797,6 +884,18 @@
     <!-- Delete alongside the language script below if this study is
          single-language. -->
     <div class="demo__controls">
+      <!-- This study's own: the dial's click is opt-in, and this switch is
+           how the page opts in. Its word is its name and aria-pressed its
+           state. Shown by the script once it has found Web Audio. -->
+      <button class="demo__sound" type="button" data-sound-toggle aria-pressed="false" hidden>
+        <svg class="demo__sound-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" />
+          <path class="demo__sound-waves" d="M15.5 9.2a4 4 0 0 1 0 5.6M18.2 6.6a7.6 7.6 0 0 1 0 10.8" />
+          <path class="demo__sound-mute" d="M16 9.5l5 5M21 9.5l-5 5" />
+        </svg>
+        <span class="demo__sound-word" data-i18n="sound">Sound</span>
+      </button>
+
       <div class="demo__lang" role="group" aria-label="Language">
         <button class="demo__lang-btn" type="button" data-lang="en" aria-pressed="true">EN</button>
         <span class="demo__lang-sep" aria-hidden="true"></span>
@@ -859,9 +958,9 @@
          component's root: it rises inside its state. See the arrival block
          in the style above. -->
     <!-- ------------------------------------------------------------------ -->
-    <!-- Eight instances, a to h in page order. Each has its own letter in
-         whatever ids it carries — the arc of a curled dial (c, d), the
-         readout lines of a display (d, e, f) — and a radio name for its
+    <!-- Twelve instances, a to l in page order. Each has its own letter in
+         whatever ids it carries — the arc of a curled dial (c, d, j), the
+         readout lines of a display (d, e, f, k, l) — and a radio name for its
          context: view, range or kit. Each root is its own form, so
          same-named groups in two instances never join. Sizes are handed in
          inline on the root; no rule on this page names a component class. -->
@@ -1387,12 +1486,279 @@
       </div>
     </section>
 
+    <!-- ------------------------------------------------------------------ -->
+    <!-- The plain finish: the same item sets with the material taken off, so
+         the page can be read against the groups above and the difference
+         is the material alone. -->
+    <section class="demo__group">
+      <div class="demo__group-head" data-reveal>
+        <h2 class="demo__group-title" data-i18n="group.plain">With the material taken off</h2>
+        <p class="demo__group-note" data-i18n="group.plainNote">The same dial and the same mechanics, flat: white fills, hairlines and plain type, the version you would drop into an ordinary website. Switch Sound on above and the two finishes part by ear as well: a ringing metal tick against a dry plastic one.</p>
+      </div>
+
+      <div class="demo__grid">
+
+        <section class="demo__state" data-reveal>
+          <p class="demo__caption" data-i18n="state.plainNames"><strong>Plain names</strong> &middot; the archive&rsquo;s views in a system face on a white plate. Where the 120 teeth were, one tick per detent.</p>
+          <p class="demo__hint">.mode-dial--plain</p>
+          <form class="mode-dial mode-dial--plain">
+            <fieldset class="mode-dial__set">
+              <legend class="mode-dial__legend" data-i18n="sample.view.legend">View</legend>
+              <div class="mode-dial__deck">
+                <div class="mode-dial__dial">
+                  <span class="mode-dial__index" aria-hidden="true"></span>
+                  <div class="mode-dial__face">
+                    <span class="mode-dial__knurl" aria-hidden="true"></span>
+                    <span class="mode-dial__plate" aria-hidden="true"></span>
+                    <span class="mode-dial__light" aria-hidden="true"></span>
+                    <div class="mode-dial__options">
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="view" value="grid">
+                        <span class="mode-dial__name" data-i18n="sample.view.grid">Grid</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="view" value="list" checked>
+                        <span class="mode-dial__name" data-i18n="sample.view.list">List</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="view" value="board">
+                        <span class="mode-dial__name" data-i18n="sample.view.board">Board</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="view" value="timeline">
+                        <span class="mode-dial__name" data-i18n="sample.view.timeline">Timeline</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="view" value="map">
+                        <span class="mode-dial__name" data-i18n="sample.view.map">Map</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="view" value="calendar">
+                        <span class="mode-dial__name" data-i18n="sample.view.calendar">Calendar</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </fieldset>
+          </form>
+        </section>
+
+        <section class="demo__state" data-reveal>
+          <p class="demo__caption" data-i18n="state.plainCurled"><strong>Plain curled</strong> &middot; the time range still turns with the dial, in the same sans and no longer cut into it.</p>
+          <p class="demo__hint">.mode-dial--plain + --curled</p>
+          <form class="mode-dial mode-dial--plain mode-dial--curled">
+            <fieldset class="mode-dial__set">
+              <legend class="mode-dial__legend" data-i18n="sample.range.legend">Range</legend>
+              <div class="mode-dial__deck">
+                <div class="mode-dial__dial">
+                  <span class="mode-dial__index" aria-hidden="true"></span>
+                  <div class="mode-dial__face">
+                    <span class="mode-dial__knurl" aria-hidden="true"></span>
+                    <span class="mode-dial__plate" aria-hidden="true"></span>
+                    <span class="mode-dial__light" aria-hidden="true"></span>
+                    <svg class="mode-dial__engraving" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+                      <path class="mode-dial__arc" id="mode-dial-j-arc" d="M50 77a27 27 0 1 1 0-54a27 27 0 1 1 0 54"/>
+                      <g class="mode-dial__words">
+                        <text class="mode-dial__engraved" text-anchor="middle"><textPath href="#mode-dial-j-arc" startOffset="50%" data-i18n="sample.range.day">Day</textPath></text>
+                        <text class="mode-dial__engraved" text-anchor="middle"><textPath href="#mode-dial-j-arc" startOffset="50%" data-i18n="sample.range.week">Week</textPath></text>
+                        <text class="mode-dial__engraved" text-anchor="middle"><textPath href="#mode-dial-j-arc" startOffset="50%" data-i18n="sample.range.month">Month</textPath></text>
+                        <text class="mode-dial__engraved" text-anchor="middle"><textPath href="#mode-dial-j-arc" startOffset="50%" data-i18n="sample.range.quarter">Quarter</textPath></text>
+                        <text class="mode-dial__engraved" text-anchor="middle"><textPath href="#mode-dial-j-arc" startOffset="50%" data-i18n="sample.range.year">Year</textPath></text>
+                        <text class="mode-dial__engraved" text-anchor="middle"><textPath href="#mode-dial-j-arc" startOffset="50%" data-i18n="sample.range.all">All</textPath></text>
+                      </g>
+                    </svg>
+                    <div class="mode-dial__options">
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="range" value="day">
+                        <span class="mode-dial__name" data-i18n="sample.range.day">Day</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="range" value="week">
+                        <span class="mode-dial__name" data-i18n="sample.range.week">Week</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="range" value="month">
+                        <span class="mode-dial__name" data-i18n="sample.range.month">Month</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="range" value="quarter" checked>
+                        <span class="mode-dial__name" data-i18n="sample.range.quarter">Quarter</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="range" value="year">
+                        <span class="mode-dial__name" data-i18n="sample.range.year">Year</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="range" value="all">
+                        <span class="mode-dial__name" data-i18n="sample.range.all">All</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </fieldset>
+          </form>
+        </section>
+
+      </div>
+
+      <!-- Two rows on purpose: the two plain dials of the first group's size
+           side by side, then the two with a display, which a flex row would
+           otherwise pull up beside them and stack. -->
+      <div class="demo__grid">
+
+        <section class="demo__state demo__state--screen" data-reveal>
+          <p class="demo__caption" data-i18n="state.plainViews"><strong>Plain icons</strong> &middot; with the display: no glass and no dot matrix, the same readout in the text face.</p>
+          <p class="demo__hint">.mode-dial--plain + --icons + __display</p>
+          <form class="mode-dial mode-dial--plain mode-dial--icons">
+            <fieldset class="mode-dial__set">
+              <legend class="mode-dial__legend" data-i18n="sample.view.legend">View</legend>
+              <div class="mode-dial__deck">
+                <div class="mode-dial__dial">
+                  <span class="mode-dial__index" aria-hidden="true"></span>
+                  <div class="mode-dial__face">
+                    <span class="mode-dial__knurl" aria-hidden="true"></span>
+                    <span class="mode-dial__plate" aria-hidden="true"></span>
+                    <span class="mode-dial__light" aria-hidden="true"></span>
+                    <div class="mode-dial__options">
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="view" value="grid" aria-describedby="mode-dial-k-grid">
+                        <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 4.5h6v6h-6zM13.5 4.5h6v6h-6zM4.5 13.5h6v6h-6zM13.5 13.5h6v6h-6z"/></svg>
+                        <span class="mode-dial__name" data-i18n="sample.view.grid">Grid</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="view" value="list" aria-describedby="mode-dial-k-list">
+                        <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 6.5h15M4.5 12h15M4.5 17.5h15"/></svg>
+                        <span class="mode-dial__name" data-i18n="sample.view.list">List</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="view" value="board" aria-describedby="mode-dial-k-board">
+                        <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 4.5h4v15h-4zM10 4.5h4v10h-4zM15.5 4.5h4v12.5h-4z"/></svg>
+                        <span class="mode-dial__name" data-i18n="sample.view.board">Board</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="view" value="timeline" aria-describedby="mode-dial-k-timeline">
+                        <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3.5 12h17M7 8.5v7M12 8.5v7M17 8.5v7"/></svg>
+                        <span class="mode-dial__name" data-i18n="sample.view.timeline">Timeline</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="view" value="map" checked aria-describedby="mode-dial-k-map">
+                        <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 20.5s-6-5.2-6-10a6 6 0 0 1 12 0c0 4.8-6 10-6 10zM12 12a1.75 1.75 0 1 0 0-3.5 1.75 1.75 0 0 0 0 3.5z"/></svg>
+                        <span class="mode-dial__name" data-i18n="sample.view.map">Map</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="view" value="calendar" aria-describedby="mode-dial-k-calendar">
+                        <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.5 6h15v13.5h-15zM4.5 10h15M8.5 3.5v4M15.5 3.5v4"/></svg>
+                        <span class="mode-dial__name" data-i18n="sample.view.calendar">Calendar</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+                <div class="mode-dial__display" aria-hidden="true">
+                  <p class="mode-dial__caption" data-i18n="sample.view.legend">View</p>
+                  <p class="mode-dial__tags">
+                    <span class="mode-dial__tag mode-dial__tag--current" data-i18n="sample.tag.current">Current</span>
+                    <span class="mode-dial__tag mode-dial__tag--preview" data-i18n="sample.tag.preview">Preview</span>
+                    <span class="mode-dial__tag mode-dial__tag--pending" data-i18n="sample.tag.pending">Pending</span>
+                  </p>
+                  <ol class="mode-dial__readouts">
+                    <li class="mode-dial__readout"><span class="mode-dial__readout-name" data-i18n="sample.view.grid">Grid</span> <span class="mode-dial__readout-line" id="mode-dial-k-grid" data-i18n="sample.view.gridLine">Everything at a glance</span></li>
+                    <li class="mode-dial__readout"><span class="mode-dial__readout-name" data-i18n="sample.view.list">List</span> <span class="mode-dial__readout-line" id="mode-dial-k-list" data-i18n="sample.view.listLine">One row per project</span></li>
+                    <li class="mode-dial__readout"><span class="mode-dial__readout-name" data-i18n="sample.view.board">Board</span> <span class="mode-dial__readout-line" id="mode-dial-k-board" data-i18n="sample.view.boardLine">Sorted by stage</span></li>
+                    <li class="mode-dial__readout"><span class="mode-dial__readout-name" data-i18n="sample.view.timeline">Timeline</span> <span class="mode-dial__readout-line" id="mode-dial-k-timeline" data-i18n="sample.view.timelineLine">In the order they happened</span></li>
+                    <li class="mode-dial__readout"><span class="mode-dial__readout-name" data-i18n="sample.view.map">Map</span> <span class="mode-dial__readout-line" id="mode-dial-k-map" data-i18n="sample.view.mapLine">Where they were made</span></li>
+                    <li class="mode-dial__readout"><span class="mode-dial__readout-name" data-i18n="sample.view.calendar">Calendar</span> <span class="mode-dial__readout-line" id="mode-dial-k-calendar" data-i18n="sample.view.calendarLine">By the day they're due</span></li>
+                  </ol>
+                  <span class="mode-dial__ticks"></span>
+                </div>
+              </div>
+            </fieldset>
+          </form>
+        </section>
+
+        <section class="demo__state demo__state--screen" data-reveal>
+          <p class="demo__caption" data-i18n="state.plainKit"><strong>Plain kit</strong> &middot; the key still travels, and still takes a ring while a choice is pending. Only the material went.</p>
+          <p class="demo__hint">.mode-dial--plain + --icons + __display + __commit</p>
+          <form class="mode-dial mode-dial--plain mode-dial--icons">
+            <fieldset class="mode-dial__set">
+              <legend class="mode-dial__legend" data-i18n="sample.kit.legend">Kit</legend>
+              <div class="mode-dial__deck">
+                <div class="mode-dial__dial">
+                  <span class="mode-dial__index" aria-hidden="true"></span>
+                  <div class="mode-dial__face">
+                    <span class="mode-dial__knurl" aria-hidden="true"></span>
+                    <span class="mode-dial__plate" aria-hidden="true"></span>
+                    <span class="mode-dial__light" aria-hidden="true"></span>
+                    <div class="mode-dial__options">
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="kit" value="lantern" aria-describedby="mode-dial-l-lantern">
+                        <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9.5 3.5h5M8 6.5h8v13H8zM12 10c-1.6 1.9-1.6 3.6 0 4.8 1.6-1.2 1.6-2.9 0-4.8z"/></svg>
+                        <span class="mode-dial__name" data-i18n="sample.kit.lantern">Lantern</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="kit" value="rope" aria-describedby="mode-dial-l-rope">
+                        <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4.5a7.5 7.5 0 1 0 0 15 7.5 7.5 0 0 0 0-15zM12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM12 11.25a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5z"/></svg>
+                        <span class="mode-dial__name" data-i18n="sample.kit.rope">Rope</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="kit" value="compass" checked aria-describedby="mode-dial-l-compass">
+                        <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4a8 8 0 1 0 0 16 8 8 0 0 0 0-16zM15 9l-1.8 4.2L9 15l1.8-4.2z"/></svg>
+                        <span class="mode-dial__name" data-i18n="sample.kit.compass">Compass</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="kit" value="flare" aria-describedby="mode-dial-l-flare">
+                        <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3.5v4M12 16.5v4M3.5 12h4M16.5 12h4M6 6l2.8 2.8M15.2 15.2L18 18M18 6l-2.8 2.8M8.8 15.2L6 18"/></svg>
+                        <span class="mode-dial__name" data-i18n="sample.kit.flare">Flare</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="kit" value="net" aria-describedby="mode-dial-l-net">
+                        <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4a8 8 0 1 0 0 16 8 8 0 0 0 0-16zM8 5.1l10.9 10.9M5.1 8L16 18.9M16 5.1L5.1 16M18.9 8L8 18.9"/></svg>
+                        <span class="mode-dial__name" data-i18n="sample.kit.net">Net</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="kit" value="notebook" aria-describedby="mode-dial-l-notebook">
+                        <svg class="mode-dial__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7.5 3.5h11v17h-11zM4.5 7h3M4.5 12h3M4.5 17h3M11 8h4.5M11 11.5h4.5"/></svg>
+                        <span class="mode-dial__name" data-i18n="sample.kit.notebook">Notebook</span>
+                      </label>
+                    </div>
+                  </div>
+                  <button class="mode-dial__commit" type="submit"><span class="mode-dial__commit-label" data-i18n="sample.kit.equip">Equip</span></button>
+                </div>
+                <div class="mode-dial__display" aria-hidden="true">
+                  <p class="mode-dial__caption" data-i18n="sample.kit.legend">Kit</p>
+                  <p class="mode-dial__tags">
+                    <span class="mode-dial__tag mode-dial__tag--current" data-i18n="sample.tag.current">Current</span>
+                    <span class="mode-dial__tag mode-dial__tag--preview" data-i18n="sample.tag.preview">Preview</span>
+                    <span class="mode-dial__tag mode-dial__tag--pending" data-i18n="sample.tag.pending">Pending</span>
+                  </p>
+                  <ol class="mode-dial__readouts">
+                    <li class="mode-dial__readout"><span class="mode-dial__readout-name" data-i18n="sample.kit.lantern">Lantern</span> <span class="mode-dial__readout-line" id="mode-dial-l-lantern" data-i18n="sample.kit.lanternLine">Lights 6 m for 30 s. Burns 1 oil.</span></li>
+                    <li class="mode-dial__readout"><span class="mode-dial__readout-name" data-i18n="sample.kit.rope">Rope</span> <span class="mode-dial__readout-line" id="mode-dial-l-rope" data-i18n="sample.kit.ropeLine">Up or down one ledge.</span></li>
+                    <li class="mode-dial__readout"><span class="mode-dial__readout-name" data-i18n="sample.kit.compass">Compass</span> <span class="mode-dial__readout-line" id="mode-dial-l-compass" data-i18n="sample.kit.compassLine">Points to the nearest unvisited site.</span></li>
+                    <li class="mode-dial__readout"><span class="mode-dial__readout-name" data-i18n="sample.kit.flare">Flare</span> <span class="mode-dial__readout-line" id="mode-dial-l-flare" data-i18n="sample.kit.flareLine">Marks your spot for the others. One use.</span></li>
+                    <li class="mode-dial__readout"><span class="mode-dial__readout-name" data-i18n="sample.kit.net">Net</span> <span class="mode-dial__readout-line" id="mode-dial-l-net" data-i18n="sample.kit.netLine">Catches anything small. Slow to pack.</span></li>
+                    <li class="mode-dial__readout"><span class="mode-dial__readout-name" data-i18n="sample.kit.notebook">Notebook</span> <span class="mode-dial__readout-line" id="mode-dial-l-notebook" data-i18n="sample.kit.notebookLine">Records the site. Ends your turn.</span></li>
+                  </ol>
+                  <span class="mode-dial__ticks"></span>
+                </div>
+              </div>
+            </fieldset>
+            <p class="mode-dial__status" role="status" aria-atomic="true"><span class="mode-dial__status-lead" data-i18n="sample.kit.status">Equipped:</span> <span class="mode-dial__status-value"></span></p>
+          </form>
+        </section>
+
+      </div>
+    </section>
+
     <script src="component.js"></script>
 
 
-    <!-- notes.md, rendered. Type, source, the origin paragraphs and one <li>
-         per decision bullet — the same shape the file has, so the two can be
-         read side by side. Update both together. -->
+    <!-- notes.md, rendered. Type, the opening paragraph and one <li> per
+         bullet of its first group, word for word, then the inspiration; the
+         Measured section below that group stays in the file, which the last
+         line links. The same shape the file has, so the two can be read side
+         by side. Update both together. -->
     <!-- notes.md, rendered. Closed by default: the states are what the page is
        for, and the decisions are what you open when you want to know why. A
        <details> rather than a scripted panel — disclosure is the one thing the
@@ -1420,107 +1786,81 @@
           knurled charcoal dial set into a cloth-dotted plate, and turning it
           brings one at a time under a fixed index mark. Underneath it is a
           radio group in a form, so arrow keys, a screen reader and a server
-          all have it with no script; turning it by dragging is what
-          component.js adds. Three item sets show where it belongs: an
-          archive's views as icons that say their name when reached for, a
-          dashboard's time range engraved round the arc, and a game's kit with
-          a display and a centre key that commits.
+          all have it with no script; turning it by dragging, and the feel of
+          each detent, are what component.js adds. Three item sets show where
+          it belongs: an archive's views as icons that say their name when
+          reached for, a dashboard's time range engraved round the arc, and a
+          game's kit with a display and a centre key that commits. A second
+          finish, <code>.mode-dial--plain</code>, is the same dial with the
+          material taken off.
         </p>
 
         <ol class="demo__notes-list">
           <li>
             <h3 class="demo__notes-head">One number turns everything.</h3>
-            <p>Eight <code>:has(… :nth-child(k) &gt; :checked)</code> rules write
-              <code>--mode-dial-sel</code> on the root, and six
-              <code>:nth-child(k):last-child</code> rules write
-              <code>--mode-dial-n</code>. Three parts turn to
-              <code>-(sel + laps·n + drag) · 360deg/n</code> on one transition — the
-              knurl, the engraving and the options layer — and each option sits on
-              that layer at <code>sin()</code>/<code>cos()</code> of
-              <code>i · 360deg/n</code> × 28cqi and turns back by the same angle on
-              the same transition, so names and icons stay upright in lockstep without
-              <code>@property</code>: measured mid-turn, layer −31.47° and option
-              31.47°. The face that holds them does not turn and is not a stacking
-              context, which is what lets the options layer sit above the centre key,
-              so a tooltip is never drawn under it. The engraved words, the display's
-              readouts and the selected word's weight are arithmetic on
-              <code>i - sel</code>, through <code>color-mix()</code> and
-              <code>max(d, -d)</code>, rather than further ladders.</p>
+            <p><code>:has()</code> rules write <code>--mode-dial-sel</code> and
+              <code>--mode-dial-n</code> on the root, and the knurl, the engraving
+              and the options layer all turn to
+              <code>-(sel + laps·n + drag) · 360deg/n</code> on one transition,
+              each option turning back by the same angle, so names and icons stay
+              upright in lockstep without <code>@property</code>. A detent is an
+              overshoot: 420ms on a <code>linear()</code> curve that passes the
+              stop by 6% of the move and settles. CSS alone spins first-to-last the
+              long way round; component.js keeps a winding count,
+              <code>--mode-dial-laps</code>, so every turn takes the near way.</p>
           </li>
           <li>
-            <h3 class="demo__notes-head">A detent is an overshoot, and the wrap is what CSS cannot do.</h3>
-            <p>420ms on
-              <code>linear(0, .42 12%, .8 26%, 1.045 46%, 1.06 52%, .995 72%, 1.003 86%, 1)</code>
-              passes the stop by 6% of the move (3.6° on a six-way dial) and settles;
-              each extra step adds 70ms. Without script, first-to-last spins the long
-              way (0° to −300°), which reads as an end stop; component.js keeps a
-              winding count (<code>--mode-dial-laps</code>) so every turn takes the
-              near way (0° to +60°). It turns a drag into <code>Math.atan2</code>
-              steps that check each radio 0.6 of a step past its detent, one detent at
-              a time, so a sweep of 3.3 steps fires exactly three <code>change</code>
-              events and a drag is heard exactly as an arrow key is. A drag starts
-              anywhere on the dial but the key. The knurl is
-              <code>touch-action: none</code>; the rest of the dial is
-              <code>pan-y</code>, because the knurl is 12px wide on a phone and too
-              thin to aim for, so a sideways swipe across the face turns it while a
-              vertical one still scrolls the page, and the <code>pointercancel</code>
-              that comes with it leaves the dial at the last detent it reached.</p>
+            <h3 class="demo__notes-head">One light, and the plain finish shows what it adds by taking it away.</h3>
+            <p><code>--mode-dial-light: 27deg</code> sets every shadow, the
+              knurl's rim light, the plate's chamfer, the face's streak, the cloth
+              and the engraving lip, and it sits on the face, which never turns, so
+              the teeth slide through a highlight that stays put.
+              <code>.mode-dial--plain</code> keeps the mechanism and every mark
+              that says something — the index, the chosen weight, the hollow index
+              and ringed key of a pending choice, the pip, the focus rings, the
+              tooltips — and takes off the cloth, the teeth, the light and every
+              shadow: white fills, 1px hairlines, a system face in sentence case,
+              and one tick per detent on the rim so it still reads as something
+              that turns. Its signal is darker, <code>#cf5a22</code>, because the
+              polished orange is about 2:1 on white.</p>
           </li>
           <li>
-            <h3 class="demo__notes-head">One light, and it does not turn.</h3>
-            <p><code>--mode-dial-light: 27deg</code>; every shadow, the knurl's
-              conic rim light, the plate's chamfer, the face's soft two-lobed streak,
-              the cloth's bumps and the engraving lip are offset by its
-              <code>sin()</code>/<code>cos()</code>. The light layer sits on the face,
-              which never turns, so the 120 teeth slide through a highlight that stays
-              put. 120 divides by 3, 4, 5, 6 and 8, so every detent lands on a whole
-              tooth. The cloth is on the deck only, in pixels rather than cqi: a 4px
-              quincunx of 1px bumps, each a shade disc with a highlight nudged a
-              quarter-pixel toward the light, so a small dial has fewer dots, not
-              smaller ones. The deck is square without a display, a 24px margin on
-              every side at the default size, and casts a warm three-layer shadow down
-              and to the right.</p>
+            <h3 class="demo__notes-head">A detent is felt as well as seen.</h3>
+            <p>A drag goes through <code>x − k·sin(2πx)/2π</code>, with
+              <code>k = --mode-dial-notch</code> (.6): slow near a stop, quick
+              between, and continuous when the radio flips. Every detent the face
+              passes is a tick — an arrow key, each detent a drag crosses, each one
+              a click or an Escape sweeps over, timed to when the eased angle
+              reaches it — and a tick dips the index, fires
+              <code>mode-dial:tick</code>, buzzes on touch and pen, and clicks if
+              <code>--mode-dial-click</code> is above 0. The key travels down, away
+              from the light, and springs back, clicking on the way down and more
+              softly on the way up. The sound is opt-in, synthesised with Web
+              Audio, and follows only a real key, pointer or click on the dial; at
+              0 no AudioContext is ever made. The polished finish rings like metal
+              and the plain one snaps like plastic.</p>
           </li>
           <li>
             <h3 class="demo__notes-head">Browsing and choosing are two marks.</h3>
             <p>With the centre key present, the checked radio is the pending choice
-              and <code>:default</code> (the radio carrying the <code>checked</code>
-              attribute) is the committed one: the index goes hollow and the key takes
-              a ring while they differ, and a pip on the face stays with what was
-              committed. The marks are heard too: a hidden status line always names
-              what is held, and the key is described by it. Without script the key
-              submits the form as GET (<code>?kit=compass</code>), and so does Enter
-              on a radio in a dial with a key — accepted, since that is the form doing
-              what it says; with no key, Enter does nothing. With script, committing
-              rewrites <code>defaultChecked</code>, Enter on a radio commits, and
-              Escape is <code>form.reset()</code>. The camera has neither a key nor a
-              display; both come from asking what a page or a game needs from the
-              control, and a view or a filter applies as it turns.</p>
+              and <code>:default</code> is the committed one: the index goes hollow
+              and the key takes a ring while they differ, and a pip stays with what
+              was committed. A hidden status line names what is held, and the key
+              is described by it. Without script the key submits the form as GET;
+              with script it rewrites <code>defaultChecked</code>, Enter on a radio
+              commits, and Escape is <code>form.reset()</code>. A view or a filter
+              has no key and applies as it turns.</p>
           </li>
           <li>
             <h3 class="demo__notes-head">No hover to spend, and nothing muted.</h3>
             <p>Names rise as tooltips on <code>:hover</code>, on
               <code>:focus-visible</code> and, under <code>(hover: none)</code>, on
-              <code>:active</code> and on the checked item. They move toward the
-              centre, the near edge 6cqi from the option's centre and 3cqi further
-              across, so a wide word clears its own icon; under 11rem a dial with no
-              key shows the name in the middle of the face instead, where it covers no
-              other icon. The farthest corner is at 27.9cqi of a 240px dial and
-              31.1cqi of the 136px one, inside the face's 37.4. A raised name holds
-              while the pointer moves onto it, except across a centre key: the key
-              keeps its clicks wherever a name lies over it, so the name gives way as
-              the pointer reaches the key. On the kit dial that is up to half of a
-              side name, measured 0.39 to 0.53 of its area at 240 and 288px, because
-              six names have nowhere else to go inside the face. Escape lowers a name
-              when there is nothing to cancel. The paint is <code>#b0ada6</code>, 6.16:1 on the face
-              and 5.02 at the brightest point of the fixed streak; the chosen word is
-              <code>#f1efe8</code>, 11.99, and 8.2 to 9.1 under the label on the key's
-              gradient. The signal <code>#f0965f</code> — index, focus ring, pending
-              ring, pip, never text — is 6.06 on the face, 4.94 at its brightest, 5.32
-              on the deck and 4.10 on the key's lit side, against a 3:1 floor. The
-              display is one ink on one glass, <code>#1b1f17</code> on
-              <code>#b3b9a2</code> at 8.27 (6.00 in the bezel's shade), because a
-              second, dimmer ink was the first thing to fall under the floor.</p>
+              <code>:active</code> and on the checked item, moving toward the centre
+              so a wide word clears its own icon. A sideways swipe across the face
+              turns the dial and a vertical one still scrolls the page. Every text
+              pair clears 4.5:1 and every signal mark 3:1, in both finishes: the
+              display is one ink on one glass, because a second, dimmer ink was the
+              first thing to fall under the floor.</p>
           </li>
         </ol>
 
@@ -1537,7 +1877,7 @@
 
         <p class="demo__notes-foot">
           <a href="notes.md">notes.md</a>
-          <span data-i18n="notes.full">&mdash; the same record, as a file</span>
+          <span data-i18n="notes.full">&mdash; the full record, including what was tried and dropped</span>
         </p>
     </div>
   </details>
@@ -1588,7 +1928,7 @@
         'notes.title': 'Beslutninger',
         'notes.type': 'Type',
         'notes.inspiration': 'Inspiration',
-        'notes.full': '\u2014 den samme optegnelse, som fil',
+        'notes.full': '\u2014 hele optegnelsen, ogs\u00e5 det der blev pr\u00f8vet og forkastet',
         'type': 'Navigation',
         'heading': 'Drejevælger',
         'lede': 'En vælger man drejer: valgene sidder rundt om et riflet hjul i en '
@@ -1612,6 +1952,15 @@
         'group.sizeNote': 'Geometrien er en andel af hjulet, og stoffet er i pixels, så et lille hjul har færre prikker, ikke mindre.',
         'state.compact': '<strong>Kompakt</strong> &middot; 8,5rem, den størrelse den har ved siden af et søgefelt i et sidehoved.',
         'state.large': '<strong>Stor</strong> &middot; 26rem, et HUD-greb en tommelfinger kan dreje; på en telefon fylder den kolonnen.',
+        'group.plain': 'Med materialet taget af',
+        'group.plainNote': 'Det samme hjul og den samme mekanik, fladt: hvide flader, hårstreger og almindelig skrift, den udgave man ville sætte ind på en helt almindelig hjemmeside. Slå Lyd til øverst, så kan de to udførelser også høres fra hinanden: et klingende metalklik mod et tørt plastikklik.',
+        'state.plainNames': '<strong>Enkle navne</strong> &middot; arkivets visninger i en systemskrift på en hvid plade. Hvor de 120 tænder sad, én streg pr. hak.',
+        'state.plainCurled': '<strong>Enkel buet tekst</strong> &middot; perioden drejer stadig med hjulet, i den samme skrift og ikke længere skåret ind i det.',
+        'state.plainViews': '<strong>Enkle ikoner</strong> &middot; med display: intet glas og ingen prikmatrix, den samme visning i tekstskriften.',
+        'state.plainKit': '<strong>Enkelt udstyr</strong> &middot; knappen trykkes stadig ned og får stadig en ring, mens et valg afventer. Kun materialet er væk.',
+
+        // The sound switch in the top bar: its word is its name.
+        'sound': 'Lyd',
 
         // The component's sample copy. Every name, engraved word, readout and
         // display string carries a sample.* key, and a string shared by several
@@ -1736,6 +2085,34 @@
       try { stored = localStorage.getItem(STORE_KEY); } catch (err) { /* private mode */ }
 
       apply(fromQuery || stored || 'en');
+    })();
+
+    // --- sound -----------------------------------------------------------
+    //
+    // The dial is silent until its root is given a volume. This switch hands
+    // --mode-dial-click to every dial on the page, inline on its own root —
+    // the channel the property block is for, and the one a declaration on a
+    // wrapper would lose to the root's own default — and takes it out again.
+    // Off on every load and never stored: a page that makes a noise is asked
+    // each time. The component makes no AudioContext until a dial is turned
+    // by hand with a volume set, so switching on is silent in itself.
+    (function () {
+      var toggle = document.querySelector('[data-sound-toggle]');
+      if (!toggle || !(window.AudioContext || window.webkitAudioContext)) return;
+      var VOLUME = '0.5';
+      var on = false;
+
+      function paint() {
+        toggle.setAttribute('aria-pressed', on ? 'true' : 'false');
+        Array.prototype.slice.call(document.querySelectorAll('.mode-dial')).forEach(function (dial) {
+          if (on) dial.style.setProperty('--mode-dial-click', VOLUME);
+          else dial.style.removeProperty('--mode-dial-click');
+        });
+      }
+
+      toggle.addEventListener('click', function () { on = !on; paint(); });
+      toggle.hidden = false;
+      paint();
     })();
 
     // --- theme -----------------------------------------------------------
