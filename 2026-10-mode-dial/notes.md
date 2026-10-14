@@ -54,12 +54,16 @@ and `.mode-dial--ratchet` gives either finish a voice of its own.
   with script it rewrites `defaultChecked`, Enter on a radio commits, and
   Escape is `form.reset()`. A view or a filter has no key and applies as it
   turns.
-- **No hover to spend, and nothing muted.** Names rise as tooltips on
-  `:hover`, on `:focus-visible` and, under `(hover: none)`, on `:active` and
-  on the checked item, moving toward the centre so a wide word clears its own
-  icon. A sideways swipe across the face turns the dial and a vertical one
-  still scrolls the page. Every text pair clears 4.5:1 and every signal mark
-  3:1, in both finishes: the display is one ink on one glass, because a
+- **Nothing small, no hover to spend, and nothing muted.** An option's
+  target is its whole slice of the face: between the half-way lines to its
+  neighbours, from the key's edge, or the middle's without one, out to the
+  plate's, turning with the face. A tap on the knurl picks the option at
+  that angle, and the key is never under 44px across. Names rise as tooltips
+  on `:hover`, on `:focus-visible` and, under `(hover: none)`, on `:active`
+  and on the checked item, moving toward the centre so a wide word clears its
+  own icon. A sideways swipe across the face turns the dial and a vertical
+  one still scrolls the page. Every text pair clears 4.5:1 and every signal
+  mark 3:1, in both finishes: the display is one ink on one glass, because a
   second, dimmer ink was the first thing to fall under the floor.
 
 ## Measured
@@ -100,6 +104,135 @@ What the bullets above rest on, and what was tried on the way.
   sample was 0.0240 of a step against 0.0150 linear, the expected (1 + k)×;
   the smallest about 0.48×. The knurl and the options layer always showed the
   same angle.
+
+### Targets
+
+- An option's target was a circle round its label,
+  `clamp(24px, 2πr/n − 6px, 44px)`: 44px from a 240px dial up and 33.9px on
+  the 136px one, on a face where each option owns a whole sixth of the
+  plate. It is that sixth now. The slice is the radio's `::before`, so a
+  press on it is a press on the radio, focused by the press without a ring
+  and checked by the click, one click event as before; the hover, the peek
+  and the tooltip hang off the label it sits in. The label's own box and the
+  radio's take no pointer: they are the focus ring's, and on the 136px dial
+  the old circle reached 2.7px into the knurl.
+- The slice turns forward by the face's angle on the face's transition, the
+  label it sits in turns back by the same, and then by its own slot's,
+  i · step, so it lives in the face's own frame with its slot straight up.
+  There it is a disc the plate's size centred on the dial, so its outer edge
+  is the plate's circle, by `border-radius`, and `clip-path: polygon()` cuts
+  the wedge and the hole. Both bound hit-testing; a mask would not. The
+  hole is a 12-sided arc drawn round its circle, 0.05px clear of it at
+  416px. Its circle is the key and its seam, `key/2 + .4cqi`, the disc the
+  names' stand-in already cuts out, or 7.5cqi on a dial with no key: the
+  middle, where component.js starts no drag either.
+- The polygon is literal, one per count from 3 to 8, drawn on the content
+  box, which the padding shrinks to the hole's square, so the inner arc is
+  a plain percentage and the far points a plain 100cqi out. It was 16
+  points of `sin()` and `cos()` over nested `var()`s first, and a
+  declaration with a `var()` in it is substituted and parsed again on every
+  restyle, which every turn and every drag frame is. By CDP's style-recalc
+  time at 1440, against the dial before the slices: a key press 7.5–8.0ms
+  against 5.6–6.5, where the `var()` polygon took 10.4–13.1; a 90-frame
+  drag 150–178ms against 120–124, where it took 251–295. At 4× CPU, a press
+  37–40ms against 27–28 and the drag 726–783ms against 569–682.
+- The key is `max(44px, 26cqi, 4em of its label)`. Every key on the demo is
+  over 169px of dial, where 26cqi wins, so none of them moved; a keyed
+  136px dial gets 44px for 35.4. Its widest word, Equip at 11px, is 30px
+  corner to corner.
+
+| dial | stops | key | slice, deep × wide at its middle | largest disc, square | before |
+|---|---|---|---|---|---|
+| 136px | 6 | — | 42.2 × 32.8 | 34.9, 27.1 | 33.9 circle |
+| 136px | 6 | 44 | 29.8 × 39.2 | 29.8, 27.1 | 33.9, key 35.4 |
+| 240px | 6 | — | 74.4 × 57.8 | 61.6, 47.8 | 44 |
+| 240px | 6 | 62.4 | 60.2 × 65.2 | 60.2, 47.8 | 44 |
+| 240px | 8 | — | 74.4 × 43.4 | 51.1, 40.8 | 44 |
+| 240px | 8 | 62.4 | 60.2 × 48.9 | 51.1, 40.8 | 44 |
+| 288px | 6 | — | 89.3 × 69.4 | 73.9, 57.4 | 44 |
+| 288px | 6 | 74.9 | 72.3 × 78.3 | 72.3, 57.4 | 44 |
+| 416px | 6 | — | 129.0 × 100.2 | 106.8, 82.9 | 44 |
+| 416px | 6 | 108.2 | 104.4 × 113.0 | 104.4, 82.9 | 44 |
+
+- Against WCAG 2.5.8, a 24px square: every slice at every size, the least
+  27.1px at 136. Against 2.5.5, 44px: every six-stop slice from 240px up
+  holds a 47.8px square; the 136px dial's do not, at 27.1, and nor do eight
+  stops at 240, a 51.1px disc but a 40.8px square. The key is never under
+  44px across. Outside every slice, the knurl's 5cqi takes a tap for the
+  same option.
+- A tap on the knurl that never became a drag picks the option at that
+  angle, read against the face's turn at the press, nearest stop, by
+  clicking its label: focus and sound as a tap on the slice. A drag from it
+  focuses nothing, as before.
+- The knurl is still `touch-action: none` and still the grip, but on touch
+  that is decided by radius, not by what is under the finger. Chromium
+  moves a touch onto the nearest thing that answers a tap, at least about
+  20px round, and near a slice that is the slice's radio: the touch's
+  target, and so its `touch-action`, became a `pan-y` radio for about 15° to
+  20° either side of each of the face's four axes, out to 42cqi, and a
+  vertical drag there scrolled the page — 38 of 78 knurl swipes at 390. Its
+  click moved too, by about 5.6px, onto a neighbour near a stop boundary.
+  `elementFromPoint` and a mouse are exact, so the grid below could not see
+  it. So a touch that starts between 38.5 and 43.5cqi from the middle has
+  its `touchmove` cancelled by component.js, whatever it was given to, and a
+  click from a press there is decided by the press's own point and the
+  face's angle at the press, with a radio it was not meant for undone. Sent
+  as real CDP touches: 0 of 78 knurl swipes scroll at 390 and at 320, all
+  turn; knurl taps 2°, 4° and 8° inside a boundary, 468 on the demo and 546
+  on 3- to 8-stop dials, every one the option at that angle.
+- A press may wander before it is a drag: 4° round the middle, as before,
+  and also 4px for a mouse or 8px for a finger or a pen. Four degrees is a
+  pixel at 14px out, and the slices reach in to 10px on the 136px dial, so
+  a tap that slipped a pixel sideways near the hole started a drag and was
+  swallowed: 27% of the 136px dial's slice area with 2px of slip, 66% with
+  3. With the floor, clicks and taps slipped 0.7 to 3px tangentially at
+  every radius on five dials pick what they were aimed at.
+- Hit-tested by `elementFromPoint` on a 2px grid over every one of the
+  demo's thirteen dials and 24px round it, at 1440 with a mouse and 390 and
+  320 with touch, in English and Danish: 566,880 points in slices, each the
+  option drawn there; 17,874 on keys, each the key; 115,378 on knurls, each
+  the knurl; 14,148 in the keyless middle or a key's seam, none an option;
+  1,099,433 outside, none an option, a key or a knurl. 0 wrong. Frozen
+  mid-turn, mid-reversal and mid-drag on six dials, the slices sit where the
+  face is: 155,680 points, 0 wrong. A disabled stop's slice is face, for a
+  click and for a knurl tap at its angle. Its own circle still takes the
+  pointer, as every option's did before: its name rises and the display
+  peeks at it, the one way to learn what a disabled icon is.
+- The edges, walked in 0.05px steps. A straight edge is exact at rest
+  unturned, ±0.02px, and moves by up to 0.6px once its box is turned, as
+  Chrome resolves a point in turned content at the middle of its pixel;
+  the neighbour moves with it, so two slices never leave a gap or overlap.
+  A round edge — the slice's outer one, the plate's, the knurl's — is tested
+  against the pixel square at the point, and reaches 0.35 to 1.4px further
+  on its upper left at rest, up to 2.35px turned and 0.5px short on the
+  lower right, the knurl's own outer edge 2.1. Points that close to an edge
+  were left out of the grid above. A tap lands on a whole pixel, 157.25
+  arriving at 157, so the real taps below sit 2.5px inside a straight edge
+  and the clicks 1.5px, both 3px inside a round one.
+- Real clicks and taps at the four corners and four edge midpoints of every
+  slice, on the knurl at every stop and 3° short of each boundary, at the
+  key's centre and 2.5px inside its rim, and in the keyless middle: 5,298
+  over the same six views, every one picking what it was aimed at; with the
+  motion on, the face turning between each, 828 more on six dials, the
+  same.
+- Re-derived, where the slice changes what was there. The stacking needs
+  nothing new: slices never overlap, so the lifts only decide whose raised
+  name is on top, and a hovered name still takes the pointer over a
+  neighbour's slice, with the key cut out of it as before. The strip that
+  kept a pointer on its option all the way to a far name is gone, since
+  the slice covers that way; on a keyless dial under 11rem, whose name
+  sits in the middle, the hovered slice reaches in to the centre instead.
+  A released drag nearly always lets go over a slice now, so `settleOn`
+  holds the peek until the pointer leaves that slice: 2px inside it stays
+  quiet, one slice on it peeks. A press on a slice focuses its radio, so a
+  drag from anywhere on the face leaves focus in the dial and Escape still
+  cancels, where before only a drag from the 44px circle did; the drag
+  moves that focus to the chosen option as it starts, so a drag that
+  crosses no detent leaves the next arrow key one stop from the choice,
+  not from the slice it was pressed on. The cursor is
+  a pointer on the slices and the grab on the knurl and the middle.
+- At rest nothing moved: 52 screenshots of the thirteen dials, light and
+  dark, 1440, 390 and 320, are pixel-identical before and after.
 
 ### Ticks
 
