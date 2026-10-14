@@ -45,7 +45,9 @@ where provenance lives either way.
 `ref.png`, which a study adds only when there is a reference to keep. The
 template used to carry a grey placeholder, and copying it is how two studies
 ended up holding a crossed-out box that looked like a record of something.
-Copy the template when starting a new study.
+Copy the template when starting a new study, and run
+`node tools/demo-chrome/build.js <folder>` once its page script is filled
+in.
 
 ## notes.md
 
@@ -292,6 +294,11 @@ All page-level context lives here, and only here:
 - the companion Figma file's Community listing and the study's own folder on
   GitHub, as the kicker's last two items, kept together — see **A card links
   the Figma file, and so does its demo page**
+- the chrome — the Sound, language and theme switches, the head script that
+  sets the theme and the crossfade — generated from `tools/demo-chrome/`
+  between `demo-chrome:` markers, with the page's own Danish and hooks in a
+  `<script data-demo-page>` beside it; see **The demo page's chrome is
+  generated**
 
 demo.html links `component.css`; it never redefines it. If the demo needs a
 style, that style belongs in a `<style>` block scoped to the demo page's own
@@ -838,11 +845,12 @@ that is the light theme, and the index already needs script for its previews,
 its rail order and its counts; on a demo page it is the ground the folder
 authored, which is the right thing to fall back to.
 
-A demo page does the same in its own `<style>`: its own tokens, its own two
-blocks, its own copy of the toggle and of the head script. No shared module and
-no shared stylesheet — the folder has to survive being copied out, which is the
-same reason its language table is its own. `_template/demo.html` holds the
-block to copy.
+A demo page does the same: its own tokens in its own two blocks, and its
+own copy of the toggle, the head script and the crossfade, generated into
+the page from `tools/demo-chrome/` rather than copied out by hand, so
+every copy is the same copy. Still no shared module and no shared
+stylesheet at runtime: the folder has to survive being copied out, which
+is the same reason its Danish table is its own.
 
 Which theme a folder's bare `:root` holds is the folder's business.
 `2026-09-inked-plate-card` is ink by authorship — the plotter ground is that
@@ -901,6 +909,138 @@ the floor by more than it did: `--muted` 5.78 on the page.
 If a ground ever wants texture or light again, the wash is the part to argue
 for, and it brings the banding back with it: dither that with noise at one
 code value, not with a visible film.
+
+## The demo page's chrome is written once and generated into every page
+
+The switches at the top of a demo page — Sound where the study makes a
+noise, then EN/DA, then the theme — are the same control on every page, and
+for a while they were ten copies kept by hand. Copies drift, and these had:
+the separator read a different token on one page, the language chip blurred
+on two, page code had grown inside the chrome's script on three, and the
+fixes the index had already taken — a validated language, an address kept
+in step with a choice — had reached none of them, because reaching them was
+ten edits. So the chrome has one source, `tools/demo-chrome/`, and
+`build.js` writes it into each `demo.html` between marker comments, as
+committed output.
+
+**Generated copies, not a shared file, and that difference is the whole
+point.** A `../demo-chrome.js` that every page loaded would be one file to
+edit and one thing every folder depended on: copy a folder out and its
+switches are gone; delete the root and every page loses them. A generated
+copy is still the page's own copy, written into its own file, so the folder
+keeps working when it is copied out, when the index is deleted, and when
+`tools/` is deleted. Only the editing is shared. It is the sweep this repo
+already allowed for contracts every page has to meet, made mechanical, and
+it passes the same test: afterwards, every folder holds its own copy.
+
+**Generated, never edited.** Six regions are the chrome's:
+
+- `head`: the script that sets the theme before the first paint;
+- `css`: the cluster, the switches and their touch sizes;
+- `crossfade`: last in the page's `<style>`;
+- `controls`: the markup;
+- `sound-mirror`: where a page has one;
+- `script`: the foot script.
+
+Each opens on a `demo-chrome:` marker that says it is generated and closes
+on its `/demo-chrome:` twin. Edit `tools/demo-chrome/`, run
+`node tools/demo-chrome/build.js`, and commit both. A hand edit between the
+markers is a second source of truth until the next run overwrites it. The
+generator throws rather than write a page it cannot account for, and writes
+nothing at all if any page fails. That covers a missing or doubled region,
+chrome markup or a chrome selector outside the regions, a missing token or
+face, a page script that does not parse or does not say what its sound does,
+and a generated script that does not parse. It proves on every run that
+nothing outside the markers moved and that a second run changes nothing.
+`--check` writes nothing, and exits 1 when a page is out of date and 2 when
+one fails a check.
+
+**The page's part sits beside the chrome, not inside it.** Just before the
+generated script, a page carries `<script data-demo-page>`, which sets
+`window.demoPage`:
+
+- `da`: its Danish for every key on the page. This is the table that used
+  to sit inside the chrome's script, moved as it was.
+- `applied`: an optional hook that runs after every language switch, for
+  copy a table cannot reach. The mode dial's status line is the case.
+- `sound`: on a page that has the Sound switch.
+
+The switches' own strings are the chrome's, and a page table may not repeat
+them. Page code that is not chrome, such as the shader's lightbox or the
+inked plate's Draw again, is a script of its own after the chrome's, never
+inside it.
+
+**The chrome reads six of the page's tokens and nothing else:**
+`--demo-gutter`, `--demo-fg`, `--demo-dim`, `--demo-accent`,
+`--demo-chip` and `--demo-line`. A page that wants its switches to look
+different moves its own tokens, not the chrome's rules. The one chrome
+selector a page may write is `.demo__controls`, for where the cluster sits
+on that page, after the chrome's region: the mode dial gives the cluster a
+line of its own below 30rem, measured against its own top padding.
+
+**The address follows a choice, as the index's does.** Only en and da, and
+dark and light, are read from a query or from storage. A click rewrites
+`?lang=` and `?theme=` with `replaceState`, so a reload, or the inked
+plate's Draw again, keeps what was chosen rather than the query the page
+was opened with. Only a choice travels in the back link, EN included. A
+default is not a choice, and is not stored.
+
+Checked against the pages as they were, on all ten at 1440, 390 and 320:
+720 combinations of width, system theme, query and storage, with every
+translated string, label, title, back link and pressed state read back, and
+nothing different but the language group's label in Danish, the default no
+longer stored, the first frame when storage is blocked, and struck tones'
+new switch. Every chip now
+blurs; over a flat ground that differs from no blur by at most six levels in
+a channel, inside the chip, and only the inked plate's grid shows it.
+
+### The Sound switch
+
+A page carries one only when its study makes a sound. It declares it as
+`+sound` on its controls marker and says what the switch does in
+`window.demoPage.sound`. The rest of the contract:
+
+- **Off on every load.** It is never stored and never carried in a link. A
+  page that makes a noise is asked each time.
+- **It makes no sound itself.** It opens the way for the component's
+  sound, and the component makes it.
+- **It is hidden without JavaScript or Web Audio**, and on an arm-switch
+  page until a switch is there to arm. A switch that cannot do anything is
+  not offered.
+- **It says its word.** "Sound" is its name, `aria-pressed` its state.
+  Nothing else up there says there is a sound to switch on.
+- **It reaches the component in one of two ways, and both use a channel
+  the component already has.** A *token* (`{ roots, token, value }`) is set
+  inline on each component's own root and taken off again, as the mode
+  dial's click level is. *Arm switches* (`{ arms }`) are pressed rather than
+  reached past, inside the page switch's own click, which is the gesture the
+  audio policy wants. The page switch then reads as on while any of them is
+  armed, so the two never disagree. That is struck tones' shape: each
+  faceplate builds its AudioContext in the click on its own switch, and the
+  page switch makes one for all four.
+- **Local mirrors are allowed.** A copy of the switch beside the state
+  whose subject is its sound, written by the generator into a
+  `sound-mirror` region so it cannot drift from the original. Every copy is
+  the one switch.
+- **The index and the previews stay silent.** No preview carries the
+  switch, and none sets a component's level. A rail of cards that makes a
+  noise unasked is the index performing over the reader.
+
+With three switches in the cluster, struck tones keeps them clear of the
+back link with nothing but its 4rem of top padding: the back link starts
+14px under the cluster with a pointer, and 1.6px under it on a touch screen
+at 390 and 320, where the switches grow.
+
+### Not yet fixed: the back link under the cluster at 320, in Danish
+
+Three pages put the back link on the cluster's line rather than under it,
+and on a touch screen at 320 in Danish, where the switches grow to 2.25rem,
+the two overlap: the liquid-glass toolbar and the drawn gradients by 1.8px,
+the detail reveal by 7.8px. With a pointer all three clear, the first two
+by 25px and the detail reveal by 19px. It predates the generated chrome and
+is identical with it. The mode
+dial's answer, a line of its own for the cluster below 30rem, is the one to
+reach for, measured against each page's own top padding.
 
 ## JavaScript
 
@@ -1013,13 +1153,19 @@ the one on the demo page.
 **The folder still survives being copied out.** The adapter is
 self-contained, so a copied folder keeps a working one; what it loses is the
 means to regenerate it. `tools/` is the one directory outside the study
-folders that knows about them, and that is allowed because nothing loads from
-it: no page, no preview, no adapter at runtime. Delete it and every study, the
-index and every generated adapter keep working. "No build step" is a rule
+folders that knows about them. It holds these generators and the demo
+chrome's, and that is allowed because nothing loads from it: no page, no
+preview, no adapter at runtime. Delete it and every study, the index and
+every generated adapter keep working. "No build step" is a rule
 about what the site serves, and the site serves nothing built — the adapter
 is committed output. One generator per study, and they share nothing: which
 tokens become props and how each lands is the part worth writing by hand,
 and it is the first thing a shared generator would abstract away.
+
+The demo chrome is one generator for every page, and that is not a
+contradiction. An adapter is the part of a study worth writing by hand,
+while the chrome is identical by contract, and having it identical is
+what it is for.
 
 **A host that unmounts is new, and it found a bug.** Nothing on the site ever
 removes a component, so nothing ever tested one being removed. The shader's
@@ -1045,8 +1191,10 @@ Never edit or refactor across folders. Never extract a shared stylesheet, a
 shared token file, or a shared anything. Two studies that solve the same
 problem the same way should contain the same code twice — the duplication is
 intentional, because each folder has to survive being copied out on its own.
-`tools/` is not an exception: it holds generators nothing loads from, and each
-study's is its own — see **A React adapter, generated**.
+`tools/` is not an exception. It holds two kinds of generator, and
+nothing loads from either: a study's React adapter, one generator per
+study, and the demo pages' chrome, one generator for every page — see **A
+React adapter, generated** and **The demo page's chrome is generated**.
 
 When asked to add a study, touch that folder and nothing else — with the
 single exception below.
@@ -1063,6 +1211,11 @@ that leaves every folder holding its own copy is a sweep; one that leaves them
 sharing a file is the thing this rule forbids. Adding a contract like that is a
 decision about the whole repo — make it deliberately, write it down here, and
 put it in `_template/` so the next study is born with it.
+
+The chrome is the contract that is now written once: changing it is an
+edit in `tools/demo-chrome/` and a run of the tool, and every folder
+still holds its own copy afterwards, so it is a sweep, not the thing
+this rule forbids.
 
 ## The landing page
 
@@ -1509,12 +1662,15 @@ too, or it stays English when the page is switched. Quick look shows variant lab
 in whatever language the preview reports them, since those strings belong to the
 folder.
 
-A `demo.html` carries its own copy of the strings and its own selector — no
-shared module, because the folder has to survive being copied out. The index
-appends `?lang=` to the link that opens a demo, and the demo's back link hands
-the choice back; `localStorage` is the secondary channel, because over `file://`
-each document gets its own opaque origin and does not share it. `_template/`
-holds the block to copy. Translate the page's own prose, and the component's
+A `demo.html` carries its own strings, as `window.demoPage.da` in a
+script of its own, and its own generated copy of the selector and the
+applier. There is no shared module at runtime, because the folder has
+to survive being copied out. The index appends `?lang=` to the link that
+opens a demo, and the demo's back link hands the choice back;
+`localStorage` is the secondary channel, because over `file://` each
+document gets its own opaque origin and does not share it. A switch keeps
+the address in step, as the index does. `_template/` carries the page
+script to fill in. Translate the page's own prose, and the component's
 sample copy where the study carries it in both languages — see below.
 Class-name hints stay as they are.
 
@@ -1536,15 +1692,17 @@ each is given its Danish, one folder at a time, and `_template/` carries both
 halves for a new study. The Figma file's copy of a study is not reached by any
 of this.
 
-**The applier reads and writes `innerHTML`, not `textContent`, and every
-folder's copy does.** A demo page's prose wants markup the sentence needs — a
-`<code>` around a token name, a `<strong>` numbering a step — and `textContent`
-cannot carry it in either direction. It is the capture that makes this a trap
-rather than a limitation: the English fallback is read off the node at boot, so
-with `textContent` it is captured already flattened and the first `apply()` on
-load strips markup that was in the markup, before anything has been translated
-and whatever language the reader is in. `2026-09-shader-token-field`'s own
-`<code>--settle</code>` had been going that way unnoticed.
+**The applier reads and writes `innerHTML`, not `textContent`, and the
+generated applier does, so every folder's copy does.** A demo page's prose
+wants markup the sentence needs — a `<code>` around a token name, a
+`<strong>` numbering a step — and `textContent` cannot carry it in either
+direction. It is the capture that makes this a trap rather than a
+limitation: the English fallback is read off the node at boot, so with
+`textContent` it is captured already flattened and the first `apply()` on
+load strips markup that was in the markup, before anything has been
+translated and whatever language the reader is in.
+`2026-09-shader-token-field`'s own `<code>--settle</code>` had been going
+that way unnoticed.
 
 It is safe here in the way `innerHTML` usually is not, and the reason is worth
 stating so nobody has to re-derive it: every string it sets is a literal in the
