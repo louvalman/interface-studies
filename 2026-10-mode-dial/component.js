@@ -39,6 +39,16 @@
        AudioContext is made. One context per document, made in the first
        gesture that has a volume, and resumed if the browser suspended it.
 
+    5. The ratchet, a voice of its own (.mode-dial--ratchet sets its levels,
+       --mode-dial-scrape and --mode-dial-snap, both 0 by default). The
+       scratch is the knurl: one grain of noise per tooth the face carries
+       past the index, so its rate is the turn's speed. The snap is the face
+       landing in a detent. Both follow the face's own path — the running
+       transition for a turn, the displayed angle frame by frame for a drag,
+       and the settle back to the stop when a drag lets go — and both are
+       scheduled ahead on the audio clock, then cancelled the moment that
+       path changes.
+
   Without it the component is still the component: arrow keys, clicks and a
   screen reader all work, the key submits the form, and the only things
   missing are the drag, the short way round, and the feel.
@@ -54,6 +64,17 @@
   var BUZZ_MS = 40;                /* no two buzzes closer than this */
   var TICK_GAP = 12;               /* no two ticks of one dial closer than this, in ms */
   var STILL_GAP = 30;              /* ticks of a turn that does not animate, in ms apart */
+
+  /* The ratchet's bookkeeping. Lengths in steps (one detent) or teeth. */
+  var AHEAD = 120;                 /* ms of sound put on the audio clock ahead of now */
+  var PUMP = 30;                   /* ms between top-ups while anything is planned */
+  var LATE = 30;                   /* ms: a sound this far overdue is dropped, not played late */
+  var PLAY = 0.25;                 /* of a tooth: how far back over one it goes to be heard again */
+  var SEAT = 0.15;                 /* of a step: how far from a detent the face goes before landing in it again is a snap */
+  var RISE = 0.0002;               /* s: a grain's attack, and the least room between two */
+  var FRAME_MAX = 50;              /* ms: the longest a drag frame's grains are spread over */
+  var IDLE = 0.3;                  /* s the scratch keeps its nodes after its last grain, so a slow drag is one chain */
+  var HOLD_MAX = 50;               /* ms a turn's sound waits for its transition's start before going without it */
 
   function list(nodes) { return Array.prototype.slice.call(nodes); }
 
@@ -148,6 +169,92 @@
     }
   };
 
+  /* The ratchet's two sounds. A grain is not a node of its own: each dial
+     that is scratching has one looping noise source through one band-pass
+     into one gain, and a grain is an envelope on that gain and a pitch on
+     that filter — so a turn of sixty teeth is three nodes, and cancelling it
+     is cancelling two automation lists. */
+  function scratchChain(v) {
+    var ctx = audio.ctx;
+    var src = ctx.createBufferSource();
+    var f = ctx.createBiquadFilter();
+    var g = ctx.createGain();
+    src.buffer = audio.noise;
+    src.loop = true;
+    f.type = 'bandpass';
+    f.frequency.value = v.scrapePitch;
+    f.Q.value = v.scrapeRing;
+    g.gain.value = 0;
+    src.connect(f);
+    f.connect(g);
+    g.connect(ctx.destination);
+    src.start(ctx.currentTime, Math.random() * 0.2);
+    return { src: src, filter: f, gain: g, last: 0, nodes: [src, f, g] };
+  }
+
+  /* Up in 0.2ms, then away on a time constant of a third of the grain, so
+     it is all but gone by the grain's length and the next grain's own
+     events cut whatever is left. A little loudness and pitch of its own. */
+  function grain(ch, when, v) {
+    var a = v.vol * v.scrape * (0.6 + Math.random() * 0.4) * Math.sqrt(Math.max(1, v.scrapeRing) / 2) * 1.6;
+    when = Math.max(when, ch.last + RISE * 1.5);
+    ch.last = when;
+    ch.filter.frequency.setValueAtTime(v.scrapePitch * (1 + (Math.random() - 0.5) * 0.24), when);
+    ch.gain.gain.setValueAtTime(0, when);
+    ch.gain.gain.linearRampToValueAtTime(a, when + RISE);
+    ch.gain.gain.setTargetAtTime(0, when + RISE, v.grain / 3);
+    return when;
+  }
+
+  /* The snap: a broadband transient and, for a full one, the thock of the
+     body — a sine falling from the token's pitch to a little over half of
+     it — and the ball settling into the notch a beat later. A detent passed
+     on the way is the transient alone, with no body under it. Five nodes or
+     three. */
+  function snapSound(when, v, full) {
+    var ctx = audio.ctx;
+    var level = v.vol * v.snap * (full ? 1 : v.snapPass);
+    var src = ctx.createBufferSource();
+    var f = ctx.createBiquadFilter();
+    var g = ctx.createGain();
+    var nodes = [src, f, g];
+    src.buffer = audio.noise;
+    f.type = 'bandpass';
+    f.Q.value = 0.7;
+    f.frequency.setValueAtTime(v.snapPitch * jitter(), when);
+    g.gain.setValueAtTime(0, when);
+    g.gain.linearRampToValueAtTime(level * 0.75, when + 0.0003);
+    g.gain.setTargetAtTime(0, when + 0.0003, full ? 0.0016 : 0.0011);
+    var end = when + 0.012;
+    if (full) {
+      var settle = when + v.settle;
+      f.frequency.setValueAtTime(v.snapPitch * 1.4 * jitter(), settle);
+      g.gain.setValueAtTime(0, settle);
+      g.gain.linearRampToValueAtTime(level * 0.75 * v.ball, settle + 0.0003);
+      g.gain.setTargetAtTime(0, settle + 0.0003, 0.0008);
+      end = settle + 0.008;
+      var o = ctx.createOscillator();
+      var og = ctx.createGain();
+      o.type = 'sine';
+      o.frequency.setValueAtTime(v.thock * jitter(), when);
+      o.frequency.exponentialRampToValueAtTime(v.thock * 0.53, when + v.body);
+      og.gain.setValueAtTime(0, when);
+      og.gain.linearRampToValueAtTime(level * 0.65, when + 0.0015);
+      og.gain.exponentialRampToValueAtTime(0.0001, when + v.body * 1.5);
+      o.connect(og);
+      og.connect(ctx.destination);
+      o.start(when);
+      o.stop(when + v.body * 1.5 + 0.005);
+      nodes.push(o, og);
+    }
+    src.connect(f);
+    f.connect(g);
+    g.connect(ctx.destination);
+    src.start(when, Math.random() * 0.15);
+    src.stop(end);
+    return nodes;
+  }
+
   /* Read off the root when a sound is wanted, so a host switches it on by
      setting the token. Null when the volume is 0, and nothing is made. */
   function voiceOf(root) {
@@ -164,8 +271,25 @@
       pitch: num('--mode-dial-click-pitch', 2600, 200, 12000),
       ring: num('--mode-dial-click-ring', 7, 0.3, 30),
       decay: num('--mode-dial-click-decay', 26, 2, 200) / 1000,
-      thump: num('--mode-dial-key-thump', 120, 30, 1000)
+      thump: num('--mode-dial-key-thump', 120, 30, 1000),
+      teeth: num('--mode-dial-teeth', 120, 3, 720),
+      scrape: num('--mode-dial-scrape', 0, 0, 1),
+      scrapePitch: num('--mode-dial-scrape-pitch', 5200, 500, 16000),
+      scrapeRing: num('--mode-dial-scrape-ring', 2.4, 0.3, 30),
+      grain: num('--mode-dial-scrape-grain', 1, 0.2, 20) / 1000,
+      snap: num('--mode-dial-snap', 0, 0, 1),
+      snapPitch: num('--mode-dial-snap-pitch', 3400, 200, 16000),
+      thock: num('--mode-dial-snap-thock', 170, 30, 1000),
+      body: num('--mode-dial-snap-body', 40, 5, 200) / 1000,
+      settle: num('--mode-dial-snap-settle', 15, 2, 60) / 1000,
+      ball: num('--mode-dial-snap-ball', 0.3, 0, 1),
+      snapPass: num('--mode-dial-snap-pass', 1, 0, 1)
     };
+  }
+
+  /* The ratchet's voice, or null: a volume, and a scratch or a snap. */
+  function ratchetOf(v) {
+    return v && (v.scrape > 0 || v.snap > 0) ? v : null;
   }
 
   /* A suspended clock plays everything scheduled on it at once when it
@@ -248,6 +372,50 @@
     }
     return 1;
   }
+
+  /* A tooth counter with play in it. Boundaries are whole numbers; once one
+     is crossed, the next one on is a whole tooth away, and the same one
+     going back is heard only once the position is PLAY past it, so a face
+     that wobbles on a boundary is not a burst of grains. */
+  function counter(u) {
+    var lo = Math.ceil(u - 1e-9) - 1, hi = Math.floor(u + 1e-9) + 1;
+    return { upB: hi, upT: hi, dnB: lo, dnT: lo, last: NaN, dir: 0 };
+  }
+
+  /* Carries on from the counter as it was last heard, so a turn that takes
+     over from another does not grain again the teeth the last one was heard
+     to pass: what the audio clock has already rendered is a few ms ahead of
+     the face. Starts afresh from the face when the face is a whole tooth
+     past what was heard, or turns back short of the last tooth heard, which
+     it never reached — and always after the face has moved unheard, when
+     hearLost has dropped the counter. */
+  function resume(q, u, dir) {
+    if (!q || !(q.dir) || (dir === q.dir ? (u - q.last) * dir >= 1 : (u - q.last) * q.dir < 0)) return counter(u);
+    return { upB: q.upB, upT: q.upT, dnB: q.dnB, dnT: q.dnT, last: q.last, dir: q.dir };
+  }
+
+  /* Each boundary crossed going straight from u0 to u1, as the fraction of
+     the way at which it is crossed. */
+  function count(q, u0, u1, out) {
+    var b;
+    if (u1 > u0) {
+      while (q.upT <= u1 + 1e-9) {
+        b = q.upB;
+        var f = Math.min(1, Math.max(0, (q.upT - u0) / (u1 - u0)));
+        q.dnB = b; q.dnT = b - PLAY; q.upB = b + 1; q.upT = b + 1; q.last = b; q.dir = 1;
+        out(f, { upB: q.upB, upT: q.upT, dnB: q.dnB, dnT: q.dnT, last: b, dir: 1 });
+      }
+    } else if (u1 < u0) {
+      while (q.dnT >= u1 - 1e-9) {
+        b = q.dnB;
+        var g = Math.min(1, Math.max(0, (u0 - q.dnT) / (u0 - u1)));
+        q.upB = b; q.upT = b + PLAY; q.dnB = b - 1; q.dnT = b - 1; q.last = b; q.dir = -1;
+        out(g, { upB: q.upB, upT: q.upT, dnB: q.dnB, dnT: q.dnT, last: b, dir: -1 });
+      }
+    }
+  }
+
+  function always() { return true; }
 
   function fire(el, type) {
     el.dispatchEvent(new Event(type, { bubbles: true }));
@@ -349,6 +517,7 @@
        dial's pointerdown. Not on click: a radio is already checked by then. */
     function resync() {
       var c = checkedIndex();
+      if (c >= 0 && c !== sel) hearLost();
       if (c >= 0) sel = c;
     }
     root.addEventListener('keydown', resync, true);
@@ -428,6 +597,7 @@
       var a0 = parseFloat((run.effect.getKeyframes()[0] || {}).rotate);
       if (!isFinite(a0)) return t;
       t.run = true;
+      t.anim = run;
       t.at = -a0 / (360 / n);
       var d = run.effect.getComputedTiming().duration;
       if (isFinite(d)) t.ms = d;
@@ -470,12 +640,14 @@
             push(m, base + crossing(t.curve, Math.max(0, (m - c) / (to - c))) * t.ms, why, voice, dir);
           }
         }
+        hearTurn(turn, t, why ? ratchetOf(voice) : null);
       } else {
         for (var k = 1; k <= turn.span; k++) {
           var at = 0;
           if (t) at = t.ms >= 1 ? crossing(t.curve, k / turn.span) * t.ms : (k - 1) * STILL_GAP;
           push(turn.from + turn.dir * k, now + at, why, voice, turn.dir);
         }
+        if (t) hearTurn(turn, t, why ? ratchetOf(voice) : null);
       }
       queue.sort(function (a, b) { return a.due - b.due; });
       pump();
@@ -489,7 +661,7 @@
 
     function pump() {
       if (queueTimer) { clearTimeout(queueTimer); queueTimer = 0; }
-      if (!root.isConnected) { queue.length = 0; return; }
+      if (!root.isConnected) { queue.length = 0; hearCancel(); hearClose(); return; }
       var now = performance.now();
       while (queue.length && queue[0].due <= now + 1) emit(queue.shift(), now);
       if (queue.length) queueTimer = setTimeout(function () { queueTimer = 0; pump(); }, queue[0].due - now);
@@ -512,12 +684,388 @@
       root.setAttribute('data-mode-dial-kick', kick ? 'a' : 'b');
       buzz(tick.cause, 6);
       /* Armed by the gesture, but the volume is read again now: a sound
-         switched off mid-turn is off for the rest of it. */
-      if (tick.cause && tick.voice) play('detent', voiceOf(root));
+         switched off mid-turn is off for the rest of it. In the ratchet's
+         voice the snap is the detent's sound, and it is already planned. */
+      if (tick.cause && tick.voice) {
+        var v = voiceOf(root);
+        if (!v) hearCancel();
+        else if (!(v.snap > 0)) play('detent', v);
+      }
       root.dispatchEvent(new CustomEvent('mode-dial:tick', {
         bubbles: true,
         detail: { value: tick.value, user: !!tick.cause }
       }));
+    }
+
+    /* --- 5. the ratchet ---------------------------------------------------
+       Positions are in steps, the same absolute count the face turns by
+       (sel + laps·n + drag), so a lap is never a jump. A tooth boundary is
+       half a tooth either side of a stop: at rest the index sits between
+       two teeth, as a pawl sits in a notch, so the settle's last wobble
+       about the stop crosses none.
+
+       Planned sounds wait in `events`, in time order, and only the next
+       AHEAD ms of them are ever on the audio clock, so a cancel has little
+       to take back. `seat` is the detent the face is in as planned and
+       `heard` as played: a snap is the face arriving at a stop other than
+       its seat, and it leaves its seat by going SEAT of a step away — three
+       teeth on six stops. A turn's own overshoot past its target, up to
+       0.24 of a step on a 4-step turn, is the same landing and never leaves
+       it. */
+    var hear = { events: [], timer: 0, chain: null, plan: 0, seat: sel, heard: sel, arrived: NaN, arrivedDir: 0, planDir: 0, tooth: null, voice: null, watch: null, inline: '', hold: 0 };
+
+    /* Every stop the face arrives at going straight from u0 to u1 — the
+       end included, the start not — as the fraction of the way, and the
+       point at which it leaves its seat, with no stop. */
+    function seats(u0, u1, out, keep) {
+      if (!(u1 !== u0) || !isFinite(u0) || !isFinite(u1)) return;
+      var dir = u1 > u0 ? 1 : -1;
+      /* A face more than SEAT from its seat has left it — unless the seat is
+         ahead of it, the way it is going, which is a face heard landing
+         before it got there. */
+      var ahead = (hear.seat - u0) * dir;
+      if (hear.seat === hear.seat && hear.seat !== keep && Math.abs(u0 - hear.seat) > SEAT && !(ahead > 0 && ahead < 1)) { hear.seat = NaN; out(0); }
+      var x = u0;
+      for (var guard = 0; guard < 4 * n + 8; guard++) {
+        var m = dir > 0 ? Math.floor(x + 1e-9) + 1 : Math.ceil(x - 1e-9) - 1;
+        var off = hear.seat === hear.seat && hear.seat !== keep ? hear.seat + dir * SEAT : NaN;
+        if (off === off && (off - x) * dir > 0 && (m - off) * dir > 0) {
+          if ((off - u1) * dir > 1e-9) return;
+          hear.seat = NaN;
+          out(Math.min(1, Math.max(0, (off - u0) / (u1 - u0))));
+          x = off;
+          continue;
+        }
+        if ((m - u1) * dir > 1e-9) return;
+        if (m !== hear.seat) {
+          out(Math.min(1, Math.max(0, (m - u0) / (u1 - u0))), m, dir);
+          hear.seat = m;
+        }
+        x = m;
+      }
+    }
+
+    /* One straight stretch of the face's path, starting at `at` and taking
+       `dur` ms: a grain for each tooth, a snap for each stop it lands in. */
+    function feed(u0, u1, at, dur, v, q, full, id, out, keep) {
+      if (u0 === u1 || !isFinite(u0) || !isFinite(u1)) return;
+      var tps = v.teeth / n;
+      if (q && v.scrape > 0) count(q, u0 * tps - 0.5, u1 * tps - 0.5, function (f, after) {
+        out.push({ at: at + f * dur, grain: true, q: after, plan: id });
+      });
+      if (v.snap > 0) seats(u0, u1, function (f, m, d) {
+        out.push(m === undefined ? { at: at + f * dur, leave: true, plan: id } : { at: at + f * dur, m: m, d: d, full: full(m), plan: id });
+      }, keep);
+    }
+
+    /* The eased path, segment by segment off the same points the ticks'
+       crossing() reads, so the snap at the target is due exactly when its
+       tick is — less the TICK_GAP spacing the ticks also carry. */
+    function walk(c, to, base, ms, curve, v, full, id, out, q) {
+      var pts = curve || [[0, 0], [1, 1]];
+      q = q || resume(hear.tooth, c * v.teeth / n - 0.5, to > c ? 1 : -1);
+      for (var i = 1; i < pts.length; i++) {
+        var a = pts[i - 1], b = pts[i];
+        feed(c + (to - c) * a[1], c + (to - c) * b[1], base + a[0] * ms, (b[0] - a[0]) * ms, v, q, full, id, out, to);
+      }
+    }
+
+    /* A transition's start is not known until its first frame. The plan is
+       made from now and kept off the audio clock until the transition's
+       `ready` says what the start was, a frame or two later; then it is
+       moved onto it, and what is already due is caught up. Put on the clock
+       at once, the first teeth were heard up to 24ms before the face moved
+       and then a hole as long, where the rest moved onto the real start.
+       Held, they come up to a frame late and close together, and the turn
+       never stutters. HOLD_MAX lets go of a start that is never reported. */
+    function rebaseOn(t, id, base) {
+      if (!t.run || isFinite(t.start) || !t.anim || !t.anim.ready) return;
+      var anim = t.anim;
+      hear.hold = id;
+      function letGo(s) {
+        if (hear.hold !== id) return;
+        hear.hold = 0;
+        if (hear.plan !== id) return;
+        if (s !== null && isFinite(s) && Math.abs(s - base) >= 1) { hearRebase(id, s - base, base); return; }
+        catchUp(hear.events, base, id);
+        hearPump(false);
+      }
+      anim.ready.then(function () { letGo(anim.startTime); }, function () { letGo(null); });
+      setTimeout(function () { letGo(null); }, HOLD_MAX);
+    }
+
+    /* A turn that takes over from a running one starts at the time of the
+       last frame, which can be most of a frame ago: the face shows that
+       much of its path at once on the next. What of the plan is already due
+       is caught up rather than dropped or played in one burst — the first
+       2d ms of it heard in the next d. */
+    function catchUp(out, from, id) {
+      var now = performance.now();
+      var d = now - from;
+      if (!(d > 1)) return;
+      out.forEach(function (e) {
+        if (e.plan === id && e.when === undefined && e.at < now + d) e.at = now + (e.at - from) / 2;
+      });
+    }
+
+    /* A turn the browser is running replaces whatever was planned and not
+       yet heard, because the face's path has changed. */
+    function hearTurn(turn, t, v) {
+      hearCancel(t.run && isFinite(t.start) ? t.start : undefined);
+      if (!v || !audioFor()) { hearLost(); return; }
+      hear.voice = v;
+      var to = turn.from + turn.dir * turn.span;
+      var now = performance.now();
+      var id = ++hear.plan;
+      var out = [];
+      var last = function (m) { return m === to; };
+      /* A turn that carries on the way the last one went, from a face short
+         of the last stop it was heard landing in, counts on from that stop,
+         as the ticks count on from the last tick: a held key outruns the
+         frames, so a snap can be heard before the face it belongs to, and
+         the plan that heard it can think the face has already left it. */
+      var c = t.run ? t.at : turn.from;
+      var pdir = to > c ? 1 : -1;
+      var ahead = (hear.arrived - c) * pdir;
+      if (pdir === hear.planDir && pdir === hear.arrivedDir && ahead > 0 && ahead < 1) hear.seat = hear.arrived;
+      hear.planDir = pdir;
+      if (t.ms >= 1 && t.run !== false) {
+        var base = t.run && isFinite(t.start) ? t.start : now;
+        walk(t.run ? t.at : turn.from, to, base, t.ms, t.curve, v, last, id, out);
+        catchUp(out, base, id);
+        rebaseOn(t, id, base);
+      } else if (t.ms < 1) {
+        /* Reduced motion: the turn has no duration, so there is nothing to
+           scratch. A snap per detent, at its tick's time. */
+        for (var k = 1; k <= turn.span; k++) {
+          feed(turn.from + turn.dir * (k - 1), turn.from + turn.dir * k, now + (k - 1) * STILL_GAP, 0, v, null, last, id, out);
+        }
+        hear.tooth = null;
+      }
+      hearAdd(out);
+    }
+
+    /* One frame of a drag: the stretch from the last displayed angle to
+       this one, spread over the frame it took, so the grains come as fast
+       as the face goes. */
+    function hearDrag(pos) {
+      var h = drag.hear, v = drag.voice;
+      var now = performance.now();
+      if (!h.q) h.q = resume(hear.tooth, h.pos * v.teeth / n - 0.5, pos > h.pos ? 1 : -1);
+      var out = [];
+      feed(h.pos, pos, now, Math.min(FRAME_MAX, Math.max(4, now - h.at)), v, h.q, always, 0, out);
+      h.pos = pos;
+      h.at = now;
+      if (out.length) hearAdd(out);
+    }
+
+    /* A drag let go: the settle back to the stop, read off its transition
+       like any turn. A face already in the notch it is going to adds no
+       snap; one that had left it by more than SEAT snaps back into it. */
+    function hearSettle(was) {
+      var v = was.voice;
+      var to = sel + laps * n;
+      var t = timing();
+      var now = performance.now();
+      var id = ++hear.plan;
+      var out = [];
+      if (t.run && t.ms >= 1) {
+        var base = isFinite(t.start) ? t.start : now;
+        walk(t.at, to, base, t.ms, t.curve, v, always, id, out, was.hear.q);
+        catchUp(out, base, id);
+        rebaseOn(t, id, base);
+      } else {
+        feed(was.hear.pos, to, now, 0, v, null, always, id, out);
+        hear.tooth = null;
+      }
+      hearAdd(out);
+    }
+
+    /* The face moved and was not heard — a host's turn, a reset, a turn
+       with the sound off, a jump under reduced motion: what was last heard
+       no longer says where the face is, so the next turn counts from it. */
+    function hearLost() {
+      hear.tooth = null;
+      hear.seat = hear.heard = hear.arrived = NaN;
+      hear.arrivedDir = hear.planDir = 0;
+    }
+
+    function byAt(a, b) { return a.at - b.at; }
+
+    function hearAdd(out) {
+      if (!out.length) return;
+      for (var i = 0; i < out.length; i++) hear.events.push(out[i]);
+      hear.events.sort(byAt);
+      /* A host that switches the sound off, or takes the ratchet away,
+         mid-turn: heard at once if it does so on the root itself. A drag
+         writes the root's style every frame, so the style is only read
+         again when one of the voice's three levels is what changed in it. */
+      if (!hear.watch && window.MutationObserver) {
+        hear.inline = levels();
+        hear.watch = new MutationObserver(function (records) {
+          var was = hear.inline;
+          hear.inline = levels();
+          var cls = records.some(function (r) { return r.attributeName === 'class'; });
+          if ((cls || was !== hear.inline) && !ratchetOf(voiceOf(root))) hearPump(true);
+        });
+        hear.watch.observe(root, { attributes: true, attributeFilter: ['style', 'class'] });
+      }
+      hearPump(false);
+    }
+
+    function levels() {
+      return ['--mode-dial-click', '--mode-dial-scrape', '--mode-dial-snap'].map(function (k) {
+        return root.style.getPropertyValue(k);
+      }).join('|');
+    }
+
+    /* Puts the next AHEAD ms on the audio clock, and checks on the way that
+       the dial is still in the document and still has a voice. `fresh`
+       reads the voice off the root again; a frame of a drag, or a plan just
+       made, uses the one last read, so a drag never makes the browser work
+       out the dial's style halfway through a frame. The timer reads it
+       every PUMP ms, between frames, where it costs nothing. */
+    function hearPump(fresh) {
+      if (hear.timer) { clearTimeout(hear.timer); hear.timer = 0; }
+      var v = root.isConnected && audio ? (fresh || !hear.voice ? ratchetOf(voiceOf(root)) : hear.voice) : null;
+      hear.voice = v;
+      if (!v) {
+        hearCancel();
+        hearClose();
+        hearLost();
+        if (drag) drag.hear = null;      /* switched off mid-drag: silent for the rest of it */
+        return;
+      }
+      var ctx = audio.ctx;
+      var now = performance.now();
+      var cnow = ctx.currentTime;
+      var running = ctx.state === 'running';
+      var keep = [];
+      var grains = false;
+      for (var i = 0; i < hear.events.length; i++) {
+        var e = hear.events[i];
+        if (e.when !== undefined) {
+          if (e.when > cnow) { keep.push(e); grains = grains || e.grain; }
+          else if (e.m !== undefined) heardAt(e);
+          else if (e.q) hear.tooth = e.q;
+          continue;
+        }
+        /* A plan waiting for its transition's start stays off the clock. */
+        if (e.plan && e.plan === hear.hold) { keep.push(e); grains = grains || e.grain; continue; }
+        /* The face leaving its seat makes no sound; it is only noted. */
+        if (e.leave) {
+          if (e.at <= now) hear.heard = NaN;
+          else keep.push(e);
+          continue;
+        }
+        /* A clock that was not running drops what came due, as a tick
+           does: scheduled late it would all play at once. */
+        if (e.at < now - LATE) continue;
+        if (!running || e.at > now + AHEAD) { keep.push(e); grains = grains || e.grain; continue; }
+        /* At the face's moment on the audio clock, as the ticks are. The
+           speaker is the output's latency behind that, and the ticks carry
+           it too: put where getOutputTimestamp says it would be heard with
+           the face, everything due sooner than the latency is committed at
+           once, and a turn that is then interrupted keeps it. */
+        var when = cnow + Math.max(0, e.at - now) / 1000;
+        try {
+          if (e.grain) {
+            if (!hear.chain) hear.chain = scratchChain(v);
+            e.when = grain(hear.chain, when, v);
+            grains = true;
+          } else {
+            e.nodes = snapSound(when, v, e.full);
+            e.when = when;
+          }
+        } catch (err) { continue; }
+        keep.push(e);
+      }
+      hear.events = keep;
+      /* The scratch's three nodes go once nothing has been left for them for IDLE. */
+      if (hear.chain && !grains && cnow > hear.chain.last + IDLE) {
+        stopAll(hear.chain.nodes, cnow);
+        hear.chain = null;
+      }
+      if (hear.events.length || hear.chain) hear.timer = setTimeout(hearPump, PUMP, true);
+      else hearClose();
+    }
+
+    /* A snap heard: the face's seat as played, and the last stop it was
+       heard landing in, and which way it was going. */
+    function heardAt(e) {
+      hear.heard = hear.arrived = e.m;
+      hear.arrivedDir = e.d;
+    }
+
+    function stopAll(nodes, at) {
+      nodes.forEach(function (node) {
+        if (node.stop) { try { node.stop(at); } catch (err) { /* not started */ } }
+        try { node.disconnect(); } catch (err) { /* gone */ }
+      });
+    }
+
+    /* Everything planned and not yet heard is taken back: the snaps'
+       nodes stopped, the scratch's gain and pitch cancelled from now, and
+       the seat and the tooth counter put back to where they were last
+       heard. `cut` is when the face stopped following the plan: the start
+       of the transition that takes over, which is the last frame's time.
+       What was due by then stands, and so does anything the audio has
+       already rendered, which cannot be taken back. */
+    function hearCancel(cut) {
+      hear.plan++;
+      if (!hear.events.length) { hear.seat = hear.heard; return; }
+      var cnow = audio ? audio.ctx.currentTime : 0;
+      if (!(cut <= performance.now())) cut = performance.now();
+      hear.events.forEach(function (e) {
+        if (e.leave) { if (e.at <= cut) hear.heard = NaN; return; }
+        if (e.when === undefined) return;
+        if (e.when <= cnow || e.at <= cut) {
+          if (e.m !== undefined) heardAt(e);
+          else if (e.q) hear.tooth = e.q;
+          return;
+        }
+        if (e.nodes) stopAll(e.nodes, cnow);
+      });
+      hear.events = [];
+      if (hear.chain) {
+        hear.chain.gain.gain.cancelScheduledValues(cnow);
+        hear.chain.filter.frequency.cancelScheduledValues(cnow);
+        hear.chain.last = cnow;
+      }
+      hear.seat = hear.heard;
+    }
+
+    /* The plan moved onto the transition's real start: what is on the
+       audio clock and not yet heard comes off it, and goes back on later. */
+    function hearRebase(id, shift, base) {
+      if (!audio || Math.abs(shift) < 1) return;
+      var cnow = audio.ctx.currentTime;
+      hear.events.forEach(function (e) {
+        if (e.when !== undefined && e.when > cnow) {
+          if (e.nodes) stopAll(e.nodes, cnow);
+          e.nodes = undefined;
+          e.when = undefined;
+        }
+        if (e.plan === id && e.when === undefined) e.at += shift;
+      });
+      catchUp(hear.events, base + shift, id);
+      if (hear.chain) {
+        hear.chain.gain.gain.cancelScheduledValues(cnow);
+        hear.chain.filter.frequency.cancelScheduledValues(cnow);
+        hear.chain.last = cnow;
+      }
+      hear.events.sort(byAt);
+      hearPump(false);
+    }
+
+    function hearClose() {
+      if (hear.timer) { clearTimeout(hear.timer); hear.timer = 0; }
+      if (hear.chain) {
+        stopAll(hear.chain.nodes, audio ? audio.ctx.currentTime : 0);
+        hear.chain = null;
+      }
+      if (hear.watch) { hear.watch.disconnect(); hear.watch = null; }
+      hear.voice = null;
     }
 
     root.addEventListener('pointermove', function (e) {
@@ -572,6 +1120,7 @@
         id: e.pointerId,
         cause: e.isTrusted ? { pointer: e.pointerType || 'mouse' } : null,
         voice: null,
+        hear: null,
         notch: 0,
         cx: cx, cy: cy,
         prev: Math.atan2(dy, dx),
@@ -605,6 +1154,13 @@
           drag.voice = voiceOf(root);
           if (drag.voice) { audioFor(); wake(); }
         }
+        /* The face is the hand's now: whatever was planned for it is off. */
+        hearCancel();
+        hear.planDir = 0;
+        if (audio && ratchetOf(drag.voice)) {
+          hear.voice = drag.voice;
+          drag.hear = { pos: drag.from, at: performance.now(), q: null };
+        } else hearLost();
         root.setAttribute('data-mode-dial-dragging', '');
         /* Capture only now: captured from the press, a plain click would
            land on the dial instead of the label it was aimed at. */
@@ -649,6 +1205,7 @@
       var x = T - cur;
       var shown = x - drag.notch * Math.sin(2 * Math.PI * x) / (2 * Math.PI);
       root.style.setProperty('--mode-dial-drag', shown.toFixed(4));
+      if (drag.hear) hearDrag(cur + +shown.toFixed(4));
     }
 
     function swallowClick() {
@@ -680,6 +1237,7 @@
          nothing a lost drag left behind can stick. */
       root.removeAttribute('data-mode-dial-dragging');
       root.style.removeProperty('--mode-dial-drag');
+      if (was.started && was.hear && root.isConnected) hearSettle(was);
       if (!was.started || e.type !== 'pointerup') return;
       swallowClick();
       root.setAttribute('data-mode-dial-settling', '');

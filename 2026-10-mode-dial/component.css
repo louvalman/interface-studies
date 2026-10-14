@@ -29,6 +29,8 @@
   detent curve (--mode-dial-notch), the index's kick per detent passed, the
   key's travel, and an opt-in click (--mode-dial-click, a volume from 0 to 1;
   at 0 no audio is ever started). Set them on the root like any other.
+  .mode-dial--ratchet gives the dial a voice of its own under that volume:
+  the knurl's scratch, a grain per tooth, and a snap as the face lands.
 
   Rules (see CLAUDE.md): BEM on `.mode-dial`, no global selectors, no font
   loading, every tunable in the block below. Re-theme it from outside by
@@ -162,6 +164,19 @@
   --mode-dial-click-ring: 7;                       /* that band's Q: high rings like metal, low is a dry plastic snap */
   --mode-dial-click-decay: 26;                     /* ms for the tick to die away */
   --mode-dial-key-thump: 120;                      /* Hz: the body of the key's press */
+  /* The ratchet's voice, under the same volume: 0 and 0 here, so the two
+     finishes keep their ticks; .mode-dial--ratchet turns both up. */
+  --mode-dial-scrape: 0;                           /* the knurl's scratch, one grain per tooth past the index, 0..1 of the volume */
+  --mode-dial-scrape-pitch: 5200;                  /* Hz: the centre of a grain's noise band, ±12% per grain */
+  --mode-dial-scrape-ring: 2.4;                    /* that band's Q */
+  --mode-dial-scrape-grain: 1;                     /* ms: a grain's length */
+  --mode-dial-snap: 0;                             /* the click of the face landing in a detent, 0..1; 0 keeps the tick */
+  --mode-dial-snap-pitch: 3400;                    /* Hz: the centre of the snap's broadband transient */
+  --mode-dial-snap-thock: 170;                     /* Hz: the body's sine, falling to 0.53 of it */
+  --mode-dial-snap-body: 40;                       /* ms: over which it falls */
+  --mode-dial-snap-settle: 15;                     /* ms: until the ball settles into the notch, a second tick */
+  --mode-dial-snap-ball: .3;                       /* that tick's level, of the snap's */
+  --mode-dial-snap-pass: 1;                        /* a detent passed on the way: the transient alone, at this share */
   /* -------------------------------------------------------------------- */
 
   display: block;
@@ -1300,6 +1315,21 @@
 .mode-dial--plain[data-mode-dial-set] .mode-dial__commit {
   background: var(--mode-dial-cap-low);
   box-shadow: 0 0 0 var(--mode-dial-hairline) var(--mode-dial-line), var(--mode-dial-key-ring);
+}
+
+/* --- the ratchet ---------------------------------------------------------------
+   A voice, not a finish: it composes with both and changes nothing that is
+   seen. Under the same volume, --mode-dial-click, the knurl scratches as it
+   turns, one grain of bright noise per tooth that passes the index, so a
+   quick turn buzzes, a slow drag crackles and a still dial is silent; and
+   the face snaps as it lands in a detent, a transient, a low thock and the
+   ball settling a beat after. A detent passed on the way gets the transient
+   alone. The snap replaces the finish's detent tick; the key keeps the
+   finish's own press and release. Every tunable is in the property block;
+   this sets the two levels. */
+.mode-dial--ratchet {
+  --mode-dial-scrape: .5;
+  --mode-dial-snap: 1;
 }
 
 /* --- the kick ------------------------------------------------------------------

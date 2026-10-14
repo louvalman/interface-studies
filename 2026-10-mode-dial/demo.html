@@ -363,9 +363,10 @@
     .demo__back svg { width: 0.85rem; height: 0.85rem; }
 
     /* --- groups -----------------------------------------------------------
-       Five, in the order the study argues: how a choice is labelled, what a
+       Six, in the order the study argues: how a choice is labelled, what a
        display adds, what a key in the middle adds, the same dial at two
-       sizes, and the same dial with its material taken off. Each opens on a title and one sentence, so the page can be read
+       sizes, the same dial with its material taken off, and the one with a
+       voice of its own. Each opens on a title and one sentence, so the page can be read
        down its left edge without opening a single dial. */
     .demo__group {
       padding-top: clamp(2.5rem, 5vw, 3.5rem);
@@ -959,7 +960,7 @@
          component's root: it rises inside its state. See the arrival block
          in the style above. -->
     <!-- ------------------------------------------------------------------ -->
-    <!-- Twelve instances, a to l in page order. Each has its own letter in
+    <!-- Thirteen instances, a to m in page order. Each has its own letter in
          whatever ids it carries — the arc of a curled dial (c, d, j), the
          readout lines of a display (d, e, f, k, l) — and a radio name for its
          context: view, range or kit. Each root is its own form, so
@@ -1752,6 +1753,76 @@
       </div>
     </section>
 
+    <!-- ------------------------------------------------------------------ -->
+    <!-- The ratchet: a voice rather than a look, so it is the one group a
+         reader has to switch something on to read. Its own Sound button is
+         the top bar's, mirrored — one state, both buttons pressed together —
+         so nobody has to scroll back up to hear it. Instance m. -->
+    <section class="demo__group">
+      <div class="demo__group-head" data-reveal>
+        <h2 class="demo__group-title" data-i18n="group.heard">Heard</h2>
+        <p class="demo__group-note" data-i18n="group.heardNote">One variation with a voice of its own, opt-in like every sound on this page: a scratch for the teeth going past the mark, and a snap as the dial lands in a detent.</p>
+      </div>
+
+      <div class="demo__grid">
+
+        <section class="demo__state" data-reveal>
+          <p class="demo__caption" data-i18n="state.ratchet"><strong>Ratchet</strong> &middot; switch Sound on and turn it. The knurl scratches tooth by tooth, quicker the quicker it turns and silent when it stops, and the face snaps into each detent it lands in.</p>
+          <p class="demo__hint">.mode-dial--ratchet</p>
+          <button class="demo__sound demo__sound--local" type="button" data-sound-toggle aria-pressed="false" hidden>
+            <svg class="demo__sound-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" />
+              <path class="demo__sound-waves" d="M15.5 9.2a4 4 0 0 1 0 5.6M18.2 6.6a7.6 7.6 0 0 1 0 10.8" />
+              <path class="demo__sound-mute" d="M16 9.5l5 5M21 9.5l-5 5" />
+            </svg>
+            <span class="demo__sound-word" data-i18n="sound">Sound</span>
+          </button>
+          <form class="mode-dial mode-dial--ratchet">
+            <fieldset class="mode-dial__set">
+              <legend class="mode-dial__legend" data-i18n="sample.range.legend">Range</legend>
+              <div class="mode-dial__deck">
+                <div class="mode-dial__dial">
+                  <span class="mode-dial__index" aria-hidden="true"></span>
+                  <div class="mode-dial__face">
+                    <span class="mode-dial__knurl" aria-hidden="true"></span>
+                    <span class="mode-dial__plate" aria-hidden="true"></span>
+                    <span class="mode-dial__light" aria-hidden="true"></span>
+                    <div class="mode-dial__options">
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="range" value="day">
+                        <span class="mode-dial__name" data-i18n="sample.range.day">Day</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="range" value="week" checked>
+                        <span class="mode-dial__name" data-i18n="sample.range.week">Week</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="range" value="month">
+                        <span class="mode-dial__name" data-i18n="sample.range.month">Month</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="range" value="quarter">
+                        <span class="mode-dial__name" data-i18n="sample.range.quarter">Quarter</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="range" value="year">
+                        <span class="mode-dial__name" data-i18n="sample.range.year">Year</span>
+                      </label>
+                      <label class="mode-dial__option">
+                        <input class="mode-dial__input" type="radio" name="range" value="all">
+                        <span class="mode-dial__name" data-i18n="sample.range.all">All</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </fieldset>
+          </form>
+        </section>
+
+      </div>
+    </section>
+
     <script src="component.js"></script>
 
 
@@ -1793,7 +1864,8 @@
           reached for, a dashboard's time range engraved round the arc, and a
           game's kit with a display and a centre key that commits. A second
           finish, <code>.mode-dial--plain</code>, is the same dial with the
-          material taken off.
+          material taken off, and <code>.mode-dial--ratchet</code> gives either
+          finish a voice of its own.
         </p>
 
         <ol class="demo__notes-list">
@@ -1839,7 +1911,12 @@
               softly on the way up. The sound is opt-in, synthesised with Web
               Audio, and follows only a real key, pointer or click on the dial; at
               0 no AudioContext is ever made. The polished finish rings like metal
-              and the plain one snaps like plastic.</p>
+              and the plain one snaps like plastic. <code>.mode-dial--ratchet</code>
+              is a voice of its own on either: a grain of bright noise for every
+              tooth the face carries past the index, so the scratch's rate is the
+              turn's speed, and a snap as the face lands in a detent — a transient,
+              a thock falling from 170Hz, the ball settling 15ms later — lighter
+              for a detent passed on the way.</p>
           </li>
           <li>
             <h3 class="demo__notes-head">Browsing and choosing are two marks.</h3>
@@ -1960,7 +2037,12 @@
         'state.plainViews': '<strong>Enkle ikoner</strong> &middot; med display: intet glas og ingen prikmatrix, den samme visning i tekstskriften.',
         'state.plainKit': '<strong>Enkelt udstyr</strong> &middot; knappen trykkes stadig ned og får stadig en ring, mens et valg afventer. Kun materialet er væk.',
 
-        // The sound switch in the top bar: its word is its name.
+        'group.heard': 'Hørt',
+        'group.heardNote': 'Én variant med sin egen stemme, slået til som al lyd på denne side: en skraben for tænderne, der passerer mærket, og et klik når hjulet lander i et hak.',
+        'state.ratchet': '<strong>Skralde</strong> &middot; slå Lyd til og drej. Riflingen skraber tand for tand, hurtigere jo hurtigere den drejer og tavs når den står stille, og fladen klikker på plads i hvert hak den lander i.',
+
+        // The sound switch, in the top bar and mirrored beside the ratchet:
+        // its word is its name.
         'sound': 'Lyd',
 
         // The component's sample copy. Every name, engraved word, readout and
@@ -2097,22 +2179,30 @@
     // Off on every load and never stored: a page that makes a noise is asked
     // each time. The component makes no AudioContext until a dial is turned
     // by hand with a volume set, so switching on is silent in itself.
+    //
+    // Two buttons, one state: the top bar's, and its mirror beside the
+    // ratchet, which is the one dial on the page that is about its sound.
+    // Either switches both, and both report it.
     (function () {
-      var toggle = document.querySelector('[data-sound-toggle]');
-      if (!toggle || !(window.AudioContext || window.webkitAudioContext)) return;
+      var toggles = Array.prototype.slice.call(document.querySelectorAll('[data-sound-toggle]'));
+      if (!toggles.length || !(window.AudioContext || window.webkitAudioContext)) return;
       var VOLUME = '0.5';
       var on = false;
 
       function paint() {
-        toggle.setAttribute('aria-pressed', on ? 'true' : 'false');
+        toggles.forEach(function (toggle) {
+          toggle.setAttribute('aria-pressed', on ? 'true' : 'false');
+        });
         Array.prototype.slice.call(document.querySelectorAll('.mode-dial')).forEach(function (dial) {
           if (on) dial.style.setProperty('--mode-dial-click', VOLUME);
           else dial.style.removeProperty('--mode-dial-click');
         });
       }
 
-      toggle.addEventListener('click', function () { on = !on; paint(); });
-      toggle.hidden = false;
+      toggles.forEach(function (toggle) {
+        toggle.addEventListener('click', function () { on = !on; paint(); });
+        toggle.hidden = false;
+      });
       paint();
     })();
 
