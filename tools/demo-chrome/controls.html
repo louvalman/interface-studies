@@ -1,0 +1,28 @@
+<div class="demo__controls">
+  {{SOUND}}
+
+  <div class="demo__lang" role="group" aria-label="Language" data-i18n-aria="a11y.lang">
+    <button class="demo__lang-btn" type="button" data-lang="en" aria-pressed="true">EN</button>
+    <span class="demo__lang-sep" aria-hidden="true"></span>
+    <button class="demo__lang-btn" type="button" data-lang="da" aria-pressed="false">DA</button>
+  </div>
+
+  <button
+    class="demo__theme"
+    type="button"
+    data-theme-toggle
+    aria-pressed="false"
+    data-i18n-aria="a11y.theme"
+    aria-label="Dark mode">
+    <svg class="demo__theme-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <mask id="demo-theme-bite">
+        <rect width="24" height="24" fill="#fff" />
+        <circle class="demo__theme-cut" cx="12" cy="12" r="9" />
+      </mask>
+      <circle class="demo__theme-disc" cx="12" cy="12" r="9" mask="url(#demo-theme-bite)" />
+      <g class="demo__theme-rays">
+        <path d="M12 1v2M12 21v2M3.9 3.9l1.4 1.4M18.7 18.7l1.4 1.4M1 12h2M21 12h2M3.9 20.1l1.4-1.4M18.7 5.3l1.4-1.4" />
+      </g>
+    </svg>
+  </button>
+</div>
