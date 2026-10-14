@@ -8,7 +8,8 @@ it by dragging, and the feel of each detent, are what component.js adds.
 Three item sets show where it belongs: an archive's views as icons that say
 their name when reached for, a dashboard's time range engraved round the arc,
 and a game's kit with a display and a centre key that commits. A second
-finish, `.mode-dial--plain`, is the same dial with the material taken off.
+finish, `.mode-dial--plain`, is the same dial with the material taken off,
+and `.mode-dial--ratchet` gives either finish a voice of its own.
 
 - **One number turns everything.** `:has()` rules write `--mode-dial-sel`
   and `--mode-dial-n` on the root, and the knurl, the engraving and the
@@ -40,7 +41,11 @@ finish, `.mode-dial--plain`, is the same dial with the material taken off.
   on the way up. The sound is opt-in, synthesised with Web Audio, and follows
   only a real key, pointer or click on the dial; at 0 no AudioContext is ever
   made. The polished finish rings like metal and the plain one snaps like
-  plastic.
+  plastic. `.mode-dial--ratchet` is a voice of its own on either: a grain
+  of bright noise for every tooth the face carries past the index, so the
+  scratch's rate is the turn's speed, and a snap as the face lands in a
+  detent — a transient, a thock falling from 170Hz, the ball settling 15ms
+  later — lighter for a detent passed on the way.
 - **Browsing and choosing are two marks.** With the centre key present, the
   checked radio is the pending choice and `:default` is the committed one:
   the index goes hollow and the key takes a ring while they differ, and a pip
@@ -188,6 +193,148 @@ What the bullets above rest on, and what was tried on the way.
   to come about 200ms before it. A second press inside the hold restarts it
   and cancels the click the first one owed. A key held by Space or Enter
   ignores a pointer pressed on it, so mixing the two cannot leave it down.
+
+### Ratchet
+
+- `.mode-dial--ratchet` sets two levels, `--mode-dial-scrape: .5` and
+  `--mode-dial-snap: 1`, under the volume, `--mode-dial-click`. Both are 0
+  in the property block, so the two finishes keep their ticks, and the nine
+  tunables beside them default to the ratchet's own values, so any dial has
+  this voice by turning the two levels up. It changes nothing that is seen,
+  and it is the same voice on both finishes: it is the mechanism's sound,
+  not the surface's. The key keeps its finish's press and release.
+- The scratch is one grain per tooth of `--mode-dial-teeth` that the face
+  carries past the index, 20 a step on six stops. A grain is not a node:
+  each scratching dial has one looping noise source through one band-pass
+  (5200Hz ±12% a grain, Q 2.4) into one gain, and a grain is an envelope on
+  that gain, up in 0.2ms and away on a third of `--mode-dial-scrape-grain`
+  (1ms), at 60–100% of its level. A tooth boundary is half a tooth either
+  side of a stop, as a pawl sits in a notch, and a tooth is heard again
+  going back over it only once the face is a quarter tooth past it, so the
+  settle's last wobble, ±0.1 tooth about the stop, is silent.
+- Grains counted against the face's own angle sampled every frame: one arrow
+  step 22 for 22 crossed — 20 and the overshoot out and back over one tooth
+  — in 10 of 10; a three-stop click 68 against 66 sampled, the samples
+  missing the top of its 3.6-tooth overshoot; four quick arrows 84–90 for
+  88–90; a held key, 33 or 50ms apart, 0.994 and 0.999 of the teeth over
+  five runs each. A reversal hears a few more than the face crosses — 1.05
+  at 100ms, 1.06–1.07 for a 90ms zig-zag, 1.16 and 1.18–1.37 at 60 and 30ms
+  — because what the audio clock has already rendered when the reversal
+  arrives, about 10ms ahead of the face, stands, and the face never gets
+  there.
+- A drag follows the displayed angle, after the detent curve, frame by
+  frame, and each frame's teeth are spread over the frame they took, at most
+  50ms, so the rate is the hand's: 7, 15 and 36 grains a second for a face
+  going 7, 14 and 36 teeth a second, 30–31 grains for 30 teeth each time.
+  Its sound trails the face by up to that frame: snaps 10–18ms after the
+  face crosses the stop.
+- The snap is the face arriving at a detent other than the one it sits in.
+  It leaves its seat by going 0.15 of a step away, three teeth on six stops,
+  and a turn's own overshoot past its target, up to 0.24 of a step on a
+  4-step turn, is the same landing. A turn's snap is due as the eased angle
+  first reaches the stop, off the same points the ticks read: median −0.3ms
+  from the face's crossing interpolated between frames, −0.4 to −0.1 over
+  five arrow steps and −1.1 to −0.1 over five three-stop clicks, which is
+  5–15ms before the first frame that shows it there; a turn whose start the
+  browser reports a frame late is up to 10ms early. The target gets the full
+  snap and a detent passed on the way the transient alone, at the same
+  level, `--mode-dial-snap-pass: 1`: a three-stop click is two light and one
+  full. It was 0.4, and at that a passed detent had the level and colour of
+  one grain — 1.3dB(A) over one in isolation, and inside a scratch
+  2.2–2.6dB(A) under its loudest 12ms, so a three-stop click was heard as
+  one scratch and one snap. At 1 it adds 4.8 and 7.6dB(A) to its own 12ms in
+  a scratch with grains 2.7 and 7.5ms apart, clears the scratch's loudest
+  12ms by 0.8 and 3.0dB(A) across the band and by 3.1 and 6.0dB between 1.2
+  and 3kHz, where the grains are thin, and stays 6.4dB(A) under a full snap.
+  Centring it an octave lower as well was measured and bought 0.2–0.5dB.
+- A turn that carries on the way the last one went, from a face short of the
+  last stop it was heard landing in, counts on from that stop, as the ticks
+  count on from the last tick: a held key outruns the frames, and the plan
+  that heard the snap can think the face has already left. A held key at
+  33ms gave 66 snaps for 60 stops over five runs without it, 60 with it; at
+  50ms, 60 either way.
+- What was last heard says where the face is only while every move of it is
+  heard. A host's turn or `form.reset()`, a `.checked` set with no event, a
+  turn or a drag with the sound off, and a jump under reduced motion all
+  move it unheard, and each one drops the tooth counter and the seat, so the
+  next heard turn counts its teeth and its landing from the face. Without
+  that, an arrow step after a host had stepped the dial back gave 2 grains
+  and no snap rather than 22 and one; after two steps with the sound off, 20
+  grains in 45ms, a buzz at the overshoot; a drag after a silent one, 6
+  grains for 28; a drag under reduced motion after two key steps, none for
+  24.
+- A full snap is a transient band-passed at 3400Hz (Q .7), up in 0.3ms; a
+  sine falling from 170Hz to 90 over 40ms; and the ball settling 15ms later,
+  a tick 1.4× higher at 0.3 of the level. Five nodes; a light one is three.
+  In the ratchet's voice it replaces the detent tick's sound, and the tick
+  event, the index's kick and the buzz keep their own timing.
+- Let go, the settle back to the stop is read off its transition like any
+  turn: from 0.34 and 0.27 of a step out the face snaps back 180–184ms after
+  the release, as the eased angle reaches the stop at 42% of 420ms. Let go
+  0.11 past the detent it had already snapped into, it does not snap again.
+- Planned sound waits in a queue and only the next 120ms of it is ever on
+  the audio clock, topped up every 30ms. A turn that takes over, a reversal,
+  a drag starting, the volume or a level going to 0 on the root, and the
+  root leaving the document all take back what has not played: the snaps'
+  nodes are stopped and the scratch's gain and pitch cancelled. What the
+  face had reached by the start of the transition that takes over stands,
+  and so does what the audio clock has already rendered, about 10ms ahead of
+  the page in Chromium; that is the one thing a reversal can still hear —
+  two across and back gave 32 snaps for 22 arrivals sampled frame by frame
+  over sixteen runs, a 90ms zig-zag 27 for 20 — 34 for 24 and 27 for 19
+  before the forgetting above and the held start below, so neither moved it
+  — and every other reversal, 30 to 200ms, one for one over eight runs each.
+  Switched off 120ms into a three-stop click, 0 heard after the cancel —
+  which on this page lands 25–33ms after the switch, while the browser works
+  out the new style of the thirteen dials the switch has just written to, so
+  the 6–8 grains due in between play, and now and then a light snap;
+  switched off mid-drag, 0 and the chain stopped; a drag started mid-turn
+  with 7 of the turn's grains on the clock past it, 0 of them heard; removed
+  mid-turn, taken back at the next top-up 23–28ms later and 0 heard after
+  it.
+- The audio clock at the face's moment, as the ticks are. The speaker is the
+  output's latency behind that — `getOutputTimestamp` says 33–42ms in
+  headless Chromium — and the ticks carry it too. Putting the sound where it
+  would be heard with the face was tried: everything due sooner than the
+  latency is committed at once, and a held key's twelve stops gave 21–23
+  snaps where they give 12.
+- A transition's start is known only a frame after it is asked for, and in
+  Chromium it is the next frame or the one after. The plan is made from now
+  and kept off the audio clock until the transition's `ready` says what the
+  start was, 2–16ms later and 27ms on the first turn, which makes the
+  AudioContext, or for at most 50ms; then it is moved onto the start and
+  what is already due is caught up. Put on the clock at once, as it was, the
+  first 3–12 grains of a turn from rest were heard up to 24ms before the
+  face moved, followed by a hole 9–24ms longer than a grain's spacing where
+  the rest had moved onto the real start. Held, over sixteen turns from
+  rest, 15 have no grain early and the hole is at most 4.7ms; the cost is
+  the first grain or two up to 9ms late, closer together. A transition that
+  takes over from a running one starts at the last frame's time, up to a
+  frame back, and what of it is already due is caught up — the first 2d ms
+  heard in the next d — rather than dropped or played as a burst.
+- Nodes: a 4-step turn from four quick arrows, 20–26 — 6–8 sources, 6–8
+  filters, 7–9 gains, 1 oscillator — depending on how many snaps the next
+  key finds already on the clock and plans again; 26–35 before a turn from
+  rest was held off the clock until its start was known; a 3s drag back and
+  forth, 78: 15 full snaps and one scratch chain, which is kept for 0.3s
+  after its last grain so a slow drag is one chain.
+- Main thread: planning a turn 0.5ms, a top-up 0.26ms, a drag frame 0.2ms,
+  1.0ms at a 4× CPU throttle. A drag never makes the dial's style be worked
+  out mid-frame: the voice is read again by the top-up, between frames, or
+  when one of the three levels changes in the root's own style. Read in the
+  frame, a drag frame cost 2ms, and 12.5 throttled.
+- Volume 0: no AudioContext over keys, a click and a drag. A host's
+  `input.click()`, `form.reset()` and a scripted `change`: no grain and no
+  snap, after a real turn had made the context.
+- Reduced motion: the turn has no duration, so there is nothing to scratch —
+  a snap per detent at the ticks' 30ms spacing, two light and one full for
+  three stops, and no grains. A drag still scratches: the face still follows
+  the hand and the teeth still pass the index. Its release is a jump, which
+  snaps and does not scratch.
+- Levels at the demo's 0.5, rendered offline from the real dial: a full snap
+  peaks at −8.4 to −11.0 dBFS against the polished tick's −14.4 to −19.7
+  over two renders each — the noise makes every click a little different —
+  and the grains sit 9–16dB under the snap.
 
 ### Tooltips, and the key's trade-off
 
