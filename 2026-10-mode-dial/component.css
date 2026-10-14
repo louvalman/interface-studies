@@ -45,8 +45,10 @@
   --mode-dial-screen-w: 14rem;
   --mode-dial-deck-radius: min(2rem, 9cqi);
   --mode-dial-r: 28cqi;                            /* option ring radius, in the dial's cqi */
-  --mode-dial-hit-min: 24px;
+  --mode-dial-hit-min: 24px;                       /* an option's own circle, which is its focus ring, not its target */
   --mode-dial-hit-max: 44px;
+  --mode-dial-hit-in: 7.5cqi;                      /* the middle of a dial with no key, which is no option's: component.js starts no drag in it either */
+  --mode-dial-hit-out: 38.5cqi;                    /* an option's slice reaches the plate's edge and stops, so the knurl stays the grip */
   --mode-dial-tip-reach: 6cqi;                     /* from the option centre to the tooltip's near edge, toward the centre */
   --mode-dial-tip-side: 3cqi;                      /* further, across only, so a wide word clears its own icon */
   --mode-dial-tip-radius: 2px;                     /* tooltip and display tags */
@@ -125,7 +127,8 @@
   --mode-dial-icon-stroke: 1.75;
   --mode-dial-lip: .06em;
   --mode-dial-tip-size: 11px;                      /* tooltip, display caption and tags */
-  --mode-dial-key-size: 26cqi;                     /* centre key diameter, in the dial's cqi */
+  --mode-dial-key-size: max(44px, 26cqi, var(--mode-dial-key-label) * var(--mode-dial-key-fit)); /* centre key diameter: a whole target at any size, and room for its word */
+  --mode-dial-key-fit: 4;                          /* ems of its label across: a word of five or six capitals, with air */
   --mode-dial-key-label: max(11px, 3.6cqi);
   --mode-dial-key-hi: 16%;                         /* the key's lit rim, as white's share */
   --mode-dial-key-hi-hover: 22%;
@@ -608,13 +611,151 @@
     calc(-50% - cos(calc(var(--mode-dial-i) * var(--mode-dial-step))) * var(--mode-dial-r));
   rotate: calc(var(--mode-dial-angle) * -1);
   transition: rotate var(--mode-dial-turn-time) var(--mode-dial-detent);
+  /* Its own box, and the radio's, are the focus ring's, not the target:
+     the target is the radio's slice, below. */
+  pointer-events: none;
+}
+
+/* --- the target: the option's slice of the face ---------------------------
+   Everything between the half-way lines to its neighbours, from the key's
+   edge (or the middle, without one) out to the plate's, so a tap or a click
+   anywhere in it picks the option drawn there. The knurl outside it stays the
+   grip. A pseudo-element of the radio, so a press on it is a press on the
+   radio — focused by the press, checked by the click, as before — and the
+   hover, the peek and the tooltip come for nothing, since the radio is in
+   the label they hang off.
+
+   It turns with the face. The label, and the radio in it, turn back by the
+   face's angle to stay upright; the slice turns forward by the same angle on
+   the same transition, then by its own slot's, i · step, so it sits in the
+   face's own frame with its slot straight up. There it is a disc the plate's
+   size centred on the dial, so its outer edge is the plate's own circle, by
+   border-radius, and clip-path cuts the wedge and the hole. Both bound
+   hit-testing, where a mask would not. The two straight edges lie on the
+   half-way lines, shared with the neighbours, so the slices meet with no gap
+   and no overlap.
+
+   The polygon is drawn on the content box, which the padding shrinks to the
+   hole's square, so the inner arc is a plain percentage of it and the far
+   points a plain distance past the plate, 100cqi out. That is what keeps it
+   cheap. Written with var() it was substituted and parsed again on every
+   restyle the turn causes, which every drag frame is, and it doubled the
+   dial's style cost; as literals it is parsed once. They depend only on the
+   count, so there is one per count, below: thirteen points round the hole
+   from one half-way line to the other, each 50%/cos(15/n deg) from the
+   middle so the twelve chords lie round the circle, not in it, and never
+   cover the key — at most 0.38% of its radius past it at three stops, 0.10%
+   at six — and three far out, on the half-way lines and between them. */
+.mode-dial__input::before {
+  --mode-dial-hole: var(--mode-dial-hit-in);
+  content: "";
+  box-sizing: border-box;
+  position: absolute;
+  inset: calc(50% - var(--mode-dial-hit-out));
+  padding: max(0px, calc(var(--mode-dial-hit-out) - max(var(--mode-dial-hole), 1px)));
+  border-radius: 50%;
+  transform:
+    rotate(var(--mode-dial-angle))
+    translate(
+      calc(sin(var(--mode-dial-i) * var(--mode-dial-step)) * var(--mode-dial-r) * -1),
+      calc(cos(var(--mode-dial-i) * var(--mode-dial-step)) * var(--mode-dial-r)))
+    rotate(calc(var(--mode-dial-i) * var(--mode-dial-step)));
+  transition: transform var(--mode-dial-turn-time) var(--mode-dial-detent);
+  pointer-events: auto;
+}
+
+.mode-dial:has(.mode-dial__option:nth-child(3):last-child) .mode-dial__input::before {
+  clip-path: polygon(
+    6.533% 24.905%, 11.551% 17.738%, 17.738% 11.551%, 24.905% 6.533%,
+    32.834% 2.836%, 41.284% 0.572%, 50% -0.191%, 58.716% 0.572%,
+    67.166% 2.836%, 75.095% 6.533%, 82.262% 11.551%, 88.449% 17.738%,
+    93.467% 24.905%,
+    calc(50% + 86.603cqi) calc(50% - 50cqi),
+    50% calc(50% - 100cqi),
+    calc(50% - 86.603cqi) calc(50% - 50cqi)) content-box;
+}
+
+.mode-dial:has(.mode-dial__option:nth-child(4):last-child) .mode-dial__input::before {
+  clip-path: polygon(
+    14.569% 14.569%, 19.497% 10.247%, 24.946% 6.606%, 30.825% 3.707%,
+    37.031% 1.6%, 43.46% 0.321%, 50% -0.107%, 56.54% 0.321%,
+    62.969% 1.6%, 69.175% 3.707%, 75.054% 6.606%, 80.503% 10.247%,
+    85.431% 14.569%,
+    calc(50% + 70.711cqi) calc(50% - 70.711cqi),
+    50% calc(50% - 100cqi),
+    calc(50% - 70.711cqi) calc(50% - 70.711cqi)) content-box;
+}
+
+.mode-dial:has(.mode-dial__option:nth-child(5):last-child) .mode-dial__input::before {
+  clip-path: polygon(
+    20.57% 9.494%, 24.966% 6.639%, 29.635% 4.26%, 34.528% 2.382%,
+    39.59% 1.026%, 44.766% 0.206%, 50% -0.069%, 55.234% 0.206%,
+    60.41% 1.026%, 65.472% 2.382%, 70.365% 4.26%, 75.034% 6.639%,
+    79.43% 9.494%,
+    calc(50% + 58.779cqi) calc(50% - 80.902cqi),
+    50% calc(50% - 100cqi),
+    calc(50% - 58.779cqi) calc(50% - 80.902cqi)) content-box;
+}
+
+.mode-dial:has(.mode-dial__option:nth-child(6):last-child) .mode-dial__input::before {
+  clip-path: polygon(
+    24.976% 6.657%, 28.849% 4.641%, 32.883% 2.971%, 37.047% 1.658%,
+    41.309% 0.713%, 45.638% 0.143%, 50% -0.048%, 54.362% 0.143%,
+    58.691% 0.713%, 62.953% 1.658%, 67.117% 2.971%, 71.151% 4.641%,
+    75.024% 6.657%,
+    calc(50% + 50cqi) calc(50% - 86.603cqi),
+    50% calc(50% - 100cqi),
+    calc(50% - 50cqi) calc(50% - 86.603cqi)) content-box;
+}
+
+.mode-dial:has(.mode-dial__option:nth-child(7):last-child) .mode-dial__input::before {
+  clip-path: polygon(
+    28.291% 4.92%, 31.72% 3.424%, 35.252% 2.188%, 38.866% 1.219%,
+    42.543% 0.524%, 46.261% 0.105%, 50% -0.035%, 53.739% 0.105%,
+    57.457% 0.524%, 61.134% 1.219%, 64.748% 2.188%, 68.28% 3.424%,
+    71.709% 4.92%,
+    calc(50% + 43.388cqi) calc(50% - 90.097cqi),
+    50% calc(50% - 100cqi),
+    calc(50% - 43.388cqi) calc(50% - 90.097cqi)) content-box;
+}
+
+.mode-dial:has(.mode-dial__option:nth-child(8):last-child) .mode-dial__input::before {
+  clip-path: polygon(
+    30.856% 3.781%, 33.919% 2.628%, 37.052% 1.678%, 40.24% 0.934%,
+    43.47% 0.401%, 46.728% 0.08%, 50% -0.027%, 53.272% 0.08%,
+    56.53% 0.401%, 59.76% 0.934%, 62.948% 1.678%, 66.081% 2.628%,
+    69.144% 3.781%,
+    calc(50% + 38.268cqi) calc(50% - 92.388cqi),
+    50% calc(50% - 100cqi),
+    calc(50% - 38.268cqi) calc(50% - 92.388cqi)) content-box;
+}
+
+/* With a key, the hole is the key and its seam, the disc the names' stand-in
+   cuts out too. */
+.mode-dial:has(.mode-dial__commit) .mode-dial__input::before {
+  --mode-dial-hole: calc(var(--mode-dial-key-size) / 2 + .4cqi);
+}
+
+/* A disabled stop is passed over, so its slice is plain face: grabbed, not
+   picked. Its own circle still takes the pointer, as every option's did
+   before the slices, so its name rises and the display peeks at it: on an
+   icons-only dial that is the one way left to learn what it is, since it
+   cannot take focus. A click there does nothing; a press drags. */
+.mode-dial__input:disabled::before {
+  pointer-events: none;
+}
+
+.mode-dial__option:has(> .mode-dial__input:disabled) {
   pointer-events: auto;
 }
 
 /* Each option turns, so each is a stacking context and a later one paints
    over an earlier one's name. The one whose name is up is lifted: the
    choice, and above it the press, the focus and — only where hover is real,
-   since a touch screen leaves it on the last thing tapped — the pointer. */
+   since a touch screen leaves it on the last thing tapped — the pointer.
+   The slices never overlap, so the lift decides nothing about them: only
+   whose raised name is on top, and so, where hover is real, which name
+   takes the pointer over a neighbour's slice. */
 .mode-dial__option:has(> .mode-dial__input:checked) {
   z-index: 1;
 }
@@ -789,23 +930,6 @@
       translate var(--mode-dial-turn-time) var(--mode-dial-detent);
   }
 
-  /* Where the name does not touch its option — on a large dial, or centred
-     on a small one — a strip from the option toward the middle, one hit
-     circle wide, keeps the pointer on the option all the way to the name.
-     No wider: it is lifted with its option, so where it reached over a
-     neighbour's icon it took that icon's clicks. Only while hovered. */
-  .mode-dial--icons:not(.mode-dial--curled, [data-mode-dial-settling], [data-mode-dial-dragging], [data-mode-dial-hush]) .mode-dial__option:hover::before {
-    content: "";
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    inline-size: var(--mode-dial-hit);
-    block-size: var(--mode-dial-bridge, calc(var(--mode-dial-tip-reach) + var(--mode-dial-tip-side)));
-    translate: -50% 0;
-    transform-origin: 50% 0;
-    rotate: var(--mode-dial-at);
-  }
-
   /* With a centre key, the key outranks a name drawn over it. The name is
      drawn as before, over the key, but what takes the pointer is a stand-in
      the size of the name with the key's disc cut out of it, so a click on
@@ -872,10 +996,6 @@
       calc(-50% - var(--mode-dial-tx) * var(--mode-dial-r))
       calc(-50% + var(--mode-dial-ty) * var(--mode-dial-r));
   }
-  /* The bridge reaches the middle, where the name is. */
-  .mode-dial--icons:not(.mode-dial--curled, :has(.mode-dial__commit)) .mode-dial__option {
-    --mode-dial-bridge: var(--mode-dial-r);
-  }
   /* One place, so one name: the option being pressed, or pointed at, has
      it, and a focused or chosen one gives way for as long as it does. */
   .mode-dial--icons:not(.mode-dial--curled, :has(.mode-dial__commit)):has(.mode-dial__option:active) .mode-dial__option:not(:active) .mode-dial__name {
@@ -886,6 +1006,12 @@
 
 @media (hover: hover) {
   @container mode-dial-dial (inline-size < 11rem) {
+    /* The name is in the middle, so the slice of the option pointed at
+       reaches it, and the pointer stays on the option all the way there. */
+    .mode-dial--icons:not(.mode-dial--curled, :has(.mode-dial__commit), [data-mode-dial-settling], [data-mode-dial-dragging], [data-mode-dial-hush]) .mode-dial__option:hover .mode-dial__input::before {
+      --mode-dial-hole: 0px;
+    }
+
     .mode-dial--icons:not(.mode-dial--curled, :has(.mode-dial__commit), [data-mode-dial-settling], [data-mode-dial-dragging]):has(.mode-dial__option:hover) .mode-dial__option:not(:hover) .mode-dial__name {
       opacity: 0;
       clip-path: inset(50%);
@@ -1362,6 +1488,7 @@
   transition: none;
 }
 
+.mode-dial[data-mode-dial-dragging] .mode-dial__input::before,
 .mode-dial[data-mode-dial-dragging] .mode-dial__option::after {
   transition: none;
 }
@@ -1375,6 +1502,7 @@
   }
 
   .mode-dial :is(.mode-dial__knurl, .mode-dial__engraving, .mode-dial__options, .mode-dial__option, .mode-dial__name, .mode-dial__ticks),
+  .mode-dial .mode-dial__input::before,
   .mode-dial .mode-dial__option::after,
   .mode-dial .mode-dial__ticks::before {
     transition-duration: 0s;

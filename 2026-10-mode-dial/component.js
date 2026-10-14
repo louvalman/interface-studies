@@ -59,7 +59,9 @@
 
   var START = 4 * Math.PI / 180;   /* a drag begins after 4 degrees */
   var CROSS = 0.6;                 /* a detent is crossed 0.6 of a step past it */
-  var CENTRE = 0.15;               /* ignore a press this close to the middle */
+  var CENTRE = 0.15;               /* ignore a press this close to the middle: --mode-dial-hit-in, 7.5cqi, where no slice is either */
+  var GRIP = [0.77, 0.87];         /* the knurl, as shares of the dial's half-width: --mode-dial-hit-out to its own edge, 38.5 to 43.5cqi */
+  var SLOP = { mouse: 4, touch: 8, pen: 8 };  /* px a press may wander and still be a click, whatever the angle says */
   var SET_MS = 180;                /* the key's pressed look after a commit */
   var BUZZ_MS = 40;                /* no two buzzes closer than this */
   var TICK_GAP = 12;               /* no two ticks of one dial closer than this, in ms */
@@ -1107,8 +1109,39 @@
 
     var drag = null;
     var raf = 0;
+    var press = null;                    /* where the last press on the knurl went down, and the face then, for its click */
+
+    /* How far from the middle a point is, as a share of the dial's
+       half-width. The middle and the knurl are told apart by this, not by
+       what is under the point: a touch is not always given to the element
+       under it (below). */
+    function reach(x, y) {
+      var box = dial.getBoundingClientRect();
+      var dx = x - (box.left + box.width / 2), dy = y - (box.top + box.height / 2);
+      return Math.sqrt(dx * dx + dy * dy) / (box.width / 2);
+    }
+
+    function onGrip(x, y) {
+      var r = reach(x, y);
+      return r >= GRIP[0] && r <= GRIP[1];
+    }
+
+    /* Focus left on a radio that is not the chosen one — by a press on a
+       slice that became a drag, or a tap undone below — goes back to the
+       chosen one, so the next arrow key moves one stop from it. */
+    function keepFocus() {
+      var a = document.activeElement;
+      if (a !== inputs[sel] && inputs.indexOf(a) !== -1) inputs[sel].focus({ preventScroll: true });
+    }
+
+    /* The face's angle as drawn now, mid-turn included. */
+    function faceAngle() {
+      var layer = root.querySelector('.mode-dial__options');
+      return layer ? parseFloat(getComputedStyle(layer).rotate) || 0 : 0;
+    }
 
     dial.addEventListener('pointerdown', function (e) {
+      press = e.isPrimary && onGrip(e.clientX, e.clientY) ? { x: e.clientX, y: e.clientY, turned: faceAngle() } : null;
       if (!e.isPrimary || e.button !== 0) return;
       if (e.target.closest && e.target.closest('.mode-dial__commit')) return;
       var box = dial.getBoundingClientRect();
@@ -1123,12 +1156,29 @@
         hear: null,
         notch: 0,
         cx: cx, cy: cy,
+        x0: e.clientX, y0: e.clientY,
+        slop: SLOP[e.pointerType] || SLOP.mouse,
         prev: Math.atan2(dy, dx),
         acc: 0,
         from: sel + laps * n,
         started: false
       };
     });
+
+    /* The knurl is touch-action: none, but Chromium adjusts a touch onto
+       the nearest thing that answers a tap, and near a slice that is the
+       slice's radio, which is pan-y: a vertical drag on the ring scrolled
+       the page. So a touch that starts on the ring keeps the page still
+       here, by radius, whatever it was given to. */
+    var gripped = false;
+    dial.addEventListener('touchstart', function (e) {
+      var t = e.touches[0];
+      gripped = e.touches.length === 1 && onGrip(t.clientX, t.clientY);
+    }, { passive: true });
+    dial.addEventListener('touchmove', function (e) {
+      if (gripped && e.cancelable) e.preventDefault();
+    }, { passive: false });
+    root.addEventListener('keydown', function () { press = null; }, true);
 
     dial.addEventListener('pointermove', function (e) {
       if (!drag || e.pointerId !== drag.id) return;
@@ -1145,8 +1195,15 @@
       drag.prev = a;
       drag.acc += d;
       if (!drag.started) {
+        /* Four degrees is a hair near the middle — a pixel at 14px out — so
+           a press must also have moved a finger's or a hand's wobble before
+           it is a drag rather than a click. */
         if (Math.abs(drag.acc) < START) return;
+        var mx = e.clientX - drag.x0, my = e.clientY - drag.y0;
+        if (Math.sqrt(mx * mx + my * my) < drag.slop) return;
         drag.started = true;
+        press = null;
+        keepFocus();
         /* Once per drag: how notched it is, and whether it is heard. */
         var k = parseFloat(getComputedStyle(root).getPropertyValue('--mode-dial-notch'));
         drag.notch = isFinite(k) ? Math.min(1, Math.max(0, k)) : 0;
@@ -1250,6 +1307,51 @@
     dial.addEventListener('pointerup', end);
     dial.addEventListener('pointercancel', end);
     dial.addEventListener('lostpointercapture', end);
+
+    /* A tap on the knurl that never became a drag picks the option at that
+       angle, so the whole dial is a target and the ring is not a dead band
+       round the slices. Its angle is read against where the face really is,
+       mid-turn included, and taken to the nearest stop; a disabled stop
+       takes nothing, as its slice does. It is then a click on that option's
+       label, so it does exactly what a click on the slice does, focus
+       included. A drag's own click never gets here: swallowClick has it
+       first.
+
+       The ring is told by where the press went down, not by what the click
+       landed on: Chromium moves a touch's click onto the nearest thing that
+       answers a tap, by some pixels — a radio, often the neighbour's near a
+       stop boundary, or the plate. So a click from a press on the ring is
+       the angle's to decide, unless it reached a name or an icon, and a
+       radio it was not meant for is undone. The angle is the face's at the
+       press: the undone radio has already turned it. */
+    dial.addEventListener('click', function (e) {
+      var p = press;
+      press = null;
+      if (!e.isTrusted || !p || !e.target.closest) return;
+      /* A raised name or an icon is its own option's; anything else is
+         the ring's, whatever a touch was given to. */
+      var on = e.target.closest('.mode-dial__input');
+      if (!on && e.target.closest('.mode-dial__option, .mode-dial__commit')) return;
+      var box = dial.getBoundingClientRect();
+      var dx = p.x - (box.left + box.width / 2);
+      var dy = p.y - (box.top + box.height / 2);
+      var at = Math.atan2(dx, -dy) * 180 / Math.PI - p.turned;
+      var k = ((Math.round(at / (360 / n)) % n) + n) % n;
+      var input = inputs[k];
+      if (on === input) return;
+      var label = input && input.closest('.mode-dial__option');
+      var pick = label && !input.disabled && !input.checked;
+      if (!on) {
+        if (pick) label.click();
+        return;
+      }
+      /* Undone: the radio puts the old choice back once this click is
+         through, so the right one is picked after it, not inside it. */
+      e.preventDefault();
+      e.stopPropagation();
+      if (pick) setTimeout(function () { label.click(); }, 0);
+      else keepFocus();
+    }, true);
 
     /* --- 3. commit -------------------------------------------------------
        The status line names what is held, always, in whatever language the
