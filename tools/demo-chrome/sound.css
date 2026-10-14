@@ -1,0 +1,55 @@
+/* --- sound ------------------------------------------------------------
+   Only on a page whose study makes a noise. Off on every load and never
+   stored. It says its word rather than being an icon alone, since nothing
+   else up here says there is a sound to switch on. Hidden until the script
+   has found Web Audio and something to reach; [hidden] is restated because
+   the rule below gives the button a display. */
+.demo__sound {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  height: 1.85rem;
+  padding: 0 0.75rem 0 0.6rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--demo-chip);
+  backdrop-filter: blur(8px);
+  color: var(--demo-dim);
+  font-family: "Fragment Mono", ui-monospace, monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 240ms ease;
+}
+.demo__sound[hidden] { display: none; }
+.demo__sound:hover { color: var(--demo-fg); }
+.demo__sound:focus-visible { outline: 2px solid var(--demo-fg); outline-offset: 2px; }
+.demo__sound[aria-pressed="true"] { color: var(--demo-fg); }
+.demo__sound[aria-pressed="true"] .demo__sound-word {
+  text-decoration: underline;
+  text-decoration-color: var(--demo-accent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.4em;
+}
+.demo__sound-icon {
+  flex: none;
+  width: 0.95rem;
+  height: 0.95rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+/* Off is a speaker and a cross; on, the cross goes and the waves come. */
+.demo__sound-waves { opacity: 0; transition: opacity 200ms ease; }
+.demo__sound-mute { transition: opacity 200ms ease; }
+.demo__sound[aria-pressed="true"] .demo__sound-waves { opacity: 1; }
+.demo__sound[aria-pressed="true"] .demo__sound-mute { opacity: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .demo__sound-waves, .demo__sound-mute { transition: none; }
+}
+@media (hover: none) {
+  .demo__sound { height: 2.25rem; }
+}
