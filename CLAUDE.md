@@ -1896,8 +1896,7 @@ which is where the file is fetched from.
 file's Community listing, and quick look draws an `Open in Figma` link beside
 `Open study` where a card carries one. Every study in the file has one. It
 stays optional because a study can land before it is in the file: no attribute,
-no link, and nothing else reads it. `2026-10-mode-dial` is that case until it
-is drawn into the file and the listing is published. The link opens in a new
+no link, and nothing else reads it. The link opens in a new
 tab and takes neither `?lang=` nor `?theme=` — Figma resolves neither, and the
 choice is this site's rather than something to hand to another one.
 
@@ -1948,11 +1947,11 @@ the page names the other two side by side, set alike, as quick look does. The
 two are one `.demo__kicker-links` span that does not wrap inside, so where the
 kicker wraps, the pair moves to the next line together rather than leaving
 GitHub on a line of its own. That is at 320 on every page and at 390 on the
-toolbar's, which has `NAVIGATION` in it: "2026-09 · Card ·" and then
-"Figma ↗ · GitHub ↗". The kicker held one line at 320 with the Figma link
-alone; it costs a line there now. A study not yet in the file carries
-GitHub alone, and the `·` between the two goes with Figma — the mode dial's
-kicker holds one line at 320 that way. Like the canonical URL,
+two whose type is `NAVIGATION`, the toolbar's and the mode dial's:
+"2026-09 · Card ·" and then "Figma ↗ · GitHub ↗". The kicker held one line at
+320 with the Figma link alone; it costs a line there now. A study not yet in
+the file carries GitHub alone, and the `·` between the two goes with Figma.
+Like the canonical URL,
 the address is absolute and the folder's own, and `_template/` carries it as
 `YYYY-MM-slug` to be filled in with the folder's name.
 
