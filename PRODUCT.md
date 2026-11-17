@@ -93,7 +93,7 @@ decisions, and reading it is not a goal in itself.
 
 - Nine studies (`2026-09-*` and `2026-10-*` folders), each with `notes.md`, a
   demo page and a live preview.
-- The Figma Community file linked above, holding eight of them; `og.png`
+- The Figma Community file linked above, holding all nine; `og.png`
   social card rendered from `og.html`.
 - No testimonials, usage figures, download counts or press. Do not invent any.
 
