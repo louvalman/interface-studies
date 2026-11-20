@@ -189,6 +189,7 @@
   box-sizing: border-box;
   width: var(--glass-grades-width);
   max-width: 100%;
+  container: glass-grades / inline-size;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: var(--glass-grades-gap);
@@ -840,6 +841,51 @@
 @media (pointer: coarse) {
   .glass-grades__btn { height: var(--glass-grades-btn-h-touch); padding: 0 16px 0 13px; }
   .glass-grades__switch-opt { height: calc(var(--glass-grades-btn-h-touch) - 2px); padding: 0 15px 0 12px; }
+}
+
+/* Narrow: below 26rem a sliver would be under 26px, too thin to read or to
+   tap, so an open pane takes the whole window and the rail is the way to the
+   others. The strip stays. open and s are restated on the window, because s
+   is worked out where it is declared, and the root's still says .62. The
+   index and the scale keep the strip's arithmetic here: at s = 0 the index
+   would sit in the middle whatever was open and the scale would be one lit
+   band, so instead they say where in the seven the open pane is. */
+@container glass-grades (max-width: 26rem) {
+  .glass-grades__window {
+    --glass-grades-open: 1;
+    --glass-grades-s: calc((1 - var(--glass-grades-open)) / (var(--glass-grades-n) - 1));
+  }
+  .glass-grades__scale,
+  .glass-grades__track { --glass-grades-a: 0; }
+
+  /* The actions keep their names for a screen reader and show their icons,
+     so the bar holds one row of tools under the readout. */
+  .glass-grades__btn {
+    justify-content: center;
+    width: var(--glass-grades-btn-h);
+    padding: 0;
+  }
+  .glass-grades__btn span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  @media (pointer: coarse) {
+    .glass-grades__btn { width: var(--glass-grades-btn-h-touch); padding: 0; }
+  }
+}
+
+/* Narrower still, the switch keeps its words and gives up its icons: a word
+   says strip or pane more plainly than a drawing of one. */
+@container glass-grades (max-width: 18rem) {
+  .glass-grades__switch-opt svg { display: none; }
+  .glass-grades__switch-opt { padding: 0 12px; }
+  @media (pointer: coarse) {
+    .glass-grades__switch-opt { padding: 0 13px; }
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
