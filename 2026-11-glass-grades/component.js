@@ -1,8 +1,8 @@
 /*
   Glass grades: what script adds to a component that already works without it.
 
-  component.css opens, slides and labels every pane from the checked radio and
-  the Strip checkbox. This file drives the same number, --glass-grades-p,
+  component.css opens, slides and labels every pane from the checked light and
+  the Strip | Pane switch. This file drives the same number, --glass-grades-p,
   faster than a transition can: a drag that sticks near each stop, a flick
   that coasts, a spring that lands. Each stop passed ticks, in sound when
   --glass-grades-click is above 0 and in touch on a phone. A still press lifts
@@ -145,7 +145,9 @@
     var radios = Array.prototype.slice.call(root.querySelectorAll('.glass-grades__radio'));
     var panes = Array.prototype.slice.call(root.querySelectorAll('.glass-grades__pane'));
     var names = Array.prototype.slice.call(root.querySelectorAll('.glass-grades__name'));
-    var strip = root.querySelector('.glass-grades__strip');
+    var sides = Array.prototype.slice.call(root.querySelectorAll('.glass-grades__switch-radio'));
+    var stripSide = sides.filter(function (s) { return s.value === 'strip'; })[0];
+    var paneSide = sides.filter(function (s) { return s.value === 'pane'; })[0];
     var file = root.querySelector('.glass-grades__file');
     var live = root.querySelector('.glass-grades__live');
     var note = root.querySelector('.glass-grades__tag--note');
@@ -326,8 +328,11 @@
     }
 
     /* ── strip and pane ── */
-    function isStrip() { return !!(strip && strip.checked); }
-    function openView() { if (strip && strip.checked) strip.checked = false; }
+    function isStrip() { return !!(stripSide && stripSide.checked); }
+    function openView() { if (isStrip() && paneSide) paneSide.checked = true; }
+    function switchView() {
+      if (stripSide && paneSide) (isStrip() ? paneSide : stripSide).checked = true;
+    }
 
     /* ── lifting the glass ──
        Held, for as long as a press or Space is; or latched, by a tap on the
@@ -490,8 +495,8 @@
         e.preventDefault();
         if (lifted()) lift(false, 'key', true);
         else { lift(true, 'key', true); latched = true; }
-      } else if ((e.key === 's' || e.key === 'S') && !e.metaKey && !e.ctrlKey && !e.altKey && strip) {
-        strip.checked = !strip.checked;
+      } else if ((e.key === 's' || e.key === 'S') && !e.metaKey && !e.ctrlKey && !e.altKey) {
+        switchView();
       }
     });
     frame.addEventListener('keyup', function (e) {

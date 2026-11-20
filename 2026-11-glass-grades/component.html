@@ -3,13 +3,15 @@
   a radio group that picks one. The contract component.css expects, and what
   gets copied out.
 
-  Works without script: the rail is a radio group and Strip is a checkbox, and
-  component.css opens, slides and labels every pane from those two alone.
+  Works without script: the rail is a radio group and so is the Strip | Pane
+  switch, and component.css opens, slides and labels every pane from those
+  two alone.
   component.js adds the drag, the flick, holding to lift the glass, a picture
   of your own (pick, drop or paste), sound and touch.
 
   - `name` on the radios is the group, so two of these on one page need two
-    names. The order of the radios is the order of the panes: pane k shows the
+    names; the Strip | Pane switch takes the same name with -view after it.
+    The order of the radios is the order of the panes: pane k shows the
     grade of radio k, and both carry the same --grade modifier.
   - Every <img> shows the same picture. component.js swaps all of them when a
     new one is given; the pane copies are decoration (alt="").
@@ -32,10 +34,17 @@
         <input class="glass-grades__file" type="file" accept="image/*">
         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="1.5" y="3" width="13" height="10" rx="2"/><circle cx="8" cy="8" r="2.6"/><path d="M5 3l1-1.5h4L11 3"/></svg><span>Photo</span>
       </label>
-      <label class="glass-grades__btn">
-        <input class="glass-grades__strip" type="checkbox" checked>
-        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="1.5" y="2.5" width="13" height="11" rx="1.5"/><path d="M5.8 2.5v11M10.2 2.5v11"/></svg><span>Strip</span>
-      </label>
+      <fieldset class="glass-grades__switch">
+        <legend class="glass-grades__legend">View</legend>
+        <label class="glass-grades__switch-opt">
+          <input class="glass-grades__switch-radio" type="radio" name="glass-grades-view" value="strip" checked>
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="1.5" y="2.5" width="13" height="11" rx="1.5"/><path d="M4.75 2.5v11M8 2.5v11M11.25 2.5v11"/></svg><span>Strip</span>
+        </label>
+        <label class="glass-grades__switch-opt">
+          <input class="glass-grades__switch-radio" type="radio" name="glass-grades-view" value="pane">
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="1.5" y="2.5" width="13" height="11" rx="1.5"/><path d="M3.9 2.5v11M12.1 2.5v11"/></svg><span>Pane</span>
+        </label>
+      </fieldset>
     </div>
   </div>
   <div class="glass-grades__window">

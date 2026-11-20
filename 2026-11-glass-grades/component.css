@@ -7,9 +7,10 @@
     select nothing.
   - Every tunable is in the block at the top of .glass-grades, the grades
     included: re-theme or re-grade it by setting those from outside.
-  - No script needed for the layout. The checked radio and the Strip checkbox
-    set two numbers, and every edge, the index, the scale and the readout are
-    arithmetic on them. component.js only drives the same two numbers faster.
+  - No script needed for the layout. The checked light and the checked side
+    of the Strip | Pane switch set two numbers, and every edge, the index,
+    the scale and the readout are arithmetic on them. component.js only
+    drives the same numbers faster.
 */
 
 /* Registered so they can be transitioned: the whole arrangement follows them.
@@ -75,6 +76,7 @@
   --glass-grades-btn-fill: rgba(255, 255, 255, .05);
   --glass-grades-btn-line: rgba(255, 255, 255, .13);
   --glass-grades-btn-hover: rgba(255, 255, 255, .1);
+  --glass-grades-switch-on: rgba(255, 255, 255, .12);
   --glass-grades-tag-fill: rgba(20, 21, 23, .88);
   --glass-grades-paper: #fff;         /* under a picture with transparency */
   --glass-grades-shadow:
@@ -244,7 +246,7 @@
 .glass-grades:has(.glass-grades__chip:nth-of-type(7):last-of-type) { --glass-grades-n: 7; }
 .glass-grades:has(.glass-grades__chip:nth-of-type(8):last-of-type) { --glass-grades-n: 8; }
 
-.glass-grades:has(.glass-grades__strip:checked) { --glass-grades-a: 0; }
+.glass-grades:has(.glass-grades__switch-radio[value="strip"]:checked) { --glass-grades-a: 0; }
 
 /* Each pane, segment and name knows its place. */
 .glass-grades__pane:nth-child(1), .glass-grades__seg:nth-child(1), .glass-grades__name:nth-child(1) { --glass-grades-i: 0; }
@@ -380,9 +382,10 @@
   transition: background-color .15s, border-color .15s;
 }
 .glass-grades__btn:hover { background: var(--glass-grades-btn-hover); }
-.glass-grades__btn svg { width: 15px; height: 15px; flex: none; }
-.glass-grades__btn:has(.glass-grades__strip:checked) { border-color: var(--glass-grades-signal); }
-.glass-grades__btn:has(:focus-visible) {
+.glass-grades__btn svg,
+.glass-grades__switch-opt svg { width: 15px; height: 15px; flex: none; }
+.glass-grades__btn:has(:focus-visible),
+.glass-grades__btn:focus-visible {
   outline: 2px solid var(--glass-grades-signal);
   outline-offset: 2px;
 }
@@ -391,13 +394,61 @@
 .glass-grades--live .glass-grades__btn--photo { display: inline-flex; }
 
 .glass-grades__file,
-.glass-grades__strip {
+.glass-grades__switch-radio {
   position: absolute;
   width: 1px;
   height: 1px;
   margin: 0;
   opacity: 0;
   pointer-events: none;
+}
+
+/* Strip | Pane: a second radio group, so the view is said by the markup
+   the way the light is, and :has() reads it into a. The chosen side is a
+   raised fill with its icon in the index's orange. */
+.glass-grades__switch {
+  display: inline-flex;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+  border: 1px solid var(--glass-grades-btn-line);
+  border-radius: 999px;
+  background: var(--glass-grades-btn-fill);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06);
+}
+.glass-grades__switch-opt {
+  position: relative;
+  z-index: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: calc(var(--glass-grades-btn-h) - 2px);
+  padding: 0 12px 0 10px;
+  border-radius: 999px;
+  color: var(--glass-grades-paint-dim);
+  font: 600 12.5px/1 var(--glass-grades-font);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: color .15s;
+}
+.glass-grades__switch-opt::before {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  z-index: -1;
+  border-radius: inherit;
+  transition: background-color .15s, box-shadow .15s;
+}
+.glass-grades__switch-opt:hover,
+.glass-grades__switch-opt:has(> :checked) { color: var(--glass-grades-paint); }
+.glass-grades__switch-opt:has(> :checked)::before {
+  background: var(--glass-grades-switch-on);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08), 0 1px 2px rgba(0, 0, 0, .4);
+}
+.glass-grades__switch-opt:has(> :checked) svg { color: var(--glass-grades-signal); }
+.glass-grades__switch-opt:has(> :focus-visible) {
+  outline: 2px solid var(--glass-grades-signal);
+  outline-offset: 1px;
 }
 
 /* --- the window: an index above, the picture, a scale below --------------- */
@@ -768,6 +819,8 @@
   --glass-grades-chip-min: 40px;
 }
 .glass-grades--compact .glass-grades__desc { display: none; }
+/* With no description the readout is one name, so it asks for room for one. */
+.glass-grades--compact .glass-grades__readout { flex-basis: 6rem; }
 .glass-grades--compact .glass-grades__chip { gap: 0; padding: 12px 3px 4px; }
 .glass-grades--compact .glass-grades__label,
 .glass-grades--compact .glass-grades__hint {
@@ -786,6 +839,7 @@
 /* A finger needs a bigger target than a pointer. */
 @media (pointer: coarse) {
   .glass-grades__btn { height: var(--glass-grades-btn-h-touch); padding: 0 16px 0 13px; }
+  .glass-grades__switch-opt { height: calc(var(--glass-grades-btn-h-touch) - 2px); padding: 0 15px 0 12px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
