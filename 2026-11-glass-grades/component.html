@@ -1,0 +1,151 @@
+<!--
+  Glass grades. Seven grades, each a pane of glass laid over one picture, and
+  a radio group that picks one. The contract component.css expects, and what
+  gets copied out.
+
+  Works without script: the rail is a radio group and Strip is a checkbox, and
+  component.css opens, slides and labels every pane from those two alone.
+  component.js adds the drag, the flick, holding to lift the glass, a picture
+  of your own (pick, drop or paste), sound and touch.
+
+  - `name` on the radios is the group, so two of these on one page need two
+    names. The order of the radios is the order of the panes: pane k shows the
+    grade of radio k, and both carry the same --grade modifier.
+  - Every <img> shows the same picture. component.js swaps all of them when a
+    new one is given; the pane copies are decoration (alt="").
+  - The readout carries one name per grade; component.css shows the chosen one.
+    It is aria-hidden because the radio group already says it.
+-->
+<div class="glass-grades">
+  <div class="glass-grades__bar">
+    <p class="glass-grades__readout" aria-hidden="true">
+      <span class="glass-grades__name">Havgus <span class="glass-grades__desc">Sea fog: scattered light lifts every shadow</span></span>
+      <span class="glass-grades__name">Dagslys <span class="glass-grades__desc">Daylight, true colour</span></span>
+      <span class="glass-grades__name">Højsol <span class="glass-grades__desc">High summer sun: hard shadows, bleached colour</span></span>
+      <span class="glass-grades__name">Sankthans <span class="glass-grades__desc">Low midsummer sun: amber light, soft shadows</span></span>
+      <span class="glass-grades__name">Blå time <span class="glass-grades__desc">Blue skylight in the shadows, lamps in the highlights</span></span>
+      <span class="glass-grades__name">Nat <span class="glass-grades__desc">Night: the eye loses colour and leans blue</span></span>
+      <span class="glass-grades__name">Natrium <span class="glass-grades__desc">A sodium lamp: one wavelength, so one colour</span></span>
+    </p>
+    <div class="glass-grades__tools">
+      <label class="glass-grades__btn glass-grades__btn--photo">
+        <input class="glass-grades__file" type="file" accept="image/*">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="1.5" y="3" width="13" height="10" rx="2"/><circle cx="8" cy="8" r="2.6"/><path d="M5 3l1-1.5h4L11 3"/></svg><span>Photo</span>
+      </label>
+      <label class="glass-grades__btn">
+        <input class="glass-grades__strip" type="checkbox" checked>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="1.5" y="2.5" width="13" height="11" rx="1.5"/><path d="M5.8 2.5v11M10.2 2.5v11"/></svg><span>Strip</span>
+      </label>
+    </div>
+  </div>
+  <div class="glass-grades__window">
+    <div class="glass-grades__scale" aria-hidden="true"><span class="glass-grades__index"></span></div>
+    <div class="glass-grades__frame" tabindex="0" role="group"
+         aria-label="Picture under seven panes of glass. Left and right arrows step through the light, hold Space to lift the glass, and S switches between the strip and one open pane.">
+      <div class="glass-grades__scene">
+        <img class="glass-grades__base" src="sample.jpg" alt="A still life on a pale backdrop: a peach sphere, a terracotta cylinder, a sage block, a slate-blue ball, a black cube, a white ball and a mustard puck." draggable="false">
+        <div class="glass-grades__panes" aria-hidden="true">
+          <div class="glass-grades__pane">
+            <div class="glass-grades__view glass-grades__view--havgus">
+              <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+              <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
+            </div>
+            <span class="glass-grades__edge"></span>
+          </div>
+          <div class="glass-grades__pane">
+            <div class="glass-grades__view glass-grades__view--dagslys">
+              <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+              <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
+            </div>
+            <span class="glass-grades__edge"></span>
+          </div>
+          <div class="glass-grades__pane">
+            <div class="glass-grades__view glass-grades__view--hojsol">
+              <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+              <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
+            </div>
+            <span class="glass-grades__edge"></span>
+          </div>
+          <div class="glass-grades__pane">
+            <div class="glass-grades__view glass-grades__view--sankthans">
+              <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+              <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
+            </div>
+            <span class="glass-grades__edge"></span>
+          </div>
+          <div class="glass-grades__pane">
+            <div class="glass-grades__view glass-grades__view--blaatime">
+              <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+              <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
+            </div>
+            <span class="glass-grades__edge"></span>
+          </div>
+          <div class="glass-grades__pane">
+            <div class="glass-grades__view glass-grades__view--nat">
+              <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+              <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
+            </div>
+            <span class="glass-grades__edge"></span>
+          </div>
+          <div class="glass-grades__pane">
+            <div class="glass-grades__view glass-grades__view--natrium">
+              <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+              <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
+            </div>
+            <span class="glass-grades__edge"></span>
+          </div>
+        </div>
+      </div>
+      <span class="glass-grades__tag glass-grades__tag--original">Original</span>
+      <span class="glass-grades__tag glass-grades__tag--drop">Drop to look through the glass</span>
+      <span class="glass-grades__tag glass-grades__tag--note"></span>
+    </div>
+    <div class="glass-grades__track" aria-hidden="true"><span class="glass-grades__seg"></span><span class="glass-grades__seg"></span><span class="glass-grades__seg"></span><span class="glass-grades__seg"></span><span class="glass-grades__seg"></span><span class="glass-grades__seg"></span><span class="glass-grades__seg"></span></div>
+    <fieldset class="glass-grades__rail">
+      <legend class="glass-grades__legend">Light</legend>
+      <label class="glass-grades__chip">
+        <input class="glass-grades__radio" type="radio" name="glass-grades" value="havgus">
+        <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--havgus"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
+        <span class="glass-grades__label">Havgus</span>
+        <span class="glass-grades__hint">Sea fog</span>
+      </label>
+      <label class="glass-grades__chip">
+        <input class="glass-grades__radio" type="radio" name="glass-grades" value="dagslys">
+        <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--dagslys"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
+        <span class="glass-grades__label">Dagslys</span>
+        <span class="glass-grades__hint">True colour</span>
+      </label>
+      <label class="glass-grades__chip">
+        <input class="glass-grades__radio" type="radio" name="glass-grades" value="hojsol">
+        <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--hojsol"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
+        <span class="glass-grades__label">Højsol</span>
+        <span class="glass-grades__hint">Hard, muted</span>
+      </label>
+      <label class="glass-grades__chip">
+        <input class="glass-grades__radio" type="radio" name="glass-grades" value="sankthans" checked>
+        <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--sankthans"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
+        <span class="glass-grades__label">Sankthans</span>
+        <span class="glass-grades__hint">Low, warm sun</span>
+      </label>
+      <label class="glass-grades__chip">
+        <input class="glass-grades__radio" type="radio" name="glass-grades" value="blaatime">
+        <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--blaatime"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
+        <span class="glass-grades__label">Blå time</span>
+        <span class="glass-grades__hint">Blue hour</span>
+      </label>
+      <label class="glass-grades__chip">
+        <input class="glass-grades__radio" type="radio" name="glass-grades" value="nat">
+        <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--nat"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
+        <span class="glass-grades__label">Nat</span>
+        <span class="glass-grades__hint">Mono, blue</span>
+      </label>
+      <label class="glass-grades__chip">
+        <input class="glass-grades__radio" type="radio" name="glass-grades" value="natrium">
+        <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--natrium"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
+        <span class="glass-grades__label">Natrium</span>
+        <span class="glass-grades__hint">Mono, orange</span>
+      </label>
+    </fieldset>
+  </div>
+  <p class="glass-grades__live" aria-live="polite"></p>
+</div>

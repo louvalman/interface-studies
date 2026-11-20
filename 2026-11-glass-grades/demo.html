@@ -1,0 +1,1811 @@
+<!doctype html>
+<!--
+  The demo page. Everything page-level lives here and only here: background,
+  centering, font loading, and 2-3 states of the component.
+
+  This page links component.css. It never redefines it — no rule below may
+  target a component class. Demo styles are scoped to .demo* only.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Glass grades &mdash; Interface Studies</title>
+
+  <!-- Font loading is the demo's job, never the component's. The page's own
+       faces are the site's pair, Mona Sans for its prose and Fragment Mono for
+       its labels; a component that wants a face of its own adds it here. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fragment+Mono&family=Mona+Sans:wght@400;600&display=swap">
+
+  <!-- Page chrome, like the back link: goes stale if this folder is copied
+       out on its own, and nothing else breaks when it does. -->
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <link rel="canonical" href="https://interface-studies.pages.dev/2026-11-glass-grades/demo.html">
+
+  <!-- What a link to this page looks like when it is pasted somewhere. The
+     card image is the index's, one level up — the same place this page
+     already takes its favicon and its back link from, so it goes stale in
+     exactly the same way and no worse. A copied-out folder loses the
+     picture and keeps the title and the sentence. -->
+  <meta property="og:type" content="article" />
+  <meta property="og:site_name" content="Interface Studies" />
+  <meta property="og:url" content="https://interface-studies.pages.dev/2026-11-glass-grades/demo.html" />
+  <meta property="og:title" content="Glass grades &mdash; Interface Studies" />
+  <meta property="og:description" content="Seven kinds of light as seven panes of glass laid over one picture, in the order of a day. Open one, slide the glass, lift it off, or put a picture of your own under it." />
+  <meta property="og:image" content="../og.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <link rel="stylesheet" href="component.css">
+
+  <style>
+    /* Page scaffolding only. Nothing here may name a component class. */
+    /* Matches the index's --gutter exactly. The pages are separate documents
+       with no shared stylesheet, so the value is repeated rather than shared —
+       but it has to be the same number, or the language control and the
+       content edge shift on every trip between them. */
+    :root {
+      --demo-gutter: clamp(1.5rem, 6vw, 6rem);
+
+      /* The page's own palette, and the only place a colour is written. Every
+         rule below reads a token, so the dark block underneath is this same
+         list with different values — not a second set of rules. The component
+         is not in it: component.css owns its colours in both themes, and this
+         page never reaches into them.
+
+         Three text tiers, not five: the greys this page had drifted a couple of
+         percent apart for no reason anyone could name. */
+      /* The repo's default demo ground. A study may depart from it — the
+         inked plate is ink by authorship, the liquid-glass toolbar is a warm
+         stone its cross-lit stage needs — but a departure is a decision, and
+         it says so in that folder's notes.md. This pair is what you keep
+         until you have one.
+
+         It was #ddd9d0 / #161512, which was neither the default nor a
+         departure: ~7.6 ΔE off the ground three of the five studies share,
+         noticeably darker, and with nothing written down saying why. Every
+         new study was being born on a ground no study used. */
+      --demo-ground: #f3f2ef;
+      --demo-fg: #1c1812;
+      --demo-soft: #4a453d;
+      --demo-dim: #605a51;
+      --demo-accent: #c43d16;
+      --demo-chip: rgba(255, 255, 255, 0.72);
+      --demo-chip-soft: rgba(255, 255, 255, 0.6);
+      --demo-chip-hover: #fff;
+      --demo-line: rgba(28, 24, 18, 0.14);
+      --demo-fill: rgba(28, 24, 18, 0.07);
+    }
+
+    :root[data-theme="dark"] {
+      /* Matte: a warm graphite with no pure black under it and off-white ink on
+         top, the same construction the index uses. The component keeps its own
+         ground and sits on this as a lit plate, which is what it does on the
+         index cards too. */
+      --demo-ground: #121316;
+      --demo-fg: #eae8e3;
+      --demo-soft: #a8a49c;
+      /* The quietest chrome grey still has to clear 4.5:1 as a control: the
+         inactive EN/DA button sits on the chip, 4.92 there, 5.47 on the ground. */
+      --demo-dim: #8f8b83;
+      --demo-accent: #f2845e;
+      --demo-chip: rgba(36, 34, 30, 0.72);
+      --demo-chip-soft: rgba(36, 34, 30, 0.6);
+      --demo-chip-hover: #2a2823;
+      --demo-line: rgba(234, 232, 227, 0.14);
+      --demo-fill: rgba(234, 232, 227, 0.07);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 4rem var(--demo-gutter);
+      box-sizing: border-box;
+      background: var(--demo-ground);
+      color: var(--demo-fg);
+      font-family: "Mona Sans", system-ui, sans-serif;
+    }
+
+    .demo {
+      display: grid;
+      gap: 3rem;
+      width: min(100%, 72rem);
+    }
+
+    /* demo-chrome:css · generated by tools/demo-chrome/build.js — edit there, not here */
+    /* The page's switches — Sound where the study makes a noise, then
+       language, then theme — in one cluster on the page's own edge. Absolute,
+       not fixed: each is set once a visit and none has a reason to ride the
+       viewport down the page. Reads six of the page's tokens and nothing else:
+       --demo-gutter, --demo-fg, --demo-dim, --demo-accent, --demo-chip,
+       --demo-line. */
+    .demo__controls {
+      position: absolute;
+      top: clamp(1.25rem, 3vw, 2.25rem);
+      right: var(--demo-gutter);
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    /* Every chip blurs what is under it. On a flat ground that is nothing;
+       over a textured one it is the chip the --demo-dim ratio was measured
+       on. */
+    .demo__lang {
+      display: flex;
+      align-items: center;
+      gap: 0.1rem;
+      padding: 0.2rem 0.35rem;
+      border-radius: 999px;
+      background: var(--demo-chip);
+      backdrop-filter: blur(8px);
+    }
+
+    .demo__lang-btn {
+      padding: 0.35em 0.5em;
+      border: 0;
+      background: transparent;
+      color: var(--demo-dim);
+      font-family: "Fragment Mono", ui-monospace, monospace;
+      font-size: 0.625rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: color 240ms ease;
+    }
+
+    .demo__lang-btn:hover { color: var(--demo-fg); }
+
+    .demo__lang-btn[aria-pressed="true"] {
+      color: var(--demo-fg);
+      text-decoration: underline;
+      text-decoration-color: var(--demo-accent);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 0.4em;
+    }
+
+    .demo__lang-btn:focus-visible {
+      outline: 2px solid var(--demo-fg);
+      outline-offset: 2px;
+      border-radius: 0.25rem;
+    }
+
+    .demo__lang-sep {
+      width: 1px;
+      height: 0.7rem;
+      background: var(--demo-line);
+    }
+
+    /* --- theme toggle ---------------------------------------------------
+       A pressed toggle named "Dark mode": pressed is dark. The icon is a disc
+       whose bite slides off as the rays come in. */
+    .demo__theme {
+      flex: none;
+      width: 1.85rem;
+      height: 1.85rem;
+      display: grid;
+      place-items: center;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      background: var(--demo-chip);
+      backdrop-filter: blur(8px);
+      color: var(--demo-dim);
+      cursor: pointer;
+      transition: color 240ms ease, background 240ms ease;
+    }
+
+    .demo__theme:hover { color: var(--demo-fg); }
+
+    .demo__theme:focus-visible {
+      outline: 2px solid var(--demo-fg);
+      outline-offset: 2px;
+    }
+
+    .demo__theme-icon { width: 0.95rem; height: 0.95rem; overflow: visible; }
+
+    /* fill: #000 is the mask's ink, not a colour of the page. */
+    .demo__theme-cut {
+      fill: #000;
+      transform-box: fill-box;
+      transform-origin: center;
+      transform: translate(30%, -30%);
+      transition: transform 520ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .demo__theme-disc {
+      fill: currentColor;
+      transform-box: fill-box;
+      transform-origin: center;
+      transition: transform 520ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .demo__theme-rays {
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      transform-box: fill-box;
+      transform-origin: center;
+      opacity: 0;
+      transform: scale(0.55) rotate(-45deg);
+      transition: opacity 320ms cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 520ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    :root[data-theme="dark"] .demo__theme-cut { transform: translate(125%, -125%); }
+    :root[data-theme="dark"] .demo__theme-disc { transform: scale(0.74); }
+    :root[data-theme="dark"] .demo__theme-rays { opacity: 1; transform: scale(1) rotate(0deg); }
+
+    /* The crossfade lays one transition list over every element for its
+       length, at (0,1,1), which outranks the icon's own. Opacity is not in
+       that list, so on a click the rays popped instead of fading, and the
+       morph ran at the crossfade's length instead of its own. For the length
+       of a switch these give the icon its own timing back. */
+    @media (prefers-reduced-motion: no-preference) {
+      html.is-theming .demo__theme-cut,
+      html.is-theming .demo__theme-disc {
+        transition: transform 520ms cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      html.is-theming .demo__theme-rays {
+        transition: opacity 320ms cubic-bezier(0.16, 1, 0.3, 1),
+                    transform 520ms cubic-bezier(0.16, 1, 0.3, 1);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .demo__theme-cut,
+      .demo__theme-disc,
+      .demo__theme-rays { transition: none; }
+    }
+
+    /* No hover means a finger, and a finger cannot aim at a 10px label. The
+       switches grow; the component is not touched. */
+    @media (hover: none) {
+      .demo__lang-btn {
+        display: grid;
+        place-items: center;
+        min-width: 2.25rem;
+        min-height: 2.25rem;
+      }
+      .demo__theme { width: 2.25rem; height: 2.25rem; }
+    }
+
+    /* --- sound ------------------------------------------------------------
+       Only on a page whose study makes a noise. Off on every load and never
+       stored. It says its word rather than being an icon alone, since nothing
+       else up here says there is a sound to switch on. Hidden until the script
+       has found Web Audio and something to reach; [hidden] is restated because
+       the rule below gives the button a display. */
+    .demo__sound {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45em;
+      height: 1.85rem;
+      padding: 0 0.75rem 0 0.6rem;
+      border: 0;
+      border-radius: 999px;
+      background: var(--demo-chip);
+      backdrop-filter: blur(8px);
+      color: var(--demo-dim);
+      font-family: "Fragment Mono", ui-monospace, monospace;
+      font-size: 0.625rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: color 240ms ease;
+    }
+    .demo__sound[hidden] { display: none; }
+    .demo__sound:hover { color: var(--demo-fg); }
+    .demo__sound:focus-visible { outline: 2px solid var(--demo-fg); outline-offset: 2px; }
+    .demo__sound[aria-pressed="true"] { color: var(--demo-fg); }
+    .demo__sound[aria-pressed="true"] .demo__sound-word {
+      text-decoration: underline;
+      text-decoration-color: var(--demo-accent);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 0.4em;
+    }
+    .demo__sound-icon {
+      flex: none;
+      width: 0.95rem;
+      height: 0.95rem;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    /* Off is a speaker and a cross; on, the cross goes and the waves come. */
+    .demo__sound-waves { opacity: 0; transition: opacity 200ms ease; }
+    .demo__sound-mute { transition: opacity 200ms ease; }
+    .demo__sound[aria-pressed="true"] .demo__sound-waves { opacity: 1; }
+    .demo__sound[aria-pressed="true"] .demo__sound-mute { opacity: 0; }
+    @media (prefers-reduced-motion: reduce) {
+      .demo__sound-waves, .demo__sound-mute { transition: none; }
+    }
+    @media (hover: none) {
+      .demo__sound { height: 2.25rem; }
+    }
+    /* /demo-chrome:css */
+
+    /* Back to the index. Page chrome — the component never depends on it. */
+    /* Aligned to the page's own padding, so it sits on the same edge as the
+       content rather than floating inside the margin. */
+    .demo__back {
+      justify-self: start;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.9rem 0.5rem 0.75rem;
+      border: 1px solid var(--demo-line);
+      border-radius: 999px;
+      background: var(--demo-chip-soft);
+      font-size: 0.6875rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--demo-soft);
+      text-decoration: none;
+    }
+
+    .demo__back:hover { background: var(--demo-chip-hover); }
+
+    .demo__back svg { width: 0.85rem; height: 0.85rem; }
+
+    /* Capped at whatever column it lands in, so a component sized in rem
+       shrinks with the page instead of pushing a scrollbar across it. Worth
+       keeping when you copy this: it is the one line that decides whether the
+       demo survives a phone. */
+    /* --- groups -----------------------------------------------------------
+       Three, in the order the study argues: the whole set at once, one pane
+       open, and what it sounds like. Each opens on a title and one sentence,
+       the mode dial's pattern, so the page reads down its left edge. */
+    .demo__group {
+      padding-top: clamp(2.5rem, 5vw, 3.5rem);
+      border-top: 1px solid var(--demo-line);
+    }
+    .demo__group:first-of-type { padding-top: 0; border-top: 0; }
+    .demo__group-head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0.5rem 1rem;
+      margin-bottom: clamp(1.75rem, 3vw, 2.25rem);
+    }
+    .demo__group-title {
+      margin: 0;
+      font-size: 1.0625rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+    .demo__group-note {
+      margin: 0;
+      max-width: 58ch;
+      font-size: 0.875rem;
+      line-height: 1.55;
+      color: var(--demo-soft);
+    }
+    /* A wrapping row, left at the gutter: the strip on its own line, then two
+       open panes that share one where there is room. */
+    .demo__grid {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      gap: clamp(2.5rem, 5vw, 3.5rem) clamp(2rem, 3vw, 2.5rem);
+    }
+    /* Capped at its column, and the column told it may shrink: the pair that
+       keeps the component off a phone's horizontal scrollbar. */
+    .demo__state {
+      flex: 1 1 28rem;
+      min-width: 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: auto 1fr auto;
+      gap: 0.85rem;
+      justify-items: start;
+      max-width: min(100%, 36rem);
+    }
+    .demo__state--wide {
+      flex-basis: 100%;
+      max-width: min(100%, 44rem);
+    }
+    /* What the state is, in the page's prose: its name in the ink. */
+    .demo__caption {
+      margin: 0;
+      max-width: 48ch;
+      font-size: 0.875rem;
+      line-height: 1.55;
+      color: var(--demo-soft);
+    }
+    .demo__caption strong { font-weight: 600; color: var(--demo-fg); }
+    /* The modifier or token that makes the state, for someone lifting it.
+       Code, so it stays as written in both languages. */
+    .demo__hint {
+      align-self: start;
+      margin: -0.25rem 0 0.5rem;
+      padding: 0.3em 0.6em;
+      border-radius: 0.35rem;
+      background: var(--demo-fill);
+      font-family: "Fragment Mono", ui-monospace, monospace;
+      font-size: 0.6875rem;
+      line-height: 1.5;
+      color: var(--demo-soft);
+      overflow-wrap: anywhere;
+    }
+    /* --- touch targets --- */
+
+    /* No hover means a finger, and a finger cannot aim at a 10px label. The
+       page's own controls grow; the component is not touched. Duplicated in
+       every demo page on purpose — no shared stylesheet, so a folder copied
+       out on its own takes this with it. */
+    @media (hover: none) {
+      .demo__back { min-height: 2.75rem; }
+    }
+
+    /* --- intro and decisions --------------------------------------------
+       Both are required on every demo page. The heading is what a reader
+       arriving from the index lands on; the decisions block is notes.md
+       rendered — the type, the origin, and the decisions the build captures,
+       which is the part of the folder actually worth lifting and the one thing
+       the site used to keep to itself.
+
+       Kept in step with notes.md by hand, like the language table below it:
+       there is no build step to read the file, and fetching it fails over
+       file://, where each document gets an opaque origin. Leave the decision
+       prose in the language notes.md was written in — it is a record, not page
+       copy, and unlike the component's sample copy, which a study may carry in
+       both languages, it is not translated at all. Only the labels around it
+       carry data-i18n. */
+    .demo__intro {
+      max-width: 46rem;
+      margin-bottom: clamp(2.5rem, 6vw, 4rem);
+    }
+
+    .demo__kicker {
+      margin: 0 0 0.75rem;
+      font-family: "Fragment Mono", ui-monospace, monospace;
+      font-size: 0.6875rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--demo-dim);
+    }
+
+    /* The companion Figma file's Community listing, and the one link in this
+       line. It takes the lede's tone rather than the kicker's: the kicker's grey is a
+       muted value, and a link is a control, which muted text may not be. It
+       is underlined in the accent, the way this page marks every link, since
+       the accent as text does not clear 4.5:1 at 11px on every ground. The
+       ::after widens the hit area to 24px tall without moving the line. */
+    /* The study's two other homes, kept together: where the kicker wraps on a
+       narrow screen, the pair goes to the next line as one rather than leaving
+       GitHub on a line of its own. */
+    .demo__kicker-links { white-space: nowrap; }
+
+    .demo__kicker-link {
+      position: relative;
+      color: var(--demo-soft);
+      text-decoration: underline;
+      text-decoration-color: var(--demo-accent);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 0.35em;
+      white-space: nowrap;
+    }
+
+    .demo__kicker-link::after {
+      content: "";
+      position: absolute;
+      inset: -0.375rem -0.25rem;
+    }
+
+    .demo__kicker-link:hover { color: var(--demo-fg); }
+
+    .demo__kicker-link:focus-visible {
+      outline: 2px solid var(--demo-fg);
+      outline-offset: 3px;
+      border-radius: 0.2rem;
+    }
+
+    .demo__kicker-link svg {
+      width: 0.8em;
+      height: 0.8em;
+      margin-left: 0.2em;
+      vertical-align: -0.05em;
+    }
+
+    .demo__heading {
+      margin: 0;
+      font-size: clamp(1.75rem, 4vw, 2.75rem);
+      font-weight: 600;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+    }
+
+    .demo__lede {
+      margin: 1.25rem 0 0;
+      max-width: 52ch;
+      font-size: 1.0625rem;
+      line-height: 1.6;
+      color: var(--demo-soft);
+    }
+
+    .demo__notes {
+      margin-top: clamp(3.5rem, 8vw, 6rem);
+      padding-top: clamp(2rem, 4vw, 3rem);
+      border-top: 1px solid var(--demo-line);
+      /* Prose measure, not the page's. */
+      max-width: 42rem;
+    }
+
+    .demo__notes-title {
+      margin: 0;
+      font-size: 1.125rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    /* The disclosure row. `list-style: none` kills the marker in Firefox and
+       Chrome; the ::-webkit- rule is still needed for Safari. */
+    .demo__notes-summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.25rem 0 0.75rem;
+      cursor: pointer;
+      list-style: none;
+    }
+
+    .demo__notes-summary::-webkit-details-marker { display: none; }
+
+    .demo__notes-summary:focus-visible {
+      outline: 2px solid var(--demo-fg);
+      outline-offset: 4px;
+      border-radius: 0.25rem;
+    }
+
+    .demo__notes-chevron {
+      flex: none;
+      width: 1rem;
+      height: 1rem;
+      color: var(--demo-dim);
+      transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .demo__notes-summary:hover .demo__notes-chevron { color: var(--demo-fg); }
+
+    .demo__notes[open] .demo__notes-chevron { transform: rotate(180deg); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .demo__notes-chevron { transition: none; }
+    }
+
+    /* Touch: the row is the target, and it has to be one you can hit. */
+    @media (hover: none) {
+      .demo__notes-summary { min-height: 2.75rem; }
+    }
+
+    .demo__notes-body { padding-bottom: 0.5rem; }
+
+    .demo__notes-meta {
+      margin: 0.75rem 0 0;
+      display: grid;
+      gap: 0.6rem;
+    }
+
+    .demo__notes-row {
+      display: grid;
+      grid-template-columns: 4.5rem minmax(0, 1fr);
+      gap: 0.9rem;
+      align-items: baseline;
+    }
+
+    .demo__notes-row dt {
+      font-family: "Fragment Mono", ui-monospace, monospace;
+      font-size: 0.625rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--demo-dim);
+    }
+
+    .demo__notes-row dd {
+      margin: 0;
+      font-size: 0.875rem;
+      line-height: 1.5;
+      color: var(--demo-soft);
+      /* A source URL is one unbroken word and the page is 320px wide on a
+         phone: without this it sets the whole column's minimum. */
+      overflow-wrap: anywhere;
+    }
+
+    .demo__notes-lede {
+      margin: 1.75rem 0 0;
+      font-size: 0.9375rem;
+      line-height: 1.7;
+      color: var(--demo-soft);
+    }
+
+    .demo__notes-list {
+      margin: 2.25rem 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 1.75rem;
+    }
+
+    .demo__notes-list > li { display: grid; gap: 0.45rem; }
+
+    .demo__notes-head {
+      margin: 0;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      line-height: 1.45;
+    }
+
+    .demo__notes-list p {
+      margin: 0;
+      font-size: 0.9375rem;
+      line-height: 1.7;
+      color: var(--demo-soft);
+    }
+
+    .demo__notes code {
+      font-family: "Fragment Mono", ui-monospace, monospace;
+      font-size: 0.85em;
+      padding: 0.12em 0.32em;
+      border-radius: 0.25rem;
+      background: var(--demo-fill);
+      overflow-wrap: anywhere;
+    }
+
+    .demo__notes a {
+      color: inherit;
+      text-decoration-color: var(--demo-accent);
+      text-underline-offset: 0.2em;
+    }
+
+    /* The inspiration row, below the decisions rather than above them. */
+    .demo__notes-meta--foot { margin-top: 2.5rem; }
+    .demo__notes-meta--foot + .demo__notes-foot { margin-top: 1.1rem; }
+    /* 'Inspiration' is longer than 'Type' and sets its own column. */
+    .demo__notes-meta--foot .demo__notes-row {
+      grid-template-columns: 6.25rem minmax(0, 1fr);
+    }
+
+    .demo__notes-foot {
+      margin: 2.5rem 0 0;
+      font-family: "Fragment Mono", ui-monospace, monospace;
+      font-size: 0.6875rem;
+      line-height: 1.7;
+      letter-spacing: 0.08em;
+      color: var(--demo-dim);
+    }
+
+    /* --- arrival ----------------------------------------------------------
+       The page arrives once, in reading order, the way the index does: the
+       kicker, the heading and the lede a beat apart, then each block as it is
+       reached, rising a short distance as it fades up. Whatever the first
+       screen does not reach waits to be scrolled to, and so does the
+       component inside it: its own animations are held with its block, so an
+       entrance it makes on load is made where it can be seen rather than
+       below the fold. The script at the foot of the page decides what is held
+       and in what order; the motion is all here.
+
+       data-reveal goes on the page's own blocks — the intro's three lines, a
+       group's head, a state, a stage, the decisions — and never on a
+       component's root, so nothing here names a component class or moves
+       one directly: a component rises inside the block that holds it. The
+       one rule that reaches past a block is the hold, and it names no class
+       either; it is the construction preview.html's pause already uses.
+
+       translate rather than transform, so nothing here takes a transform the
+       page or a component already has. An animation rather than a
+       transition, so html.is-theming's transition list still reaches these
+       blocks during the crossfade. Fill is backwards only, so nothing is left
+       holding a compositing layer once it has landed. And all of it is
+       screen and no-preference: reduced motion gets the page as it was, and
+       print never gets a block held at opacity 0. Copied, not shared, like
+       everything else on this page. */
+    :root {
+      --demo-arrive-rise: 0.75rem;
+      --demo-arrive-dur: 900ms;
+      --demo-arrive-step: 70ms;
+      --demo-arrive-lead: 120ms;
+      --demo-arrive-ease: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes demo-arrive {
+      from { opacity: 0; translate: 0 var(--demo-arrive-rise); }
+    }
+
+    @media screen and (prefers-reduced-motion: no-preference) {
+      /* A block's slot is its place in the order. The intro's lines are 0 to
+         2 and everything else is 3, which is the page without its script;
+         with it, the first screen is re-slotted in reading order and a batch
+         reached later runs from 0. */
+      [data-reveal] {
+        animation: demo-arrive var(--demo-arrive-dur) var(--demo-arrive-ease)
+          calc(var(--demo-arrive-lead) + var(--demo-arrive-at, 3) * var(--demo-arrive-step))
+          backwards;
+      }
+
+      .demo__kicker { --demo-arrive-at: 0; }
+      .demo__heading { --demo-arrive-at: 1; }
+      .demo__lede { --demo-arrive-at: 2; }
+
+      /* Below the fold at boot, until it is reached. animation-name rather
+         than the shorthand, so letting go starts it from the top. */
+      [data-reveal].is-held {
+        opacity: 0;
+        animation-name: none;
+      }
+
+      /* The component waits with its block, paused at wherever it had got
+         to, and picks up when the block is let go. */
+      [data-reveal].is-held *,
+      [data-reveal].is-held *::before,
+      [data-reveal].is-held *::after {
+        animation-play-state: paused !important;
+      }
+
+      /* Once through, never again: an element coming back from display:none
+         starts its animations over. */
+      [data-reveal].has-arrived { animation: none; }
+    }
+
+    /* demo-chrome:crossfade · generated by tools/demo-chrome/build.js — edit there, not here */
+    /* --- the switch itself ------------------------------------------------
+       Flipping the token block repaints the page in one frame, which reads as
+       a cut rather than as a change of light. The script hangs .is-theming on
+       <html> for the length of the crossfade and takes it off again, so the
+       rule is not on every element for the rest of the session. One class plus
+       a type, so it outranks the page rules it stands in for without
+       !important. */
+    html.is-theming,
+    html.is-theming *,
+    html.is-theming *::before,
+    html.is-theming *::after {
+      transition:
+        background-color 420ms cubic-bezier(0.16, 1, 0.3, 1),
+        background-image 420ms cubic-bezier(0.16, 1, 0.3, 1),
+        border-color 420ms cubic-bezier(0.16, 1, 0.3, 1),
+        box-shadow 420ms cubic-bezier(0.16, 1, 0.3, 1),
+        color 420ms cubic-bezier(0.16, 1, 0.3, 1),
+        fill 420ms cubic-bezier(0.16, 1, 0.3, 1),
+        stroke 420ms cubic-bezier(0.16, 1, 0.3, 1),
+        transform 420ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html.is-theming,
+      html.is-theming *,
+      html.is-theming *::before,
+      html.is-theming *::after { transition-duration: 1ms; }
+    }
+    /* /demo-chrome:crossfade */
+</style>
+
+  <!-- demo-chrome:head · generated by tools/demo-chrome/build.js — edit there, not here -->
+  <!-- The theme, before the first paint. The toggle and the rest of it are in
+       the chrome script at the foot of the page, but the answer has to be on
+       <html> by the time the stylesheet draws, or a page opened in dark
+       flashes a frame of the other one.
+
+       The query string first, because that is how the index hands the choice
+       over — over file:// each document gets an opaque origin and
+       localStorage does not carry across. Then the stored choice, then the
+       system's. Storage that throws is a missing choice, not a reason to skip
+       the system. -->
+  <script>
+    (function () {
+      var t = new URLSearchParams(location.search).get('theme');
+      if (t !== 'dark' && t !== 'light') {
+        try { t = localStorage.getItem('interface-studies:theme'); } catch (err) { t = null; }
+      }
+      if (t !== 'dark' && t !== 'light') {
+        t = window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+  <!-- /demo-chrome:head -->
+</head>
+<body>
+  <div class="demo">
+
+    <!-- demo-chrome:controls +sound · generated by tools/demo-chrome/build.js — edit there, not here -->
+    <div class="demo__controls">
+      <!-- The page's Sound switch: what it does is this study's, said
+           by window.demoPage.sound. Its word is its name and
+           aria-pressed its state. Shown by the script once it has found
+           Web Audio and something to reach. -->
+      <button class="demo__sound" type="button" data-sound-toggle aria-pressed="false" hidden>
+        <svg class="demo__sound-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" />
+          <path class="demo__sound-waves" d="M15.5 9.2a4 4 0 0 1 0 5.6M18.2 6.6a7.6 7.6 0 0 1 0 10.8" />
+          <path class="demo__sound-mute" d="M16 9.5l5 5M21 9.5l-5 5" />
+        </svg>
+        <span class="demo__sound-word" data-i18n="sound">Sound</span>
+      </button>
+
+      <div class="demo__lang" role="group" aria-label="Language" data-i18n-aria="a11y.lang">
+        <button class="demo__lang-btn" type="button" data-lang="en" aria-pressed="true">EN</button>
+        <span class="demo__lang-sep" aria-hidden="true"></span>
+        <button class="demo__lang-btn" type="button" data-lang="da" aria-pressed="false">DA</button>
+      </div>
+
+      <button
+        class="demo__theme"
+        type="button"
+        data-theme-toggle
+        aria-pressed="false"
+        data-i18n-aria="a11y.theme"
+        aria-label="Dark mode">
+        <svg class="demo__theme-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <mask id="demo-theme-bite">
+            <rect width="24" height="24" fill="#fff" />
+            <circle class="demo__theme-cut" cx="12" cy="12" r="9" />
+          </mask>
+          <circle class="demo__theme-disc" cx="12" cy="12" r="9" mask="url(#demo-theme-bite)" />
+          <g class="demo__theme-rays">
+            <path d="M12 1v2M12 21v2M3.9 3.9l1.4 1.4M18.7 18.7l1.4 1.4M1 12h2M21 12h2M3.9 20.1l1.4-1.4M18.7 5.3l1.4-1.4" />
+          </g>
+        </svg>
+      </button>
+    </div>
+    <!-- /demo-chrome:controls -->
+
+    <a class="demo__back" href="../index.html">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <path d="M10 2 4 8l6 6" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+      <span data-i18n="back">All studies</span>
+    </a>
+
+    <header class="demo__intro">
+      <!-- The kicker's link is the companion Figma file's Community listing,
+           the same URL as the card's data-figma in index.html. A study not
+           yet in the file leaves the link out, and the &middot; before it. -->
+      <p class="demo__kicker" data-reveal>
+        2026-11 &middot; <span data-i18n="type">Aesthetic</span> &middot;
+        <span class="demo__kicker-links">
+          <a
+            class="demo__kicker-link"
+            href="https://github.com/louvalman/interface-studies/tree/main/2026-11-glass-grades"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-i18n-aria="a11y.github"
+            aria-label="Open on GitHub">GitHub<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true" focusable="false"><path d="M4 12 12 4M6 4h6v6" stroke-linecap="round" stroke-linejoin="round" /></svg></a>
+        </span>
+      </p>
+      <h1 class="demo__heading" data-reveal data-i18n="heading">Glass grades</h1>
+      <p class="demo__lede" data-reveal data-i18n="lede">
+        Seven kinds of light as seven panes of glass laid over one picture, in the order of a day. Open one, slide the glass, lift it off, or put a picture of your own under it.
+      </p>
+    </header>
+
+    <!-- data-reveal on each of the page's own blocks, and never on the
+         component's root: it rises inside its state. -->
+    <section class="demo__group">
+      <div class="demo__group-head" data-reveal>
+        <h2 class="demo__group-title" data-i18n="group.strip">Seven kinds of light</h2>
+        <p class="demo__group-note" data-i18n="group.stripNote">The same picture through every grade at once, sea fog to streetlight. Tap a pane to open it; without script the selectors and Strip still do.</p>
+      </div>
+      <div class="demo__grid">
+        <section class="demo__state demo__state--wide" data-reveal>
+          <p class="demo__caption" data-i18n="state.strip"><strong>The strip</strong> &middot; all seven side by side, each selector under its own pane. Drag it, flick it, hold it, or drop a picture of your own onto it.</p>
+          <code class="demo__hint">.glass-grades</code>
+          <div class="glass-grades">
+            <div class="glass-grades__bar">
+              <p class="glass-grades__readout" aria-hidden="true">
+                <span class="glass-grades__name">Havgus <span class="glass-grades__desc" data-i18n="sample.havgusDesc">Sea fog: scattered light lifts every shadow</span></span>
+                <span class="glass-grades__name">Dagslys <span class="glass-grades__desc" data-i18n="sample.dagslysDesc">Daylight, true colour</span></span>
+                <span class="glass-grades__name">Højsol <span class="glass-grades__desc" data-i18n="sample.hojsolDesc">High summer sun: hard shadows, bleached colour</span></span>
+                <span class="glass-grades__name">Sankthans <span class="glass-grades__desc" data-i18n="sample.sankthansDesc">Low midsummer sun: amber light, soft shadows</span></span>
+                <span class="glass-grades__name">Blå time <span class="glass-grades__desc" data-i18n="sample.blaatimeDesc">Blue skylight in the shadows, lamps in the highlights</span></span>
+                <span class="glass-grades__name">Nat <span class="glass-grades__desc" data-i18n="sample.natDesc">Night: the eye loses colour and leans blue</span></span>
+                <span class="glass-grades__name">Natrium <span class="glass-grades__desc" data-i18n="sample.natriumDesc">A sodium lamp: one wavelength, so one colour</span></span>
+              </p>
+              <div class="glass-grades__tools">
+                <label class="glass-grades__btn glass-grades__btn--photo">
+                  <input class="glass-grades__file" type="file" accept="image/*">
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="1.5" y="3" width="13" height="10" rx="2"/><circle cx="8" cy="8" r="2.6"/><path d="M5 3l1-1.5h4L11 3"/></svg><span data-i18n="sample.photo">Photo</span>
+                </label>
+                <label class="glass-grades__btn">
+                  <input class="glass-grades__strip" type="checkbox" checked>
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="1.5" y="2.5" width="13" height="11" rx="1.5"/><path d="M5.8 2.5v11M10.2 2.5v11"/></svg><span data-i18n="sample.strip">Strip</span>
+                </label>
+              </div>
+            </div>
+            <div class="glass-grades__window">
+              <div class="glass-grades__scale" aria-hidden="true"><span class="glass-grades__index"></span></div>
+              <div class="glass-grades__frame" tabindex="0" role="group" data-i18n-aria="sample.frame"
+                   aria-label="Picture under seven panes of glass. Left and right arrows step through the light, hold Space to lift the glass, and S switches between the strip and one open pane.">
+                <div class="glass-grades__scene">
+                  <img class="glass-grades__base" src="sample.jpg" alt="A still life on a pale backdrop: a peach sphere, a terracotta cylinder, a sage block, a slate-blue ball, a black cube, a white ball and a mustard puck." draggable="false">
+                  <div class="glass-grades__panes" aria-hidden="true">
+                    <div class="glass-grades__pane">
+                      <div class="glass-grades__view glass-grades__view--havgus">
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+                        <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
+                      </div>
+                      <span class="glass-grades__edge"></span>
+                    </div>
+                    <div class="glass-grades__pane">
+                      <div class="glass-grades__view glass-grades__view--dagslys">
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+                        <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
+                      </div>
+                      <span class="glass-grades__edge"></span>
+                    </div>
+                    <div class="glass-grades__pane">
+                      <div class="glass-grades__view glass-grades__view--hojsol">
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+                        <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
+                      </div>
+                      <span class="glass-grades__edge"></span>
+                    </div>
+                    <div class="glass-grades__pane">
+                      <div class="glass-grades__view glass-grades__view--sankthans">
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+                        <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
+                      </div>
+                      <span class="glass-grades__edge"></span>
+                    </div>
+                    <div class="glass-grades__pane">
+                      <div class="glass-grades__view glass-grades__view--blaatime">
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+                        <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
+                      </div>
+                      <span class="glass-grades__edge"></span>
+                    </div>
+                    <div class="glass-grades__pane">
+                      <div class="glass-grades__view glass-grades__view--nat">
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+                        <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
+                      </div>
+                      <span class="glass-grades__edge"></span>
+                    </div>
+                    <div class="glass-grades__pane">
+                      <div class="glass-grades__view glass-grades__view--natrium">
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+                        <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
+                      </div>
+                      <span class="glass-grades__edge"></span>
+                    </div>
+                  </div>
+                </div>
+                <span class="glass-grades__tag glass-grades__tag--original" data-i18n="sample.original">Original</span>
+                <span class="glass-grades__tag glass-grades__tag--drop" data-i18n="sample.drop">Drop to look through the glass</span>
+                <span class="glass-grades__tag glass-grades__tag--note"></span>
+              </div>
+              <div class="glass-grades__track" aria-hidden="true"><span class="glass-grades__seg"></span><span class="glass-grades__seg"></span><span class="glass-grades__seg"></span><span class="glass-grades__seg"></span><span class="glass-grades__seg"></span><span class="glass-grades__seg"></span><span class="glass-grades__seg"></span></div>
+              <fieldset class="glass-grades__rail">
+                <legend class="glass-grades__legend" data-i18n="sample.legend">Light</legend>
+                <label class="glass-grades__chip">
+                  <input class="glass-grades__radio" type="radio" name="glass-grades-strip" value="havgus">
+                  <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--havgus"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
+                  <span class="glass-grades__label">Havgus</span>
+                  <span class="glass-grades__hint" data-i18n="sample.havgus">Sea fog</span>
+                </label>
+                <label class="glass-grades__chip">
+                  <input class="glass-grades__radio" type="radio" name="glass-grades-strip" value="dagslys">
+                  <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--dagslys"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
+                  <span class="glass-grades__label">Dagslys</span>
+                  <span class="glass-grades__hint" data-i18n="sample.dagslys">True colour</span>
+                </label>
+                <label class="glass-grades__chip">
+                  <input class="glass-grades__radio" type="radio" name="glass-grades-strip" value="hojsol">
+                  <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--hojsol"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
+                  <span class="glass-grades__label">Højsol</span>
+                  <span class="glass-grades__hint" data-i18n="sample.hojsol">Hard, muted</span>
+                </label>
+                <label class="glass-grades__chip">
+                  <input class="glass-grades__radio" type="radio" name="glass-grades-strip" value="sankthans" checked>
+                  <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--sankthans"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
+                  <span class="glass-grades__label">Sankthans</span>
+                  <span class="glass-grades__hint" data-i18n="sample.sankthans">Low, warm sun</span>
+                </label>
+                <label class="glass-grades__chip">
+                  <input class="glass-grades__radio" type="radio" name="glass-grades-strip" value="blaatime">
+                  <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--blaatime"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
+                  <span class="glass-grades__label">Blå time</span>
+                  <span class="glass-grades__hint" data-i18n="sample.blaatime">Blue hour</span>
+                </label>
+                <label class="glass-grades__chip">
+                  <input class="glass-grades__radio" type="radio" name="glass-grades-strip" value="nat">
+                  <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--nat"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
+                  <span class="glass-grades__label">Nat</span>
+                  <span class="glass-grades__hint" data-i18n="sample.nat">Mono, blue</span>
+                </label>
+                <label class="glass-grades__chip">
+                  <input class="glass-grades__radio" type="radio" name="glass-grades-strip" value="natrium">
+                  <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--natrium"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
+                  <span class="glass-grades__label">Natrium</span>
+                  <span class="glass-grades__hint" data-i18n="sample.natrium">Mono, orange</span>
+                </label>
+              </fieldset>
+            </div>
+            <p class="glass-grades__live" aria-live="polite"></p>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="demo__group">
+      <div class="demo__group-head" data-reveal>
+        <h2 class="demo__group-title" data-i18n="group.open">One pane open</h2>
+        <p class="demo__group-note" data-i18n="group.openNote">The open pane takes 62% of the window, and the others stay as slivers you can still see and still tap.</p>
+      </div>
+      <div class="demo__grid">
+        <section class="demo__state" data-reveal>
+          <p class="demo__caption" data-i18n="state.hojsol"><strong>Højsol</strong> &middot; muted colour over hard shadows. Arrow keys step the glass a pane at a time, and Space lifts it.</p>
+          <code class="demo__hint">Strip off</code>
+          <div class="glass-grades">
+            <div class="glass-grades__bar">
+              <p class="glass-grades__readout" aria-hidden="true">
+                <span class="glass-grades__name">Havgus <span class="glass-grades__desc" data-i18n="sample.havgusDesc">Sea fog: scattered light lifts every shadow</span></span>
+                <span class="glass-grades__name">Dagslys <span class="glass-grades__desc" data-i18n="sample.dagslysDesc">Daylight, true colour</span></span>
+                <span class="glass-grades__name">Højsol <span class="glass-grades__desc" data-i18n="sample.hojsolDesc">High summer sun: hard shadows, bleached colour</span></span>
+                <span class="glass-grades__name">Sankthans <span class="glass-grades__desc" data-i18n="sample.sankthansDesc">Low midsummer sun: amber light, soft shadows</span></span>
+                <span class="glass-grades__name">Blå time <span class="glass-grades__desc" data-i18n="sample.blaatimeDesc">Blue skylight in the shadows, lamps in the highlights</span></span>
+                <span class="glass-grades__name">Nat <span class="glass-grades__desc" data-i18n="sample.natDesc">Night: the eye loses colour and leans blue</span></span>
+                <span class="glass-grades__name">Natrium <span class="glass-grades__desc" data-i18n="sample.natriumDesc">A sodium lamp: one wavelength, so one colour</span></span>
+              </p>
+              <div class="glass-grades__tools">
+                <label class="glass-grades__btn glass-grades__btn--photo">
+                  <input class="glass-grades__file" type="file" accept="image/*">
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="1.5" y="3" width="13" height="10" rx="2"/><circle cx="8" cy="8" r="2.6"/><path d="M5 3l1-1.5h4L11 3"/></svg><span data-i18n="sample.photo">Photo</span>
+                </label>
+                <label class="glass-grades__btn">
+                  <input class="glass-grades__strip" type="checkbox">
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="1.5" y="2.5" width="13" height="11" rx="1.5"/><path d="M5.8 2.5v11M10.2 2.5v11"/></svg><span data-i18n="sample.strip">Strip</span>
+                </label>
+              </div>
+            </div>
+            <div class="glass-grades__window">
+              <div class="glass-grades__scale" aria-hidden="true"><span class="glass-grades__index"></span></div>
+              <div class="glass-grades__frame" tabindex="0" role="group" data-i18n-aria="sample.frame"
+                   aria-label="Picture under seven panes of glass. Left and right arrows step through the light, hold Space to lift the glass, and S switches between the strip and one open pane.">
+                <div class="glass-grades__scene">
+                  <img class="glass-grades__base" src="sample.jpg" alt="A still life on a pale backdrop: a peach sphere, a terracotta cylinder, a sage block, a slate-blue ball, a black cube, a white ball and a mustard puck." draggable="false">
+                  <div class="glass-grades__panes" aria-hidden="true">
+                    <div class="glass-grades__pane">
+                      <div class="glass-grades__view glass-grades__view--havgus">
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+                        <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
+                      </div>
+                      <span class="glass-grades__edge"></span>
+                    </div>
+                    <div class="glass-grades__pane">
+                      <div class="glass-grades__view glass-grades__view--dagslys">
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+                        <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
+                      </div>
+                      <span class="glass-grades__edge"></span>
+                    </div>
+                    <div class="glass-grades__pane">
+                      <div class="glass-grades__view glass-grades__view--hojsol">
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+                        <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
+                      </div>
+                      <span class="glass-grades__edge"></span>
+                    </div>
+                    <div class="glass-grades__pane">
+                      <div class="glass-grades__view glass-grades__view--sankthans">
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+                        <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
+                      </div>
+                      <span class="glass-grades__edge"></span>
+                    </div>
+                    <div class="glass-grades__pane">
+                      <div class="glass-grades__view glass-grades__view--blaatime">
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+                        <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
+                      </div>
+                      <span class="glass-grades__edge"></span>
+                    </div>
+                    <div class="glass-grades__pane">
+                      <div class="glass-grades__view glass-grades__view--nat">
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+                        <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
+                      </div>
+                      <span class="glass-grades__edge"></span>
+                    </div>
+                    <div class="glass-grades__pane">
+                      <div class="glass-grades__view glass-grades__view--natrium">
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+                        <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
+                      </div>
+                      <span class="glass-grades__edge"></span>
+                    </div>
+                  </div>
+                </div>
+                <span class="glass-grades__tag glass-grades__tag--original" data-i18n="sample.original">Original</span>
+                <span class="glass-grades__tag glass-grades__tag--drop" data-i18n="sample.drop">Drop to look through the glass</span>
+                <span class="glass-grades__tag glass-grades__tag--note"></span>
+              </div>
+              <div class="glass-grades__track" aria-hidden="true"><span class="glass-grades__seg"></span><span class="glass-grades__seg"></span><span class="glass-grades__seg"></span><span class="glass-grades__seg"></span><span class="glass-grades__seg"></span><span class="glass-grades__seg"></span><span class="glass-grades__seg"></span></div>
+              <fieldset class="glass-grades__rail">
+                <legend class="glass-grades__legend" data-i18n="sample.legend">Light</legend>
+                <label class="glass-grades__chip">
+                  <input class="glass-grades__radio" type="radio" name="glass-grades-hojsol" value="havgus">
+                  <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--havgus"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
+                  <span class="glass-grades__label">Havgus</span>
+                  <span class="glass-grades__hint" data-i18n="sample.havgus">Sea fog</span>
+                </label>
+                <label class="glass-grades__chip">
+                  <input class="glass-grades__radio" type="radio" name="glass-grades-hojsol" value="dagslys">
+                  <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--dagslys"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
+                  <span class="glass-grades__label">Dagslys</span>
+                  <span class="glass-grades__hint" data-i18n="sample.dagslys">True colour</span>
+                </label>
+                <label class="glass-grades__chip">
+                  <input class="glass-grades__radio" type="radio" name="glass-grades-hojsol" value="hojsol" checked>
+                  <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--hojsol"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
+                  <span class="glass-grades__label">Højsol</span>
+                  <span class="glass-grades__hint" data-i18n="sample.hojsol">Hard, muted</span>
+                </label>
+                <label class="glass-grades__chip">
+                  <input class="glass-grades__radio" type="radio" name="glass-grades-hojsol" value="sankthans">
+                  <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--sankthans"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
+                  <span class="glass-grades__label">Sankthans</span>
+                  <span class="glass-grades__hint" data-i18n="sample.sankthans">Low, warm sun</span>
+                </label>
+                <label class="glass-grades__chip">
+                  <input class="glass-grades__radio" type="radio" name="glass-grades-hojsol" value="blaatime">
+                  <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--blaatime"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
+                  <span class="glass-grades__label">Blå time</span>
+                  <span class="glass-grades__hint" data-i18n="sample.blaatime">Blue hour</span>
+                </label>
+                <label class="glass-grades__chip">
+                  <input class="glass-grades__radio" type="radio" name="glass-grades-hojsol" value="nat">
+                  <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--nat"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
+                  <span class="glass-grades__label">Nat</span>
+                  <span class="glass-grades__hint" data-i18n="sample.nat">Mono, blue</span>
+                </label>
+                <label class="glass-grades__chip">
+                  <input class="glass-grades__radio" type="radio" name="glass-grades-hojsol" value="natrium">
+                  <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--natrium"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
+                  <span class="glass-grades__label">Natrium</span>
+                  <span class="glass-grades__hint" data-i18n="sample.natrium">Mono, orange</span>
+                </label>
+              </fieldset>
+            </div>
+            <p class="glass-grades__live" aria-live="polite"></p>
+          </div>
+        </section>
+        <section class="demo__state" data-reveal>
+          <p class="demo__caption" data-i18n="state.nat"><strong>Nat, upright</strong> &middot; a tall picture narrows the window rather than growing past the screen.</p>
+          <code class="demo__hint">--glass-grades-ratio: 0.8</code>
+          <div class="glass-grades" style="--glass-grades-ratio: 0.8">
+            <div class="glass-grades__bar">
+              <p class="glass-grades__readout" aria-hidden="true">
+                <span class="glass-grades__name">Havgus <span class="glass-grades__desc" data-i18n="sample.havgusDesc">Sea fog: scattered light lifts every shadow</span></span>
+                <span class="glass-grades__name">Dagslys <span class="glass-grades__desc" data-i18n="sample.dagslysDesc">Daylight, true colour</span></span>
+                <span class="glass-grades__name">Højsol <span class="glass-grades__desc" data-i18n="sample.hojsolDesc">High summer sun: hard shadows, bleached colour</span></span>
+                <span class="glass-grades__name">Sankthans <span class="glass-grades__desc" data-i18n="sample.sankthansDesc">Low midsummer sun: amber light, soft shadows</span></span>
+                <span class="glass-grades__name">Blå time <span class="glass-grades__desc" data-i18n="sample.blaatimeDesc">Blue skylight in the shadows, lamps in the highlights</span></span>
+                <span class="glass-grades__name">Nat <span class="glass-grades__desc" data-i18n="sample.natDesc">Night: the eye loses colour and leans blue</span></span>
+                <span class="glass-grades__name">Natrium <span class="glass-grades__desc" data-i18n="sample.natriumDesc">A sodium lamp: one wavelength, so one colour</span></span>
+              </p>
+              <div class="glass-grades__tools">
+                <label class="glass-grades__btn glass-grades__btn--photo">
+                  <input class="glass-grades__file" type="file" accept="image/*">
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="1.5" y="3" width="13" height="10" rx="2"/><circle cx="8" cy="8" r="2.6"/><path d="M5 3l1-1.5h4L11 3"/></svg><span data-i18n="sample.photo">Photo</span>
+                </label>
+                <label class="glass-grades__btn">
+                  <input class="glass-grades__strip" type="checkbox">
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="1.5" y="2.5" width="13" height="11" rx="1.5"/><path d="M5.8 2.5v11M10.2 2.5v11"/></svg><span data-i18n="sample.strip">Strip</span>
+                </label>
+              </div>
+            </div>
+            <div class="glass-grades__window">
+              <div class="glass-grades__scale" aria-hidden="true"><span class="glass-grades__index"></span></div>
+              <div class="glass-grades__frame" tabindex="0" role="group" data-i18n-aria="sample.frame"
+                   aria-label="Picture under seven panes of glass. Left and right arrows step through the light, hold Space to lift the glass, and S switches between the strip and one open pane.">
+                <div class="glass-grades__scene">
+                  <img class="glass-grades__base" src="sample-portrait.jpg" alt="A still life on a pale backdrop: a peach sphere, a terracotta cylinder, a sage block, a slate-blue ball, a black cube, a white ball and a mustard puck." draggable="false">
+                  <div class="glass-grades__panes" aria-hidden="true">
+                    <div class="glass-grades__pane">
+                      <div class="glass-grades__view glass-grades__view--havgus">
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample-portrait.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample-portrait.jpg" alt="" draggable="false"></div></div>
+                        <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
+                      </div>
+                      <span class="glass-grades__edge"></span>
+                    </div>
+                    <div class="glass-grades__pane">
+                      <div class="glass-grades__view glass-grades__view--dagslys">
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample-portrait.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample-portrait.jpg" alt="" draggable="false"></div></div>
+                        <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
+                      </div>
+                      <span class="glass-grades__edge"></span>
+                    </div>
+                    <div class="glass-grades__pane">
+                      <div class="glass-grades__view glass-grades__view--hojsol">
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample-portrait.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample-portrait.jpg" alt="" draggable="false"></div></div>
+                        <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
+                      </div>
+                      <span class="glass-grades__edge"></span>
+                    </div>
+                    <div class="glass-grades__pane">
+                      <div class="glass-grades__view glass-grades__view--sankthans">
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample-portrait.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample-portrait.jpg" alt="" draggable="false"></div></div>
+                        <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
+                      </div>
+                      <span class="glass-grades__edge"></span>
+                    </div>
+                    <div class="glass-grades__pane">
+                      <div class="glass-grades__view glass-grades__view--blaatime">
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample-portrait.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample-portrait.jpg" alt="" draggable="false"></div></div>
+                        <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
+                      </div>
+                      <span class="glass-grades__edge"></span>
+                    </div>
+                    <div class="glass-grades__pane">
+                      <div class="glass-grades__view glass-grades__view--nat">
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample-portrait.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample-portrait.jpg" alt="" draggable="false"></div></div>
+                        <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
+                      </div>
+                      <span class="glass-grades__edge"></span>
+                    </div>
+                    <div class="glass-grades__pane">
+                      <div class="glass-grades__view glass-grades__view--natrium">
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample-portrait.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample-portrait.jpg" alt="" draggable="false"></div></div>
+                        <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
+                      </div>
+                      <span class="glass-grades__edge"></span>
+                    </div>
+                  </div>
+                </div>
+                <span class="glass-grades__tag glass-grades__tag--original" data-i18n="sample.original">Original</span>
+                <span class="glass-grades__tag glass-grades__tag--drop" data-i18n="sample.drop">Drop to look through the glass</span>
+                <span class="glass-grades__tag glass-grades__tag--note"></span>
+              </div>
+              <div class="glass-grades__track" aria-hidden="true"><span class="glass-grades__seg"></span><span class="glass-grades__seg"></span><span class="glass-grades__seg"></span><span class="glass-grades__seg"></span><span class="glass-grades__seg"></span><span class="glass-grades__seg"></span><span class="glass-grades__seg"></span></div>
+              <fieldset class="glass-grades__rail">
+                <legend class="glass-grades__legend" data-i18n="sample.legend">Light</legend>
+                <label class="glass-grades__chip">
+                  <input class="glass-grades__radio" type="radio" name="glass-grades-nat" value="havgus">
+                  <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--havgus"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
+                  <span class="glass-grades__label">Havgus</span>
+                  <span class="glass-grades__hint" data-i18n="sample.havgus">Sea fog</span>
+                </label>
+                <label class="glass-grades__chip">
+                  <input class="glass-grades__radio" type="radio" name="glass-grades-nat" value="dagslys">
+                  <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--dagslys"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
+                  <span class="glass-grades__label">Dagslys</span>
+                  <span class="glass-grades__hint" data-i18n="sample.dagslys">True colour</span>
+                </label>
+                <label class="glass-grades__chip">
+                  <input class="glass-grades__radio" type="radio" name="glass-grades-nat" value="hojsol">
+                  <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--hojsol"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
+                  <span class="glass-grades__label">Højsol</span>
+                  <span class="glass-grades__hint" data-i18n="sample.hojsol">Hard, muted</span>
+                </label>
+                <label class="glass-grades__chip">
+                  <input class="glass-grades__radio" type="radio" name="glass-grades-nat" value="sankthans">
+                  <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--sankthans"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
+                  <span class="glass-grades__label">Sankthans</span>
+                  <span class="glass-grades__hint" data-i18n="sample.sankthans">Low, warm sun</span>
+                </label>
+                <label class="glass-grades__chip">
+                  <input class="glass-grades__radio" type="radio" name="glass-grades-nat" value="blaatime">
+                  <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--blaatime"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
+                  <span class="glass-grades__label">Blå time</span>
+                  <span class="glass-grades__hint" data-i18n="sample.blaatime">Blue hour</span>
+                </label>
+                <label class="glass-grades__chip">
+                  <input class="glass-grades__radio" type="radio" name="glass-grades-nat" value="nat" checked>
+                  <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--nat"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
+                  <span class="glass-grades__label">Nat</span>
+                  <span class="glass-grades__hint" data-i18n="sample.nat">Mono, blue</span>
+                </label>
+                <label class="glass-grades__chip">
+                  <input class="glass-grades__radio" type="radio" name="glass-grades-nat" value="natrium">
+                  <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--natrium"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
+                  <span class="glass-grades__label">Natrium</span>
+                  <span class="glass-grades__hint" data-i18n="sample.natrium">Mono, orange</span>
+                </label>
+              </fieldset>
+            </div>
+            <p class="glass-grades__live" aria-live="polite"></p>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="demo__group">
+      <div class="demo__group-head" data-reveal>
+        <h2 class="demo__group-title" data-i18n="group.heard">Heard</h2>
+        <p class="demo__group-note" data-i18n="group.heardNote">Switch Sound on above. Every pane the glass passes ticks, a landing seats it, and lifting the glass and setting it down each have a sound of their own. On a phone the same moments are felt.</p>
+      </div>
+      <code class="demo__hint" data-reveal>--glass-grades-click: 0.5</code>
+    </section>
+    <!-- notes.md, rendered. Type, source, the origin paragraphs and one <li>
+         per decision bullet — the same shape the file has, so the two can be
+         read side by side. Update both together. -->
+    <!-- notes.md, rendered. Closed by default: the states are what the page is
+       for, and the decisions are what you open when you want to know why. A
+       <details> rather than a scripted panel — disclosure is the one thing the
+       element already is, keyboard and screen reader included, and this page
+       has no other reason to carry script. -->
+  <details class="demo__notes" data-reveal>
+    <summary class="demo__notes-summary">
+      <h2 class="demo__notes-title" data-i18n="notes.title">Decisions</h2>
+      <svg class="demo__notes-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true">
+        <path d="M4 6l4 4 4-4" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </summary>
+
+    <div class="demo__notes-body">
+
+        <dl class="demo__notes-meta">
+          <div class="demo__notes-row">
+            <dt data-i18n="notes.type">Type</dt>
+            <dd data-i18n="type">Aesthetic</dd>
+          </div>
+        </dl>
+        <p class="demo__notes-lede">
+          Seven colour grades as seven panes of glass laid over one picture. Seen as a
+          strip they show the whole set at once, the same picture through each; tap one
+          and it opens to most of the window while the others close to slivers you can
+          still see and still tap. Drag and the glass slides, sticking a little at each
+          pane; hold and it lifts off to show the picture bare; drop, paste or pick a
+          picture of your own and it slides in under the glass. Under it all is a radio
+          group and a checkbox, and without script every pane still opens and slides.
+        </p>
+        <ol class="demo__notes-list">
+          <li>
+            <h3 class="demo__notes-head">One number opens every pane.</h3>
+            <p><code>:has()</code> rules write <code>--glass-grades-p</code> from the checked radio and
+              <code>--glass-grades-a</code> from the Strip checkbox, both registered with
+              <code>@property</code> so they transition, and every pane&rsquo;s left edge is a share of the
+              window: <code>(1 − a)·j/n + a·(j·s + (open − s)·clamp(0, j − p, 1))</code>, with
+              <code>s</code> one sliver and <code>open</code> .62. The index, the scale and the readout read
+              the same two numbers, so nothing on the component can disagree with the glass, and
+              <code>component.js</code> only ever drives <code>p</code> faster than a transition can.</p>
+          </li>
+          <li>
+            <h3 class="demo__notes-head">A grade is a filter and two sheets of colour.</h3>
+            <p>Each pane is the picture through <code>brightness() contrast() saturate()</code>, then a toe
+              sheet in <code>screen</code>, which moves black to the toe colour and leaves white alone, then
+              a shoulder sheet in <code>multiply</code>, which moves white to the shoulder colour and leaves
+              black alone, then grain in <code>overlay</code>. Nothing reads a pixel, so a grade is instant
+              and works on a photo, an illustration or a live element. Each selector runs the same layers
+              over a fixed reference row, black to white and then skin, sky, leaf and red, and shows it under
+              the same row bare: the change a grade makes, read at a glance.</p>
+          </li>
+          <li>
+            <h3 class="demo__notes-head">Glass only where it does a job.</h3>
+            <p>The one material on the picture is the edge of each pane: a lit face and a shaded face from
+              one light on the left, a few pixels of the green float glass has at its edge, and a 14px strip
+              magnified 1.45× so the picture bends where the glass ends. The edges catch more light the
+              faster they move. The body is the camera&rsquo;s matte charcoal, and the open pane carries the
+              mode dial&rsquo;s orange index.</p>
+          </li>
+          <li>
+            <h3 class="demo__notes-head">Moving the glass is felt as well as seen.</h3>
+            <p>A drag runs through the mode dial&rsquo;s detent curve, <code>x − k·sin(2πx)/2π</code> with
+              <code>k</code> .55, so the glass sticks near each pane. A release springs to a stop with a
+              damping ratio of .67, about 6% overshoot in a third of a second, and a flick coasts up to three
+              panes. Every stop passed is a tick, landing adds a low seat, and a still press of 260ms lifts the
+              glass. The sounds are synthesised, a struck plate&rsquo;s first three modes at 1, 2.756 and
+              5.404 times about 2.4 kHz, and start no audio while <code>--glass-grades-click</code> is 0; a
+              finger or a pen gets the same moments as vibration.</p>
+          </li>
+          <li>
+            <h3 class="demo__notes-head">The grades are kinds of light, in the order of a day.</h3>
+            <p>Havgus (sea fog), Dagslys (daylight), Højsol (high sun), Sankthans (the low midsummer sun),
+              Blå time (blue hour), Nat (night) and Natrium (a sodium lamp). Each name says what its numbers
+              do: fog lifts the blacks, low sun warms the whites, and night and a sodium lamp take the colour
+              away, the eye for want of light and the lamp because it gives one wavelength. Højsol carries
+              muted colour over hard shadows and Sankthans amber highlights over soft ones, by their
+              decisions only. The names stay Danish in both languages.</p>
+          </li>
+        </ol>
+        <dl class="demo__notes-meta demo__notes-meta--foot">
+          <div class="demo__notes-row">
+            <dt data-i18n="notes.inspiration">Inspiration</dt>
+            <dd><a href="https://www.fujifilm-x.com/global/products/cameras/x-t50/" target="_blank" rel="noopener noreferrer">fujifilm-x.com/x-t50</a> &mdash; the film simulation dial, and the habit its owners have of writing a look down as a recipe: a handful of numbers anyone can dial in.</dd>
+          </div>
+        </dl>
+        <p class="demo__notes-foot">
+          <a href="notes.md">notes.md</a>
+          <span data-i18n="notes.full">&mdash; the full record, including what was measured and what is not done yet</span>
+        </p>
+    </div>
+  </details>
+
+  </div>
+  <!-- This page's part of the chrome: its Danish and what its hooks do. The
+       generated script below reads it; nothing else does. Fill it in, then
+       run node tools/demo-chrome/build.js with this folder's name. -->
+  <script data-demo-page>
+    window.demoPage = {
+      // Danish for every data-i18n and data-i18n-aria key on this page, the
+      // component's sample.* copy included. English is the markup. The grade
+      // names stay Danish in both.
+      da: {
+        'a11y.github': '\u00c5bn p\u00e5 GitHub',
+        'back': 'Alle studier',
+        'notes.title': 'Beslutninger',
+        'notes.type': 'Type',
+        'notes.inspiration': 'Inspiration',
+        'notes.full': '\u2014 hele optegnelsen, ogs\u00e5 det der blev m\u00e5lt og det der mangler',
+        'type': '\u00c6stetik',
+        'heading': 'Lys gennem glas',
+        'lede': 'Syv slags lys som syv glasruder lagt over \u00e9t billede, i d\u00f8gnets r\u00e6kkef\u00f8lge. '
+          + '\u00c5bn \u00e9n, skub glasset, l\u00f8ft det af, eller l\u00e6g dit eget billede under.',
+        'group.strip': 'Syv slags lys',
+        'group.stripNote': 'Det samme billede gennem hvert lys p\u00e5 \u00e9n gang, fra havgus til gadelys. '
+          + 'Tryk p\u00e5 en rude for at \u00e5bne den; uden script g\u00f8r v\u00e6lgerne og Strimmel det stadig.',
+        'state.strip': '<strong>Strimlen</strong> &middot; alle syv side om side, hver v\u00e6lger under sin egen rude. '
+          + 'Tr\u00e6k i den, svirp den, hold den, eller slip dit eget billede p\u00e5 den.',
+        'group.open': '\u00c9n rude \u00e5ben',
+        'group.openNote': 'Den \u00e5bne rude fylder 62% af vinduet, og de andre bliver smalle striber, '
+          + 'du stadig kan se og stadig trykke p\u00e5.',
+        'state.hojsol': '<strong>H\u00f8jsol</strong> &middot; d\u00e6mpede farver over h\u00e5rde skygger. '
+          + 'Piletasterne flytter glasset \u00e9n rude ad gangen, og mellemrum l\u00f8fter det.',
+        'state.nat': '<strong>Nat, p\u00e5 h\u00f8jkant</strong> &middot; et h\u00f8jt billede g\u00f8r vinduet smallere '
+          + 'i stedet for at vokse ud over sk\u00e6rmen.',
+        'group.heard': 'H\u00f8rt',
+        'group.heardNote': 'Sl\u00e5 Lyd til ovenfor. Hver rude glasset passerer, tikker, en landing s\u00e6tter det '
+          + 'p\u00e5 plads, og at l\u00f8fte glasset og l\u00e6gge det har hver sin lyd. P\u00e5 en telefon m\u00e6rkes '
+          + 'de samme \u00f8jeblikke.',
+        'sample.havgus': 'Tåge fra havet',
+        'sample.havgusDesc': 'Havgus: spredt lys løfter hver skygge',
+        'sample.dagslys': 'Ægte farver',
+        'sample.dagslysDesc': 'Dagslys, ægte farver',
+        'sample.hojsol': 'Hårdt, dæmpet',
+        'sample.hojsolDesc': 'Høj sommersol: hårde skygger, blegede farver',
+        'sample.sankthans': 'Lav, varm sol',
+        'sample.sankthansDesc': 'Lav midsommersol: ravgult lys, bløde skygger',
+        'sample.blaatime': 'Blå skygger',
+        'sample.blaatimeDesc': 'Blåt himmellys i skyggerne, lamper i højlysene',
+        'sample.nat': 'Sort-hvid, blå',
+        'sample.natDesc': 'Nat: øjet mister farverne og trækker mod blåt',
+        'sample.natrium': 'Sort-hvid, orange',
+        'sample.natriumDesc': 'En natriumlampe: én bølgelængde, så én farve',
+        'sample.photo': 'Foto',
+        'sample.strip': 'Strimmel',
+        'sample.original': 'Original',
+        'sample.drop': 'Slip for at se gennem glasset',
+        'sample.legend': 'Lys',
+        'sample.frame': 'Billede under syv glasruder. Venstre og højre pil skifter lys, hold mellemrum nede for at løfte glasset, og S skifter mellem strimlen og én åben rude.',
+      },
+      // The page's Sound switch sets the component's own volume token, the
+      // channel the mode dial uses: at 0 no audio is ever started.
+      sound: { roots: '.glass-grades', token: '--glass-grades-click', value: '0.5' }
+    };
+  </script>
+
+  <!-- demo-chrome:script · generated by tools/demo-chrome/build.js — edit there, not here -->
+  <script>
+  (function () {
+    // The page's chrome: the language switch, the theme switch, the Sound
+    // switch where the study makes a noise, and the back link that hands the
+    // first two to the index. This page's own part — its Danish and its
+    // hooks — is window.demoPage, set by the <script data-demo-page> just
+    // above.
+    var page = window.demoPage || {};
+    var root = document.documentElement;
+    var params = new URLSearchParams(location.search);
+    var back = document.querySelector('.demo__back');
+    var LANG_KEY = 'interface-studies:lang';
+    var THEME_KEY = 'interface-studies:theme';
+
+    function slice(list) { return Array.prototype.slice.call(list); }
+    function stored(key) { try { return localStorage.getItem(key); } catch (err) { return null; } }
+    function store(key, value) { try { localStorage.setItem(key, value); } catch (err) { /* private mode */ } }
+    function language(v) { return v === 'en' || v === 'da' ? v : null; }
+    function theme(v) { return v === 'dark' || v === 'light' ? v : null; }
+
+    // Only a choice travels: one handed over in the address, one stored, or
+    // one made here. A default is not a choice, and the index would only
+    // resolve it the same way. Both are resolved before anything writes the
+    // back link, so it is never written from half an answer.
+    var langFromQuery = language(params.get('lang'));
+    var chosenLang = langFromQuery || language(stored(LANG_KEY));
+    var chosenTheme = theme(params.get('theme')) || theme(stored(THEME_KEY));
+
+    function syncBack() {
+      if (!back) return;
+      var q = [];
+      if (chosenLang) q.push('lang=' + chosenLang);
+      if (chosenTheme) q.push('theme=' + chosenTheme);
+      back.setAttribute('href', '../index.html' + (q.length ? '?' + q.join('&') : ''));
+    }
+
+    // Keep the address in step with a choice, as the index does: left stale,
+    // the query outranks the stored choice on the next reload and undoes it.
+    function rewrite(name, value) {
+      try {
+        var url = new URL(location.href);
+        if (value) url.searchParams.set(name, value);
+        else url.searchParams.delete(name);
+        history.replaceState(history.state, '', url);
+      } catch (err) { /* file:// can refuse replaceState */ }
+    }
+
+    // A page's hook runs inside the chrome's own flow, so a hook that throws
+    // is rethrown on its own turn rather than taking the switches down.
+    function hook(fn, arg) {
+      if (typeof fn !== 'function') return;
+      try { fn(arg); } catch (err) { setTimeout(function () { throw err; }); }
+    }
+
+    // --- language -------------------------------------------------------
+    (function () {
+      // The switches' own strings. The page's are page.da, and a page key of
+      // the same name would win, though the generator refuses one.
+      var DA = {
+        'a11y.lang': 'Sprog',
+        'a11y.theme': 'Mørk tilstand',
+        'sound': 'Lyd'
+      };
+      var own = page.da || {};
+      Object.keys(own).forEach(function (key) { DA[key] = own[key]; });
+
+      var nodes = slice(document.querySelectorAll('[data-i18n]'));
+      var labelled = slice(document.querySelectorAll('[data-i18n-aria]'));
+      var buttons = slice(document.querySelectorAll('.demo__lang [data-lang]'));
+      var englishLabels = labelled.map(function (el) { return el.getAttribute('aria-label'); });
+      /* innerHTML rather than textContent, on the capture and on the set
+         alike. Several strings want markup the sentence needs — a <code>
+         around a token name, a <strong> that numbers a step — and read with
+         textContent the English fallback is captured already flattened, so the
+         first apply() on load strips markup that was in the markup. Safe here
+         in the way innerHTML usually is not: every string it sets is a literal
+         in this file or in the page's table. Nothing from a URL, a field or a
+         fetch reaches this line. */
+      var english = nodes.map(function (el) { return el.innerHTML; });
+
+      function apply(lang) {
+        var table = lang === 'da' ? DA : null;
+        nodes.forEach(function (el, i) {
+          var key = el.getAttribute('data-i18n');
+          el.innerHTML = table && table[key] ? table[key] : english[i];
+        });
+        labelled.forEach(function (el, i) {
+          var key = el.getAttribute('data-i18n-aria');
+          el.setAttribute('aria-label', table && table[key] ? table[key] : englishLabels[i]);
+        });
+        // The tab follows the heading, so the study's name is one string in
+        // both places and both languages. <title> is the no-script fallback.
+        var head = document.querySelector('.demo__heading');
+        if (head) document.title = head.textContent.trim() + ' — Interface Studies';
+        root.lang = lang;
+        buttons.forEach(function (b) {
+          b.setAttribute('aria-pressed', b.dataset.lang === lang ? 'true' : 'false');
+        });
+        syncBack();
+        hook(page.applied, lang);
+      }
+
+      buttons.forEach(function (b) {
+        b.addEventListener('click', function () {
+          chosenLang = b.dataset.lang;
+          store(LANG_KEY, chosenLang);
+          rewrite('lang', chosenLang === 'en' ? null : chosenLang);
+          apply(chosenLang);
+        });
+      });
+
+      // A handover is a choice and is kept; a default is not.
+      if (langFromQuery) store(LANG_KEY, langFromQuery);
+      apply(chosenLang || 'en');
+    })();
+
+    // --- sound ----------------------------------------------------------
+    // Off on every load, never stored, never in a link: a page that makes a
+    // noise is asked each time. The switch makes no sound itself. What on and
+    // off mean is the study's, said by page.sound in one of two shapes. Every
+    // [data-sound-toggle] on the page is the one switch, the top bar's and
+    // any local mirror: either copy switches all of them and all of them
+    // report it. Without Web Audio, or with nothing to reach, every copy stays
+    // hidden.
+    (function () {
+      var spec = page.sound;
+      var toggles = slice(document.querySelectorAll('[data-sound-toggle]'));
+      if (!spec || !toggles.length) return;
+      if (!(window.AudioContext || window.webkitAudioContext)) return;
+      var on = false;
+
+      function report() {
+        toggles.forEach(function (t) { t.setAttribute('aria-pressed', on ? 'true' : 'false'); });
+      }
+      function offer(flip) {
+        toggles.forEach(function (t) { t.addEventListener('click', flip); t.hidden = false; });
+        report();
+      }
+
+      // A token: the component is silent until its root is given a level, so
+      // on hands spec.token = spec.value inline to every spec.roots — on the
+      // root itself, where a declaration on a wrapper would lose to the root's
+      // own default — and off takes it out. Roots are found on every switch.
+      if (spec.token) {
+        var hand = function () {
+          slice(document.querySelectorAll(spec.roots)).forEach(function (el) {
+            if (on) el.style.setProperty(spec.token, spec.value);
+            else el.style.removeProperty(spec.token);
+          });
+        };
+        offer(function () { on = !on; report(); hand(); });
+        hand();
+        return;
+      }
+
+      // Arm switches: the component owns its own and builds its AudioContext
+      // inside the click on one. So this presses them rather than reaching
+      // past them, inside its own click (the gesture the audio policy wants),
+      // and reads its state back off them: on while any is armed. A component
+      // enables its switches when it boots, so this starts a turn after every
+      // DOMContentLoaded listener has run, whatever order the scripts loaded
+      // in.
+      if (spec.arms) {
+        var start = function () {
+          var arms = slice(document.querySelectorAll(spec.arms))
+            .filter(function (arm) { return !arm.disabled; });
+          if (!arms.length) return;
+          var armed = function (arm) { return arm.getAttribute('aria-pressed') === 'true'; };
+          var read = function () { on = arms.some(armed); report(); };
+          if (window.MutationObserver) {
+            var watch = new MutationObserver(read);
+            arms.forEach(function (arm) {
+              watch.observe(arm, { attributes: true, attributeFilter: ['aria-pressed'] });
+            });
+          }
+          offer(function () {
+            var next = !on;
+            arms.forEach(function (arm) { if (armed(arm) !== next) arm.click(); });
+            read();
+          });
+          read();
+        };
+        var later = function () { setTimeout(start, 0); };
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', later);
+        else later();
+      }
+    })();
+
+    // --- theme ----------------------------------------------------------
+    // The answer is already on <html>: the head carries the same resolution.
+    // The stylesheet reads the attribute and nothing else; the system
+    // preference is resolved here so it stays live until someone picks.
+    (function () {
+      var toggle = document.querySelector('[data-theme-toggle]');
+      var media = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+
+      function shown() { return chosenTheme || (media && media.matches ? 'dark' : 'light'); }
+
+      function paint() {
+        var t = shown();
+        root.setAttribute('data-theme', t);
+        if (toggle) toggle.setAttribute('aria-pressed', t === 'dark' ? 'true' : 'false');
+        syncBack();
+      }
+
+      var settle = 0;
+      if (toggle) {
+        toggle.addEventListener('click', function () {
+          chosenTheme = shown() === 'dark' ? 'light' : 'dark';
+          store(THEME_KEY, chosenTheme);
+          rewrite('theme', chosenTheme);
+          // Hung on <html> for its own length and taken off again, so the rule
+          // is not on every element for the rest of the session.
+          root.classList.add('is-theming');
+          clearTimeout(settle);
+          settle = setTimeout(function () { root.classList.remove('is-theming'); }, 420);
+          paint();
+        });
+      }
+
+      if (media) {
+        var follow = function () { if (!chosenTheme) paint(); };
+        if (media.addEventListener) media.addEventListener('change', follow);
+        else if (media.addListener) media.addListener(follow);
+      }
+      paint();
+    })();
+  })();
+  </script>
+  <!-- /demo-chrome:script -->
+
+  <script src="component.js"></script>
+  <!--
+    Arrival: which blocks wait to be scrolled to, and in what order the rest
+    arrive. The motion is the style block's; this adds the one thing CSS
+    cannot ask, which is whether a block is on screen. A script of its own,
+    last, so that anything failing above it leaves every block to play at
+    load — the page without this, rather than a page with its states held for
+    good. Delete it and the page still arrives, all at once below the intro.
+  -->
+  <script>
+  (function () {
+    var blocks = Array.prototype.slice.call(document.querySelectorAll('[data-reveal]'));
+    if (!blocks.length || !('IntersectionObserver' in window)) return;
+
+    // The held state lives in the same media query, so where it does not
+    // match there is nothing to hold and nothing to let go of.
+    if (!window.matchMedia('screen and (prefers-reduced-motion: no-preference)').matches) return;
+
+    // How far up the viewport a block has to come to count as reached, and
+    // the latest slot anything on the first screen starts at: a tall screen
+    // holding twenty blocks should not keep the last one waiting two seconds.
+    var LINE = 0.9;
+    var LAST = 8;
+
+    function arriving(a) { return /^demo-arrive/.test(a.animationName || ''); }
+
+    function own(block) {
+      return block.getAnimations ? block.getAnimations().filter(arriving) : [];
+    }
+
+    // Still in its delay, so moving its slot moves nothing a reader has seen.
+    // A block already rising keeps the slot it started with: re-slotting it
+    // would snap it back to its first frame.
+    function waiting(block) {
+      return own(block).every(function (a) {
+        return a.currentTime !== null && a.currentTime < a.effect.getTiming().delay;
+      });
+    }
+
+    // Once its entrance is over the animation comes off — see has-arrived.
+    // Cancelled counts as over. Where the browser cannot say, it stays on:
+    // marking it early would cut the entrance off where it stood.
+    function settle(block) {
+      if (!block.getAnimations) return;
+      Promise.allSettled(own(block).map(function (a) { return a.finished; }))
+        .then(function () { block.classList.add('has-arrived'); });
+    }
+
+    function inOrder(list) {
+      return list.sort(function (a, b) {
+        return a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1;
+      });
+    }
+
+    // Everything reached in one scroll is one batch, in reading order from
+    // zero, a step apart — a row of three states side by side arrives as a
+    // row, and the same three stacked on a phone arrive one at a time.
+    var seen = new IntersectionObserver(function (entries) {
+      var landed = entries
+        .filter(function (e) { return e.isIntersecting; })
+        .map(function (e) { return e.target; });
+      inOrder(landed).forEach(function (block, n) {
+        seen.unobserve(block);
+        block.style.setProperty('--demo-arrive-lead', '0ms');
+        block.style.setProperty('--demo-arrive-at', String(Math.min(n, LAST)));
+        block.classList.remove('is-held');
+        settle(block);
+      });
+    }, { rootMargin: '0px 0px -' + Math.round((1 - LINE) * 100) + '% 0px' });
+
+    var line = window.innerHeight * LINE;
+    var first = [];
+
+    blocks.forEach(function (block) {
+      var box = block.getBoundingClientRect();
+      if (box.top < line && box.bottom > 0) {
+        first.push(block);
+        return;
+      }
+      block.classList.add('is-held');
+      seen.observe(block);
+    });
+
+    // The first screen, in reading order. Its animations have been running
+    // since the first paint, which is why only a block still waiting moves.
+    inOrder(first).forEach(function (block, n) {
+      if (waiting(block)) block.style.setProperty('--demo-arrive-at', String(Math.min(n, LAST)));
+      settle(block);
+    });
+  })();
+  </script>
+
+</body>
+</html>
