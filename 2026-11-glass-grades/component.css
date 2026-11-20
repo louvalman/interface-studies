@@ -107,7 +107,7 @@
   --glass-grades-flick: 400ms;        /* read by component.js: how far ahead a release is projected, so a flick coasts, three panes at most */
   --glass-grades-notch: .55;          /* read by component.js: how much the glass sticks near each stop as you drag */
   --glass-grades-damping: .67;        /* read by component.js: the landing spring, about 6% overshoot */
-  --glass-grades-hold: 260ms;         /* read by component.js: a still press this long lifts the glass */
+  --glass-grades-hold: 320ms;         /* read by component.js: a still press this long lifts the glass, for as long as it is held */
   --glass-grades-click: 0;            /* read by component.js: sound volume, 0 to 1; at 0 no audio is ever started */
 
   /* --- the reference row every selector shows: black to white, then skin,

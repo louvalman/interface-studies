@@ -22,8 +22,10 @@
   var lastActive = null;   // the instance a paste goes to
 
   var MSG = {
-    en: { notImage: 'That is not an image. Try a JPEG, PNG or HEIC.', cannot: 'This browser could not open that image.', alt: 'Your picture' },
-    da: { notImage: 'Det er ikke et billede. Prøv JPEG, PNG eller HEIC.', cannot: 'Browseren kunne ikke åbne billedet.', alt: 'Dit billede' }
+    en: { notImage: 'That is not an image. Try a JPEG, PNG or HEIC.', cannot: 'This browser could not open that image.', alt: 'Your picture',
+          lifted: 'Glass lifted: the picture as it is.', down: 'Glass back down:' },
+    da: { notImage: 'Det er ikke et billede. Prøv JPEG, PNG eller HEIC.', cannot: 'Browseren kunne ikke åbne billedet.', alt: 'Dit billede',
+          lifted: 'Glasset er løftet: billedet, som det er.', down: 'Glasset er lagt tilbage:' }
   };
   function msg(key) {
     var lang = (document.documentElement.getAttribute('lang') || 'en').slice(0, 2);
@@ -327,12 +329,19 @@
     function isStrip() { return !!(strip && strip.checked); }
     function openView() { if (strip && strip.checked) strip.checked = false; }
 
-    /* ── lifting the glass ── */
-    function lift(on, type) {
-      if (on === root.classList.contains('glass-grades--lifted')) return;
+    /* ── lifting the glass ──
+       Held, for as long as a press or Space is; or latched, by a tap on the
+       open pane or by Enter, until the next tap or Enter, a drag or a change
+       of light. The latch is the way to compare that needs no timing. */
+    var latched = false;
+    function lifted() { return root.classList.contains('glass-grades--lifted'); }
+    function lift(on, type, say) {
+      if (!on) latched = false;
+      if (on === lifted()) return;
       root.classList.toggle('glass-grades--lifted', on);
       feedback(on ? 'lift' : 'set', type);
       if (on) glintFlash();
+      if (say && live) live.textContent = on ? msg('lifted') : msg('down') + ' ' + labelOf(nearest(p)) + '.';
     }
 
     /* ── the drag: relative, detented, with a flick ── */
@@ -360,21 +369,33 @@
       return Math.max(24, (open - sliver) * frame.clientWidth);
     }
 
+    // A press catches moving glass. If it then neither drags nor picks
+    // another pane, the glass lands where it was nearest, rather than being
+    // left between two stops.
     frame.addEventListener('pointerdown', function (e) {
       if (e.button !== 0 || ptr) return;
-      ptr = { id: e.pointerId, type: e.pointerType || 'mouse', x0: e.clientX, y0: e.clientY, raw0: 0, k: 0, step: 1, moved: false, lifted: false, samples: [] };
+      ptr = { id: e.pointerId, type: e.pointerType || 'mouse', x0: e.clientX, y0: e.clientY, raw0: 0, k: 0, step: 1,
+              moved: false, held: false, caught: !!spring.raf, samples: [] };
       stopSpring();
       try { frame.setPointerCapture(e.pointerId); } catch (err) { /* fine without it */ }
-      holdTimer = setTimeout(function () {
-        if (ptr && !ptr.moved) { ptr.lifted = true; lift(true, ptr.type); }
-      }, ms('--glass-grades-hold', 260));
+      if (!latched) holdTimer = setTimeout(function () {
+        if (ptr && !ptr.moved) { ptr.held = true; lift(true, ptr.type); }
+      }, ms('--glass-grades-hold', 320));
     });
     frame.addEventListener('pointermove', function (e) {
-      if (!ptr || e.pointerId !== ptr.id || ptr.lifted) return;
+      if (!ptr || e.pointerId !== ptr.id) return;
       if (!ptr.moved) {
         var dx = e.clientX - ptr.x0, dy = e.clientY - ptr.y0;
         if (Math.hypot(dx, dy) < (ptr.type === 'mouse' ? 4 : 8)) return;
-        if (ptr.type !== 'mouse' && Math.abs(dy) > Math.abs(dx)) return;   // a vertical swipe is the page's
+        var sideways = Math.abs(dx) >= Math.abs(dy);
+        if (ptr.type !== 'mouse' && !sideways) return;   // a vertical swipe is the page's
+        // Lifted, held or latched: a sideways move sets the glass down and
+        // becomes a drag. The hand was looking, and now it is moving it.
+        if (lifted()) {
+          if (!sideways) return;
+          ptr.held = false;
+          lift(false, ptr.type);
+        }
         ptr.moved = true;
         clearTimeout(holdTimer);
         frame.classList.add('glass-grades__frame--dragging');
@@ -397,8 +418,12 @@
       var P = ptr;
       ptr = null;
       frame.classList.remove('glass-grades__frame--dragging');
-      if (P.lifted) { lift(false, P.type); return; }
-      if (!P.moved) { if (!cancelled) tapAt(e.clientX, P.type); return; }
+      if (!P.moved) {
+        if (P.held) lift(false, P.type);
+        else if (!cancelled) tapAt(e.clientX, P.type, P.caught);
+        if (driven && !spring.raf) springTo(nearest(p), 0, P.type, true);
+        return;
+      }
       var v = 0, s = P.samples;
       if (!cancelled && s.length > 1 && e.timeStamp - s[s.length - 1].t < 80) {
         var dt = (s[s.length - 1].t - s[0].t) / 1000;
@@ -415,15 +440,25 @@
     frame.addEventListener('pointercancel', function (e) { endPointer(e, true); });
     frame.addEventListener('contextmenu', function (e) { e.preventDefault(); });
 
-    function tapAt(clientX, type) {
+    function paneAt(clientX) {
       var i = 0;
       for (; i < N - 1; i++) {
         var r = panes[i] && panes[i].getBoundingClientRect();
         if (r && clientX < r.right) break;
       }
-      var wasStrip = isStrip();
+      return i;
+    }
+    // A tap opens the pane it lands on. On the pane already open, glass at
+    // rest, it lifts the glass off, and the next tap anywhere puts it back.
+    function tapAt(clientX, type, caught) {
+      if (latched) { lift(false, type, true); return; }
+      var i = paneAt(clientX);
+      if (!isStrip() && !caught && i === nearest(p)) {
+        lift(true, type, true);
+        latched = true;
+        return;
+      }
       openView();
-      if (i === nearest(p) && !wasStrip) return;
       drive(p);   // hold the glass before the radio moves, or the stylesheet starts its own transition
       mark(i);
       springTo(i, 0, type, false);
@@ -434,6 +469,7 @@
       var from = spring.raf ? spring.target : nearest(p);
       if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
         e.preventDefault();
+        if (latched) lift(false, 'key');
         openView();
         var t = nearest(from + (e.key === 'ArrowRight' ? 1 : -1));
         drive(p);
@@ -441,24 +477,31 @@
         springTo(t, 0, 'key', false);
       } else if (e.key === 'Home' || e.key === 'End') {
         e.preventDefault();
+        if (latched) lift(false, 'key');
         var end = e.key === 'Home' ? 0 : N - 1;
         drive(p);
         mark(end);
         springTo(end, 0, 'key', false);
       } else if (e.key === ' ' && !e.repeat) {
         e.preventDefault();
-        lift(true, 'key');
+        if (!lifted()) lift(true, 'key', true);
+      } else if (e.key === 'Enter' && !e.repeat) {
+        // The latch, for a hand that cannot hold a key down.
+        e.preventDefault();
+        if (lifted()) lift(false, 'key', true);
+        else { lift(true, 'key', true); latched = true; }
       } else if ((e.key === 's' || e.key === 'S') && !e.metaKey && !e.ctrlKey && !e.altKey && strip) {
         strip.checked = !strip.checked;
       }
     });
     frame.addEventListener('keyup', function (e) {
-      if (e.key === ' ') { e.preventDefault(); lift(false, 'key'); }
+      if (e.key === ' ') { e.preventDefault(); if (!latched) lift(false, 'key', true); }
     });
     frame.addEventListener('blur', function () { if (!ptr) lift(false, 'key'); });
     radios.forEach(function (r, i) {
       r.addEventListener('change', function () {
         if (!r.checked) return;
+        if (latched) lift(false, lastType);
         // The stylesheet has already been told; hold p where the glass is
         // and spring from there, so the move ticks like any other.
         drive(p);
