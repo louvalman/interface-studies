@@ -47,6 +47,42 @@
   inherits: true;
   initial-value: 0;
 }
+/* The recipe's factors, worked out once on the root and handed down as
+   numbers. Unregistered, every pane re-parsed the whole chain of clamp(),
+   max() and calc() behind each one on every frame of a drag: measured, style
+   recalculation went from 0.24s to 0.32s over the same 120 steps. */
+@property --glass-grades-r-h { syntax: "<number>"; inherits: true; initial-value: 0; }
+@property --glass-grades-r-s { syntax: "<number>"; inherits: true; initial-value: 0; }
+@property --glass-grades-r-fr { syntax: "<number>"; inherits: true; initial-value: 1; }
+@property --glass-grades-r-fb { syntax: "<number>"; inherits: true; initial-value: 1; }
+@property --glass-grades-r-gain { syntax: "<number>"; inherits: true; initial-value: 1; }
+@property --glass-grades-r-con { syntax: "<number>"; inherits: true; initial-value: 1; }
+@property --glass-grades-r-exp { syntax: "<number>"; inherits: true; initial-value: 1; }
+@property --glass-grades-r-sat { syntax: "<number>"; inherits: true; initial-value: 1; }
+@property --glass-grades-r-soft { syntax: "<number>"; inherits: true; initial-value: 1; }
+@property --glass-grades-r-lift { syntax: "<number>"; inherits: true; initial-value: 0; }
+@property --glass-grades-r-grain { syntax: "<number>"; inherits: true; initial-value: 0; }
+@property --glass-grades-r-wr { syntax: "<number>"; inherits: true; initial-value: 1; }
+@property --glass-grades-r-wg { syntax: "<number>"; inherits: true; initial-value: 1; }
+@property --glass-grades-r-wb { syntax: "<number>"; inherits: true; initial-value: 1; }
+/* Each grade's two sheets with the recipe on them, worked out on the root,
+   which nothing moving restyles. Worked out on each sheet instead, the 14
+   relative colours under the glass were resolved again on every frame of a
+   drag: 0.27s of style recalculation over the 120 steps against 0.24s. */
+@property --glass-grades-havgus-toe-f { syntax: "<color>"; inherits: true; initial-value: #000; }
+@property --glass-grades-havgus-shoulder-f { syntax: "<color>"; inherits: true; initial-value: #fff; }
+@property --glass-grades-dagslys-toe-f { syntax: "<color>"; inherits: true; initial-value: #000; }
+@property --glass-grades-dagslys-shoulder-f { syntax: "<color>"; inherits: true; initial-value: #fff; }
+@property --glass-grades-hojsol-toe-f { syntax: "<color>"; inherits: true; initial-value: #000; }
+@property --glass-grades-hojsol-shoulder-f { syntax: "<color>"; inherits: true; initial-value: #fff; }
+@property --glass-grades-sankthans-toe-f { syntax: "<color>"; inherits: true; initial-value: #000; }
+@property --glass-grades-sankthans-shoulder-f { syntax: "<color>"; inherits: true; initial-value: #fff; }
+@property --glass-grades-blaatime-toe-f { syntax: "<color>"; inherits: true; initial-value: #000; }
+@property --glass-grades-blaatime-shoulder-f { syntax: "<color>"; inherits: true; initial-value: #fff; }
+@property --glass-grades-nat-toe-f { syntax: "<color>"; inherits: true; initial-value: #000; }
+@property --glass-grades-nat-shoulder-f { syntax: "<color>"; inherits: true; initial-value: #fff; }
+@property --glass-grades-natrium-toe-f { syntax: "<color>"; inherits: true; initial-value: #000; }
+@property --glass-grades-natrium-shoulder-f { syntax: "<color>"; inherits: true; initial-value: #fff; }
 
 .glass-grades {
   /* --- size and shape ------------------------------------------------- */
@@ -175,6 +211,23 @@
   --glass-grades-natrium-con: 1.06;
   --glass-grades-natrium-exp: 1.08;
   --glass-grades-natrium-grain: .12;
+
+  /* --- the recipe: the camera's own units, laid over whichever grade is
+         open, and 0 leaves the grade as it is. The k- factors say what one
+         step does; they were chosen by eye, not measured against a camera,
+         so a step here is near a step there and no more. ---------------- */
+  --glass-grades-tone-h: 0;           /* highlight tone, -2 to +4 in halves: + harder whites, - softer */
+  --glass-grades-tone-s: 0;           /* shadow tone, -2 to +4 in halves: + deeper shadows, - lifted */
+  --glass-grades-color: 0;            /* -4 to +4: saturation */
+  --glass-grades-wb-r: 0;             /* white balance shift, -9 to +9: + red, - cyan */
+  --glass-grades-wb-b: 0;             /* -9 to +9: + blue, - yellow */
+  --glass-grades-grain-step: 0;       /* 0 the grade's own grain, 1 weak, 2 strong, added to it */
+  --glass-grades-k-tone: .05;         /* contrast per step of + tone, the pivot moved by half as much exposure */
+  --glass-grades-k-soft: .03;         /* how far white comes down per step of - highlight */
+  --glass-grades-k-lift: 10;          /* how far black comes up per step of - shadow, of 255 */
+  --glass-grades-k-color: .1;         /* saturation per step of colour */
+  --glass-grades-k-wb: .018;          /* gain per step of white balance, on its channel */
+  --glass-grades-k-grain: .06;        /* grain per step */
   /* ---------------------------------------------------------------------- */
 
   /* Written by the rules below from the markup, not tunables. */
@@ -183,6 +236,46 @@
   --glass-grades-p: 0;
   --glass-grades-a: 1;
   --glass-grades-s: calc((1 - var(--glass-grades-open)) / (var(--glass-grades-n) - 1));   /* one sliver */
+
+  /* The recipe as factors, worked out once here and read by every layer.
+     + tone hardens with contrast, H moving the pivot down and S up, so H
+     mostly brightens the whites and S mostly deepens the blacks. - tone
+     softens with the sheets: the shoulder comes down, the toe comes up.
+     White balance is a gain per channel on the shoulder, since multiplying
+     by a colour scales every tone; a gain above 1 is said by lowering the
+     other channels and raising exposure by the same factor. */
+  --glass-grades-r-h: clamp(-2, var(--glass-grades-tone-h), 4);
+  --glass-grades-r-s: clamp(-2, var(--glass-grades-tone-s), 4);
+  --glass-grades-r-fr: calc(1 + clamp(-9, var(--glass-grades-wb-r), 9) * var(--glass-grades-k-wb));
+  --glass-grades-r-fb: calc(1 + clamp(-9, var(--glass-grades-wb-b), 9) * var(--glass-grades-k-wb));
+  --glass-grades-r-gain: 1;           /* raised below where relative colour can lower the shoulder to match */
+  --glass-grades-r-con: calc(1 + (max(0, var(--glass-grades-r-h)) + max(0, var(--glass-grades-r-s))) * var(--glass-grades-k-tone));
+  --glass-grades-r-exp: calc((1 + (max(0, var(--glass-grades-r-h)) - max(0, var(--glass-grades-r-s))) * var(--glass-grades-k-tone) / 2) * var(--glass-grades-r-gain));
+  --glass-grades-r-sat: max(0, 1 + clamp(-4, var(--glass-grades-color), 4) * var(--glass-grades-k-color));
+  --glass-grades-r-soft: calc(1 - max(0, -1 * var(--glass-grades-r-h)) * var(--glass-grades-k-soft));
+  --glass-grades-r-lift: calc(max(0, -1 * var(--glass-grades-r-s)) * var(--glass-grades-k-lift));
+  --glass-grades-r-grain: calc(clamp(0, var(--glass-grades-grain-step), 2) * var(--glass-grades-k-grain));
+  --glass-grades-r-wr: calc(var(--glass-grades-r-fr) / var(--glass-grades-r-gain) * var(--glass-grades-r-soft));
+  --glass-grades-r-wg: calc(1 / var(--glass-grades-r-gain) * var(--glass-grades-r-soft));
+  --glass-grades-r-wb: calc(var(--glass-grades-r-fb) / var(--glass-grades-r-gain) * var(--glass-grades-r-soft));
+  /* Each grade's sheets as the grade gives them; where relative colour is
+     understood, the rule below puts the recipe's tone and white balance on
+     them. A grade of your own maps its own toe and shoulder and the recipe's
+     tone and white balance pass it by, unless it gets a pair here too. */
+  --glass-grades-havgus-toe-f: var(--glass-grades-havgus-toe);
+  --glass-grades-havgus-shoulder-f: var(--glass-grades-havgus-shoulder);
+  --glass-grades-dagslys-toe-f: var(--glass-grades-dagslys-toe);
+  --glass-grades-dagslys-shoulder-f: var(--glass-grades-dagslys-shoulder);
+  --glass-grades-hojsol-toe-f: var(--glass-grades-hojsol-toe);
+  --glass-grades-hojsol-shoulder-f: var(--glass-grades-hojsol-shoulder);
+  --glass-grades-sankthans-toe-f: var(--glass-grades-sankthans-toe);
+  --glass-grades-sankthans-shoulder-f: var(--glass-grades-sankthans-shoulder);
+  --glass-grades-blaatime-toe-f: var(--glass-grades-blaatime-toe);
+  --glass-grades-blaatime-shoulder-f: var(--glass-grades-blaatime-shoulder);
+  --glass-grades-nat-toe-f: var(--glass-grades-nat-toe);
+  --glass-grades-nat-shoulder-f: var(--glass-grades-nat-shoulder);
+  --glass-grades-natrium-toe-f: var(--glass-grades-natrium-toe);
+  --glass-grades-natrium-shoulder-f: var(--glass-grades-natrium-shoulder);
 
   position: relative;
   isolation: isolate;
@@ -276,13 +369,13 @@
 
 /* --- the grade: one filter, two sheets of colour, grain --------------------- */
 
-.glass-grades__view--havgus    { --glass-grades-toe: var(--glass-grades-havgus-toe);    --glass-grades-shoulder: var(--glass-grades-havgus-shoulder);    --glass-grades-sat: var(--glass-grades-havgus-sat);    --glass-grades-con: var(--glass-grades-havgus-con);    --glass-grades-exp: var(--glass-grades-havgus-exp);    --glass-grades-grain: var(--glass-grades-havgus-grain); }
-.glass-grades__view--dagslys   { --glass-grades-toe: var(--glass-grades-dagslys-toe);   --glass-grades-shoulder: var(--glass-grades-dagslys-shoulder);   --glass-grades-sat: var(--glass-grades-dagslys-sat);   --glass-grades-con: var(--glass-grades-dagslys-con);   --glass-grades-exp: var(--glass-grades-dagslys-exp);   --glass-grades-grain: var(--glass-grades-dagslys-grain); }
-.glass-grades__view--hojsol    { --glass-grades-toe: var(--glass-grades-hojsol-toe);    --glass-grades-shoulder: var(--glass-grades-hojsol-shoulder);    --glass-grades-sat: var(--glass-grades-hojsol-sat);    --glass-grades-con: var(--glass-grades-hojsol-con);    --glass-grades-exp: var(--glass-grades-hojsol-exp);    --glass-grades-grain: var(--glass-grades-hojsol-grain); }
-.glass-grades__view--sankthans { --glass-grades-toe: var(--glass-grades-sankthans-toe); --glass-grades-shoulder: var(--glass-grades-sankthans-shoulder); --glass-grades-sat: var(--glass-grades-sankthans-sat); --glass-grades-con: var(--glass-grades-sankthans-con); --glass-grades-exp: var(--glass-grades-sankthans-exp); --glass-grades-grain: var(--glass-grades-sankthans-grain); }
-.glass-grades__view--blaatime  { --glass-grades-toe: var(--glass-grades-blaatime-toe);  --glass-grades-shoulder: var(--glass-grades-blaatime-shoulder);  --glass-grades-sat: var(--glass-grades-blaatime-sat);  --glass-grades-con: var(--glass-grades-blaatime-con);  --glass-grades-exp: var(--glass-grades-blaatime-exp);  --glass-grades-grain: var(--glass-grades-blaatime-grain); }
-.glass-grades__view--nat       { --glass-grades-toe: var(--glass-grades-nat-toe);       --glass-grades-shoulder: var(--glass-grades-nat-shoulder);       --glass-grades-sat: var(--glass-grades-nat-sat);       --glass-grades-con: var(--glass-grades-nat-con);       --glass-grades-exp: var(--glass-grades-nat-exp);       --glass-grades-grain: var(--glass-grades-nat-grain); }
-.glass-grades__view--natrium   { --glass-grades-toe: var(--glass-grades-natrium-toe);   --glass-grades-shoulder: var(--glass-grades-natrium-shoulder);   --glass-grades-sat: var(--glass-grades-natrium-sat);   --glass-grades-con: var(--glass-grades-natrium-con);   --glass-grades-exp: var(--glass-grades-natrium-exp);   --glass-grades-grain: var(--glass-grades-natrium-grain); }
+.glass-grades__view--havgus    { --glass-grades-toe: var(--glass-grades-havgus-toe-f);    --glass-grades-shoulder: var(--glass-grades-havgus-shoulder-f);    --glass-grades-sat: var(--glass-grades-havgus-sat);    --glass-grades-con: var(--glass-grades-havgus-con);    --glass-grades-exp: var(--glass-grades-havgus-exp);    --glass-grades-grain: var(--glass-grades-havgus-grain); }
+.glass-grades__view--dagslys   { --glass-grades-toe: var(--glass-grades-dagslys-toe-f);   --glass-grades-shoulder: var(--glass-grades-dagslys-shoulder-f);   --glass-grades-sat: var(--glass-grades-dagslys-sat);   --glass-grades-con: var(--glass-grades-dagslys-con);   --glass-grades-exp: var(--glass-grades-dagslys-exp);   --glass-grades-grain: var(--glass-grades-dagslys-grain); }
+.glass-grades__view--hojsol    { --glass-grades-toe: var(--glass-grades-hojsol-toe-f);    --glass-grades-shoulder: var(--glass-grades-hojsol-shoulder-f);    --glass-grades-sat: var(--glass-grades-hojsol-sat);    --glass-grades-con: var(--glass-grades-hojsol-con);    --glass-grades-exp: var(--glass-grades-hojsol-exp);    --glass-grades-grain: var(--glass-grades-hojsol-grain); }
+.glass-grades__view--sankthans { --glass-grades-toe: var(--glass-grades-sankthans-toe-f); --glass-grades-shoulder: var(--glass-grades-sankthans-shoulder-f); --glass-grades-sat: var(--glass-grades-sankthans-sat); --glass-grades-con: var(--glass-grades-sankthans-con); --glass-grades-exp: var(--glass-grades-sankthans-exp); --glass-grades-grain: var(--glass-grades-sankthans-grain); }
+.glass-grades__view--blaatime  { --glass-grades-toe: var(--glass-grades-blaatime-toe-f);  --glass-grades-shoulder: var(--glass-grades-blaatime-shoulder-f);  --glass-grades-sat: var(--glass-grades-blaatime-sat);  --glass-grades-con: var(--glass-grades-blaatime-con);  --glass-grades-exp: var(--glass-grades-blaatime-exp);  --glass-grades-grain: var(--glass-grades-blaatime-grain); }
+.glass-grades__view--nat       { --glass-grades-toe: var(--glass-grades-nat-toe-f);       --glass-grades-shoulder: var(--glass-grades-nat-shoulder-f);       --glass-grades-sat: var(--glass-grades-nat-sat);       --glass-grades-con: var(--glass-grades-nat-con);       --glass-grades-exp: var(--glass-grades-nat-exp);       --glass-grades-grain: var(--glass-grades-nat-grain); }
+.glass-grades__view--natrium   { --glass-grades-toe: var(--glass-grades-natrium-toe-f);   --glass-grades-shoulder: var(--glass-grades-natrium-shoulder-f);   --glass-grades-sat: var(--glass-grades-natrium-sat);   --glass-grades-con: var(--glass-grades-natrium-con);   --glass-grades-exp: var(--glass-grades-natrium-exp);   --glass-grades-grain: var(--glass-grades-natrium-grain); }
 
 .glass-grades__view {
   position: absolute;
@@ -297,7 +390,10 @@
   inset: 0;
   display: block;
   background: var(--glass-grades-paper);
-  filter: brightness(var(--glass-grades-exp, 1)) contrast(var(--glass-grades-con, 1)) saturate(var(--glass-grades-sat, 1));
+  filter:
+    brightness(calc(var(--glass-grades-exp, 1) * var(--glass-grades-r-exp, 1)))
+    contrast(calc(var(--glass-grades-con, 1) * var(--glass-grades-r-con, 1)))
+    saturate(calc(var(--glass-grades-sat, 1) * var(--glass-grades-r-sat, 1)));
 }
 
 .glass-grades__toe,
@@ -315,7 +411,32 @@
 .glass-grades__grain {
   background: var(--glass-grades-noise) 0 0 / var(--glass-grades-grain-size) var(--glass-grades-grain-size);
   mix-blend-mode: overlay;
-  opacity: var(--glass-grades-grain, 0);
+  opacity: calc(var(--glass-grades-grain, 0) + var(--glass-grades-r-grain, 0));
+}
+
+/* The recipe's tone and white balance move the sheets themselves, where
+   relative colour can say so: black comes up by the lift, and white takes the
+   three channel gains. Without it the sheets keep the grade's own colours,
+   exposure keeps no compensation to match, and the recipe is contrast,
+   saturation and grain. */
+@supports (color: rgb(from red r g b)) {
+  .glass-grades {
+    --glass-grades-r-gain: max(1, var(--glass-grades-r-fr), var(--glass-grades-r-fb));
+    --glass-grades-havgus-toe-f: rgb(from var(--glass-grades-havgus-toe) calc(r + var(--glass-grades-r-lift)) calc(g + var(--glass-grades-r-lift)) calc(b + var(--glass-grades-r-lift)));
+    --glass-grades-havgus-shoulder-f: rgb(from var(--glass-grades-havgus-shoulder) calc(r * var(--glass-grades-r-wr)) calc(g * var(--glass-grades-r-wg)) calc(b * var(--glass-grades-r-wb)));
+    --glass-grades-dagslys-toe-f: rgb(from var(--glass-grades-dagslys-toe) calc(r + var(--glass-grades-r-lift)) calc(g + var(--glass-grades-r-lift)) calc(b + var(--glass-grades-r-lift)));
+    --glass-grades-dagslys-shoulder-f: rgb(from var(--glass-grades-dagslys-shoulder) calc(r * var(--glass-grades-r-wr)) calc(g * var(--glass-grades-r-wg)) calc(b * var(--glass-grades-r-wb)));
+    --glass-grades-hojsol-toe-f: rgb(from var(--glass-grades-hojsol-toe) calc(r + var(--glass-grades-r-lift)) calc(g + var(--glass-grades-r-lift)) calc(b + var(--glass-grades-r-lift)));
+    --glass-grades-hojsol-shoulder-f: rgb(from var(--glass-grades-hojsol-shoulder) calc(r * var(--glass-grades-r-wr)) calc(g * var(--glass-grades-r-wg)) calc(b * var(--glass-grades-r-wb)));
+    --glass-grades-sankthans-toe-f: rgb(from var(--glass-grades-sankthans-toe) calc(r + var(--glass-grades-r-lift)) calc(g + var(--glass-grades-r-lift)) calc(b + var(--glass-grades-r-lift)));
+    --glass-grades-sankthans-shoulder-f: rgb(from var(--glass-grades-sankthans-shoulder) calc(r * var(--glass-grades-r-wr)) calc(g * var(--glass-grades-r-wg)) calc(b * var(--glass-grades-r-wb)));
+    --glass-grades-blaatime-toe-f: rgb(from var(--glass-grades-blaatime-toe) calc(r + var(--glass-grades-r-lift)) calc(g + var(--glass-grades-r-lift)) calc(b + var(--glass-grades-r-lift)));
+    --glass-grades-blaatime-shoulder-f: rgb(from var(--glass-grades-blaatime-shoulder) calc(r * var(--glass-grades-r-wr)) calc(g * var(--glass-grades-r-wg)) calc(b * var(--glass-grades-r-wb)));
+    --glass-grades-nat-toe-f: rgb(from var(--glass-grades-nat-toe) calc(r + var(--glass-grades-r-lift)) calc(g + var(--glass-grades-r-lift)) calc(b + var(--glass-grades-r-lift)));
+    --glass-grades-nat-shoulder-f: rgb(from var(--glass-grades-nat-shoulder) calc(r * var(--glass-grades-r-wr)) calc(g * var(--glass-grades-r-wg)) calc(b * var(--glass-grades-r-wb)));
+    --glass-grades-natrium-toe-f: rgb(from var(--glass-grades-natrium-toe) calc(r + var(--glass-grades-r-lift)) calc(g + var(--glass-grades-r-lift)) calc(b + var(--glass-grades-r-lift)));
+    --glass-grades-natrium-shoulder-f: rgb(from var(--glass-grades-natrium-shoulder) calc(r * var(--glass-grades-r-wr)) calc(g * var(--glass-grades-r-wg)) calc(b * var(--glass-grades-r-wb)));
+  }
 }
 
 /* --- the bar: what you are looking through, and two switches -------------- */

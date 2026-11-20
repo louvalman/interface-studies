@@ -436,6 +436,123 @@
       color: var(--demo-soft);
       overflow-wrap: anywhere;
     }
+    /* --- the recipe -------------------------------------------------------
+       Steppers for the recipe's tokens, under the instance they write to.
+       Each is a number input, which is what a keyboard and a screen reader
+       use; the minus and plus either side are for a pointer, and are left
+       out of the tab order and the accessibility tree. */
+    .demo__recipe:not([hidden]) {
+      display: grid;
+      gap: 1.1rem;
+      width: 100%;
+      margin-top: 0.5rem;
+    }
+    .demo__recipe-steps {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(min(100%, 12.5rem), 1fr));
+      gap: 0.6rem 1.75rem;
+    }
+    .demo__step {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      min-width: 0;
+    }
+    .demo__step-name {
+      font-family: "Fragment Mono", ui-monospace, monospace;
+      font-size: 0.6875rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--demo-soft);
+    }
+    .demo__step-field {
+      display: inline-flex;
+      align-items: center;
+      flex: none;
+      border: 1px solid var(--demo-line);
+      border-radius: 999px;
+      background: var(--demo-chip);
+    }
+    .demo__step-btn {
+      display: grid;
+      place-items: center;
+      width: 2rem;
+      height: 2rem;
+      padding: 0;
+      border: 0;
+      border-radius: 999px;
+      background: none;
+      color: var(--demo-fg);
+      font: 1rem/1 "Mona Sans", system-ui, sans-serif;
+      cursor: pointer;
+    }
+    .demo__step-btn:hover { background: var(--demo-fill); }
+    .demo__step-input {
+      width: 3rem;
+      height: 2rem;
+      padding: 0;
+      border: 0;
+      background: none;
+      color: var(--demo-fg);
+      font: 0.8125rem/1 "Fragment Mono", ui-monospace, monospace;
+      text-align: center;
+      -moz-appearance: textfield;
+      appearance: textfield;
+    }
+    .demo__step-input::-webkit-inner-spin-button,
+    .demo__step-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+    .demo__step-input:focus-visible {
+      outline: 2px solid var(--demo-fg);
+      outline-offset: 2px;
+      border-radius: 0.35rem;
+    }
+    .demo__step-input--select {
+      width: auto;
+      height: 2rem;
+      padding: 0 0.85rem;
+      border: 1px solid var(--demo-line);
+      border-radius: 999px;
+      background: var(--demo-chip);
+      text-align: left;
+      appearance: auto;
+    }
+    .demo__recipe-line {
+      margin: 0;
+      font-family: "Fragment Mono", ui-monospace, monospace;
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      color: var(--demo-fg);
+      overflow-wrap: anywhere;
+    }
+    .demo__recipe-part { white-space: nowrap; }
+    .demo__recipe-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem 0.75rem;
+    }
+    .demo__recipe-btn {
+      min-height: 2rem;
+      padding: 0.4rem 0.95rem;
+      border: 1px solid var(--demo-line);
+      border-radius: 999px;
+      background: var(--demo-chip-soft);
+      color: var(--demo-fg);
+      font: 600 0.8125rem/1 "Mona Sans", system-ui, sans-serif;
+      cursor: pointer;
+    }
+    .demo__recipe-btn:hover { background: var(--demo-chip-hover); }
+    .demo__recipe-btn:focus-visible,
+    .demo__step-btn:focus-visible {
+      outline: 2px solid var(--demo-fg);
+      outline-offset: 2px;
+    }
+    .demo__recipe-done {
+      font-size: 0.8125rem;
+      color: var(--demo-soft);
+    }
+
     /* --- touch targets --- */
 
     /* No hover means a finger, and a finger cannot aim at a 10px label. The
@@ -444,6 +561,10 @@
        out on its own takes this with it. */
     @media (hover: none) {
       .demo__back { min-height: 2.75rem; }
+      .demo__step-btn { width: 2.75rem; height: 2.75rem; }
+      .demo__step-input,
+      .demo__step-input--select,
+      .demo__recipe-btn { min-height: 2.75rem; }
     }
 
     /* --- intro and decisions --------------------------------------------
@@ -1341,6 +1462,220 @@
 
     <section class="demo__group">
       <div class="demo__group-head" data-reveal>
+        <h2 class="demo__group-title" data-i18n="group.recipe">A recipe on top</h2>
+        <p class="demo__group-note" data-i18n="group.recipeNote">The camera&rsquo;s own numbers over whichever light is open: highlight and shadow tone, colour, a white balance shift and grain. Each is a token set on this instance&rsquo;s root, and the line under them is the recipe as it would be written down.</p>
+      </div>
+      <div class="demo__grid">
+        <section class="demo__state demo__state--wide" data-reveal data-recipe>
+          <p class="demo__caption" data-i18n="state.recipe"><strong>Dagslys, with a recipe</strong> &middot; the reference light, made warm and punchy. Change the light and the recipe stays on it.</p>
+          <code class="demo__hint">--glass-grades-tone-h, -tone-s, -color, -wb-r, -wb-b, -grain-step</code>
+          <div class="glass-grades">
+            <div class="glass-grades__bar">
+              <p class="glass-grades__readout" aria-hidden="true">
+                <span class="glass-grades__name">Havgus <span class="glass-grades__desc" data-i18n="sample.havgusDesc">Sea fog: scattered light lifts every shadow</span></span>
+                <span class="glass-grades__name">Dagslys <span class="glass-grades__desc" data-i18n="sample.dagslysDesc">Daylight, true colour</span></span>
+                <span class="glass-grades__name">Højsol <span class="glass-grades__desc" data-i18n="sample.hojsolDesc">High summer sun: hard shadows, bleached colour</span></span>
+                <span class="glass-grades__name">Sankthans <span class="glass-grades__desc" data-i18n="sample.sankthansDesc">Low midsummer sun: amber light, soft shadows</span></span>
+                <span class="glass-grades__name">Blå time <span class="glass-grades__desc" data-i18n="sample.blaatimeDesc">Blue skylight in the shadows, lamps in the highlights</span></span>
+                <span class="glass-grades__name">Nat <span class="glass-grades__desc" data-i18n="sample.natDesc">Night: the eye loses colour and leans blue</span></span>
+                <span class="glass-grades__name">Natrium <span class="glass-grades__desc" data-i18n="sample.natriumDesc">A sodium lamp: one wavelength, so one colour</span></span>
+              </p>
+              <div class="glass-grades__tools">
+                <label class="glass-grades__btn glass-grades__btn--photo">
+                  <input class="glass-grades__file" type="file" accept="image/*">
+                  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="1.5" y="3" width="13" height="10" rx="2"/><circle cx="8" cy="8" r="2.6"/><path d="M5 3l1-1.5h4L11 3"/></svg><span data-i18n="sample.photo">Photo</span>
+                </label>
+                <fieldset class="glass-grades__switch">
+                  <legend class="glass-grades__legend" data-i18n="sample.viewLegend">View</legend>
+                  <label class="glass-grades__switch-opt">
+                    <input class="glass-grades__switch-radio" type="radio" name="glass-grades-recipe-view" value="strip">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="1.5" y="2.5" width="13" height="11" rx="1.5"/><path d="M4.75 2.5v11M8 2.5v11M11.25 2.5v11"/></svg><span data-i18n="sample.strip">Strip</span>
+                  </label>
+                  <label class="glass-grades__switch-opt">
+                    <input class="glass-grades__switch-radio" type="radio" name="glass-grades-recipe-view" value="pane" checked>
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="1.5" y="2.5" width="13" height="11" rx="1.5"/><path d="M3.9 2.5v11M12.1 2.5v11"/></svg><span data-i18n="sample.pane">Pane</span>
+                  </label>
+                </fieldset>
+              </div>
+            </div>
+            <div class="glass-grades__window">
+              <div class="glass-grades__scale" aria-hidden="true"><span class="glass-grades__index"></span></div>
+              <div class="glass-grades__frame" tabindex="0" role="group" data-i18n-aria="sample.frame"
+                   aria-label="Picture under seven panes of glass. Left and right arrows step through the light. Enter lifts the glass off and puts it back; Space lifts it while held. S switches between the strip and one pane.">
+                <div class="glass-grades__scene">
+                  <img class="glass-grades__base" src="sample.jpg" alt="A still life on a pale backdrop: a peach sphere, a terracotta cylinder, a sage block, a slate-blue ball, a black cube, a white ball and a mustard puck." draggable="false">
+                  <div class="glass-grades__panes" aria-hidden="true">
+                    <div class="glass-grades__pane">
+                      <div class="glass-grades__view glass-grades__view--havgus">
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+                        <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
+                      </div>
+                      <span class="glass-grades__edge"></span>
+                    </div>
+                    <div class="glass-grades__pane">
+                      <div class="glass-grades__view glass-grades__view--dagslys">
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+                        <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
+                      </div>
+                      <span class="glass-grades__edge"></span>
+                    </div>
+                    <div class="glass-grades__pane">
+                      <div class="glass-grades__view glass-grades__view--hojsol">
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+                        <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
+                      </div>
+                      <span class="glass-grades__edge"></span>
+                    </div>
+                    <div class="glass-grades__pane">
+                      <div class="glass-grades__view glass-grades__view--sankthans">
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+                        <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
+                      </div>
+                      <span class="glass-grades__edge"></span>
+                    </div>
+                    <div class="glass-grades__pane">
+                      <div class="glass-grades__view glass-grades__view--blaatime">
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+                        <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
+                      </div>
+                      <span class="glass-grades__edge"></span>
+                    </div>
+                    <div class="glass-grades__pane">
+                      <div class="glass-grades__view glass-grades__view--nat">
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+                        <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
+                      </div>
+                      <span class="glass-grades__edge"></span>
+                    </div>
+                    <div class="glass-grades__pane">
+                      <div class="glass-grades__view glass-grades__view--natrium">
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+                        <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
+                      </div>
+                      <span class="glass-grades__edge"></span>
+                    </div>
+                  </div>
+                </div>
+                <span class="glass-grades__tag glass-grades__tag--original" data-i18n="sample.original">Original</span>
+                <span class="glass-grades__tag glass-grades__tag--drop" data-i18n="sample.drop">Drop to look through the glass</span>
+                <span class="glass-grades__tag glass-grades__tag--note"></span>
+              </div>
+              <div class="glass-grades__track" aria-hidden="true"><span class="glass-grades__seg"></span><span class="glass-grades__seg"></span><span class="glass-grades__seg"></span><span class="glass-grades__seg"></span><span class="glass-grades__seg"></span><span class="glass-grades__seg"></span><span class="glass-grades__seg"></span></div>
+              <fieldset class="glass-grades__rail">
+                <legend class="glass-grades__legend" data-i18n="sample.legend">Light</legend>
+                <label class="glass-grades__chip">
+                  <input class="glass-grades__radio" type="radio" name="glass-grades-recipe" value="havgus">
+                  <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--havgus"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
+                  <span class="glass-grades__label">Havgus</span>
+                  <span class="glass-grades__hint" data-i18n="sample.havgus">Sea fog</span>
+                </label>
+                <label class="glass-grades__chip">
+                  <input class="glass-grades__radio" type="radio" name="glass-grades-recipe" value="dagslys" checked>
+                  <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--dagslys"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
+                  <span class="glass-grades__label">Dagslys</span>
+                  <span class="glass-grades__hint" data-i18n="sample.dagslys">True colour</span>
+                </label>
+                <label class="glass-grades__chip">
+                  <input class="glass-grades__radio" type="radio" name="glass-grades-recipe" value="hojsol">
+                  <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--hojsol"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
+                  <span class="glass-grades__label">Højsol</span>
+                  <span class="glass-grades__hint" data-i18n="sample.hojsol">Hard, muted</span>
+                </label>
+                <label class="glass-grades__chip">
+                  <input class="glass-grades__radio" type="radio" name="glass-grades-recipe" value="sankthans">
+                  <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--sankthans"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
+                  <span class="glass-grades__label">Sankthans</span>
+                  <span class="glass-grades__hint" data-i18n="sample.sankthans">Low, warm sun</span>
+                </label>
+                <label class="glass-grades__chip">
+                  <input class="glass-grades__radio" type="radio" name="glass-grades-recipe" value="blaatime">
+                  <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--blaatime"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
+                  <span class="glass-grades__label">Blå time</span>
+                  <span class="glass-grades__hint" data-i18n="sample.blaatime">Blue hour</span>
+                </label>
+                <label class="glass-grades__chip">
+                  <input class="glass-grades__radio" type="radio" name="glass-grades-recipe" value="nat">
+                  <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--nat"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
+                  <span class="glass-grades__label">Nat</span>
+                  <span class="glass-grades__hint" data-i18n="sample.nat">Mono, blue</span>
+                </label>
+                <label class="glass-grades__chip">
+                  <input class="glass-grades__radio" type="radio" name="glass-grades-recipe" value="natrium">
+                  <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--natrium"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
+                  <span class="glass-grades__label">Natrium</span>
+                  <span class="glass-grades__hint" data-i18n="sample.natrium">Mono, orange</span>
+                </label>
+              </fieldset>
+            </div>
+            <p class="glass-grades__live" aria-live="polite"></p>
+          </div>
+          <!-- Page scaffolding: steppers that write the recipe's tokens inline
+               on the instance above, the channel the property block is for.
+               Hidden without script, which is what writes them. -->
+          <div class="demo__recipe" hidden>
+            <div class="demo__recipe-steps">
+              <div class="demo__step">
+                <label class="demo__step-name" for="recipe-h" data-i18n="recipe.h">Highlight</label>
+                <span class="demo__step-field">
+                  <button class="demo__step-btn" type="button" tabindex="-1" aria-hidden="true" data-step="-1">&minus;</button>
+                  <input class="demo__step-input" id="recipe-h" type="number" inputmode="decimal" min="-2" max="4" step="0.5" value="-1" data-token="--glass-grades-tone-h">
+                  <button class="demo__step-btn" type="button" tabindex="-1" aria-hidden="true" data-step="1">+</button>
+                </span>
+              </div>
+              <div class="demo__step">
+                <label class="demo__step-name" for="recipe-s" data-i18n="recipe.s">Shadow</label>
+                <span class="demo__step-field">
+                  <button class="demo__step-btn" type="button" tabindex="-1" aria-hidden="true" data-step="-1">&minus;</button>
+                  <input class="demo__step-input" id="recipe-s" type="number" inputmode="decimal" min="-2" max="4" step="0.5" value="1" data-token="--glass-grades-tone-s">
+                  <button class="demo__step-btn" type="button" tabindex="-1" aria-hidden="true" data-step="1">+</button>
+                </span>
+              </div>
+              <div class="demo__step">
+                <label class="demo__step-name" for="recipe-color" data-i18n="recipe.color">Colour</label>
+                <span class="demo__step-field">
+                  <button class="demo__step-btn" type="button" tabindex="-1" aria-hidden="true" data-step="-1">&minus;</button>
+                  <input class="demo__step-input" id="recipe-color" type="number" inputmode="decimal" min="-4" max="4" step="1" value="2" data-token="--glass-grades-color">
+                  <button class="demo__step-btn" type="button" tabindex="-1" aria-hidden="true" data-step="1">+</button>
+                </span>
+              </div>
+              <div class="demo__step">
+                <label class="demo__step-name" for="recipe-wbr" data-i18n="recipe.wbr">WB red</label>
+                <span class="demo__step-field">
+                  <button class="demo__step-btn" type="button" tabindex="-1" aria-hidden="true" data-step="-1">&minus;</button>
+                  <input class="demo__step-input" id="recipe-wbr" type="number" inputmode="decimal" min="-9" max="9" step="1" value="2" data-token="--glass-grades-wb-r">
+                  <button class="demo__step-btn" type="button" tabindex="-1" aria-hidden="true" data-step="1">+</button>
+                </span>
+              </div>
+              <div class="demo__step">
+                <label class="demo__step-name" for="recipe-wbb" data-i18n="recipe.wbb">WB blue</label>
+                <span class="demo__step-field">
+                  <button class="demo__step-btn" type="button" tabindex="-1" aria-hidden="true" data-step="-1">&minus;</button>
+                  <input class="demo__step-input" id="recipe-wbb" type="number" inputmode="decimal" min="-9" max="9" step="1" value="-4" data-token="--glass-grades-wb-b">
+                  <button class="demo__step-btn" type="button" tabindex="-1" aria-hidden="true" data-step="1">+</button>
+                </span>
+              </div>
+              <div class="demo__step">
+                <label class="demo__step-name" for="recipe-grain" data-i18n="recipe.grain">Grain</label>
+                <select class="demo__step-input demo__step-input--select" id="recipe-grain" data-token="--glass-grades-grain-step">
+                  <option value="0" data-i18n="recipe.grain0">Off</option>
+                  <option value="1" data-i18n="recipe.grain1" selected>Weak</option>
+                  <option value="2" data-i18n="recipe.grain2">Strong</option>
+                </select>
+              </div>
+            </div>
+            <p class="demo__recipe-line"></p>
+            <div class="demo__recipe-actions">
+              <button class="demo__recipe-btn" type="button" data-recipe-copy><span data-i18n="recipe.copy">Copy CSS</span></button>
+              <button class="demo__recipe-btn" type="button" data-recipe-reset data-i18n="recipe.reset">Reset</button>
+              <span class="demo__recipe-done" role="status"></span>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="demo__group">
+      <div class="demo__group-head" data-reveal>
         <h2 class="demo__group-title" data-i18n="group.heard">Heard</h2>
         <p class="demo__group-note" data-i18n="group.heardNote">Switch Sound on above. Every pane the glass passes ticks, a landing seats it, and lifting the glass and setting it down each have a sound of their own. On a phone the same moments are felt.</p>
       </div>
@@ -1474,6 +1809,23 @@
           + 'piletasterne flytter det \u00e9n rude ad gangen.',
         'state.nat': '<strong>Nat, p\u00e5 h\u00f8jkant</strong> &middot; et h\u00f8jt billede g\u00f8r vinduet smallere '
           + 'i stedet for at vokse ud over sk\u00e6rmen.',
+        'group.recipe': 'En opskrift oven p\u00e5',
+        'group.recipeNote': 'Kameraets egne tal oven p\u00e5 det lys, der er \u00e5bent: h\u00f8jlys- og skyggetone, farve, '
+          + 'et skift i hvidbalancen og korn. Hver er en token sat p\u00e5 denne instans\u2019 rod, og linjen under '
+          + 'dem er opskriften, som den ville blive skrevet ned.',
+        'state.recipe': '<strong>Dagslys med en opskrift</strong> &middot; referencelyset, gjort varmt og kraftigt. '
+          + 'Skift lyset, og opskriften bliver liggende.',
+        'recipe.h': 'H\u00f8jlys',
+        'recipe.s': 'Skygge',
+        'recipe.color': 'Farve',
+        'recipe.wbr': 'HB r\u00f8d',
+        'recipe.wbb': 'HB bl\u00e5',
+        'recipe.grain': 'Korn',
+        'recipe.grain0': 'Fra',
+        'recipe.grain1': 'Svag',
+        'recipe.grain2': 'Kraftig',
+        'recipe.copy': 'Kopi\u00e9r CSS',
+        'recipe.reset': 'Nulstil',
         'group.heard': 'H\u00f8rt',
         'group.heardNote': 'Sl\u00e5 Lyd til ovenfor. Hver rude glasset passerer, tikker, en landing s\u00e6tter det '
           + 'p\u00e5 plads, og at l\u00f8fte glasset og l\u00e6gge det har hver sin lyd. P\u00e5 en telefon m\u00e6rkes '
@@ -1500,6 +1852,11 @@
         'sample.drop': 'Slip for at se gennem glasset',
         'sample.legend': 'Lys',
         'sample.frame': 'Billede under syv glasruder. Venstre og højre pil skifter lys. Enter løfter glasset af og lægger det tilbage; mellemrum løfter det, så længe den holdes nede. S skifter mellem strimlen og én rude.',
+      },
+      // The recipe's line is written by the page's own script below, so it
+      // is rewritten after every switch, in the language the page is in.
+      applied: function () {
+        if (window.demoRecipe) window.demoRecipe.render();
       },
       // The page's Sound switch sets the component's own volume token, the
       // channel the mode dial uses: at 0 no audio is ever started.
@@ -1740,6 +2097,122 @@
   <!-- /demo-chrome:script -->
 
   <script src="component.js"></script>
+
+  <!-- The recipe's steppers: page code, not chrome. They write the tokens
+       inline on the instance's own root and say the recipe the way a camera
+       owner writes one down. Danish for the words in the line is here, the
+       labels' is in window.demoPage.da. -->
+  <script>
+  (function () {
+    var state = document.querySelector('[data-recipe]');
+    var panel = state && state.querySelector('.demo__recipe');
+    var root = state && state.querySelector('.glass-grades');
+    if (!panel || !root) return;
+    var inputs = Array.prototype.slice.call(panel.querySelectorAll('[data-token]'));
+    var line = panel.querySelector('.demo__recipe-line');
+    var done = panel.querySelector('.demo__recipe-done');
+    var WORDS = {
+      en: { colour: 'Colour', wb: 'WB', grain: 'Grain', weak: 'weak', strong: 'strong', copied: 'Copied.', failed: 'Select the text and copy it.' },
+      da: { colour: 'Farve', wb: 'HB', grain: 'Korn', weak: 'svag', strong: 'kraftig', copied: 'Kopieret.', failed: 'Mark\u00e9r teksten, og kopi\u00e9r den.' }
+    };
+    function lang() { return document.documentElement.lang === 'da' ? 'da' : 'en'; }
+    function w(k) { return WORDS[lang()][k]; }
+    function val(token) {
+      var input = inputs.filter(function (i) { return i.dataset.token === token; })[0];
+      var v = input ? parseFloat(input.value) : 0;
+      return isFinite(v) ? v : 0;
+    }
+    // Signed as a camera says it, with a real minus, and a comma in Danish.
+    function signed(v) {
+      var s = String(Math.abs(v));
+      if (lang() === 'da') s = s.replace('.', ',');
+      return (v > 0 ? '+' : v < 0 ? '\u2212' : '') + s;
+    }
+    function grade() {
+      var r = root.querySelector('.glass-grades__radio:checked');
+      var l = r && r.closest('.glass-grades__chip').querySelector('.glass-grades__label');
+      return l ? l.textContent.trim() : '';
+    }
+    function parts() {
+      var g = val('--glass-grades-grain-step');
+      return [grade(),
+        'H ' + signed(val('--glass-grades-tone-h')),
+        'S ' + signed(val('--glass-grades-tone-s')),
+        w('colour') + ' ' + signed(val('--glass-grades-color')),
+        w('wb') + ' R' + signed(val('--glass-grades-wb-r')) + ' B' + signed(val('--glass-grades-wb-b'))]
+        .concat(g ? [w('grain') + ' ' + w(g > 1 ? 'strong' : 'weak')] : [])
+        .filter(Boolean);
+    }
+    function text() { return parts().join(' \u00b7 '); }
+    function css() {
+      return '/* ' + text() + ' */\n.glass-grades {\n' + inputs.map(function (i) {
+        return '  ' + i.dataset.token + ': ' + val(i.dataset.token) + ';';
+      }).join('\n') + '\n}\n';
+    }
+    // The values are clamped to the input's own range and step, then handed
+    // to the component on its root.
+    function write() {
+      inputs.forEach(function (i) {
+        if (i.type === 'number') {
+          var v = parseFloat(i.value), min = parseFloat(i.min), max = parseFloat(i.max), step = parseFloat(i.step) || 1;
+          if (!isFinite(v)) v = 0;
+          v = Math.min(max, Math.max(min, Math.round(v / step) * step));
+          if (String(v) !== i.value) i.value = v;
+        }
+        root.style.setProperty(i.dataset.token, String(val(i.dataset.token)));
+      });
+      render();
+    }
+    // Each setting is kept whole where the line wraps.
+    function render() {
+      line.textContent = '';
+      parts().forEach(function (part, n) {
+        if (n) line.appendChild(document.createTextNode(' \u00b7 '));
+        var s = document.createElement('span');
+        s.className = 'demo__recipe-part';
+        s.textContent = part;
+        line.appendChild(s);
+      });
+    }
+    inputs.forEach(function (i) { i.addEventListener('input', write); i.addEventListener('change', write); });
+    Array.prototype.forEach.call(panel.querySelectorAll('.demo__step-btn'), function (b) {
+      b.addEventListener('click', function () {
+        var input = b.parentNode.querySelector('.demo__step-input');
+        if (b.dataset.step === '1') input.stepUp(); else input.stepDown();
+        write();
+      });
+    });
+    root.addEventListener('change', render);   // a new light renames the line
+    panel.querySelector('[data-recipe-reset]').addEventListener('click', function () {
+      inputs.forEach(function (i) { i.value = '0'; });
+      write();
+    });
+    var doneTimer = 0;
+    function say(msg) {
+      done.textContent = msg;
+      clearTimeout(doneTimer);
+      doneTimer = setTimeout(function () { done.textContent = ''; }, 2400);
+    }
+    panel.querySelector('[data-recipe-copy]').addEventListener('click', function () {
+      var text = css();
+      var fallback = function () {
+        var area = document.createElement('textarea');
+        area.value = text; area.setAttribute('readonly', ''); area.style.position = 'fixed'; area.style.opacity = '0';
+        document.body.appendChild(area); area.select();
+        var ok = false;
+        try { ok = document.execCommand('copy'); } catch (err) { ok = false; }
+        area.remove();
+        say(ok ? w('copied') : w('failed'));
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () { say(w('copied')); }, fallback);
+      } else fallback();
+    });
+    window.demoRecipe = { render: render, css: css };
+    panel.hidden = false;
+    write();
+  })();
+  </script>
   <!--
     Arrival: which blocks wait to be scrolled to, and in what order the rest
     arrive. The motion is the style block's; this adds the one thing CSS
