@@ -23,9 +23,11 @@
 
   var MSG = {
     en: { notImage: 'That is not an image. Try a JPEG, PNG or HEIC.', cannot: 'This browser could not open that image.', alt: 'Your picture',
-          lifted: 'Glass lifted: the picture as it is.', down: 'Glass back down:' },
+          lifted: 'Glass lifted: the picture as it is.', down: 'Glass back down:',
+          ownOnly: 'Saving works on your own pictures.', unsaved: 'This browser could not save the picture.' },
     da: { notImage: 'Det er ikke et billede. Prøv JPEG, PNG eller HEIC.', cannot: 'Browseren kunne ikke åbne billedet.', alt: 'Dit billede',
-          lifted: 'Glasset er løftet: billedet, som det er.', down: 'Glasset er lagt tilbage:' }
+          lifted: 'Glasset er løftet: billedet, som det er.', down: 'Glasset er lagt tilbage:',
+          ownOnly: 'Gemme virker med dine egne billeder.', unsaved: 'Browseren kunne ikke gemme billedet.' }
   };
   function msg(key) {
     var lang = (document.documentElement.getAttribute('lang') || 'en').slice(0, 2);
@@ -569,6 +571,97 @@
       }, reduce.matches ? 0 : ms('--glass-grades-swap-out', 110));
     }
     root.__glassGradesLoad = load;
+
+    /* ── saving the picture through the open pane ──
+       The same layers on a canvas, at the picture's own size: the picture on
+       its paper through the pane's filter, its toe in screen, its shoulder in
+       multiply and its grain in overlay. Every value is read off the pane as
+       the browser computed it, so a recipe, or a grade re-set from outside,
+       is saved as it is seen. The grain is the stylesheet's own noise, drawn
+       as large against the picture as it is on screen. Over file:// the
+       folder's own picture cannot be read back off a canvas; a picture of
+       your own can. */
+    var saveBtn = root.querySelector('.glass-grades__btn--save');
+    var canFilter = typeof CanvasRenderingContext2D !== 'undefined' && 'filter' in CanvasRenderingContext2D.prototype;
+    if (saveBtn && canFilter) {
+      root.classList.add('glass-grades--saves');
+      saveBtn.addEventListener('click', function () { save(checkedIndex()); });
+    }
+    var noiseImg = null;
+    function noise() {
+      if (noiseImg) return noiseImg;
+      var m = /url\((['"]?)(.*?)\1\)/.exec(read('--glass-grades-noise'));
+      noiseImg = new Promise(function (res) {
+        if (!m) { res(null); return; }
+        var im = new Image();
+        im.onload = function () { res(im); };
+        im.onerror = function () { res(null); };
+        im.src = m[2];
+      });
+      return noiseImg;
+    }
+    function grainPattern(ctx, im, tile) {
+      if (!im) return null;
+      var t = document.createElement('canvas');
+      t.width = t.height = Math.max(8, Math.round(tile));
+      var tx = t.getContext('2d');
+      try {
+        tx.drawImage(im, 0, 0, t.width, t.height);
+        tx.getImageData(0, 0, 1, 1);   // a noise that would taint the picture is left off
+      } catch (err) { return null; }
+      return ctx.createPattern(t, 'repeat');
+    }
+    function save(i) {
+      var pane = panes[i], base = root.querySelector('.glass-grades__base');
+      if (!pane || !base || !base.naturalWidth) return;
+      var media = pane.querySelector('.glass-grades__media');
+      var m = getComputedStyle(media);
+      var w = base.naturalWidth, h = base.naturalHeight;
+      var flat = document.createElement('canvas');
+      flat.width = w; flat.height = h;
+      var fx = flat.getContext('2d');
+      fx.fillStyle = m.backgroundColor;
+      fx.fillRect(0, 0, w, h);
+      fx.drawImage(base, 0, 0, w, h);
+      var out = document.createElement('canvas');
+      out.width = w; out.height = h;
+      var ctx = out.getContext('2d');
+      ctx.filter = m.filter && m.filter !== 'none' ? m.filter : 'none';
+      ctx.drawImage(flat, 0, 0);
+      ctx.filter = 'none';
+      ctx.globalCompositeOperation = 'screen';
+      ctx.fillStyle = getComputedStyle(pane.querySelector('.glass-grades__toe')).backgroundColor;
+      ctx.fillRect(0, 0, w, h);
+      ctx.globalCompositeOperation = 'multiply';
+      ctx.fillStyle = getComputedStyle(pane.querySelector('.glass-grades__shoulder')).backgroundColor;
+      ctx.fillRect(0, 0, w, h);
+      var grain = parseFloat(getComputedStyle(pane.querySelector('.glass-grades__grain')).opacity) || 0;
+      var name = 'glass-grades-' + (radios[i].value || i) + '.jpg';
+      (grain > 0 ? noise() : Promise.resolve(null)).then(function (im) {
+        var tile = parseFloat(read('--glass-grades-grain-size')) * w / Math.max(1, frame.clientWidth);
+        var pattern = grain > 0 ? grainPattern(ctx, im, tile) : null;
+        if (pattern) {
+          ctx.globalCompositeOperation = 'overlay';
+          ctx.globalAlpha = Math.min(1, grain);
+          ctx.fillStyle = pattern;
+          ctx.fillRect(0, 0, w, h);
+          ctx.globalAlpha = 1;
+        }
+        ctx.globalCompositeOperation = 'source-over';
+        try {
+          out.toBlob(function (blob) {
+            if (!blob) { tell(msg('unsaved')); return; }
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
+            a.href = url; a.download = name; a.hidden = true;
+            document.body.appendChild(a); a.click(); a.remove();
+            setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+          }, 'image/jpeg', 0.92);
+        } catch (err) {
+          tell(msg(err && err.name === 'SecurityError' ? 'ownOnly' : 'unsaved'));
+        }
+      });
+    }
 
     if (file) {
       file.addEventListener('change', function () {

@@ -511,9 +511,12 @@
   outline: 2px solid var(--glass-grades-signal);
   outline-offset: 2px;
 }
-/* A picker that can show nothing without script is not offered without it. */
-.glass-grades__btn--photo { display: none; }
-.glass-grades--live .glass-grades__btn--photo { display: inline-flex; }
+/* A picker that can show nothing without script is not offered without it,
+   and Save only where script found a canvas that takes a filter. */
+.glass-grades__btn--photo,
+.glass-grades__btn--save { display: none; }
+.glass-grades--live .glass-grades__btn--photo,
+.glass-grades--saves .glass-grades__btn--save { display: inline-flex; }
 
 .glass-grades__file,
 .glass-grades__switch-radio {
@@ -944,6 +947,13 @@
 /* With no description the readout is one name, so it asks for room for one. */
 .glass-grades--compact .glass-grades__readout { flex-basis: 6rem; }
 .glass-grades--compact .glass-grades__chip { gap: 0; padding: 12px 3px 4px; }
+/* ...and the actions keep their icons, their names left for a screen reader. */
+.glass-grades--compact .glass-grades__btn {
+  justify-content: center;
+  width: var(--glass-grades-btn-h);
+  padding: 0;
+}
+.glass-grades--compact .glass-grades__btn span,
 .glass-grades--compact .glass-grades__label,
 .glass-grades--compact .glass-grades__hint {
   position: absolute;
@@ -961,6 +971,7 @@
 /* A finger needs a bigger target than a pointer. */
 @media (pointer: coarse) {
   .glass-grades__btn { height: var(--glass-grades-btn-h-touch); padding: 0 16px 0 13px; }
+  .glass-grades--compact .glass-grades__btn { width: var(--glass-grades-btn-h-touch); }
   .glass-grades__switch-opt { height: calc(var(--glass-grades-btn-h-touch) - 2px); padding: 0 15px 0 12px; }
 }
 
