@@ -345,6 +345,20 @@
     }
     function rubber(x) { return x < 0 ? x * 0.3 : x > N - 1 ? (N - 1) + (x - (N - 1)) * 0.3 : x; }
     function unrubber(y) { return y < 0 ? y / 0.3 : y > N - 1 ? (N - 1) + (y - (N - 1)) / 0.3 : y; }
+    // How far the moving edge travels while the glass goes one pane: the open
+    // pane's width less a sliver. One pane of drag is that distance divided
+    // by --glass-grades-drag, so at 1 the edge stays under the hand. It was a
+    // fixed clamp(56px, 26% of the window, 170px), which at 1440 moved the
+    // edge 2.2 times as far as the hand. Covering ground fast is the flick's
+    // job. open is read where the panes are, because a narrow window changes
+    // it below the root.
+    function travel() {
+      var open = parseFloat(getComputedStyle(panesEl || frame).getPropertyValue('--glass-grades-open'));
+      if (!isFinite(open)) open = 0.62;
+      open = Math.min(1, Math.max(0.05, open));
+      var sliver = N > 1 ? (1 - open) / (N - 1) : 0;
+      return Math.max(24, (open - sliver) * frame.clientWidth);
+    }
 
     frame.addEventListener('pointerdown', function (e) {
       if (e.button !== 0 || ptr) return;
@@ -366,7 +380,7 @@
         frame.classList.add('glass-grades__frame--dragging');
         if (isStrip()) { p = nearest(p); openView(); }   // dragging from the strip opens it
         ptr.k = num('--glass-grades-notch', 0.55, 0, 0.95);
-        ptr.step = Math.max(56, Math.min(170, frame.clientWidth * 0.26));   // drag distance per pane
+        ptr.step = travel() / num('--glass-grades-drag', 1, 0.25, 4);   // drag distance per pane
         ptr.x0 = e.clientX;
         ptr.raw0 = unnotch(unrubber(p), ptr.k);
       }
@@ -390,8 +404,12 @@
         var dt = (s[s.length - 1].t - s[0].t) / 1000;
         if (dt > 0) v = (s[s.length - 1].raw - s[0].raw) / dt;
       }
+      // Projected ahead, so a flick coasts; three panes at most from where
+      // the glass is. With the drag direct, a pane is 2.2 times the hand's
+      // distance it used to be, so the projection grew from 0.2s to match.
       var here = nearest(p);
-      springTo(Math.max(here - 3, Math.min(here + 3, Math.round(p + v * 0.2))), v * 0.5, P.type, true);
+      var ahead = ms('--glass-grades-flick', 400) / 1000;
+      springTo(Math.max(here - 3, Math.min(here + 3, Math.round(p + v * ahead))), v * 0.5, P.type, true);
     }
     frame.addEventListener('pointerup', function (e) { endPointer(e, false); });
     frame.addEventListener('pointercancel', function (e) { endPointer(e, true); });
