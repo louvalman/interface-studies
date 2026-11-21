@@ -43,8 +43,9 @@ radio groups, and without script every pane still opens and slides.
   moving edge travels, the open pane less a sliver, so at
   `--glass-grades-drag: 1` the edge stays under the hand, and the mode
   dial's detent curve, `x − k·sin(2πx)/2π` with `k` .55, makes it stick near
-  each pane. A release is projected 0.4s ahead, so a flick coasts up to three
-  panes, and springs to a stop with a damping ratio of .67, about 6%
+  each pane. A release faster than 400px/s is projected 0.4s ahead, so a flick
+  coasts up to three panes, and a slower one lands on the nearest pane; either
+  springs to a stop with a damping ratio of .67, about 6%
   overshoot in a third of a second. A still press of 320ms lifts the glass
   for as long as it is held, and a sideways move sets it down and drags; a
   tap on the open pane, or Enter, lifts it until the next. Every stop passed
@@ -85,9 +86,11 @@ radio groups, and without script every pane still opens and slides.
   and working each grade's two sheets out once on the root, as registered
   colours, back to level.
 - The drag is direct: at 1440, 293.9px of drag moved the edge 293.9px, the
-  detent varying its pace between 0.45 and 1.55 of the hand's. Flicks from
-  pane 2: 4000px/s coasted three panes with two passes and one landing,
-  2500px/s two, 940px/s one.
+  detent varying its pace between 0.45 and 1.55 of the hand's. Releases from
+  pane 2, by the hand's own speed over its last 90ms: 500px/s coasted one
+  pane, 909 and 1238 two, and 2045 three past where it was let go, with three
+  passes and one landing. Let go at p 2.32, short of halfway, 128 and 360px/s
+  land back on 2, where 360 used to coast on to 3, and 546px/s goes on to 3.
 - Below 26rem, measured with touch at 390 and 320 in both languages: the open
   pane is the window's 322 and 252px, the index sits at (p + ½)/7, the bar is
   one row of tools at 94px, and nothing scrolls sideways.

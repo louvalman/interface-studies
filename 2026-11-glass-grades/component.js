@@ -439,9 +439,15 @@
       // Projected ahead, so a flick coasts; three panes at most from where
       // the glass is. With the drag direct, a pane is 2.2 times the hand's
       // distance it used to be, so the projection grew from 0.2s to match.
+      // Only a flick is projected: a hand let go slower than
+      // --glass-grades-flick-min, in px a second over the last 90ms, lands
+      // the glass on the pane it is nearest, however close to halfway it was,
+      // so a slow release never coasts on.
       var here = nearest(p);
       var ahead = ms('--glass-grades-flick', 400) / 1000;
-      springTo(Math.max(here - 3, Math.min(here + 3, Math.round(p + v * ahead))), v * 0.5, P.type, true);
+      var flung = Math.abs(v) * P.step >= num('--glass-grades-flick-min', 400, 0, 10000);
+      var target = flung ? Math.max(here - 3, Math.min(here + 3, Math.round(p + v * ahead))) : here;
+      springTo(target, v * 0.5, P.type, true);
     }
     frame.addEventListener('pointerup', function (e) { endPointer(e, false); });
     frame.addEventListener('pointercancel', function (e) { endPointer(e, true); });

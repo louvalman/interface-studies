@@ -143,6 +143,7 @@
   --glass-grades-swap-in: 160ms;
   --glass-grades-drag: 1;             /* read by component.js: glass moved per distance dragged; at 1 the moving edge stays under the hand */
   --glass-grades-flick: 400ms;        /* read by component.js: how far ahead a release is projected, so a flick coasts, three panes at most */
+  --glass-grades-flick-min: 400;      /* read by component.js: the slowest release that is a flick, in px a second; slower lands on the nearest pane */
   --glass-grades-notch: .55;          /* read by component.js: how much the glass sticks near each stop as you drag */
   --glass-grades-damping: .67;        /* read by component.js: the landing spring, about 6% overshoot */
   --glass-grades-hold: 320ms;         /* read by component.js: a still press this long lifts the glass, for as long as it is held */

@@ -1767,8 +1767,8 @@
             <p>One pane of drag is the distance the moving edge travels, the open pane less a sliver, so at
               <code>--glass-grades-drag: 1</code> the edge stays under the hand, and the mode dial&rsquo;s detent
               curve, <code>x − k·sin(2πx)/2π</code> with <code>k</code> .55, makes it stick near each pane. A
-              release is projected 0.4s ahead, so a flick coasts up to three panes, and springs to a stop
-              with a damping ratio of .67, about 6% overshoot in a third of a second. A still press of 320ms
+              release faster than 400px/s is projected 0.4s ahead, so a flick coasts up to three panes, and a
+              slower one lands on the nearest pane; either springs to a stop with a damping ratio of .67, about 6% overshoot in a third of a second. A still press of 320ms
               lifts the glass for as long as it is held, and a sideways move sets it down and drags; a tap on
               the open pane, or Enter, lifts it until the next. Every stop passed is a tick and a landing adds
               a low seat, synthesised from a struck plate&rsquo;s first three modes and silent while
