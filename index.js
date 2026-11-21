@@ -98,6 +98,13 @@ function withParam(src, key, value) {
       'tech.backdrop-filter': 'Backdrop-filter',
       'tech.tokens': 'Design-tokens',
       'tech.css-trig': 'CSS-trigonometri',
+      'tech.blend-modes': 'Blend-modes',
+      'piece.glassGrades.title': 'Lys gennem glas',
+      'piece.glassGrades.note': 'Syv slags dansk lys, fra havgus til en '
+        + 'natriumlampe, lagt som glasruder over ét billede. Hvert er et filter '
+        + 'og to farvelag, så intet læser en pixel, og dit eget billede kan '
+        + 'glide ind under glasset.',
+      'cta.quickLookGlass': 'Hurtigt kig: Lys gennem glas',
       'piece.modeDial.title': 'Drejevælger',
       'piece.modeDial.note': 'En vælger man drejer i stedet for at trykke '
         + 'på: et riflet, koksgråt hjul i en plade med prikket stof, '
@@ -162,8 +169,8 @@ function withParam(src, key, value) {
       'cta.quickLookOf': 'Hurtigt kig: Kort med detaljepanel',
       'ghost.title': 'Kommende studie',
       'ghost.est': 'Forventet start',
-      'ghost.month.nov': 'november',
       'ghost.month.dec': 'december',
+      'ghost.month.jan': 'januar',
       'foot.inviteTitle': 'Tag samlingen med dig,',
       'foot.inviteTitleTail': 'i Figma.',
       'a11y.filePage': 'En studies side i Figma-filen: en Start here-ramme, '
@@ -1432,7 +1439,8 @@ function withParam(src, key, value) {
     'tech.container-queries': 'Container queries',
     'tech.backdrop-filter': 'Backdrop filter',
     'tech.tokens': 'Design tokens',
-    'tech.css-trig': 'CSS trig'
+    'tech.css-trig': 'CSS trig',
+    'tech.blend-modes': 'Blend modes'
   };
 
   // A study's techniques, by hand on its card as data-tech, the way its type

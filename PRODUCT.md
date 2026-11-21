@@ -91,9 +91,9 @@ decisions, and reading it is not a goal in itself.
 
 ## Evidence on Hand
 
-- Nine studies (`2026-09-*` and `2026-10-*` folders), each with `notes.md`, a
+- Ten studies (`2026-09-*` to `2026-11-*` folders), each with `notes.md`, a
   demo page and a live preview.
-- The Figma Community file linked above, holding all nine; `og.png`
+- The Figma Community file linked above, holding nine of the ten; `og.png`
   social card rendered from `og.html`.
 - No testimonials, usage figures, download counts or press. Do not invent any.
 
