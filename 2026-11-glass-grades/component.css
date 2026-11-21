@@ -512,7 +512,7 @@
   outline-offset: 2px;
 }
 /* A picker that can show nothing without script is not offered without it,
-   and Save only where script found a canvas that takes a filter. */
+   and neither is Save, which script draws on a canvas. */
 .glass-grades__btn--photo,
 .glass-grades__btn--save { display: none; }
 .glass-grades--live .glass-grades__btn--photo,

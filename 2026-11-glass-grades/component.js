@@ -580,12 +580,41 @@
        is saved as it is seen. The grain is the stylesheet's own noise, drawn
        as large against the picture as it is on screen. Over file:// the
        folder's own picture cannot be read back off a canvas; a picture of
-       your own can. */
+       your own can.
+       Where a canvas takes no filter, Safari on every iPhone among them, the
+       filter is done by hand, the arithmetic the CSS functions are defined
+       by, on the picture's pixels; the three blends are the canvas's own. */
     var saveBtn = root.querySelector('.glass-grades__btn--save');
     var canFilter = typeof CanvasRenderingContext2D !== 'undefined' && 'filter' in CanvasRenderingContext2D.prototype;
-    if (saveBtn && canFilter) {
+    if (saveBtn && typeof CanvasRenderingContext2D !== 'undefined') {
       root.classList.add('glass-grades--saves');
       saveBtn.addEventListener('click', function () { save(checkedIndex()); });
+    }
+    // brightness(), contrast() and saturate() as Filter Effects defines them,
+    // in the order the filter names them, each clamped.
+    function filterByHand(ctx, w, h, filter) {
+      var steps = [], re = /(brightness|contrast|saturate)\(([^)]+)\)/g, m;
+      while ((m = re.exec(filter))) steps.push([m[1], parseFloat(m[2])]);
+      if (!steps.length) return;
+      var img = ctx.getImageData(0, 0, w, h), d = img.data;
+      var cl = function (v) { return v < 0 ? 0 : v > 1 ? 1 : v; };
+      for (var i = 0; i < d.length; i += 4) {
+        var r = d[i] / 255, g = d[i + 1] / 255, b = d[i + 2] / 255;
+        for (var k = 0; k < steps.length; k++) {
+          var f = steps[k][0], v = steps[k][1];
+          if (!isFinite(v)) continue;
+          if (f === 'brightness') { r = cl(r * v); g = cl(g * v); b = cl(b * v); }
+          else if (f === 'contrast') { r = cl((r - 0.5) * v + 0.5); g = cl((g - 0.5) * v + 0.5); b = cl((b - 0.5) * v + 0.5); }
+          else {
+            var R = (0.213 + 0.787 * v) * r + (0.715 - 0.715 * v) * g + (0.072 - 0.072 * v) * b;
+            var G = (0.213 - 0.213 * v) * r + (0.715 + 0.285 * v) * g + (0.072 - 0.072 * v) * b;
+            var B = (0.213 - 0.213 * v) * r + (0.715 - 0.715 * v) * g + (0.072 + 0.928 * v) * b;
+            r = cl(R); g = cl(G); b = cl(B);
+          }
+        }
+        d[i] = Math.round(r * 255); d[i + 1] = Math.round(g * 255); d[i + 2] = Math.round(b * 255);
+      }
+      ctx.putImageData(img, 0, 0);
     }
     var noiseImg = null;
     function noise() {
@@ -626,9 +655,20 @@
       var out = document.createElement('canvas');
       out.width = w; out.height = h;
       var ctx = out.getContext('2d');
-      ctx.filter = m.filter && m.filter !== 'none' ? m.filter : 'none';
+      var wanted = m.filter && m.filter !== 'none' ? m.filter : 'none';
+      // A canvas that says it takes a filter and then keeps none, as WebKit's
+      // can off the page, is done by hand like one that does not.
+      var byHand = !canFilter;
+      if (!byHand) {
+        ctx.filter = wanted;
+        if (wanted !== 'none' && ctx.filter === 'none') byHand = true;
+      }
       ctx.drawImage(flat, 0, 0);
       ctx.filter = 'none';
+      if (byHand && wanted !== 'none') {
+        try { filterByHand(ctx, w, h, wanted); }
+        catch (err) { tell(msg(err && err.name === 'SecurityError' ? 'ownOnly' : 'unsaved')); return; }
+      }
       ctx.globalCompositeOperation = 'screen';
       ctx.fillStyle = getComputedStyle(pane.querySelector('.glass-grades__toe')).backgroundColor;
       ctx.fillRect(0, 0, w, h);
