@@ -7,7 +7,8 @@
   that coasts, a glide that lands. Each stop passed ticks, in sound when
   --glass-grades-click is above 0 and in touch on a phone. A still press lifts
   the glass off the picture. A picture of your own can be picked, dropped or
-  pasted. When the glass lands, p is handed back to the stylesheet, so at rest
+  pasted, and a page can hand one in by its address. When the glass lands, p
+  is handed back to the stylesheet, so at rest
   the component is exactly what it would be without this file.
 
   It reads its tunables from the root's own custom properties, so a host
@@ -674,22 +675,37 @@
         });
       }).catch(function () { tell(msg('cannot')); });
     }
-    function swap(url, ratio, type) {
+    function swap(url, ratio, type, alt) {
       feedback('swap', type);
       root.classList.add('glass-grades--swapping');
       setTimeout(function () {
         Array.prototype.forEach.call(root.querySelectorAll('.glass-grades__base, .glass-grades__img'), function (im) { im.src = url; });
         var base = root.querySelector('.glass-grades__base');
-        if (base) base.alt = msg('alt');
+        if (base) base.alt = alt != null ? alt : msg('alt');
         root.style.setProperty('--glass-grades-ratio', Math.max(0.66, Math.min(2.2, ratio)).toFixed(4));
         requestAnimationFrame(function () {
           requestAnimationFrame(function () { root.classList.remove('glass-grades--swapping'); });
         });
         if (current) URL.revokeObjectURL(current);
-        current = url;
+        current = /^blob:/.test(url) ? url : null;
       }, reduce.matches ? 0 : ms('--glass-grades-swap-out', 110));
     }
     root.__glassGradesLoad = load;
+
+    /* A picture handed in by its address, by a page that offers pictures of
+       its own: it slides in the way a picked one does, and is named by the
+       alt it comes with.
+         root.dispatchEvent(new CustomEvent('glass-grades:picture',
+           { detail: { src: 'photos/sea.jpg', alt: 'Pink clouds over the sea' } })); */
+    root.addEventListener('glass-grades:picture', function (e) {
+      var d = e.detail || {};
+      if (!d.src) return;
+      var probe = new Image();
+      probe.src = d.src;
+      (probe.decode ? probe.decode() : Promise.resolve()).then(function () {
+        swap(d.src, probe.naturalWidth / probe.naturalHeight || 1.5, d.type || lastType, d.alt);
+      }, function () { tell(msg('cannot')); });
+    });
 
     /* ── saving the picture through the open pane ──
        The same layers on a canvas, at the picture's own size: the picture on

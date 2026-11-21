@@ -447,12 +447,14 @@
       .demo__state--lead {
         max-width: none;
         grid-template-columns: minmax(0, 1fr) auto;
-        grid-template-rows: auto auto 1fr;
+        grid-template-rows: auto auto auto 1fr;
         column-gap: clamp(2.5rem, 4vw, 4rem);
       }
       .demo__state--lead > .demo__group-head,
       .demo__state--lead > .demo__caption,
-      .demo__state--lead > .demo__hint { grid-column: 1; }
+      .demo__state--lead > .demo__hint,
+      .demo__state--lead > .demo__pics { grid-column: 1; }
+      .demo__state--lead > .demo__pics { align-self: start; }
       .demo__state--lead > .demo__group-head { margin-bottom: 0.4rem; }
       .demo__state--lead > :last-child { grid-column: 2; grid-row: 1 / -1; }
     }
@@ -478,6 +480,63 @@
       line-height: 1.5;
       color: var(--demo-soft);
       overflow-wrap: anywhere;
+    }
+    /* --- pictures ---------------------------------------------------------
+       Eight photographs beside the first component, each a thumbnail that
+       hands its address to the component, which slides it in the way it
+       slides in a picture of the reader's own. The one showing is ringed in
+       the ink, a gap of the ground between; focus is the accent. The row is
+       held to four landscape thumbnails' width, the tall one among the first
+       four, so it is two rows of four at every width down to 320. */
+    .demo__pics { display: grid; gap: 0.6rem; justify-items: start; min-width: 0; }
+    .demo__pics[hidden] { display: none; }
+    .demo__pics-label {
+      margin: 0;
+      font-size: 0.875rem;
+      line-height: 1.55;
+      color: var(--demo-soft);
+    }
+    .demo__pics-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      max-width: calc(4 * 62px + 3 * 6px);
+    }
+    .demo__pic {
+      position: relative;
+      display: block;
+      padding: 0;
+      border: 0;
+      border-radius: 6px;
+      background: var(--demo-fill);
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .demo__pic img {
+      display: block;
+      width: 62px;
+      height: 41px;
+      border-radius: inherit;
+      object-fit: cover;
+    }
+    .demo__pic--tall img { width: 33px; }
+    .demo__pic::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      box-shadow: inset 0 0 0 1px var(--demo-line);
+      pointer-events: none;
+    }
+    .demo__pic[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--demo-ground), 0 0 0 4px var(--demo-fg); }
+    .demo__pic:focus-visible { outline: 2px solid var(--demo-accent); outline-offset: 6px; }
+    .demo__pic-name {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
     }
     /* --- interaction ------------------------------------------------------
        Every way in and what it does, then how big each target is: a term and
@@ -1153,6 +1212,22 @@
           </div>
           <p class="demo__caption" data-i18n="state.strip"><strong>The strip</strong> &middot; all seven side by side, in the order of a day. Drag it, flick it, hold it, or drop a picture of your own onto it.</p>
           <code class="demo__hint">.glass-grades</code>
+          <!-- Eight of mine, offered beside the first component. Script hands the
+               chosen one to it by its address, so without script the row is not
+               offered at all. -->
+          <div class="demo__pics" data-pics hidden>
+            <p class="demo__pics-label" id="pics-label" data-i18n="pics.label">Or one of mine, taken with my X-T50</p>
+            <div class="demo__pics-row" role="group" aria-labelledby="pics-label">
+              <button class="demo__pic" type="button" data-pic="storm" aria-pressed="true" data-alt="A rain shower falls from a dark cloud into the sea at sunset: the sky pink at the horizon, waves breaking white, the shore dark in front."><img src="photos/thumbs/storm.jpg" alt="" width="62" height="41" draggable="false"><span class="demo__pic-name" data-i18n="pic.stormName">Rain at sunset</span></button>
+              <button class="demo__pic" type="button" data-pic="sea" aria-pressed="false" data-alt="Pink-lit clouds over a grey sea, with waves breaking and foam running up a stony beach."><img src="photos/thumbs/sea.jpg" alt="" width="62" height="41" draggable="false"><span class="demo__pic-name" data-i18n="pic.seaName">Pink clouds over the sea</span></button>
+              <button class="demo__pic" type="button" data-pic="dusk" aria-pressed="false" data-alt="Clouds lit orange from below at dusk over the sea, the sky pale at the horizon, a house and trees in silhouette on the left."><img src="photos/thumbs/dusk.jpg" alt="" width="62" height="41" draggable="false"><span class="demo__pic-name" data-i18n="pic.duskName">Clouds lit from below</span></button>
+              <button class="demo__pic demo__pic--tall" type="button" data-pic="forest" aria-pressed="false" data-alt="A gravel track with grass down its middle runs into a green wood of birches."><img src="photos/thumbs/forest.jpg" alt="" width="33" height="41" draggable="false"><span class="demo__pic-name" data-i18n="pic.forestName">A path through birches</span></button>
+              <button class="demo__pic" type="button" data-pic="leaves" aria-pressed="false" data-alt="A young sycamore lit bright green against a dark wood, its leaves and branches fading into shadow."><img src="photos/thumbs/leaves.jpg" alt="" width="62" height="41" draggable="false"><span class="demo__pic-name" data-i18n="pic.leavesName">A sapling in the shade</span></button>
+              <button class="demo__pic" type="button" data-pic="tub" aria-pressed="false" data-alt="A child with wet hair peeks over the rim of a white tub on a wooden deck in hard sun."><img src="photos/thumbs/tub.jpg" alt="" width="62" height="41" draggable="false"><span class="demo__pic-name" data-i18n="pic.tubName">In the tub</span></button>
+              <button class="demo__pic" type="button" data-pic="focaccia" aria-pressed="false" data-alt="Focaccia dough sprinkled with herbs in a baking tin, beside a bottle of olive oil, a bowl of salt and chopped shallots on a speckled board."><img src="photos/thumbs/focaccia.jpg" alt="" width="62" height="41" draggable="false"><span class="demo__pic-name" data-i18n="pic.focacciaName">Focaccia, before the oven</span></button>
+              <button class="demo__pic" type="button" data-pic="kitchen" aria-pressed="false" data-alt="A portrait at a kitchen table at night: short hair, a short beard, a dark overshirt over a white T-shirt, knives on a magnetic strip behind."><img src="photos/thumbs/kitchen.jpg" alt="" width="62" height="41" draggable="false"><span class="demo__pic-name" data-i18n="pic.kitchenName">At the kitchen table</span></button>
+            </div>
+          </div>
           <div class="glass-grades" style="--glass-grades-max-h: 42vh">
             <div class="glass-grades__bar">
               <p class="glass-grades__readout" aria-hidden="true">
@@ -1190,53 +1265,53 @@
               <div class="glass-grades__frame" tabindex="0" role="group" data-i18n-aria="sample.frame"
                    aria-label="Picture under seven panes of glass. Left and right arrows step through the light. Enter lifts the glass off and puts it back; Space lifts it while held. S switches between the strip and one pane.">
                 <div class="glass-grades__scene">
-                  <img class="glass-grades__base" src="sample.jpg" alt="A still life on a pale backdrop: a peach sphere, a terracotta cylinder, a sage block, a slate-blue ball, a black cube, a white ball and a mustard puck." data-i18n-alt="sample.alt" draggable="false">
+                  <img class="glass-grades__base" src="photos/storm.jpg" alt="A rain shower falls from a dark cloud into the sea at sunset: the sky pink at the horizon, waves breaking white, the shore dark in front." data-i18n-alt="pic.stormAlt" draggable="false">
                   <div class="glass-grades__panes" aria-hidden="true">
                     <div class="glass-grades__pane">
                       <div class="glass-grades__view glass-grades__view--havgus">
-                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="photos/storm.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="photos/storm.jpg" alt="" draggable="false"></div></div>
                         <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
                       </div>
                       <span class="glass-grades__edge"></span>
                     </div>
                     <div class="glass-grades__pane">
                       <div class="glass-grades__view glass-grades__view--dagslys">
-                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="photos/storm.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="photos/storm.jpg" alt="" draggable="false"></div></div>
                         <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
                       </div>
                       <span class="glass-grades__edge"></span>
                     </div>
                     <div class="glass-grades__pane">
                       <div class="glass-grades__view glass-grades__view--hojsol">
-                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="photos/storm.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="photos/storm.jpg" alt="" draggable="false"></div></div>
                         <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
                       </div>
                       <span class="glass-grades__edge"></span>
                     </div>
                     <div class="glass-grades__pane">
                       <div class="glass-grades__view glass-grades__view--sankthans">
-                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="photos/storm.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="photos/storm.jpg" alt="" draggable="false"></div></div>
                         <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
                       </div>
                       <span class="glass-grades__edge"></span>
                     </div>
                     <div class="glass-grades__pane">
                       <div class="glass-grades__view glass-grades__view--blaatime">
-                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="photos/storm.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="photos/storm.jpg" alt="" draggable="false"></div></div>
                         <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
                       </div>
                       <span class="glass-grades__edge"></span>
                     </div>
                     <div class="glass-grades__pane">
                       <div class="glass-grades__view glass-grades__view--nat">
-                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="photos/storm.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="photos/storm.jpg" alt="" draggable="false"></div></div>
                         <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
                       </div>
                       <span class="glass-grades__edge"></span>
                     </div>
                     <div class="glass-grades__pane">
                       <div class="glass-grades__view glass-grades__view--natrium">
-                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="photos/storm.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="photos/storm.jpg" alt="" draggable="false"></div></div>
                         <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
                       </div>
                       <span class="glass-grades__edge"></span>
@@ -1346,53 +1421,53 @@
               <div class="glass-grades__frame" tabindex="0" role="group" data-i18n-aria="sample.frame"
                    aria-label="Picture under seven panes of glass. Left and right arrows step through the light. Enter lifts the glass off and puts it back; Space lifts it while held. S switches between the strip and one pane.">
                 <div class="glass-grades__scene">
-                  <img class="glass-grades__base" src="sample.jpg" alt="A still life on a pale backdrop: a peach sphere, a terracotta cylinder, a sage block, a slate-blue ball, a black cube, a white ball and a mustard puck." data-i18n-alt="sample.alt" draggable="false">
+                  <img class="glass-grades__base" src="photos/tub.jpg" alt="A child with wet hair peeks over the rim of a white tub on a wooden deck in hard sun." data-i18n-alt="pic.tubAlt" draggable="false">
                   <div class="glass-grades__panes" aria-hidden="true">
                     <div class="glass-grades__pane">
                       <div class="glass-grades__view glass-grades__view--havgus">
-                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="photos/tub.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="photos/tub.jpg" alt="" draggable="false"></div></div>
                         <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
                       </div>
                       <span class="glass-grades__edge"></span>
                     </div>
                     <div class="glass-grades__pane">
                       <div class="glass-grades__view glass-grades__view--dagslys">
-                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="photos/tub.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="photos/tub.jpg" alt="" draggable="false"></div></div>
                         <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
                       </div>
                       <span class="glass-grades__edge"></span>
                     </div>
                     <div class="glass-grades__pane">
                       <div class="glass-grades__view glass-grades__view--hojsol">
-                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="photos/tub.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="photos/tub.jpg" alt="" draggable="false"></div></div>
                         <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
                       </div>
                       <span class="glass-grades__edge"></span>
                     </div>
                     <div class="glass-grades__pane">
                       <div class="glass-grades__view glass-grades__view--sankthans">
-                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="photos/tub.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="photos/tub.jpg" alt="" draggable="false"></div></div>
                         <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
                       </div>
                       <span class="glass-grades__edge"></span>
                     </div>
                     <div class="glass-grades__pane">
                       <div class="glass-grades__view glass-grades__view--blaatime">
-                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="photos/tub.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="photos/tub.jpg" alt="" draggable="false"></div></div>
                         <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
                       </div>
                       <span class="glass-grades__edge"></span>
                     </div>
                     <div class="glass-grades__pane">
                       <div class="glass-grades__view glass-grades__view--nat">
-                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="photos/tub.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="photos/tub.jpg" alt="" draggable="false"></div></div>
                         <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
                       </div>
                       <span class="glass-grades__edge"></span>
                     </div>
                     <div class="glass-grades__pane">
                       <div class="glass-grades__view glass-grades__view--natrium">
-                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="photos/tub.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="photos/tub.jpg" alt="" draggable="false"></div></div>
                         <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
                       </div>
                       <span class="glass-grades__edge"></span>
@@ -1493,53 +1568,53 @@
               <div class="glass-grades__frame" tabindex="0" role="group" data-i18n-aria="sample.frame"
                    aria-label="Picture under seven panes of glass. Left and right arrows step through the light. Enter lifts the glass off and puts it back; Space lifts it while held. S switches between the strip and one pane.">
                 <div class="glass-grades__scene">
-                  <img class="glass-grades__base" src="sample-portrait.jpg" alt="A still life on a pale backdrop: a peach sphere, a terracotta cylinder, a sage block, a slate-blue ball, a black cube, a white ball and a mustard puck." data-i18n-alt="sample.alt" draggable="false">
+                  <img class="glass-grades__base" src="photos/forest.jpg" alt="A gravel track with grass down its middle runs into a green wood of birches." data-i18n-alt="pic.forestAlt" draggable="false">
                   <div class="glass-grades__panes" aria-hidden="true">
                     <div class="glass-grades__pane">
                       <div class="glass-grades__view glass-grades__view--havgus">
-                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample-portrait.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample-portrait.jpg" alt="" draggable="false"></div></div>
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="photos/forest.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="photos/forest.jpg" alt="" draggable="false"></div></div>
                         <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
                       </div>
                       <span class="glass-grades__edge"></span>
                     </div>
                     <div class="glass-grades__pane">
                       <div class="glass-grades__view glass-grades__view--dagslys">
-                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample-portrait.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample-portrait.jpg" alt="" draggable="false"></div></div>
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="photos/forest.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="photos/forest.jpg" alt="" draggable="false"></div></div>
                         <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
                       </div>
                       <span class="glass-grades__edge"></span>
                     </div>
                     <div class="glass-grades__pane">
                       <div class="glass-grades__view glass-grades__view--hojsol">
-                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample-portrait.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample-portrait.jpg" alt="" draggable="false"></div></div>
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="photos/forest.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="photos/forest.jpg" alt="" draggable="false"></div></div>
                         <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
                       </div>
                       <span class="glass-grades__edge"></span>
                     </div>
                     <div class="glass-grades__pane">
                       <div class="glass-grades__view glass-grades__view--sankthans">
-                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample-portrait.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample-portrait.jpg" alt="" draggable="false"></div></div>
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="photos/forest.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="photos/forest.jpg" alt="" draggable="false"></div></div>
                         <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
                       </div>
                       <span class="glass-grades__edge"></span>
                     </div>
                     <div class="glass-grades__pane">
                       <div class="glass-grades__view glass-grades__view--blaatime">
-                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample-portrait.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample-portrait.jpg" alt="" draggable="false"></div></div>
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="photos/forest.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="photos/forest.jpg" alt="" draggable="false"></div></div>
                         <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
                       </div>
                       <span class="glass-grades__edge"></span>
                     </div>
                     <div class="glass-grades__pane">
                       <div class="glass-grades__view glass-grades__view--nat">
-                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample-portrait.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample-portrait.jpg" alt="" draggable="false"></div></div>
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="photos/forest.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="photos/forest.jpg" alt="" draggable="false"></div></div>
                         <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
                       </div>
                       <span class="glass-grades__edge"></span>
                     </div>
                     <div class="glass-grades__pane">
                       <div class="glass-grades__view glass-grades__view--natrium">
-                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample-portrait.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample-portrait.jpg" alt="" draggable="false"></div></div>
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="photos/forest.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="photos/forest.jpg" alt="" draggable="false"></div></div>
                         <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
                       </div>
                       <span class="glass-grades__edge"></span>
@@ -1649,53 +1724,53 @@
               <div class="glass-grades__frame" tabindex="0" role="group" data-i18n-aria="sample.frame"
                    aria-label="Picture under seven panes of glass. Left and right arrows step through the light. Enter lifts the glass off and puts it back; Space lifts it while held. S switches between the strip and one pane.">
                 <div class="glass-grades__scene">
-                  <img class="glass-grades__base" src="sample.jpg" alt="A still life on a pale backdrop: a peach sphere, a terracotta cylinder, a sage block, a slate-blue ball, a black cube, a white ball and a mustard puck." data-i18n-alt="sample.alt" draggable="false">
+                  <img class="glass-grades__base" src="photos/focaccia.jpg" alt="Focaccia dough sprinkled with herbs in a baking tin, beside a bottle of olive oil, a bowl of salt and chopped shallots on a speckled board." data-i18n-alt="pic.focacciaAlt" draggable="false">
                   <div class="glass-grades__panes" aria-hidden="true">
                     <div class="glass-grades__pane">
                       <div class="glass-grades__view glass-grades__view--havgus">
-                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="photos/focaccia.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="photos/focaccia.jpg" alt="" draggable="false"></div></div>
                         <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
                       </div>
                       <span class="glass-grades__edge"></span>
                     </div>
                     <div class="glass-grades__pane">
                       <div class="glass-grades__view glass-grades__view--dagslys">
-                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="photos/focaccia.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="photos/focaccia.jpg" alt="" draggable="false"></div></div>
                         <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
                       </div>
                       <span class="glass-grades__edge"></span>
                     </div>
                     <div class="glass-grades__pane">
                       <div class="glass-grades__view glass-grades__view--hojsol">
-                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="photos/focaccia.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="photos/focaccia.jpg" alt="" draggable="false"></div></div>
                         <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
                       </div>
                       <span class="glass-grades__edge"></span>
                     </div>
                     <div class="glass-grades__pane">
                       <div class="glass-grades__view glass-grades__view--sankthans">
-                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="photos/focaccia.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="photos/focaccia.jpg" alt="" draggable="false"></div></div>
                         <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
                       </div>
                       <span class="glass-grades__edge"></span>
                     </div>
                     <div class="glass-grades__pane">
                       <div class="glass-grades__view glass-grades__view--blaatime">
-                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="photos/focaccia.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="photos/focaccia.jpg" alt="" draggable="false"></div></div>
                         <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
                       </div>
                       <span class="glass-grades__edge"></span>
                     </div>
                     <div class="glass-grades__pane">
                       <div class="glass-grades__view glass-grades__view--nat">
-                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="photos/focaccia.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="photos/focaccia.jpg" alt="" draggable="false"></div></div>
                         <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
                       </div>
                       <span class="glass-grades__edge"></span>
                     </div>
                     <div class="glass-grades__pane">
                       <div class="glass-grades__view glass-grades__view--natrium">
-                        <div class="glass-grades__media"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="sample.jpg" alt="" draggable="false"></div></div>
+                        <div class="glass-grades__media"><img class="glass-grades__img" src="photos/focaccia.jpg" alt="" draggable="false"><div class="glass-grades__bevel"><img class="glass-grades__img" src="photos/focaccia.jpg" alt="" draggable="false"></div></div>
                         <span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span>
                       </div>
                       <span class="glass-grades__edge"></span>
@@ -1971,7 +2046,9 @@
               in the camera&rsquo;s units. Highlight and shadow tone harden through contrast and soften through
               the sheets, colour scales saturation, a white balance shift is a gain per channel on the
               shoulder, and grain adds weak or strong to the grade&rsquo;s own. Save draws the same layers on a
-              canvas, and does the filter by hand where a canvas takes none.</p>
+              canvas, and does the filter by hand where a canvas takes none. The pictures it is shown on are
+              eight of my own from the same X-T50, and several had already been through one of its
+              simulations, as most pictures dropped on it will have: a grade has to hold over another.</p>
           </li>
           <li>
             <h3 class="demo__notes-head">Glass only where it does a job.</h3>
@@ -2151,8 +2228,23 @@
         'sample.original': 'Original',
         'sample.drop': 'Slip for at se gennem glasset',
         'sample.legend': 'Lys',
-        'sample.alt': 'Et stilleben p\u00e5 en lys baggrund: en ferskenfarvet kugle, en terrakottafarvet cylinder, '
-          + 'en salviegr\u00f8n klods, en skiferbl\u00e5 kugle, en sort terning, en hvid kugle og en sennepsgul skive.',
+        'pics.label': 'Eller et af mine, taget med min X-T50',
+        'pic.stormName': 'Regn ved solnedgang',
+        'pic.stormAlt': 'En regnbyge falder fra en m\u00f8rk sky ned i havet ved solnedgang: himlen lyser\u00f8d ved horisonten, b\u00f8lgerne brydes hvidt, og kysten er m\u00f8rk forrest.',
+        'pic.seaName': 'Lyser\u00f8de skyer over havet',
+        'pic.seaAlt': 'Lyser\u00f8dt oplyste skyer over et gr\u00e5t hav, hvor b\u00f8lgerne brydes, og skummet l\u00f8ber op ad en stenet strand.',
+        'pic.duskName': 'Skyer lyst op nedefra',
+        'pic.duskAlt': 'Skyer, der lyses orange op nedefra i skumringen over havet; himlen er bleg ved horisonten, og et hus og tr\u00e6er st\u00e5r i silhuet til venstre.',
+        'pic.forestName': 'En sti gennem birketr\u00e6er',
+        'pic.forestAlt': 'Et grusspor med gr\u00e6s i midten l\u00f8ber ind i en gr\u00f8n skov af birketr\u00e6er.',
+        'pic.leavesName': 'Et ungt tr\u00e6 i skyggen',
+        'pic.leavesAlt': 'Et ungt ahorntr\u00e6 lyser gr\u00f8nt mod en m\u00f8rk skov, og dets blade og grene forsvinder i skyggen.',
+        'pic.tubName': 'I baljen',
+        'pic.tubAlt': 'Et barn med v\u00e5dt h\u00e5r kigger op over kanten af en hvid balje p\u00e5 en terrasse af tr\u00e6 i skarp sol.',
+        'pic.focacciaName': 'Focaccia f\u00f8r ovnen',
+        'pic.focacciaAlt': 'Focacciadej drysset med krydderurter i en bradepande ved siden af en flaske olivenolie, en sk\u00e5l salt og hakkede skalottel\u00f8g p\u00e5 et sp\u00e6ttet sk\u00e6rebr\u00e6t.',
+        'pic.kitchenName': 'Ved k\u00f8kkenbordet',
+        'pic.kitchenAlt': 'Et portr\u00e6t ved et k\u00f8kkenbord om aftenen: kort h\u00e5r, kort sk\u00e6g, en m\u00f8rk overskjorte over en hvid T-shirt og knive p\u00e5 en magnetliste bagved.',
         'sample.frame': 'Billede under syv glasruder. Venstre og højre pil skifter lys. Enter løfter glasset af og lægger det tilbage; mellemrum løfter det, så længe den holdes nede. S skifter mellem strimlen og én rude.',
       },
       // The recipe's line is written by the page's own script below, so it
@@ -2409,6 +2501,46 @@
   <!-- /demo-chrome:script -->
 
   <script src="component.js"></script>
+
+  <!-- The pictures beside the first component: page code, not chrome. A
+       tap hands the photo's address and its name to the component through
+       its own event, and the picture's alt follows the language from then
+       on, as the markup's did. A picture the reader drops in is theirs, and
+       none of the eight is ringed while it shows. -->
+  <script>
+  (function () {
+    var pics = document.querySelector('[data-pics]');
+    var state = pics && pics.closest('.demo__state');
+    var root = state && state.querySelector('.glass-grades');
+    if (!root || !window.CustomEvent) return;
+    var base = root.querySelector('img[data-i18n-alt]');
+    var buttons = Array.prototype.slice.call(pics.querySelectorAll('.demo__pic'));
+    function ring(which) {
+      buttons.forEach(function (b) { b.setAttribute('aria-pressed', String(b === which)); });
+    }
+    buttons.forEach(function (b) {
+      b.addEventListener('click', function (e) {
+        var name = b.getAttribute('data-pic');
+        var key = 'pic.' + name + 'Alt';
+        var en = b.getAttribute('data-alt');
+        var da = window.demoPage && window.demoPage.da && window.demoPage.da[key];
+        var alt = document.documentElement.getAttribute('lang') === 'da' && da ? da : en;
+        if (base) { base.setAttribute('data-i18n-alt', key); base.setAttribute('data-alt-en', en); }
+        root.dispatchEvent(new CustomEvent('glass-grades:picture', { detail: {
+          src: 'photos/' + name + '.jpg', alt: alt,
+          type: e.pointerType || (e.detail === 0 ? 'key' : 'mouse')
+        } }));
+        ring(b);
+      });
+    });
+    if (base && window.MutationObserver) {
+      new MutationObserver(function () {
+        if (/^blob:/.test(base.getAttribute('src') || '')) ring(null);
+      }).observe(base, { attributes: true, attributeFilter: ['src'] });
+    }
+    pics.hidden = false;
+  })();
+  </script>
 
   <!-- The recipe's steppers: page code, not chrome. They write the tokens
        inline on the instance's own root and say the recipe the way a camera

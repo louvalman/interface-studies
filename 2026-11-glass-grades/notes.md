@@ -35,6 +35,9 @@ radio groups, and without script every pane still opens and slides.
   saturation, a white balance shift is a gain per channel on the shoulder,
   and grain adds weak or strong to the grade's own. Save draws the same
   layers on a canvas, and does the filter by hand where a canvas takes none.
+  The pictures it is shown on are eight of my own from the same X-T50, and
+  several had already been through one of its simulations, as most pictures
+  dropped on it will have: a grade has to hold over another.
 - **Glass only where it does a job.** The one material on the picture is the
   edge of each pane: a lit face and a shaded face from one light on the left,
   a few pixels of the green float glass has at its edge, and a 14px strip
@@ -130,14 +133,17 @@ radio groups, and without script every pane still opens and slides.
   a target, which it allows where another control does the same: the rail's
   selectors do. Photo, Save and the switch are 34px tall for a pointer and 46
   for a finger.
-- Saving, against the screen at 1440 over http, CIEDE2000 over the open pane:
-  through the canvas filter, mean 0.53 to 0.82 across the seven grades and the
-  demo's recipe, 99th percentile 1.71 to 2.17, worst 4.6 to 9.3; by hand,
-  mean 0.41 to 0.69, worst 4.5 to 8.0. The worst sit on edges, a luma step of
-  55 against the picture's 3.3, and blurring both by 1.5px takes the recipe's
-  worst from 8.43 to 2.93: the picture resampled at two sizes, not the
-  pipeline. 52 to 69ms from click to download at 1800×1200 with the filter,
-  102 to 132ms by hand.
+- Saving, against the screen at 1440 over http, CIEDE2000 over the open pane
+  of the stormy sunset: through the canvas filter, mean 0.96 to 1.2 across the
+  seven grades and the demo's recipe, 99th percentile 4.0 to 6.2, worst 18 to
+  28; by hand, mean 0.92 to 1.1, worst 18 to 28. The worst sit on edges, a
+  luma step of 69 against the picture's 4.8, and blurring both by 1.5px takes
+  the recipe's worst from 26.1 to 7.5 and its mean from 1.02 to 0.59: the
+  picture resampled at two sizes, not the pipeline. The smoother still life
+  the study opened on before measured mean 0.53 to 0.82 and worst 4.6 to 9.3
+  the same way. 52 to 69ms from click to download at 1800×1200 with the
+  filter, 102 to 132ms by hand, timed on the still life; saved side by side in
+  one session, a photograph takes as long, within the spread between runs.
 - The sound, rendered offline at the demo's volume of 0.5 after a second of
   silence: the output's compressor takes that long to settle, and figures
   taken from its first frame read about 10dB low. Against the version before
