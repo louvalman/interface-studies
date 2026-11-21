@@ -35,70 +35,93 @@
   }
 
   /* ── sound: one context per document, made on the first sound that has a
-        volume above 0, never before ── */
-  var audio = { ctx: null, out: null, noise: null };
+        volume above 0, never before. Every note is from one chord, C major,
+        so the sounds agree with each other however they fall, and nothing
+        is pitched in the top octaves, where a run of ticks tires the ear. ── */
+  var C6 = 1046.5, G6 = 1568, C7 = 2093, E4 = 329.6;
+  var audio = { ctx: null, out: null, room: null, noise: null };
   function ensureAudio() {
     if (!audio.ctx) {
       var AC = window.AudioContext || window.webkitAudioContext;
       if (!AC) return null;
-      audio.ctx = new AC();
-      var comp = audio.ctx.createDynamicsCompressor();
+      var c = audio.ctx = new AC(), sr = c.sampleRate;
+      var comp = c.createDynamicsCompressor();
       comp.threshold.value = -18;
       comp.ratio.value = 3;
-      audio.out = audio.ctx.createGain();
-      audio.out.connect(comp);
-      comp.connect(audio.ctx.destination);
-      var len = Math.floor(audio.ctx.sampleRate * 0.3);
-      var buf = audio.ctx.createBuffer(1, len, audio.ctx.sampleRate);
-      var d = buf.getChannelData(0);
-      for (var i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+      var top = c.createBiquadFilter();
+      top.type = 'lowpass'; top.frequency.value = 6500; top.Q.value = 0.5;
+      audio.out = c.createGain();
+      audio.out.connect(top); top.connect(comp); comp.connect(c.destination);
+      // A small, dark room: under half a second of decaying, softened noise,
+      // a little of which follows the landings so they ring out rather than stop.
+      var len = Math.floor(sr * 0.45), ir = c.createBuffer(2, len, sr);
+      for (var ch = 0; ch < 2; ch++) {
+        var r = ir.getChannelData(ch), lp = 0;
+        for (var i = 0; i < len; i++) { lp += 0.3 * (Math.random() * 2 - 1 - lp); r[i] = lp * Math.exp(-i / (sr * 0.06)); }
+      }
+      var conv = c.createConvolver();
+      conv.buffer = ir;
+      audio.room = c.createGain();
+      audio.room.connect(conv); conv.connect(audio.out);
+      var n = Math.floor(sr * 0.3), buf = c.createBuffer(1, n, sr), d = buf.getChannelData(0);
+      for (var k = 0; k < n; k++) d[k] = Math.random() * 2 - 1;
       audio.noise = buf;
     }
     if (audio.ctx.state === 'suspended') audio.ctx.resume();
     return audio.ctx;
   }
-  // A struck pane: the first three modes of a free plate, the higher ones dying faster.
-  function tink(t, f0, level, decay) {
-    var c = audio.ctx;
-    [[1, 0.5], [2.756, 0.22], [5.404, 0.1]].forEach(function (m) {
+  // Where a sound goes: all of it to the output, and some to the room.
+  function voice(wet) {
+    var c = audio.ctx, v = c.createGain();
+    v.connect(audio.out);
+    if (wet > 0) { var s = c.createGain(); s.gain.value = wet; v.connect(s); s.connect(audio.room); }
+    return v;
+  }
+  // A tap on thick glass: the note, a quiet octave, and a trace of a struck
+  // plate's second mode, which is what makes it glass rather than a bell.
+  // The upper two die first.
+  function tap(t, f0, level, decay, wet) {
+    var c = audio.ctx, v = voice(wet);
+    [[1, 1], [2, 0.12], [2.756, 0.035]].forEach(function (m) {
       var o = c.createOscillator(), g = c.createGain(), d = decay / Math.sqrt(m[0]);
       o.frequency.value = f0 * m[0];
       g.gain.setValueAtTime(0, t);
-      g.gain.linearRampToValueAtTime(m[1] * level, t + 0.0015);
+      g.gain.linearRampToValueAtTime(m[1] * level, t + 0.003);
       g.gain.exponentialRampToValueAtTime(0.0001, t + d);
-      o.connect(g); g.connect(audio.out);
+      o.connect(g); g.connect(v);
       o.start(t); o.stop(t + d + 0.02);
     });
   }
-  // Contact: a few milliseconds of filtered noise.
-  function click(t, level, hp, len) {
+  // Contact: a few milliseconds of noise, in the band a fingertip on glass makes.
+  function touch(t, level, freq, len) {
     var c = audio.ctx, s = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain();
-    s.buffer = audio.noise; f.type = 'highpass'; f.frequency.value = hp || 3200;
-    g.gain.setValueAtTime(level, t);
-    g.gain.exponentialRampToValueAtTime(0.0001, t + (len || 0.004));
+    s.buffer = audio.noise; f.type = 'bandpass'; f.frequency.value = freq; f.Q.value = 1.4;
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(level, t + 0.001);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + len);
     s.connect(f); f.connect(g); g.connect(audio.out);
-    s.start(t, Math.random() * 0.2); s.stop(t + (len || 0.004) + 0.01);
+    s.start(t, Math.random() * 0.2); s.stop(t + len + 0.01);
   }
-  // The glass seating on the rail.
-  function thock(t, level, from, to, dur) {
+  // The glass seating: a short, low body, settling a little as it sounds.
+  function body(t, level, from, to, dur, wet) {
     var c = audio.ctx, o = c.createOscillator(), g = c.createGain();
     o.frequency.setValueAtTime(from, t);
     o.frequency.exponentialRampToValueAtTime(to, t + dur);
     g.gain.setValueAtTime(0, t);
-    g.gain.linearRampToValueAtTime(level, t + 0.003);
+    g.gain.linearRampToValueAtTime(level, t + 0.004);
     g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-    o.connect(g); g.connect(audio.out);
+    o.connect(g); g.connect(voice(wet));
     o.start(t); o.stop(t + dur + 0.02);
   }
-  function air(t, level, from, to, dur) {
+  function air(t, level, from, to, dur, wet) {
     var c = audio.ctx, s = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain();
-    s.buffer = audio.noise; f.type = 'bandpass'; f.Q.value = 1.1;
+    s.buffer = audio.noise; f.type = 'bandpass'; f.Q.value = 0.9;
     f.frequency.setValueAtTime(from, t);
     f.frequency.exponentialRampToValueAtTime(to, t + dur);
     g.gain.setValueAtTime(0.0001, t);
-    g.gain.exponentialRampToValueAtTime(level, t + dur * 0.35);
+    g.gain.exponentialRampToValueAtTime(level, t + dur * 0.4);
     g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-    s.connect(f); f.connect(g); g.connect(audio.out);
+    s.connect(f); f.connect(g); g.connect(voice(wet));
     s.start(t, Math.random() * 0.05); s.stop(t + dur + 0.02);
   }
   function play(kind, volume) {
@@ -107,12 +130,12 @@
     if (!c) return;
     audio.out.gain.value = 1.2 * volume;
     var t = c.currentTime + 0.004;
-    var j = 1 + (Math.random() - 0.5) * 0.04;   // a little variation, so a sweep never sounds mechanical
-    if (kind === 'pass') { tink(t, 2450 * j, 0.35, 0.05); click(t, 0.05); }
-    else if (kind === 'land') { tink(t, 1900 * j, 0.7, 0.11); click(t, 0.09); thock(t, 0.22, 190, 105, 0.07); }
-    else if (kind === 'lift') { air(t, 0.06, 700, 2400, 0.16); tink(t + 0.02, 3100 * j, 0.18, 0.05); }
-    else if (kind === 'set') { click(t, 0.12, 2200, 0.006); thock(t, 0.26, 170, 95, 0.08); tink(t, 2050 * j, 0.45, 0.09); tink(t + 0.022, 2300 * j, 0.22, 0.06); }
-    else if (kind === 'swap') { air(t, 0.05, 2600, 900, 0.13); tink(t + 0.11, 2200 * j, 0.3, 0.07); }
+    var j = 1 + (Math.random() - 0.5) * 0.012;   // a little variation, so a sweep never sounds mechanical, and little enough to stay in tune
+    if (kind === 'pass') { touch(t, 0.07, 2000 * j, 0.005); tap(t, G6 * j, 0.17, 0.035, 0.05); }
+    else if (kind === 'land') { body(t, 0.18, E4 * 1.04, E4 * 0.92, 0.06, 0.1); tap(t, C6 * j, 0.32, 0.16, 0.2); touch(t, 0.04, 1800, 0.007); }
+    else if (kind === 'lift') { air(t, 0.032, 500, 1600, 0.2, 0.2); tap(t + 0.06, C7 * j, 0.06, 0.09, 0.25); }
+    else if (kind === 'set') { body(t, 0.16, E4, E4 * 0.88, 0.07, 0.1); tap(t, C6 * j, 0.21, 0.13, 0.2); tap(t + 0.026, G6 * j, 0.07, 0.08, 0.2); touch(t, 0.05, 1600, 0.008); }
+    else if (kind === 'swap') { air(t, 0.025, 1600, 600, 0.16, 0.2); tap(t + 0.1, C6 * j, 0.085, 0.12, 0.25); tap(t + 0.19, G6 * j, 0.07, 0.16, 0.25); }
   }
 
   /* ── touch: a finger or a pen feels what a pointer hears ── */

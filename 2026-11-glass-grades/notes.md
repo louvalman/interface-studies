@@ -51,9 +51,11 @@ radio groups, and without script every pane still opens and slides.
   first control point set to match. A still press of 320ms lifts the glass
   for as long as it is held, and a sideways move sets it down and drags; a
   tap on the open pane, or Enter, lifts it until the next. Every stop passed
-  is a tick and a landing adds a low seat, synthesised from a struck plate's
-  first three modes and silent while `--glass-grades-click` is 0; a finger or
-  a pen gets the same moments as vibration.
+  ticks and a landing seats the glass, each a tap on thick glass: a note, a
+  quiet octave and a trace of a struck plate's second mode. Every note is
+  from one chord, C major, so a run of them never clashes, and a little of a
+  small room follows the landings. It is silent while `--glass-grades-click`
+  is 0, and a finger or a pen gets the same moments as vibration.
 - **The grades are kinds of light, in the order of a day.** Sea fog,
   Daylight, High sun, Midsummer, Blue hour, Night and Sodium, for a sodium
   street lamp; in Danish Havgus, Dagslys, Højsol, Sankthans, Blå time, Nat
@@ -124,9 +126,16 @@ radio groups, and without script every pane still opens and slides.
   worst from 8.43 to 2.93: the picture resampled at two sizes, not the
   pipeline. 52 to 69ms from click to download at 1800×1200 with the filter,
   102 to 132ms by hand.
-- Sound peaks, rendered offline: pass −28 dBFS over 33ms, land −18.5 over
-  76ms, lift −29.5 over 105ms, set −20.5 over 69ms, swap −18.7 over 160ms.
-  Nothing clips.
+- The sound, rendered offline at the demo's volume of 0.5 after a second of
+  silence: the output's compressor takes that long to settle, and figures
+  taken from its first frame, the peaks this line used to give among them,
+  read about 10dB low. Against the struck plate it replaced, the energy above
+  5kHz went from 7.6 to 14.2% of each sound to under 0.4%, and the spectral
+  centroid from 1.6–4.0kHz to 0.9–2.1kHz, at the same A-weighted level to
+  within 0.5dB; the pass, which comes in runs, is 1.4dB softer. Five passes
+  60ms apart and a landing: each pass peaks at −18.7 dBFS and the landing at
+  −10.5, −4.9 at full volume, so nothing clips, and between two passes the
+  sound falls by 44dB or more.
 - Contrast on the charcoal: the names 12.7:1, the descriptions 6.2:1 and 5.1
   on a chosen selector, the orange marks 6.8:1, a tag over a white picture
   10.7:1. The scale's unlit segments are 1.6:1 and decoration; the lit one
@@ -140,6 +149,9 @@ radio groups, and without script every pane still opens and slides.
   finger resting before a drag no longer lifts the glass and drops it again,
   well short of a system long press. A phone decides it, and the flick's
   reach and the glide's 560ms with it.
+- The sound was tuned by measurement against the one before it, not by ear,
+  and a phone's speaker is the test: the body under a landing, at 330Hz, is
+  the part it is most likely to lose.
 - The recipe's steps are chosen by eye. In-camera conversions, Provia at 0
   against the same frame with one setting moved, would calibrate them.
 
