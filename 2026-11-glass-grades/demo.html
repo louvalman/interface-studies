@@ -413,6 +413,31 @@
       flex-basis: 100%;
       max-width: min(100%, 44rem);
     }
+    /* The lead state: its group's head inside it, so the head is where the
+       grid's gap would otherwise be. From 75rem the head, the caption and
+       the class chip stand in a column beside the component, the page
+       arrives on the lede rather than on its own margin, and the picture is
+       on the first screen: the instance hands itself a lower max-h, 42vh,
+       and a narrower selector so its rail still sits under its panes.
+       Measured with the whole picture above the fold at 1440x900 and
+       1470x802. */
+    .demo__state--lead > .demo__group-head {
+      margin-bottom: calc(clamp(1.75rem, 3vw, 2.25rem) - 0.85rem);
+    }
+    @media (min-width: 75rem) {
+      .demo > .demo__intro { margin-bottom: 0; }
+      .demo__state--lead {
+        max-width: none;
+        grid-template-columns: minmax(0, 1fr) auto;
+        grid-template-rows: auto auto 1fr;
+        column-gap: clamp(2.5rem, 4vw, 4rem);
+      }
+      .demo__state--lead > .demo__group-head,
+      .demo__state--lead > .demo__caption,
+      .demo__state--lead > .demo__hint { grid-column: 1; }
+      .demo__state--lead > .demo__group-head { margin-bottom: 0.4rem; }
+      .demo__state--lead > :last-child { grid-column: 2; grid-row: 1 / -1; }
+    }
     /* What the state is, in the page's prose: its name in the ink. */
     .demo__caption {
       margin: 0;
@@ -1010,16 +1035,19 @@
 
     <!-- data-reveal on each of the page's own blocks, and never on the
          component's root: it rises inside its state. -->
+    <!-- The lead state carries its group's head inside it, so on a wide
+         screen the head, the caption and the class chip can stand beside
+         the component and its picture is on the first screen. -->
     <section class="demo__group">
-      <div class="demo__group-head" data-reveal>
-        <h2 class="demo__group-title" data-i18n="group.strip">Seven kinds of light</h2>
-        <p class="demo__group-note" data-i18n="group.stripNote">The same picture through every grade at once, sea fog to streetlight. Tap a pane to open it; without script the selectors and the Strip and Pane switch still do.</p>
-      </div>
       <div class="demo__grid">
-        <section class="demo__state demo__state--wide" data-reveal>
+        <section class="demo__state demo__state--wide demo__state--lead" data-reveal>
+          <div class="demo__group-head">
+            <h2 class="demo__group-title" data-i18n="group.strip">Seven kinds of light</h2>
+            <p class="demo__group-note" data-i18n="group.stripNote">The same picture through every grade at once, sea fog to streetlight. Tap a pane to open it; without script the selectors and the Strip and Pane switch still do.</p>
+          </div>
           <p class="demo__caption" data-i18n="state.strip"><strong>The strip</strong> &middot; all seven side by side, each selector under its own pane. Drag it, flick it, hold it, or drop a picture of your own onto it.</p>
           <code class="demo__hint">.glass-grades</code>
-          <div class="glass-grades">
+          <div class="glass-grades" style="--glass-grades-max-h: 42vh; --glass-grades-chip-min: 72px">
             <div class="glass-grades__bar">
               <p class="glass-grades__readout" aria-hidden="true">
                 <span class="glass-grades__name">Havgus <span class="glass-grades__desc" data-i18n="sample.havgusDesc">Sea fog: scattered light lifts every shadow</span></span>
