@@ -1718,34 +1718,41 @@
           </div>
         </dl>
         <p class="demo__notes-lede">
-          Seven colour grades as seven panes of glass laid over one picture. Seen as a
-          strip they show the whole set at once, the same picture through each; tap one
-          and it opens to most of the window while the others close to slivers you can
-          still see and still tap. Drag and the glass slides, sticking a little at each
-          pane; hold and it lifts off to show the picture bare; drop, paste or pick a
-          picture of your own and it slides in under the glass. Under it all is a radio
-          group and a checkbox, and without script every pane still opens and slides.
+          Seven colour grades as seven panes of glass laid over one picture. As a strip
+          they show the whole set at once; open one and it takes most of the window
+          while the others close to slivers you can still see and tap. Drag and the
+          glass slides under your hand, sticking a little at each pane; hold it, or tap
+          the open pane, and it lifts off to show the picture bare. A picture of your
+          own slides in under the glass and saves out through it, and a recipe in the
+          camera&rsquo;s own units lies over whichever grade is open. Under it all are two
+          radio groups, and without script every pane still opens and slides.
         </p>
         <ol class="demo__notes-list">
           <li>
             <h3 class="demo__notes-head">One number opens every pane.</h3>
-            <p><code>:has()</code> rules write <code>--glass-grades-p</code> from the checked radio and
-              <code>--glass-grades-a</code> from the Strip checkbox, both registered with
+            <p><code>:has()</code> rules write <code>--glass-grades-p</code> from the checked light and
+              <code>--glass-grades-a</code> from the Strip | Pane switch, both registered with
               <code>@property</code> so they transition, and every pane&rsquo;s left edge is a share of the
               window: <code>(1 − a)·j/n + a·(j·s + (open − s)·clamp(0, j − p, 1))</code>, with
               <code>s</code> one sliver and <code>open</code> .62. The index, the scale and the readout read
-              the same two numbers, so nothing on the component can disagree with the glass, and
-              <code>component.js</code> only ever drives <code>p</code> faster than a transition can.</p>
+              the same numbers, so nothing on the component can disagree with the glass, and
+              <code>component.js</code> only ever drives <code>p</code> faster than a transition can. Below
+              26rem the root, an inline-size container, restates <code>open</code> as 1: a pane fills the
+              window, the rail is the way to the others, and the index and the scale keep the strip&rsquo;s
+              arithmetic to say where in the seven it is.</p>
           </li>
           <li>
-            <h3 class="demo__notes-head">A grade is a filter and two sheets of colour.</h3>
+            <h3 class="demo__notes-head">A grade is a filter and two sheets of colour, and a recipe moves all three.</h3>
             <p>Each pane is the picture through <code>brightness() contrast() saturate()</code>, then a toe
               sheet in <code>screen</code>, which moves black to the toe colour and leaves white alone, then
               a shoulder sheet in <code>multiply</code>, which moves white to the shoulder colour and leaves
               black alone, then grain in <code>overlay</code>. Nothing reads a pixel, so a grade is instant
-              and works on a photo, an illustration or a live element. Each selector runs the same layers
-              over a fixed reference row, black to white and then skin, sky, leaf and red, and shows it under
-              the same row bare: the change a grade makes, read at a glance.</p>
+              and works on a photo, an illustration or a live element, and each selector runs the same layers
+              over a reference row: black to white, then skin, sky, leaf and red. Over any grade lies a recipe
+              in the camera&rsquo;s units. Highlight and shadow tone harden through contrast and soften through
+              the sheets, colour scales saturation, a white balance shift is a gain per channel on the
+              shoulder, and grain adds weak or strong to the grade&rsquo;s own. Save draws the same layers on a
+              canvas, and does the filter by hand where a canvas takes none.</p>
           </li>
           <li>
             <h3 class="demo__notes-head">Glass only where it does a job.</h3>
@@ -1756,14 +1763,17 @@
               mode dial&rsquo;s orange index.</p>
           </li>
           <li>
-            <h3 class="demo__notes-head">Moving the glass is felt as well as seen.</h3>
-            <p>A drag runs through the mode dial&rsquo;s detent curve, <code>x − k·sin(2πx)/2π</code> with
-              <code>k</code> .55, so the glass sticks near each pane. A release springs to a stop with a
-              damping ratio of .67, about 6% overshoot in a third of a second, and a flick coasts up to three
-              panes. Every stop passed is a tick, landing adds a low seat, and a still press of 260ms lifts the
-              glass. The sounds are synthesised, a struck plate&rsquo;s first three modes at 1, 2.756 and
-              5.404 times about 2.4 kHz, and start no audio while <code>--glass-grades-click</code> is 0; a
-              finger or a pen gets the same moments as vibration.</p>
+            <h3 class="demo__notes-head">The glass moves under the hand.</h3>
+            <p>One pane of drag is the distance the moving edge travels, the open pane less a sliver, so at
+              <code>--glass-grades-drag: 1</code> the edge stays under the hand, and the mode dial&rsquo;s detent
+              curve, <code>x − k·sin(2πx)/2π</code> with <code>k</code> .55, makes it stick near each pane. A
+              release is projected 0.4s ahead, so a flick coasts up to three panes, and springs to a stop
+              with a damping ratio of .67, about 6% overshoot in a third of a second. A still press of 320ms
+              lifts the glass for as long as it is held, and a sideways move sets it down and drags; a tap on
+              the open pane, or Enter, lifts it until the next. Every stop passed is a tick and a landing adds
+              a low seat, synthesised from a struck plate&rsquo;s first three modes and silent while
+              <code>--glass-grades-click</code> is 0; a finger or a pen gets the same moments as
+              vibration.</p>
           </li>
           <li>
             <h3 class="demo__notes-head">The grades are kinds of light, in the order of a day.</h3>
