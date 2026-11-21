@@ -166,10 +166,10 @@ radio groups, and without script every pane still opens and slides.
   finger resting before a drag no longer lifts the glass and drops it again,
   well short of a system long press. A phone decides it, and the flick's
   reach and the glide's 560ms with it.
-- The sound is tuned by measurement from the owner's ear on the version
-  before it, and has not been heard on a phone, whose speaker is the test:
-  the landing, an octave lower than it was, and the body under it at 330Hz
-  are what it is most likely to lose.
+- The owner approved the sound by ear on 21 November 2026, as built, reverb
+  included. A phone's speaker is still the test: the landing, an octave lower
+  than it was, and the body under it at 330Hz are what it is most likely to
+  lose.
 - The recipe's steps are chosen by eye. In-camera conversions would
   calibrate them: one frame at the camera's standard settings, against the
   same frame with one setting moved.
