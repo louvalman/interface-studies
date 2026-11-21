@@ -485,9 +485,10 @@
        Eight photographs beside the first component, each a thumbnail that
        hands its address to the component, which slides it in the way it
        slides in a picture of the reader's own. The one showing is ringed in
-       the ink, a gap of the ground between; focus is the accent. The row is
-       held to four landscape thumbnails' width, the tall one among the first
-       four, so it is two rows of four at every width down to 320. */
+       the ink, a gap of the ground between; focus is the accent. Every
+       thumbnail is the same 3:2 tile, the tall photo's cut as a band across
+       its path, and the row is held to four of them, so it is two rows of
+       four that line up at every width down to 320. */
     .demo__pics { display: grid; gap: 0.6rem; justify-items: start; min-width: 0; }
     .demo__pics[hidden] { display: none; }
     .demo__pics-label {
@@ -519,7 +520,6 @@
       border-radius: inherit;
       object-fit: cover;
     }
-    .demo__pic--tall img { width: 33px; }
     .demo__pic::after {
       content: "";
       position: absolute;
@@ -1221,7 +1221,7 @@
               <button class="demo__pic" type="button" data-pic="storm" aria-pressed="true" data-alt="A rain shower falls from a dark cloud into the sea at sunset: the sky pink at the horizon, waves breaking white, the shore dark in front."><img src="photos/thumbs/storm.jpg" alt="" width="62" height="41" draggable="false"><span class="demo__pic-name" data-i18n="pic.stormName">Rain at sunset</span></button>
               <button class="demo__pic" type="button" data-pic="sea" aria-pressed="false" data-alt="Pink-lit clouds over a grey sea, with waves breaking and foam running up a stony beach."><img src="photos/thumbs/sea.jpg" alt="" width="62" height="41" draggable="false"><span class="demo__pic-name" data-i18n="pic.seaName">Pink clouds over the sea</span></button>
               <button class="demo__pic" type="button" data-pic="dusk" aria-pressed="false" data-alt="Clouds lit orange from below at dusk over the sea, the sky pale at the horizon, a house and trees in silhouette on the left."><img src="photos/thumbs/dusk.jpg" alt="" width="62" height="41" draggable="false"><span class="demo__pic-name" data-i18n="pic.duskName">Clouds lit from below</span></button>
-              <button class="demo__pic demo__pic--tall" type="button" data-pic="forest" aria-pressed="false" data-alt="A gravel track with grass down its middle runs into a green wood of birches."><img src="photos/thumbs/forest.jpg" alt="" width="33" height="41" draggable="false"><span class="demo__pic-name" data-i18n="pic.forestName">A path through birches</span></button>
+              <button class="demo__pic" type="button" data-pic="forest" aria-pressed="false" data-alt="A gravel track with grass down its middle runs into a green wood of birches."><img src="photos/thumbs/forest.jpg" alt="" width="62" height="41" draggable="false"><span class="demo__pic-name" data-i18n="pic.forestName">A path through birches</span></button>
               <button class="demo__pic" type="button" data-pic="leaves" aria-pressed="false" data-alt="A young sycamore lit bright green against a dark wood, its leaves and branches fading into shadow."><img src="photos/thumbs/leaves.jpg" alt="" width="62" height="41" draggable="false"><span class="demo__pic-name" data-i18n="pic.leavesName">A sapling in the shade</span></button>
               <button class="demo__pic" type="button" data-pic="tub" aria-pressed="false" data-alt="A child with wet hair peeks over the rim of a white tub on a wooden deck in hard sun."><img src="photos/thumbs/tub.jpg" alt="" width="62" height="41" draggable="false"><span class="demo__pic-name" data-i18n="pic.tubName">In the tub</span></button>
               <button class="demo__pic" type="button" data-pic="focaccia" aria-pressed="false" data-alt="Focaccia dough sprinkled with herbs in a baking tin, beside a bottle of olive oil, a bowl of salt and chopped shallots on a speckled board."><img src="photos/thumbs/focaccia.jpg" alt="" width="62" height="41" draggable="false"><span class="demo__pic-name" data-i18n="pic.focacciaName">Focaccia, before the oven</span></button>
