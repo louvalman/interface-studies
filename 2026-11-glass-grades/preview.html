@@ -225,14 +225,15 @@
           "original": "Original",
           "drop": "Drop to look through the glass",
           "legend": "Light",
+          "alt": "A still life on a pale backdrop: a peach sphere, a terracotta cylinder, a sage block, a slate-blue ball, a black cube, a white ball and a mustard puck.",
           "frame": "Picture under seven panes of glass. Left and right arrows step through the light. Enter lifts the glass off and puts it back; Space lifts it while held. S switches between the strip and one pane.",
           "strip.variant": "All seven"
         },
         "da": {
           "havgus": "T\u00e5ge fra havet",
-          "havgusDesc": "Havgus: spredt lys l\u00f8fter hver skygge",
+          "havgusDesc": "Spredt lys l\u00f8fter hver skygge",
           "dagslys": "\u00c6gte farver",
-          "dagslysDesc": "Dagslys, \u00e6gte farver",
+          "dagslysDesc": "Referencen: \u00e6gte farver",
           "hojsol": "H\u00e5rdt, d\u00e6mpet",
           "hojsolDesc": "H\u00f8j sommersol: h\u00e5rde skygger, blegede farver",
           "sankthans": "Lav, varm sol",
@@ -240,7 +241,7 @@
           "blaatime": "Bl\u00e5 skygger",
           "blaatimeDesc": "Bl\u00e5t himmellys i skyggerne, lamper i h\u00f8jlysene",
           "nat": "Sort-hvid, bl\u00e5",
-          "natDesc": "Nat: \u00f8jet mister farverne og tr\u00e6kker mod bl\u00e5t",
+          "natDesc": "\u00d8jet mister farverne og tr\u00e6kker mod bl\u00e5t",
           "natrium": "Sort-hvid, orange",
           "natriumDesc": "En natriumlampe: \u00e9n b\u00f8lgel\u00e6ngde, s\u00e5 \u00e9n farve",
           "photo": "Foto",
@@ -251,6 +252,7 @@
           "original": "Original",
           "drop": "Slip for at se gennem glasset",
           "legend": "Lys",
+          "alt": "Et stilleben p\u00e5 en lys baggrund: en ferskenfarvet kugle, en terrakottafarvet cylinder, en salviegr\u00f8n klods, en skiferbl\u00e5 kugle, en sort terning, en hvid kugle og en sennepsgul skive.",
           "frame": "Billede under syv glasruder. Venstre og h\u00f8jre pil skifter lys. Enter l\u00f8fter glasset af og l\u00e6gger det tilbage; mellemrum l\u00f8fter det, s\u00e5 l\u00e6nge den holdes nede. S skifter mellem strimlen og \u00e9n rude.",
           "strip.variant": "Alle syv"
         }
@@ -274,6 +276,8 @@
         });
         var frame = root.querySelector('.glass-grades__frame');
         if (frame) frame.setAttribute('aria-label', t('frame'));
+        var base = root.querySelector('.glass-grades__base');
+        if (base && !/^blob:/.test(base.getAttribute('src') || '')) base.alt = t('alt');
         document.documentElement.setAttribute('lang', lang);
       }
       if (lang !== 'en') retext();
