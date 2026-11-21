@@ -62,7 +62,9 @@ radio groups, and without script every pane still opens and slides.
   sound of choosing a grade, is the lowest, and everything but the ticks
   carries a slight reverb, a dark tail of about a second. It is silent while
   `--glass-grades-click` is 0, and a finger or a pen gets the same moments as
-  vibration.
+  vibration where the browser can vibrate; an iPhone, which lets a page tick
+  only inside a tap, ticks once as the finger lets go and as a selector or the
+  switch is tapped.
 - **The grades are kinds of light, in the order of a day.** Sea fog,
   Daylight, High sun, Midsummer, Blue hour, Night and Sodium, for a sodium
   street lamp; in Danish Havgus, Dagslys, Højsol, Sankthans, Blå time, Nat
@@ -178,8 +180,11 @@ radio groups, and without script every pane still opens and slides.
 
 ## Not yet
 
-- Haptics on an iPhone: the switch the script toggles is a Safari workaround,
-  untested on a device.
+- Haptics on an iPhone: on my iPhone, on 22 November 2026, the system switch
+  the script toggled for every moment never ticked, because iOS ticks a switch
+  only inside a tap and every moment came off the clock. It is toggled now
+  only in the handlers of a tap, as a finger lets go and as a selector or the
+  switch is tapped, which is untested.
 - The hold is 320ms, from 260, chosen without a phone: long enough that a
   finger resting before a drag no longer lifts the glass and drops it again,
   well short of a system long press. A phone decides it, and the flick's

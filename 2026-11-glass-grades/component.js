@@ -152,14 +152,21 @@
   var VIB = { pass: 7, land: 16, lift: 12, set: [9, 34, 12], swap: 12 };
   var lastBuzz = 0;
   // Safari has no vibration API. Toggling a system switch makes iOS tick, and
-  // that is the only touch feedback a page can reach there.
+  // that is the only touch feedback a page can reach there, but only inside a
+  // tap: toggled off the clock, as the glass passed a pane or landed after a
+  // glide, it never ticked on an iPhone. So it is toggled in the handlers of a
+  // tap itself, once as a finger lets go of the picture and once as a
+  // selector or the switch is tapped, and never for the moments in between.
   function iosTick() {
     try {
       var l = document.createElement('label'), i = document.createElement('input');
       i.type = 'checkbox'; i.setAttribute('switch', '');
       l.setAttribute('aria-hidden', 'true'); l.style.display = 'none';
-      l.appendChild(i); document.body.appendChild(l); l.click(); l.remove();
+      l.appendChild(i); document.head.appendChild(l); l.click(); l.remove();
     } catch (err) { /* not available */ }
+  }
+  function tapTick(type) {
+    if (isIOS && (type === 'touch' || type === 'pen')) iosTick();
   }
   function buzz(kind, type) {
     if (type !== 'touch' && type !== 'pen') return;
@@ -168,9 +175,7 @@
     lastBuzz = now;
     if (typeof navigator.vibrate === 'function' && !isIOS) {
       try { navigator.vibrate(VIB[kind] || 8); } catch (err) { /* not allowed here */ }
-      return;
     }
-    if (isIOS) iosTick();
   }
 
   function setup(root) {
@@ -563,7 +568,10 @@
       var target = flung ? Math.max(here - 3, Math.min(here + 3, Math.round(p + v * ahead))) : here;
       glideTo(target, vp, P.type, true);
     }
-    frame.addEventListener('pointerup', function (e) { endPointer(e, false); });
+    frame.addEventListener('pointerup', function (e) {
+      if (ptr && e.pointerId === ptr.id) tapTick(ptr.type);
+      endPointer(e, false);
+    });
     frame.addEventListener('pointercancel', function (e) { endPointer(e, true); });
     frame.addEventListener('contextmenu', function (e) { e.preventDefault(); });
 
@@ -628,12 +636,16 @@
     radios.forEach(function (r, i) {
       r.addEventListener('change', function () {
         if (!r.checked) return;
+        tapTick(lastType);
         if (latched) lift(false, lastType);
         // The stylesheet has already been told; hold p where the glass is
         // and glide from there, so the move ticks like any other.
         drive(p);
         glideTo(i, null, lastType, false);
       });
+    });
+    sides.forEach(function (side) {
+      side.addEventListener('change', function () { if (side.checked) tapTick(lastType); });
     });
 
     /* ── a picture of your own: picked, dropped or pasted ── */
