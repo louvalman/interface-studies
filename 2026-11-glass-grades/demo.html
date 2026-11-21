@@ -433,8 +433,10 @@
        grid's gap would otherwise be. From 75rem the head, the caption and
        the class chip stand in a column beside the component, the page
        arrives on the lede rather than on its own margin, and the picture is
-       on the first screen: the instance hands itself a lower max-h, 42vh,
-       and a narrower selector so its rail still sits under its panes.
+       on the first screen: the instance hands itself a lower max-h, 42vh.
+       Below about 980px of height that leaves the picture under 616px
+       wide, too narrow for seven selectors at 88px, so the rail takes the
+       component's whole width.
        Measured with the whole picture above the fold at 1440x900 and
        1470x802. */
     .demo__state--lead > .demo__group-head {
@@ -1092,9 +1094,9 @@
             <h2 class="demo__group-title" data-i18n="group.strip">Seven kinds of light</h2>
             <p class="demo__group-note" data-i18n="group.stripNote">The same picture through every grade at once, sea fog to streetlight. Tap a pane to open it; without script the selectors and the Strip and Pane switch still do.</p>
           </div>
-          <p class="demo__caption" data-i18n="state.strip"><strong>The strip</strong> &middot; all seven side by side, each selector under its own pane. Drag it, flick it, hold it, or drop a picture of your own onto it.</p>
+          <p class="demo__caption" data-i18n="state.strip"><strong>The strip</strong> &middot; all seven side by side, in the order of a day. Drag it, flick it, hold it, or drop a picture of your own onto it.</p>
           <code class="demo__hint">.glass-grades</code>
-          <div class="glass-grades" style="--glass-grades-max-h: 42vh; --glass-grades-chip-min: 72px">
+          <div class="glass-grades" style="--glass-grades-max-h: 42vh">
             <div class="glass-grades__bar">
               <p class="glass-grades__readout" aria-hidden="true">
                 <span class="glass-grades__name"><span data-i18n="sample.havgusName">Sea fog</span> <span class="glass-grades__desc" data-i18n="sample.havgusDesc">Scattered light lifts every shadow</span></span>
@@ -1902,7 +1904,7 @@
         'group.strip': 'Syv slags lys',
         'group.stripNote': 'Det samme billede gennem hvert lys p\u00e5 \u00e9n gang, fra havgus til gadelys. '
           + 'Tryk p\u00e5 en rude for at \u00e5bne den; uden script g\u00f8r v\u00e6lgerne og knapperne Strimmel og Rude det stadig.',
-        'state.strip': '<strong>Strimlen</strong> &middot; alle syv side om side, hver v\u00e6lger under sin egen rude. '
+        'state.strip': '<strong>Strimlen</strong> &middot; alle syv side om side, i d\u00f8gnets r\u00e6kkef\u00f8lge. '
           + 'Tr\u00e6k i den, svirp den, hold den, eller slip dit eget billede p\u00e5 den.',
         'group.open': '\u00c9n rude \u00e5ben',
         'group.openNote': 'Den \u00e5bne rude fylder 62% af vinduet, og de andre bliver smalle striber, '

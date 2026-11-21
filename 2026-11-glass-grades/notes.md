@@ -107,6 +107,12 @@ radio groups, and without script every pane still opens and slides.
   release comes after that, so timed from the release the first frame after
   letting go stood still. Which pane a release lands on is decided before the
   glide starts, so the flick figures above hold as they did for the spring.
+- Held to the window, a selector was 72px at 1470x802, where the demo
+  narrows its first picture to keep it on the first screen, and a nine-letter
+  name is 73px of tracked capitals: Midsummer ran 1px into Blue hour. Stepped
+  out to the component's width the rail gives each 96.6px, and the closest
+  two names are 23.5px apart in English and 27.6 in Danish; nowhere on the
+  demo are they closer than 14.9.
 - Below 26rem, measured with touch at 390 and 320 in both languages: the open
   pane is the window's 322 and 252px, the index sits at (p + ½)/7, the bar is
   one row of tools at 94px, and nothing scrolls sideways.

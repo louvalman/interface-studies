@@ -807,8 +807,17 @@
 
 /* --- the rail: one selector per grade, a window onto a reference row ------- */
 
-/* As wide as the window, so in the strip each selector sits under its own pane. */
+/* As wide as the window, so in the strip each selector sits under its own
+   pane, wherever the window holds them all at chip-min. Where it does not, as
+   when a short screen narrows the window, the rail steps out to the
+   component's whole width, 100cqw, before it scrolls: held to the window, a
+   selector went down to 72px, and a nine-letter name, 73px of tracked
+   capitals, touched the next. A step rather than a stretch, by the clamp's
+   9999, so the rail lines up with something either way: the panes or the
+   bar above. */
 .glass-grades__rail {
+  justify-self: center;
+  width: clamp(100%, (var(--glass-grades-n) * var(--glass-grades-chip-min) - 100%) * 9999, 100cqw);
   margin: 4px 0 0;
   padding: 0;
   border: 0;
