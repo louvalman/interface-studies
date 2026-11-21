@@ -494,8 +494,13 @@
   gap: 6px;
 }
 
+/* Photo is a label and Save a button, and a browser sizes a button's
+   border inside its height and a label's outside it, so Save stood 2px
+   shorter than Photo beside it: 32 against 34, 44 against 46 on a phone.
+   Both size their insides now, the way the switch's sides do. */
 .glass-grades__btn {
   position: relative;
+  box-sizing: content-box;
   display: inline-flex;
   align-items: center;
   gap: 8px;
