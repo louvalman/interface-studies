@@ -91,14 +91,16 @@ radio groups, and without script every pane still opens and slides.
 - The same drag on a faster machine, this build against the one before the
   direct drag, the tap, the switch, the narrow window, the recipe and Save,
   nine runs each, interleaved: median 0.680s of main thread against 0.655,
-  about 4% more, style recalculation 0.269s against 0.263, layout 21ms
-  against 22. Taking out the demo's fourth instance, the registered sheet
-  colours or the demo's lead layout one at a time moved nothing past the
-  spread between runs, which is as wide as the difference. The recipe at
-  first took recalculation from 0.24 to 0.32s, every pane re-parsing its
-  chain of `clamp()`, `max()` and `calc()` on every frame; registering the
-  factors as numbers brought it to 0.27s, and working each grade's two
-  sheets out once on the root, as registered colours, to within the spread.
+  about 4% more, style recalculation 0.269s against 0.263, layout 21ms against
+  22. Taking out the demo's fourth instance, the registered sheet colours or
+  the demo's lead layout one at a time moved nothing past the spread between
+  runs, which is as wide as the difference. The recipe at first took
+  recalculation from 0.24 to 0.32s, every pane re-parsing its chain of
+  `clamp()`, `max()` and `calc()` on every frame; registering the factors as
+  numbers brought it to 0.27s, and working each grade's two sheets out once on
+  the root, as registered colours, to within the spread. The photographs in
+  place of the still life moved nothing: median 0.630s of main thread against
+  0.629, five runs each, interleaved.
 - The drag is direct: at 1440, 293.9px of drag moved the edge 293.9px, the
   detent varying its pace between 0.45 and 1.55 of the hand's. Releases from
   pane 2, by the hand's own speed over its last 90ms: 500px/s coasted one
