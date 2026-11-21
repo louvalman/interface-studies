@@ -152,8 +152,9 @@ radio groups, and without script every pane still opens and slides.
 - The sound was tuned by measurement against the one before it, not by ear,
   and a phone's speaker is the test: the body under a landing, at 330Hz, is
   the part it is most likely to lose.
-- The recipe's steps are chosen by eye. In-camera conversions, Provia at 0
-  against the same frame with one setting moved, would calibrate them.
+- The recipe's steps are chosen by eye. In-camera conversions would
+  calibrate them: one frame at the camera's standard settings, against the
+  same frame with one setting moved.
 
 Inspiration: https://www.fujifilm-x.com/global/products/cameras/x-t50/ — my
 own X-T50: turning its film simulation dial to see one scene in another
