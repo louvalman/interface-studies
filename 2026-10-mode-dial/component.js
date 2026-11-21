@@ -712,7 +712,7 @@
        `heard` as played: a snap is the face arriving at a stop other than
        its seat, and it leaves its seat by going SEAT of a step away — three
        teeth on six stops. A turn's own overshoot past its target, up to
-       0.24 of a step on a 4-step turn, is the same landing and never leaves
+       0.08 of a step on a 4-step turn, is the same landing and never leaves
        it. */
     var hear = { events: [], timer: 0, chain: null, plan: 0, seat: sel, heard: sel, arrived: NaN, arrivedDir: 0, planDir: 0, tooth: null, voice: null, watch: null, inline: '', hold: 0 };
 

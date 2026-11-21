@@ -16,8 +16,8 @@ and `.mode-dial--ratchet` gives either finish a voice of its own.
   options layer all turn to `-(sel + laps·n + drag) · 360deg/n` on one
   transition, each option turning back by the same angle, so names and icons
   stay upright in lockstep without `@property`. A detent is an overshoot:
-  420ms on a `linear()` curve that passes the stop by 6% of the move and
-  settles. CSS alone spins first-to-last the long way round; component.js
+  420ms on a `linear()` curve that passes the stop by 2% of the move and
+  settles without swinging back. CSS alone spins first-to-last the long way round; component.js
   keeps a winding count, `--mode-dial-laps`, so every turn takes the near way.
 - **One light, and the plain finish shows what it adds by taking it away.**
   `--mode-dial-light: 27deg` sets every shadow, the knurl's rim light, the
@@ -82,8 +82,10 @@ What the bullets above rest on, and what was tried on the way.
   readouts and the selected word's weight are arithmetic on `i - sel`, through
   `color-mix()` and `max(d, -d)`, rather than further ladders.
 - The overshoot is
-  `linear(0, .42 12%, .8 26%, 1.045 46%, 1.06 52%, .995 72%, 1.003 86%, 1)`:
-  3.6° past the stop on a six-way dial. Each extra step adds 70ms. Without
+  `linear(0, .12 6%, .354 12%, .62 19%, .815 26%, .945 34%, 1.002 42%, 1.019 50%, 1.018 58%, 1.01 68%, 1.003 80%, 1)`,
+  a damped spring's step response at a damping ratio of .78, sampled: 1.2°
+  past the stop on a six-way dial, where the 6% it replaced was 3.6° and
+  swung back under the stop before it settled. Each extra step adds 70ms. Without
   script first-to-last turns 0° to −300°, which reads as an end stop; with it,
   0° to +60°.
 
@@ -345,7 +347,8 @@ What the bullets above rest on, and what was tried on the way.
   side of a stop, as a pawl sits in a notch, and a tooth is heard again
   going back over it only once the face is a quarter tooth past it, so the
   settle's last wobble, ±0.1 tooth about the stop, is silent.
-- Grains counted against the face's own angle sampled every frame: one arrow
+- Grains counted against the face's own angle sampled every frame, with the
+  earlier 6% overshoot, which carried a step's turn over one more tooth: one arrow
   step 22 for 22 crossed — 20 and the overshoot out and back over one tooth
   — in 10 of 10; a three-stop click 68 against 66 sampled, the samples
   missing the top of its 3.6-tooth overshoot; four quick arrows 84–90 for
@@ -363,7 +366,7 @@ What the bullets above rest on, and what was tried on the way.
   face crosses the stop.
 - The snap is the face arriving at a detent other than the one it sits in.
   It leaves its seat by going 0.15 of a step away, three teeth on six stops,
-  and a turn's own overshoot past its target, up to 0.24 of a step on a
+  and a turn's own overshoot past its target, up to 0.08 of a step on a
   4-step turn, is the same landing. A turn's snap is due as the eased angle
   first reaches the stop, off the same points the ticks read: median −0.3ms
   from the face's crossing interpolated between frames, −0.4 to −0.1 over
