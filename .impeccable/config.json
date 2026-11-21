@@ -19,6 +19,12 @@
         ],
         "createdAt": "2026-10-01T12:16:27.629Z",
         "reason": "Agent: false positive on .foot__invite. The static scan flags it with any padding-bottom, a plain 3rem included; rendered, the band has clamp(2.5rem, 4.5vw, 3.5rem) above its hairline, 56px at 1489px wide and 40px at the floor"
+      },
+      {
+        "rule": "bounce-easing",
+        "value": "cubic-bezier(.3, 1.4, .5, 1)",
+        "createdAt": "2026-11-21T09:13:20.767Z",
+        "reason": "Intentional detent overshoot, the mode dial study's fallback for its linear() curve where linear() is unsupported; a mechanical stop passing by ~6% and settling, documented in 2026-11-glass-grades/notes.md and the handoff's motion spec, and predating this session"
       }
     ]
   }
