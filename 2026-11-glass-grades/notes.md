@@ -181,4 +181,6 @@ radio groups, and without script every pane still opens and slides.
 Inspiration: https://www.fujifilm-x.com/global/products/cameras/x-t50/ — my
 own X-T50: turning its film simulation dial to see one scene in another
 light, and the recipes its owners trade, a handful of numbers anyone can dial
-in.
+in. Two grades carry the decisions behind two simulations I love: High sun,
+Classic Chrome's muted colour over hard shadows, and Midsummer, Nostalgic
+Neg.'s amber highlights over soft ones.
