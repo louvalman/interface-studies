@@ -4,7 +4,7 @@
   component.css opens, slides and labels every pane from the checked light and
   the Strip | Pane switch. This file drives the same number, --glass-grades-p,
   faster than a transition can: a drag that sticks near each stop, a flick
-  that coasts, a spring that lands. Each stop passed ticks, in sound when
+  that coasts, a glide that lands. Each stop passed ticks, in sound when
   --glass-grades-click is above 0 and in touch on a phone. A still press lifts
   the glass off the picture. A picture of your own can be picked, dropped or
   pasted. When the glass lands, p is handed back to the stylesheet, so at rest
@@ -239,8 +239,57 @@
       rail.scrollTo({ left: Math.max(0, left), behavior: reduce.matches ? 'auto' : 'smooth' });
     }
 
-    var spring = { raf: 0, target: 0, v: 0, landed: false, type: 'mouse', last: 0, zeta: 0.67, follow: true };
-    // Every stop crossed is a tick; the first arrival at the target is a landing.
+    /* ── the glide: how the glass gets to a pane ──
+       A cubic-bezier over time, read from --glass-grades-glide, the curve the
+       stylesheet's own transition uses, so the glass moves the same way with
+       script and without, and it never passes its pane. It replaced a spring
+       that overshot by 6% and came back: a bounce on every landing. The curve
+       slows from its first frame, because one that eases in, as the sheet
+       curve (.32, .72, 0, 1) does, has to catch up: worked out on that curve,
+       a glass let go at 3.6 panes a second was at 11.8 a tenth of a second on.
+       A glide that starts while the glass is moving, a release from a drag
+       above all, leaves at the speed the glass already has, so a hand letting
+       go is never jolted: the curve's first control point is set to that
+       speed, and the second stays the token's, so every glide arrives the
+       same way. One from rest is the token's curve exactly. */
+    var glide = { raf: 0, from: 0, to: 0, d: 0, t0: 0, dur: 560, c: [0.25, 1, 0.5, 1], landed: false, type: 'mouse', follow: true };
+    var EASE = { ease: [0.25, 0.1, 0.25, 1], 'ease-in': [0.42, 0, 1, 1], 'ease-out': [0, 0, 0.58, 1], 'ease-in-out': [0.42, 0, 0.58, 1], linear: [0, 0, 1, 1] };
+    function curve() {
+      var s = read('--glass-grades-glide'), m = /cubic-bezier\(([^)]*)\)/.exec(s);
+      var c = m ? m[1].split(',').map(parseFloat) : (EASE[s] || []).slice();
+      if (c.length !== 4 || c.some(function (n) { return !isFinite(n); })) c = [0.25, 1, 0.5, 1];
+      c[0] = Math.min(1, Math.max(0, c[0]));
+      c[2] = Math.min(1, Math.max(0, c[2]));
+      return c;
+    }
+    // One axis of a cubic-bezier from (0, 0) to (1, 1), and its slope.
+    function bz(a, b, t) { var u = 1 - t; return 3 * u * u * t * a + 3 * u * t * t * b + t * t * t; }
+    function dbz(a, b, t) { var u = 1 - t; return 3 * u * u * a + 6 * u * t * (b - a) + 3 * t * t * (1 - b); }
+    // The curve's parameter at time x: Newton's method, then halving where it stalls.
+    function solve(c, x) {
+      var t = x;
+      for (var i = 0; i < 8; i++) {
+        var e = bz(c[0], c[2], t) - x, d = dbz(c[0], c[2], t);
+        if (Math.abs(e) < 1e-7) return t;
+        if (Math.abs(d) < 1e-6) break;
+        t = Math.min(1, Math.max(0, t - e / d));
+      }
+      var lo = 0, hi = 1;
+      for (var j = 0; j < 40; j++) { t = (lo + hi) / 2; if (bz(c[0], c[2], t) < x) lo = t; else hi = t; }
+      return t;
+    }
+    // The glass's speed on the curve, in panes a second.
+    function speedAt(t) {
+      var dx = dbz(glide.c[0], glide.c[2], t), dy = dbz(glide.c[1], glide.c[3], t);
+      if (dx < 1e-4) { t = Math.min(1, t + 1e-3); dx = dbz(glide.c[0], glide.c[2], t); dy = dbz(glide.c[1], glide.c[3], t); }
+      return dx > 0 ? glide.d * (dy / dx) / (glide.dur / 1000) : 0;
+    }
+    function speedNow() {
+      if (!glide.raf) return 0;
+      var x = glide.t0 ? Math.min(1, Math.max(0, (performance.now() - glide.t0) / glide.dur)) : 0;
+      return speedAt(solve(glide.c, x));
+    }
+    // Every stop crossed is a tick; the arrival at the target is a landing.
     function moveTo(next, why) {
       var prev = p;
       p = next;
@@ -248,56 +297,79 @@
         var lo = Math.min(prev, next), hi = Math.max(prev, next);
         for (var n = Math.ceil(lo - 1e-9); n <= hi + 1e-9; n++) {
           if (n < 0 || n > N - 1 || Math.abs(n - prev) < 1e-9) continue;
-          if (why.spring && n === spring.target) {
-            if (!spring.landed) { spring.landed = true; feedback('land', why.type); }
+          if (why.glide && n === glide.to) {
+            if (!glide.landed) { glide.landed = true; feedback('land', why.type); }
           } else feedback('pass', why.type);
         }
       }
       drive(p);
       if (!why || why.follow !== false) mark(nearest(p));
     }
-    function stopSpring() {
-      if (spring.raf) cancelAnimationFrame(spring.raf);
-      spring.raf = 0;
-      spring.v = 0;
+    function stopGlide() {
+      if (glide.raf) cancelAnimationFrame(glide.raf);
+      glide.raf = 0;
     }
-    function springTo(t, v0, type, follow) {
+    // v0 is the speed to leave at, in panes a second: a release passes the
+    // hand's. Left out, a glide keeps the speed of the one it replaces, and
+    // from rest it is the token's curve.
+    function glideTo(t, v0, type, follow) {
       t = nearest(t);
-      spring.target = t;
-      spring.v = v0 || 0;
-      spring.landed = false;
-      spring.type = type;
-      spring.follow = follow !== false;
-      spring.zeta = num('--glass-grades-damping', 0.67, 0.2, 1.5);
+      var matched = v0 != null || !!glide.raf;
+      if (v0 == null) v0 = speedNow();
+      stopGlide();
+      glide.to = t;
+      glide.landed = false;
+      glide.type = type;
+      glide.follow = follow !== false;
       if (reduce.matches || Math.abs(p - t) < 1e-4) {
-        stopSpring();
-        moveTo(t, { spring: true, type: type, follow: spring.follow });
+        moveTo(t, { glide: true, type: type, follow: glide.follow });
         release();
         return;
       }
-      if (!spring.raf) {
-        spring.last = performance.now();
-        spring.raf = requestAnimationFrame(step);
+      var d = t - p, c = curve();
+      // A little longer over more panes and less over part of one: a fourth
+      // root of the distance, 0.6 to 1.6 times the token.
+      var dur = ms('--glass-grades-glide-time', 560) * Math.min(1.6, Math.max(0.6, Math.pow(Math.abs(d), 0.25)));
+      if (matched) {
+        // The slope the curve has to leave at. y1 over x1 is that slope, so
+        // x1 stays the token's and y1 moves; a speed x1 cannot reach without
+        // y1 passing 1, and the glass its pane, pulls x1 in instead. Leaving
+        // away from the pane, y1 goes below 0: the glass carries on a little
+        // the way the hand was going, and turns.
+        var s = v0 * (dur / 1000) / d, x1 = Math.max(0.1, c[0]);
+        if (s * x1 <= 1) { c[0] = x1; c[1] = Math.max(-1, s * x1); }
+        else { c[1] = 1; c[0] = Math.max(0.02, 1 / s); }
       }
+      glide.from = p;
+      glide.d = d;
+      glide.c = c;
+      glide.dur = Math.max(1, dur);
+      glide.t0 = 0;
+      glide.raf = requestAnimationFrame(step);
     }
     function step(now) {
-      if (!root.isConnected) { spring.raf = 0; return; }
-      var dt = Math.min(0.034, (now - spring.last) / 1000);
-      spring.last = now;
-      var k = 340, c = 2 * spring.zeta * Math.sqrt(k), x = p, v = spring.v, h = dt / 6;
-      for (var i = 0; i < 6; i++) { var acc = -k * (x - spring.target) - c * v; v += acc * h; x += v * h; }
-      spring.v = v;
-      var why = { spring: true, type: spring.type, follow: spring.follow };
-      glintFrom(v);
-      moveTo(x, why);
-      if (Math.abs(x - spring.target) < 0.002 && Math.abs(v) < 0.03) {
-        spring.raf = 0;
-        moveTo(spring.target, why);
-        if (!spring.landed) { spring.landed = true; feedback('land', spring.type); }
+      if (!root.isConnected) { glide.raf = 0; return; }
+      var why = { glide: true, type: glide.type, follow: glide.follow };
+      // Timed from a frame before the first, so the frame that follows a
+      // release already moves: a frame's time is when it began, and the
+      // release that started the glide came after that, so timed from the
+      // release the glass stood still for one frame as the hand let go.
+      if (!glide.t0) glide.t0 = now - 16;
+      var x = Math.min(1, Math.max(0, (now - glide.t0) / glide.dur));
+      if (x >= 1) {
+        glide.raf = 0;
+        moveTo(glide.to, why);
+        if (!glide.landed) { glide.landed = true; feedback('land', glide.type); }
         release();
         return;
       }
-      spring.raf = requestAnimationFrame(step);
+      var t = solve(glide.c, x), at = glide.from + glide.d * bz(glide.c[1], glide.c[3], t);
+      glintFrom(speedAt(t));
+      moveTo(at, why);
+      // The seat is heard as the glass arrives, not when the curve's long
+      // tail runs out: within a hundredth of a pane of its stop.
+      if (!glide.landed && Math.abs(glide.to - at) < 0.01) { glide.landed = true; feedback('land', glide.type); }
+      glide.raf = requestAnimationFrame(step);
     }
 
     /* ── the edges catch the light while the glass moves ──
@@ -382,8 +454,8 @@
     frame.addEventListener('pointerdown', function (e) {
       if (e.button !== 0 || ptr) return;
       ptr = { id: e.pointerId, type: e.pointerType || 'mouse', x0: e.clientX, y0: e.clientY, raw0: 0, k: 0, step: 1,
-              moved: false, held: false, caught: !!spring.raf, samples: [] };
-      stopSpring();
+              moved: false, held: false, caught: !!glide.raf, samples: [] };
+      stopGlide();
       try { frame.setPointerCapture(e.pointerId); } catch (err) { /* fine without it */ }
       if (!latched) holdTimer = setTimeout(function () {
         if (ptr && !ptr.moved) { ptr.held = true; lift(true, ptr.type); }
@@ -428,13 +500,22 @@
       if (!P.moved) {
         if (P.held) lift(false, P.type);
         else if (!cancelled) tapAt(e.clientX, P.type, P.caught);
-        if (driven && !spring.raf) springTo(nearest(p), 0, P.type, true);
+        if (driven && !glide.raf) glideTo(nearest(p), 0, P.type, true);
         return;
       }
-      var v = 0, s = P.samples;
+      var v = 0, vp = 0, s = P.samples;
       if (!cancelled && s.length > 1 && e.timeStamp - s[s.length - 1].t < 80) {
         var dt = (s[s.length - 1].t - s[0].t) / 1000;
-        if (dt > 0) v = (s[s.length - 1].raw - s[0].raw) / dt;
+        if (dt > 0) {
+          v = (s[s.length - 1].raw - s[0].raw) / dt;
+          // The glass's own speed as it is let go, through the notch, which
+          // the glide leaves at: over the last 50ms, as the 90ms the flick is
+          // judged on lags a hand that is speeding up or slowing down.
+          var a = s.length - 2;
+          while (a > 0 && s[s.length - 1].t - s[a - 1].t <= 50) a--;
+          var lastS = s[s.length - 1], span = (lastS.t - s[a].t) / 1000;
+          if (span > 0) vp = (rubber(notch(lastS.raw, P.k)) - rubber(notch(s[a].raw, P.k))) / span;
+        }
       }
       // Projected ahead, so a flick coasts; three panes at most from where
       // the glass is. With the drag direct, a pane is 2.2 times the hand's
@@ -447,7 +528,7 @@
       var ahead = ms('--glass-grades-flick', 400) / 1000;
       var flung = Math.abs(v) * P.step >= num('--glass-grades-flick-min', 400, 0, 10000);
       var target = flung ? Math.max(here - 3, Math.min(here + 3, Math.round(p + v * ahead))) : here;
-      springTo(target, v * 0.5, P.type, true);
+      glideTo(target, vp, P.type, true);
     }
     frame.addEventListener('pointerup', function (e) { endPointer(e, false); });
     frame.addEventListener('pointercancel', function (e) { endPointer(e, true); });
@@ -474,12 +555,12 @@
       openView();
       drive(p);   // hold the glass before the radio moves, or the stylesheet starts its own transition
       mark(i);
-      springTo(i, 0, type, false);
+      glideTo(i, null, type, false);
     }
 
     /* ── keys: the window steps and lifts; the rail is a radio group ── */
     frame.addEventListener('keydown', function (e) {
-      var from = spring.raf ? spring.target : nearest(p);
+      var from = glide.raf ? glide.to : nearest(p);
       if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
         e.preventDefault();
         if (latched) lift(false, 'key');
@@ -487,14 +568,14 @@
         var t = nearest(from + (e.key === 'ArrowRight' ? 1 : -1));
         drive(p);
         mark(t);
-        springTo(t, 0, 'key', false);
+        glideTo(t, null, 'key', false);
       } else if (e.key === 'Home' || e.key === 'End') {
         e.preventDefault();
         if (latched) lift(false, 'key');
         var end = e.key === 'Home' ? 0 : N - 1;
         drive(p);
         mark(end);
-        springTo(end, 0, 'key', false);
+        glideTo(end, null, 'key', false);
       } else if (e.key === ' ' && !e.repeat) {
         e.preventDefault();
         if (!lifted()) lift(true, 'key', true);
@@ -516,9 +597,9 @@
         if (!r.checked) return;
         if (latched) lift(false, lastType);
         // The stylesheet has already been told; hold p where the glass is
-        // and spring from there, so the move ticks like any other.
+        // and glide from there, so the move ticks like any other.
         drive(p);
-        springTo(i, 0, lastType, false);
+        glideTo(i, null, lastType, false);
       });
     });
 

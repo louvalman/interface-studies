@@ -33,7 +33,7 @@
   <meta property="og:site_name" content="Interface Studies" />
   <meta property="og:url" content="https://interface-studies.pages.dev/2026-11-glass-grades/demo.html" />
   <meta property="og:title" content="Glass grades &mdash; Interface Studies" />
-  <meta property="og:description" content="Seven kinds of light as seven panes of glass laid over one picture, in the order of a day. Open one, slide the glass, lift it off, or put a picture of your own under it." />
+  <meta property="og:description" content="Inspired by turning the film simulation dial on my Fujifilm X-T50: seven kinds of light as panes of glass laid over one picture. Slide the glass, lift it off to compare, or put a picture of your own under it." />
   <meta property="og:image" content="../og.png" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
@@ -412,6 +412,22 @@
     .demo__state--wide {
       flex-basis: 100%;
       max-width: min(100%, 44rem);
+    }
+    /* A pair of states shares its rows, so a caption a line longer than its
+       neighbour's no longer pushes its component down: each state is a
+       subgrid of the pair's three rows, caption, class chip and component,
+       and the two components start on one line. The columns keep the flex
+       row's arithmetic: two side by side from 28rem each, 36rem at most,
+       one under the other below that. */
+    .demo__grid--pair {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 28rem), 1fr));
+      max-width: calc(72rem + clamp(2rem, 3vw, 2.5rem));
+    }
+    .demo__grid--pair > .demo__state {
+      grid-row: span 3;
+      grid-template-rows: subgrid;
+      align-items: start;
     }
     /* The lead state: its group's head inside it, so the head is where the
        grid's gap would otherwise be. From 75rem the head, the caption and
@@ -1029,7 +1045,7 @@
       </p>
       <h1 class="demo__heading" data-reveal data-i18n="heading">Glass grades</h1>
       <p class="demo__lede" data-reveal data-i18n="lede">
-        Seven kinds of light as seven panes of glass laid over one picture, in the order of a day. Open one, slide the glass, lift it off, or put a picture of your own under it.
+        Inspired by turning the film simulation dial on my Fujifilm X-T50: seven kinds of light as panes of glass laid over one picture. Slide the glass, lift it off to compare, or put a picture of your own under it.
       </p>
     </header>
 
@@ -1050,13 +1066,13 @@
           <div class="glass-grades" style="--glass-grades-max-h: 42vh; --glass-grades-chip-min: 72px">
             <div class="glass-grades__bar">
               <p class="glass-grades__readout" aria-hidden="true">
-                <span class="glass-grades__name">Havgus <span class="glass-grades__desc" data-i18n="sample.havgusDesc">Sea fog: scattered light lifts every shadow</span></span>
-                <span class="glass-grades__name">Dagslys <span class="glass-grades__desc" data-i18n="sample.dagslysDesc">Daylight, true colour</span></span>
-                <span class="glass-grades__name">Højsol <span class="glass-grades__desc" data-i18n="sample.hojsolDesc">High summer sun: hard shadows, bleached colour</span></span>
-                <span class="glass-grades__name">Sankthans <span class="glass-grades__desc" data-i18n="sample.sankthansDesc">Low midsummer sun: amber light, soft shadows</span></span>
-                <span class="glass-grades__name">Blå time <span class="glass-grades__desc" data-i18n="sample.blaatimeDesc">Blue skylight in the shadows, lamps in the highlights</span></span>
-                <span class="glass-grades__name">Nat <span class="glass-grades__desc" data-i18n="sample.natDesc">Night: the eye loses colour and leans blue</span></span>
-                <span class="glass-grades__name">Natrium <span class="glass-grades__desc" data-i18n="sample.natriumDesc">A sodium lamp: one wavelength, so one colour</span></span>
+                <span class="glass-grades__name"><span data-i18n="sample.havgusName">Sea fog</span> <span class="glass-grades__desc" data-i18n="sample.havgusDesc">Scattered light lifts every shadow</span></span>
+                <span class="glass-grades__name"><span data-i18n="sample.dagslysName">Daylight</span> <span class="glass-grades__desc" data-i18n="sample.dagslysDesc">The reference: true colour</span></span>
+                <span class="glass-grades__name"><span data-i18n="sample.hojsolName">High sun</span> <span class="glass-grades__desc" data-i18n="sample.hojsolDesc">High summer sun: hard shadows, bleached colour</span></span>
+                <span class="glass-grades__name"><span data-i18n="sample.sankthansName">Midsummer</span> <span class="glass-grades__desc" data-i18n="sample.sankthansDesc">Low midsummer sun: amber light, soft shadows</span></span>
+                <span class="glass-grades__name"><span data-i18n="sample.blaatimeName">Blue hour</span> <span class="glass-grades__desc" data-i18n="sample.blaatimeDesc">Blue skylight in the shadows, lamps in the highlights</span></span>
+                <span class="glass-grades__name"><span data-i18n="sample.natName">Night</span> <span class="glass-grades__desc" data-i18n="sample.natDesc">The eye loses colour and leans blue</span></span>
+                <span class="glass-grades__name"><span data-i18n="sample.natriumName">Sodium</span> <span class="glass-grades__desc" data-i18n="sample.natriumDesc">A sodium lamp: one wavelength, so one colour</span></span>
               </p>
               <div class="glass-grades__tools">
                 <label class="glass-grades__btn glass-grades__btn--photo">
@@ -1147,43 +1163,43 @@
                 <label class="glass-grades__chip">
                   <input class="glass-grades__radio" type="radio" name="glass-grades-strip" value="havgus">
                   <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--havgus"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
-                  <span class="glass-grades__label">Havgus</span>
-                  <span class="glass-grades__hint" data-i18n="sample.havgus">Sea fog</span>
+                  <span class="glass-grades__label" data-i18n="sample.havgusName">Sea fog</span>
+                  <span class="glass-grades__hint" data-i18n="sample.havgus">Lifted shadows</span>
                 </label>
                 <label class="glass-grades__chip">
                   <input class="glass-grades__radio" type="radio" name="glass-grades-strip" value="dagslys">
                   <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--dagslys"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
-                  <span class="glass-grades__label">Dagslys</span>
+                  <span class="glass-grades__label" data-i18n="sample.dagslysName">Daylight</span>
                   <span class="glass-grades__hint" data-i18n="sample.dagslys">True colour</span>
                 </label>
                 <label class="glass-grades__chip">
                   <input class="glass-grades__radio" type="radio" name="glass-grades-strip" value="hojsol">
                   <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--hojsol"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
-                  <span class="glass-grades__label">Højsol</span>
+                  <span class="glass-grades__label" data-i18n="sample.hojsolName">High sun</span>
                   <span class="glass-grades__hint" data-i18n="sample.hojsol">Hard, muted</span>
                 </label>
                 <label class="glass-grades__chip">
                   <input class="glass-grades__radio" type="radio" name="glass-grades-strip" value="sankthans" checked>
                   <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--sankthans"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
-                  <span class="glass-grades__label">Sankthans</span>
+                  <span class="glass-grades__label" data-i18n="sample.sankthansName">Midsummer</span>
                   <span class="glass-grades__hint" data-i18n="sample.sankthans">Low, warm sun</span>
                 </label>
                 <label class="glass-grades__chip">
                   <input class="glass-grades__radio" type="radio" name="glass-grades-strip" value="blaatime">
                   <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--blaatime"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
-                  <span class="glass-grades__label">Blå time</span>
-                  <span class="glass-grades__hint" data-i18n="sample.blaatime">Blue hour</span>
+                  <span class="glass-grades__label" data-i18n="sample.blaatimeName">Blue hour</span>
+                  <span class="glass-grades__hint" data-i18n="sample.blaatime">Blue shadows</span>
                 </label>
                 <label class="glass-grades__chip">
                   <input class="glass-grades__radio" type="radio" name="glass-grades-strip" value="nat">
                   <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--nat"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
-                  <span class="glass-grades__label">Nat</span>
+                  <span class="glass-grades__label" data-i18n="sample.natName">Night</span>
                   <span class="glass-grades__hint" data-i18n="sample.nat">Mono, blue</span>
                 </label>
                 <label class="glass-grades__chip">
                   <input class="glass-grades__radio" type="radio" name="glass-grades-strip" value="natrium">
                   <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--natrium"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
-                  <span class="glass-grades__label">Natrium</span>
+                  <span class="glass-grades__label" data-i18n="sample.natriumName">Sodium</span>
                   <span class="glass-grades__hint" data-i18n="sample.natrium">Mono, orange</span>
                 </label>
               </fieldset>
@@ -1199,20 +1215,20 @@
         <h2 class="demo__group-title" data-i18n="group.open">One pane open</h2>
         <p class="demo__group-note" data-i18n="group.openNote">The open pane takes 62% of the window, and the others stay as slivers you can still see and still tap.</p>
       </div>
-      <div class="demo__grid">
+      <div class="demo__grid demo__grid--pair">
         <section class="demo__state" data-reveal>
-          <p class="demo__caption" data-i18n="state.hojsol"><strong>Højsol</strong> &middot; muted colour over hard shadows. Tap the open pane, or press Enter, to lift the glass off and compare; arrow keys step it a pane at a time.</p>
+          <p class="demo__caption" data-i18n="state.hojsol"><strong>High sun</strong> &middot; muted colour over hard shadows. Tap the open pane, or press Enter, to lift the glass off and compare; arrow keys step it a pane at a time.</p>
           <code class="demo__hint">value="pane" checked</code>
           <div class="glass-grades">
             <div class="glass-grades__bar">
               <p class="glass-grades__readout" aria-hidden="true">
-                <span class="glass-grades__name">Havgus <span class="glass-grades__desc" data-i18n="sample.havgusDesc">Sea fog: scattered light lifts every shadow</span></span>
-                <span class="glass-grades__name">Dagslys <span class="glass-grades__desc" data-i18n="sample.dagslysDesc">Daylight, true colour</span></span>
-                <span class="glass-grades__name">Højsol <span class="glass-grades__desc" data-i18n="sample.hojsolDesc">High summer sun: hard shadows, bleached colour</span></span>
-                <span class="glass-grades__name">Sankthans <span class="glass-grades__desc" data-i18n="sample.sankthansDesc">Low midsummer sun: amber light, soft shadows</span></span>
-                <span class="glass-grades__name">Blå time <span class="glass-grades__desc" data-i18n="sample.blaatimeDesc">Blue skylight in the shadows, lamps in the highlights</span></span>
-                <span class="glass-grades__name">Nat <span class="glass-grades__desc" data-i18n="sample.natDesc">Night: the eye loses colour and leans blue</span></span>
-                <span class="glass-grades__name">Natrium <span class="glass-grades__desc" data-i18n="sample.natriumDesc">A sodium lamp: one wavelength, so one colour</span></span>
+                <span class="glass-grades__name"><span data-i18n="sample.havgusName">Sea fog</span> <span class="glass-grades__desc" data-i18n="sample.havgusDesc">Scattered light lifts every shadow</span></span>
+                <span class="glass-grades__name"><span data-i18n="sample.dagslysName">Daylight</span> <span class="glass-grades__desc" data-i18n="sample.dagslysDesc">The reference: true colour</span></span>
+                <span class="glass-grades__name"><span data-i18n="sample.hojsolName">High sun</span> <span class="glass-grades__desc" data-i18n="sample.hojsolDesc">High summer sun: hard shadows, bleached colour</span></span>
+                <span class="glass-grades__name"><span data-i18n="sample.sankthansName">Midsummer</span> <span class="glass-grades__desc" data-i18n="sample.sankthansDesc">Low midsummer sun: amber light, soft shadows</span></span>
+                <span class="glass-grades__name"><span data-i18n="sample.blaatimeName">Blue hour</span> <span class="glass-grades__desc" data-i18n="sample.blaatimeDesc">Blue skylight in the shadows, lamps in the highlights</span></span>
+                <span class="glass-grades__name"><span data-i18n="sample.natName">Night</span> <span class="glass-grades__desc" data-i18n="sample.natDesc">The eye loses colour and leans blue</span></span>
+                <span class="glass-grades__name"><span data-i18n="sample.natriumName">Sodium</span> <span class="glass-grades__desc" data-i18n="sample.natriumDesc">A sodium lamp: one wavelength, so one colour</span></span>
               </p>
               <div class="glass-grades__tools">
                 <label class="glass-grades__btn glass-grades__btn--photo">
@@ -1303,43 +1319,43 @@
                 <label class="glass-grades__chip">
                   <input class="glass-grades__radio" type="radio" name="glass-grades-hojsol" value="havgus">
                   <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--havgus"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
-                  <span class="glass-grades__label">Havgus</span>
-                  <span class="glass-grades__hint" data-i18n="sample.havgus">Sea fog</span>
+                  <span class="glass-grades__label" data-i18n="sample.havgusName">Sea fog</span>
+                  <span class="glass-grades__hint" data-i18n="sample.havgus">Lifted shadows</span>
                 </label>
                 <label class="glass-grades__chip">
                   <input class="glass-grades__radio" type="radio" name="glass-grades-hojsol" value="dagslys">
                   <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--dagslys"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
-                  <span class="glass-grades__label">Dagslys</span>
+                  <span class="glass-grades__label" data-i18n="sample.dagslysName">Daylight</span>
                   <span class="glass-grades__hint" data-i18n="sample.dagslys">True colour</span>
                 </label>
                 <label class="glass-grades__chip">
                   <input class="glass-grades__radio" type="radio" name="glass-grades-hojsol" value="hojsol" checked>
                   <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--hojsol"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
-                  <span class="glass-grades__label">Højsol</span>
+                  <span class="glass-grades__label" data-i18n="sample.hojsolName">High sun</span>
                   <span class="glass-grades__hint" data-i18n="sample.hojsol">Hard, muted</span>
                 </label>
                 <label class="glass-grades__chip">
                   <input class="glass-grades__radio" type="radio" name="glass-grades-hojsol" value="sankthans">
                   <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--sankthans"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
-                  <span class="glass-grades__label">Sankthans</span>
+                  <span class="glass-grades__label" data-i18n="sample.sankthansName">Midsummer</span>
                   <span class="glass-grades__hint" data-i18n="sample.sankthans">Low, warm sun</span>
                 </label>
                 <label class="glass-grades__chip">
                   <input class="glass-grades__radio" type="radio" name="glass-grades-hojsol" value="blaatime">
                   <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--blaatime"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
-                  <span class="glass-grades__label">Blå time</span>
-                  <span class="glass-grades__hint" data-i18n="sample.blaatime">Blue hour</span>
+                  <span class="glass-grades__label" data-i18n="sample.blaatimeName">Blue hour</span>
+                  <span class="glass-grades__hint" data-i18n="sample.blaatime">Blue shadows</span>
                 </label>
                 <label class="glass-grades__chip">
                   <input class="glass-grades__radio" type="radio" name="glass-grades-hojsol" value="nat">
                   <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--nat"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
-                  <span class="glass-grades__label">Nat</span>
+                  <span class="glass-grades__label" data-i18n="sample.natName">Night</span>
                   <span class="glass-grades__hint" data-i18n="sample.nat">Mono, blue</span>
                 </label>
                 <label class="glass-grades__chip">
                   <input class="glass-grades__radio" type="radio" name="glass-grades-hojsol" value="natrium">
                   <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--natrium"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
-                  <span class="glass-grades__label">Natrium</span>
+                  <span class="glass-grades__label" data-i18n="sample.natriumName">Sodium</span>
                   <span class="glass-grades__hint" data-i18n="sample.natrium">Mono, orange</span>
                 </label>
               </fieldset>
@@ -1348,18 +1364,18 @@
           </div>
         </section>
         <section class="demo__state" data-reveal>
-          <p class="demo__caption" data-i18n="state.nat"><strong>Nat, upright</strong> &middot; a tall picture narrows the window rather than growing past the screen.</p>
+          <p class="demo__caption" data-i18n="state.nat"><strong>Night, upright</strong> &middot; a tall picture narrows the window rather than growing past the screen.</p>
           <code class="demo__hint">--glass-grades-ratio: 0.8</code>
           <div class="glass-grades" style="--glass-grades-ratio: 0.8">
             <div class="glass-grades__bar">
               <p class="glass-grades__readout" aria-hidden="true">
-                <span class="glass-grades__name">Havgus <span class="glass-grades__desc" data-i18n="sample.havgusDesc">Sea fog: scattered light lifts every shadow</span></span>
-                <span class="glass-grades__name">Dagslys <span class="glass-grades__desc" data-i18n="sample.dagslysDesc">Daylight, true colour</span></span>
-                <span class="glass-grades__name">Højsol <span class="glass-grades__desc" data-i18n="sample.hojsolDesc">High summer sun: hard shadows, bleached colour</span></span>
-                <span class="glass-grades__name">Sankthans <span class="glass-grades__desc" data-i18n="sample.sankthansDesc">Low midsummer sun: amber light, soft shadows</span></span>
-                <span class="glass-grades__name">Blå time <span class="glass-grades__desc" data-i18n="sample.blaatimeDesc">Blue skylight in the shadows, lamps in the highlights</span></span>
-                <span class="glass-grades__name">Nat <span class="glass-grades__desc" data-i18n="sample.natDesc">Night: the eye loses colour and leans blue</span></span>
-                <span class="glass-grades__name">Natrium <span class="glass-grades__desc" data-i18n="sample.natriumDesc">A sodium lamp: one wavelength, so one colour</span></span>
+                <span class="glass-grades__name"><span data-i18n="sample.havgusName">Sea fog</span> <span class="glass-grades__desc" data-i18n="sample.havgusDesc">Scattered light lifts every shadow</span></span>
+                <span class="glass-grades__name"><span data-i18n="sample.dagslysName">Daylight</span> <span class="glass-grades__desc" data-i18n="sample.dagslysDesc">The reference: true colour</span></span>
+                <span class="glass-grades__name"><span data-i18n="sample.hojsolName">High sun</span> <span class="glass-grades__desc" data-i18n="sample.hojsolDesc">High summer sun: hard shadows, bleached colour</span></span>
+                <span class="glass-grades__name"><span data-i18n="sample.sankthansName">Midsummer</span> <span class="glass-grades__desc" data-i18n="sample.sankthansDesc">Low midsummer sun: amber light, soft shadows</span></span>
+                <span class="glass-grades__name"><span data-i18n="sample.blaatimeName">Blue hour</span> <span class="glass-grades__desc" data-i18n="sample.blaatimeDesc">Blue skylight in the shadows, lamps in the highlights</span></span>
+                <span class="glass-grades__name"><span data-i18n="sample.natName">Night</span> <span class="glass-grades__desc" data-i18n="sample.natDesc">The eye loses colour and leans blue</span></span>
+                <span class="glass-grades__name"><span data-i18n="sample.natriumName">Sodium</span> <span class="glass-grades__desc" data-i18n="sample.natriumDesc">A sodium lamp: one wavelength, so one colour</span></span>
               </p>
               <div class="glass-grades__tools">
                 <label class="glass-grades__btn glass-grades__btn--photo">
@@ -1450,43 +1466,43 @@
                 <label class="glass-grades__chip">
                   <input class="glass-grades__radio" type="radio" name="glass-grades-nat" value="havgus">
                   <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--havgus"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
-                  <span class="glass-grades__label">Havgus</span>
-                  <span class="glass-grades__hint" data-i18n="sample.havgus">Sea fog</span>
+                  <span class="glass-grades__label" data-i18n="sample.havgusName">Sea fog</span>
+                  <span class="glass-grades__hint" data-i18n="sample.havgus">Lifted shadows</span>
                 </label>
                 <label class="glass-grades__chip">
                   <input class="glass-grades__radio" type="radio" name="glass-grades-nat" value="dagslys">
                   <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--dagslys"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
-                  <span class="glass-grades__label">Dagslys</span>
+                  <span class="glass-grades__label" data-i18n="sample.dagslysName">Daylight</span>
                   <span class="glass-grades__hint" data-i18n="sample.dagslys">True colour</span>
                 </label>
                 <label class="glass-grades__chip">
                   <input class="glass-grades__radio" type="radio" name="glass-grades-nat" value="hojsol">
                   <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--hojsol"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
-                  <span class="glass-grades__label">Højsol</span>
+                  <span class="glass-grades__label" data-i18n="sample.hojsolName">High sun</span>
                   <span class="glass-grades__hint" data-i18n="sample.hojsol">Hard, muted</span>
                 </label>
                 <label class="glass-grades__chip">
                   <input class="glass-grades__radio" type="radio" name="glass-grades-nat" value="sankthans">
                   <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--sankthans"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
-                  <span class="glass-grades__label">Sankthans</span>
+                  <span class="glass-grades__label" data-i18n="sample.sankthansName">Midsummer</span>
                   <span class="glass-grades__hint" data-i18n="sample.sankthans">Low, warm sun</span>
                 </label>
                 <label class="glass-grades__chip">
                   <input class="glass-grades__radio" type="radio" name="glass-grades-nat" value="blaatime">
                   <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--blaatime"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
-                  <span class="glass-grades__label">Blå time</span>
-                  <span class="glass-grades__hint" data-i18n="sample.blaatime">Blue hour</span>
+                  <span class="glass-grades__label" data-i18n="sample.blaatimeName">Blue hour</span>
+                  <span class="glass-grades__hint" data-i18n="sample.blaatime">Blue shadows</span>
                 </label>
                 <label class="glass-grades__chip">
                   <input class="glass-grades__radio" type="radio" name="glass-grades-nat" value="nat" checked>
                   <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--nat"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
-                  <span class="glass-grades__label">Nat</span>
+                  <span class="glass-grades__label" data-i18n="sample.natName">Night</span>
                   <span class="glass-grades__hint" data-i18n="sample.nat">Mono, blue</span>
                 </label>
                 <label class="glass-grades__chip">
                   <input class="glass-grades__radio" type="radio" name="glass-grades-nat" value="natrium">
                   <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--natrium"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
-                  <span class="glass-grades__label">Natrium</span>
+                  <span class="glass-grades__label" data-i18n="sample.natriumName">Sodium</span>
                   <span class="glass-grades__hint" data-i18n="sample.natrium">Mono, orange</span>
                 </label>
               </fieldset>
@@ -1504,18 +1520,18 @@
       </div>
       <div class="demo__grid">
         <section class="demo__state demo__state--wide" data-reveal data-recipe>
-          <p class="demo__caption" data-i18n="state.recipe"><strong>Dagslys, with a recipe</strong> &middot; the reference light, made warm and punchy. Change the light and the recipe stays on it.</p>
+          <p class="demo__caption" data-i18n="state.recipe"><strong>Daylight, with a recipe</strong> &middot; the reference light, made warm and punchy. Change the light and the recipe stays on it.</p>
           <code class="demo__hint">--glass-grades-tone-h, -tone-s, -color, -wb-r, -wb-b, -grain-step</code>
           <div class="glass-grades">
             <div class="glass-grades__bar">
               <p class="glass-grades__readout" aria-hidden="true">
-                <span class="glass-grades__name">Havgus <span class="glass-grades__desc" data-i18n="sample.havgusDesc">Sea fog: scattered light lifts every shadow</span></span>
-                <span class="glass-grades__name">Dagslys <span class="glass-grades__desc" data-i18n="sample.dagslysDesc">Daylight, true colour</span></span>
-                <span class="glass-grades__name">Højsol <span class="glass-grades__desc" data-i18n="sample.hojsolDesc">High summer sun: hard shadows, bleached colour</span></span>
-                <span class="glass-grades__name">Sankthans <span class="glass-grades__desc" data-i18n="sample.sankthansDesc">Low midsummer sun: amber light, soft shadows</span></span>
-                <span class="glass-grades__name">Blå time <span class="glass-grades__desc" data-i18n="sample.blaatimeDesc">Blue skylight in the shadows, lamps in the highlights</span></span>
-                <span class="glass-grades__name">Nat <span class="glass-grades__desc" data-i18n="sample.natDesc">Night: the eye loses colour and leans blue</span></span>
-                <span class="glass-grades__name">Natrium <span class="glass-grades__desc" data-i18n="sample.natriumDesc">A sodium lamp: one wavelength, so one colour</span></span>
+                <span class="glass-grades__name"><span data-i18n="sample.havgusName">Sea fog</span> <span class="glass-grades__desc" data-i18n="sample.havgusDesc">Scattered light lifts every shadow</span></span>
+                <span class="glass-grades__name"><span data-i18n="sample.dagslysName">Daylight</span> <span class="glass-grades__desc" data-i18n="sample.dagslysDesc">The reference: true colour</span></span>
+                <span class="glass-grades__name"><span data-i18n="sample.hojsolName">High sun</span> <span class="glass-grades__desc" data-i18n="sample.hojsolDesc">High summer sun: hard shadows, bleached colour</span></span>
+                <span class="glass-grades__name"><span data-i18n="sample.sankthansName">Midsummer</span> <span class="glass-grades__desc" data-i18n="sample.sankthansDesc">Low midsummer sun: amber light, soft shadows</span></span>
+                <span class="glass-grades__name"><span data-i18n="sample.blaatimeName">Blue hour</span> <span class="glass-grades__desc" data-i18n="sample.blaatimeDesc">Blue skylight in the shadows, lamps in the highlights</span></span>
+                <span class="glass-grades__name"><span data-i18n="sample.natName">Night</span> <span class="glass-grades__desc" data-i18n="sample.natDesc">The eye loses colour and leans blue</span></span>
+                <span class="glass-grades__name"><span data-i18n="sample.natriumName">Sodium</span> <span class="glass-grades__desc" data-i18n="sample.natriumDesc">A sodium lamp: one wavelength, so one colour</span></span>
               </p>
               <div class="glass-grades__tools">
                 <label class="glass-grades__btn glass-grades__btn--photo">
@@ -1606,43 +1622,43 @@
                 <label class="glass-grades__chip">
                   <input class="glass-grades__radio" type="radio" name="glass-grades-recipe" value="havgus">
                   <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--havgus"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
-                  <span class="glass-grades__label">Havgus</span>
-                  <span class="glass-grades__hint" data-i18n="sample.havgus">Sea fog</span>
+                  <span class="glass-grades__label" data-i18n="sample.havgusName">Sea fog</span>
+                  <span class="glass-grades__hint" data-i18n="sample.havgus">Lifted shadows</span>
                 </label>
                 <label class="glass-grades__chip">
                   <input class="glass-grades__radio" type="radio" name="glass-grades-recipe" value="dagslys" checked>
                   <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--dagslys"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
-                  <span class="glass-grades__label">Dagslys</span>
+                  <span class="glass-grades__label" data-i18n="sample.dagslysName">Daylight</span>
                   <span class="glass-grades__hint" data-i18n="sample.dagslys">True colour</span>
                 </label>
                 <label class="glass-grades__chip">
                   <input class="glass-grades__radio" type="radio" name="glass-grades-recipe" value="hojsol">
                   <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--hojsol"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
-                  <span class="glass-grades__label">Højsol</span>
+                  <span class="glass-grades__label" data-i18n="sample.hojsolName">High sun</span>
                   <span class="glass-grades__hint" data-i18n="sample.hojsol">Hard, muted</span>
                 </label>
                 <label class="glass-grades__chip">
                   <input class="glass-grades__radio" type="radio" name="glass-grades-recipe" value="sankthans">
                   <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--sankthans"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
-                  <span class="glass-grades__label">Sankthans</span>
+                  <span class="glass-grades__label" data-i18n="sample.sankthansName">Midsummer</span>
                   <span class="glass-grades__hint" data-i18n="sample.sankthans">Low, warm sun</span>
                 </label>
                 <label class="glass-grades__chip">
                   <input class="glass-grades__radio" type="radio" name="glass-grades-recipe" value="blaatime">
                   <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--blaatime"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
-                  <span class="glass-grades__label">Blå time</span>
-                  <span class="glass-grades__hint" data-i18n="sample.blaatime">Blue hour</span>
+                  <span class="glass-grades__label" data-i18n="sample.blaatimeName">Blue hour</span>
+                  <span class="glass-grades__hint" data-i18n="sample.blaatime">Blue shadows</span>
                 </label>
                 <label class="glass-grades__chip">
                   <input class="glass-grades__radio" type="radio" name="glass-grades-recipe" value="nat">
                   <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--nat"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
-                  <span class="glass-grades__label">Nat</span>
+                  <span class="glass-grades__label" data-i18n="sample.natName">Night</span>
                   <span class="glass-grades__hint" data-i18n="sample.nat">Mono, blue</span>
                 </label>
                 <label class="glass-grades__chip">
                   <input class="glass-grades__radio" type="radio" name="glass-grades-recipe" value="natrium">
                   <span class="glass-grades__win" aria-hidden="true"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><span class="glass-grades__view glass-grades__view--natrium"><span class="glass-grades__media"><span class="glass-grades__ref"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></span><span class="glass-grades__toe"></span><span class="glass-grades__shoulder"></span><span class="glass-grades__grain"></span></span></span>
-                  <span class="glass-grades__label">Natrium</span>
+                  <span class="glass-grades__label" data-i18n="sample.natriumName">Sodium</span>
                   <span class="glass-grades__hint" data-i18n="sample.natrium">Mono, orange</span>
                 </label>
               </fieldset>
@@ -1796,7 +1812,10 @@
               <code>--glass-grades-drag: 1</code> the edge stays under the hand, and the mode dial&rsquo;s detent
               curve, <code>x − k·sin(2πx)/2π</code> with <code>k</code> .55, makes it stick near each pane. A
               release faster than 400px/s is projected 0.4s ahead, so a flick coasts up to three panes, and a
-              slower one lands on the nearest pane; either springs to a stop with a damping ratio of .67, about 6% overshoot in a third of a second. A still press of 320ms
+              slower one lands on the nearest pane. Either way it glides there on <code>cubic-bezier(.25, 1, .5, 1)</code>,
+              560ms a pane, the curve the stylesheet&rsquo;s own transition uses: it slows from its first frame,
+              never passes its pane, and leaves at the speed the hand let go at, its first control point set to
+              match. A still press of 320ms
               lifts the glass for as long as it is held, and a sideways move sets it down and drags; a tap on
               the open pane, or Enter, lifts it until the next. Every stop passed is a tick and a landing adds
               a low seat, synthesised from a struck plate&rsquo;s first three modes and silent while
@@ -1805,18 +1824,18 @@
           </li>
           <li>
             <h3 class="demo__notes-head">The grades are kinds of light, in the order of a day.</h3>
-            <p>Havgus (sea fog), Dagslys (daylight), Højsol (high sun), Sankthans (the low midsummer sun),
-              Blå time (blue hour), Nat (night) and Natrium (a sodium lamp). Each name says what its numbers
-              do: fog lifts the blacks, low sun warms the whites, and night and a sodium lamp take the colour
-              away, the eye for want of light and the lamp because it gives one wavelength. Højsol carries
-              muted colour over hard shadows and Sankthans amber highlights over soft ones, by their
-              decisions only. The names stay Danish in both languages.</p>
+            <p>Sea fog, Daylight, High sun, Midsummer, Blue hour, Night and Sodium, for a sodium street lamp;
+              in Danish Havgus, Dagslys, Højsol, Sankthans, Blå time, Nat and Natrium. Each name says what its
+              numbers do: fog lifts the blacks, low sun warms the whites, and night and a sodium lamp take the
+              colour away, the eye for want of light and the lamp because it gives one wavelength. High sun
+              carries muted colour over hard shadows and Midsummer amber highlights over soft ones, by their
+              decisions only. A selector&rsquo;s hint says what its grade does, never what its name means.</p>
           </li>
         </ol>
         <dl class="demo__notes-meta demo__notes-meta--foot">
           <div class="demo__notes-row">
             <dt data-i18n="notes.inspiration">Inspiration</dt>
-            <dd><a href="https://www.fujifilm-x.com/global/products/cameras/x-t50/" target="_blank" rel="noopener noreferrer">fujifilm-x.com/x-t50</a> &mdash; the film simulation dial, and the habit its owners have of writing a look down as a recipe: a handful of numbers anyone can dial in.</dd>
+            <dd><a href="https://www.fujifilm-x.com/global/products/cameras/x-t50/" target="_blank" rel="noopener noreferrer">fujifilm-x.com/x-t50</a> &mdash; my own X-T50: turning its film simulation dial to see one scene in another light, and the recipes its owners trade, a handful of numbers anyone can dial in.</dd>
           </div>
         </dl>
         <p class="demo__notes-foot">
@@ -1833,8 +1852,8 @@
   <script data-demo-page>
     window.demoPage = {
       // Danish for every data-i18n and data-i18n-aria key on this page, the
-      // component's sample.* copy included. English is the markup. The grade
-      // names stay Danish in both.
+      // component's sample.* copy included. English is the markup, the grade
+      // names too, and their Danish is here.
       da: {
         'a11y.github': '\u00c5bn p\u00e5 GitHub',
         'back': 'Alle studier',
@@ -1844,8 +1863,8 @@
         'notes.full': '\u2014 hele optegnelsen, ogs\u00e5 det der blev m\u00e5lt og det der mangler',
         'type': '\u00c6stetik',
         'heading': 'Lys gennem glas',
-        'lede': 'Syv slags lys som syv glasruder lagt over \u00e9t billede, i d\u00f8gnets r\u00e6kkef\u00f8lge. '
-          + '\u00c5bn \u00e9n, skub glasset, l\u00f8ft det af, eller l\u00e6g dit eget billede under.',
+        'lede': 'Inspireret af at dreje filmsimuleringshjulet p\u00e5 min Fujifilm X-T50: syv slags lys som glasruder lagt over \u00e9t billede. '
+          + 'Skub glasset, l\u00f8ft det af for at sammenligne, eller l\u00e6g dit eget billede under.',
         'group.strip': 'Syv slags lys',
         'group.stripNote': 'Det samme billede gennem hvert lys p\u00e5 \u00e9n gang, fra havgus til gadelys. '
           + 'Tryk p\u00e5 en rude for at \u00e5bne den; uden script g\u00f8r v\u00e6lgerne og knapperne Strimmel og Rude det stadig.',
@@ -1880,7 +1899,14 @@
         'group.heardNote': 'Sl\u00e5 Lyd til ovenfor. Hver rude glasset passerer, tikker, en landing s\u00e6tter det '
           + 'p\u00e5 plads, og at l\u00f8fte glasset og l\u00e6gge det har hver sin lyd. P\u00e5 en telefon m\u00e6rkes '
           + 'de samme \u00f8jeblikke.',
-        'sample.havgus': 'Tåge fra havet',
+        'sample.havgusName': 'Havgus',
+        'sample.dagslysName': 'Dagslys',
+        'sample.hojsolName': 'H\u00f8jsol',
+        'sample.sankthansName': 'Sankthans',
+        'sample.blaatimeName': 'Bl\u00e5 time',
+        'sample.natName': 'Nat',
+        'sample.natriumName': 'Natrium',
+        'sample.havgus': 'Løftede skygger',
         'sample.havgusDesc': 'Spredt lys løfter hver skygge',
         'sample.dagslys': 'Ægte farver',
         'sample.dagslysDesc': 'Referencen: ægte farver',

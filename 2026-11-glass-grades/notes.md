@@ -44,22 +44,25 @@ radio groups, and without script every pane still opens and slides.
   `--glass-grades-drag: 1` the edge stays under the hand, and the mode
   dial's detent curve, `x − k·sin(2πx)/2π` with `k` .55, makes it stick near
   each pane. A release faster than 400px/s is projected 0.4s ahead, so a flick
-  coasts up to three panes, and a slower one lands on the nearest pane; either
-  springs to a stop with a damping ratio of .67, about 6%
-  overshoot in a third of a second. A still press of 320ms lifts the glass
+  coasts up to three panes, and a slower one lands on the nearest pane. Either
+  way it glides there on `cubic-bezier(.25, 1, .5, 1)`, 560ms a pane, the
+  curve the stylesheet's own transition uses: it slows from its first frame,
+  never passes its pane, and leaves at the speed the hand let go at, its
+  first control point set to match. A still press of 320ms lifts the glass
   for as long as it is held, and a sideways move sets it down and drags; a
   tap on the open pane, or Enter, lifts it until the next. Every stop passed
   is a tick and a landing adds a low seat, synthesised from a struck plate's
   first three modes and silent while `--glass-grades-click` is 0; a finger or
   a pen gets the same moments as vibration.
-- **The grades are kinds of light, in the order of a day.** Havgus (sea fog),
-  Dagslys (daylight), Højsol (high sun), Sankthans (the low midsummer sun),
-  Blå time (blue hour), Nat (night) and Natrium (a sodium lamp). Each name
-  says what its numbers do: fog lifts the blacks, low sun warms the whites,
-  and night and a sodium lamp take the colour away, the eye for want of light
-  and the lamp because it gives one wavelength. Højsol carries muted colour
-  over hard shadows and Sankthans amber highlights over soft ones, by their
-  decisions only. The names stay Danish in both languages.
+- **The grades are kinds of light, in the order of a day.** Sea fog,
+  Daylight, High sun, Midsummer, Blue hour, Night and Sodium, for a sodium
+  street lamp; in Danish Havgus, Dagslys, Højsol, Sankthans, Blå time, Nat
+  and Natrium. Each name says what its numbers do: fog lifts the blacks, low
+  sun warms the whites, and night and a sodium lamp take the colour away, the
+  eye for want of light and the lamp because it gives one wavelength. High
+  sun carries muted colour over hard shadows and Midsummer amber highlights
+  over soft ones, by their decisions only. A selector's hint says what its
+  grade does, never what its name means.
 
 ## Measured
 
@@ -93,6 +96,17 @@ radio groups, and without script every pane still opens and slides.
   pane, 909 and 1238 two, and 2045 three past where it was let go, with three
   passes and one landing. Let go at p 2.32, short of halfway, 128 and 360px/s
   land back on 2, where 360 used to coast on to 3, and 546px/s goes on to 3.
+- The glide, against the spring it replaced: no glide passes its pane, where
+  the spring went 6% past and came back. Let go at 5.6, 2.9 and 1.2 panes a
+  second, measured on the glide's own frame clock with the drag dispatched on
+  a busy-wait clock, the glass left at 5.4, 2.8 and 1.3 and was never faster
+  after. The sheet curve, `cubic-bezier(.32, .72, 0, 1)`, eases in, and
+  matched to the hand it has to catch up: worked out on the curve, a glass let
+  go at 3.6 panes a second was at 11.8 a tenth of a second on. The glide is
+  timed from a frame before its first: a frame's time is when it began, and a
+  release comes after that, so timed from the release the first frame after
+  letting go stood still. Which pane a release lands on is decided before the
+  glide starts, so the flick figures above hold as they did for the spring.
 - Below 26rem, measured with touch at 390 and 320 in both languages: the open
   pane is the window's 322 and 252px, the index sits at (p + ½)/7, the bar is
   one row of tools at 94px, and nothing scrolls sideways.
@@ -119,10 +133,11 @@ radio groups, and without script every pane still opens and slides.
 - The hold is 320ms, from 260, chosen without a phone: long enough that a
   finger resting before a drag no longer lifts the glass and drops it again,
   well short of a system long press. A phone decides it, and the flick's
-  reach with it.
+  reach and the glide's 560ms with it.
 - The recipe's steps are chosen by eye. In-camera conversions, Provia at 0
   against the same frame with one setting moved, would calibrate them.
 
-Inspiration: https://www.fujifilm-x.com/global/products/cameras/x-t50/ — the
-film simulation dial, and the habit its owners have of writing a look down as
-a recipe: a handful of numbers anyone can dial in.
+Inspiration: https://www.fujifilm-x.com/global/products/cameras/x-t50/ — my
+own X-T50: turning its film simulation dial to see one scene in another
+light, and the recipes its owners trade, a handful of numbers anyone can dial
+in.

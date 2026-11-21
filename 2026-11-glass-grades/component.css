@@ -134,8 +134,8 @@
   --glass-grades-grain-size: 180px;
 
   /* --- motion ---------------------------------------------------------- */
-  --glass-grades-detent: cubic-bezier(.3, 1.4, .5, 1);   /* the mode dial's overshoot, where linear() is missing */
-  --glass-grades-open-time: 420ms;    /* a pane opening, without script */
+  --glass-grades-glide: cubic-bezier(.25, 1, .5, 1);   /* read by component.js too: how the glass gets to a pane, slowing from the first frame to a soft stop, never past it */
+  --glass-grades-glide-time: 560ms;   /* read by component.js too: one pane's glide; script takes a little longer over more panes and less over part of one */
   --glass-grades-view-time: 300ms;    /* strip to pane and back */
   --glass-grades-lift-time: 160ms;
   --glass-grades-set-time: 300ms;
@@ -145,7 +145,6 @@
   --glass-grades-flick: 400ms;        /* read by component.js: how far ahead a release is projected, so a flick coasts, three panes at most */
   --glass-grades-flick-min: 400;      /* read by component.js: the slowest release that is a flick, in px a second; slower lands on the nearest pane */
   --glass-grades-notch: .55;          /* read by component.js: how much the glass sticks near each stop as you drag */
-  --glass-grades-damping: .67;        /* read by component.js: the landing spring, about 6% overshoot */
   --glass-grades-hold: 320ms;         /* read by component.js: a still press this long lifts the glass, for as long as it is held */
   --glass-grades-click: 0;            /* read by component.js: sound volume, 0 to 1; at 0 no audio is ever started */
 
@@ -294,14 +293,8 @@
   background: linear-gradient(160deg, var(--glass-grades-body-lit), var(--glass-grades-body) 46%);
   box-shadow: var(--glass-grades-shadow);
   transition:
-    --glass-grades-p var(--glass-grades-open-time) var(--glass-grades-detent),
+    --glass-grades-p var(--glass-grades-glide-time) var(--glass-grades-glide),
     --glass-grades-a var(--glass-grades-view-time) cubic-bezier(.2, .8, .2, 1);
-}
-
-@supports (transition-timing-function: linear(0, 1)) {
-  .glass-grades {
-    --glass-grades-detent: linear(0, .42 12%, .8 26%, 1.045 46%, 1.06 52%, .995 72%, 1.003 86%, 1);
-  }
 }
 
 /* Bead-blasted metal: a fine noise, barely there. */
@@ -484,6 +477,7 @@
 .glass-grades__tools {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 6px;
 }
 
@@ -531,9 +525,15 @@
 
 /* Strip | Pane: a second radio group, so the view is said by the markup
    the way the light is, and :has() reads it into a. The chosen side is a
-   raised fill with its icon in the index's orange. */
+   raised fill with its icon in the index's orange. Each side is as tall as a
+   button's inside, so the switch is a button's height and the fill sits 3px
+   inside its edge all round, its ends concentric with the switch's. The
+   sides were 2px shorter once, and the row stretched the switch to the
+   buttons' height round them: the fill sat 3px under the top and 5px over
+   the bottom, and its ends met the switch's off true. */
 .glass-grades__switch {
   display: inline-flex;
+  align-items: center;
   margin: 0;
   padding: 0;
   min-width: 0;
@@ -548,8 +548,8 @@
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  height: calc(var(--glass-grades-btn-h) - 2px);
-  padding: 0 12px 0 10px;
+  height: var(--glass-grades-btn-h);
+  padding: 0 11px;
   border-radius: 999px;
   color: var(--glass-grades-paint-dim);
   font: 600 12.5px/1 var(--glass-grades-font);
@@ -669,7 +669,7 @@
   pointer-events: none;
   transition:
     opacity var(--glass-grades-set-time) ease-out,
-    transform var(--glass-grades-set-time) var(--glass-grades-detent);
+    transform var(--glass-grades-set-time) var(--glass-grades-glide);
 }
 .glass-grades--lifted .glass-grades__panes {
   opacity: 0;
@@ -835,10 +835,15 @@
   white-space: nowrap;
 }
 
+/* Stacked from the top, so every name sits on one line across the rail
+   whether its hint takes one line or two: stretched to the rail's height, a
+   selector used to share the spare height out between its rows, and a name
+   over a one-line hint sat 5px below its neighbour's. */
 .glass-grades__chip {
   position: relative;
   min-width: 0;
   display: grid;
+  align-content: start;
   gap: 7px;
   justify-items: center;
   padding: 14px 7px 10px;
@@ -867,7 +872,7 @@
   background: var(--glass-grades-signal);
   opacity: 0;
   transform: translateY(-4px);
-  transition: opacity .15s, transform 320ms var(--glass-grades-detent);
+  transition: opacity .15s, transform 320ms var(--glass-grades-glide);
 }
 .glass-grades__chip:has(> .glass-grades__radio:checked)::before { opacity: 1; transform: none; }
 
@@ -920,9 +925,16 @@
 .glass-grades__ref i:nth-child(8) { background: var(--glass-grades-ref-8); }
 .glass-grades__ref i:nth-child(9) { background: var(--glass-grades-ref-9); }
 
+/* The label may use the selector's 7px sides, and gives back the spacing
+   its capitals carry after the last letter, so it is centred on its letters
+   across the whole selector. A nine-letter name, Midsummer or Sankthans, is
+   wider than the space between the sides of a 72px selector, and a grid item
+   wider than its cell is set at the cell's start: it ran 7px past the right
+   edge. */
 .glass-grades__label {
   font: 400 11px/1.2 var(--glass-grades-mono);
   letter-spacing: .12em;
+  margin: 0 calc(-7px - .12em) 0 -7px;
   text-transform: uppercase;
   color: var(--glass-grades-paint);
   white-space: nowrap;
@@ -973,7 +985,7 @@
 @media (pointer: coarse) {
   .glass-grades__btn { height: var(--glass-grades-btn-h-touch); padding: 0 16px 0 13px; }
   .glass-grades--compact .glass-grades__btn { width: var(--glass-grades-btn-h-touch); }
-  .glass-grades__switch-opt { height: calc(var(--glass-grades-btn-h-touch) - 2px); padding: 0 15px 0 12px; }
+  .glass-grades__switch-opt { height: var(--glass-grades-btn-h-touch); padding: 0 13px; }
 }
 
 /* Narrow: below 26rem a sliver would be under 26px, too thin to read or to
