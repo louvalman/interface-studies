@@ -548,15 +548,41 @@
       outline-offset: 2px;
       border-radius: 0.35rem;
     }
+    /* Grain is three words rather than a number, so it is a select, drawn as
+       the steppers' pill: their height and width, so the controls make one
+       column, and the page's own chevron where their plus sits. The
+       platform's arrow sat 4px inside the pill's round end, against 13.6px of
+       room before the word, and the pill was 2px shorter than the steppers,
+       whose border is outside their 2rem. */
+    .demo__step-select {
+      position: relative;
+      display: inline-grid;
+      flex: none;
+    }
     .demo__step-input--select {
-      width: auto;
-      height: 2rem;
-      padding: 0 0.85rem;
+      box-sizing: border-box;
+      width: calc(7rem + 2px);
+      height: calc(2rem + 2px);
+      padding: 0 calc(2rem + 1px) 0 0.85rem;
       border: 1px solid var(--demo-line);
       border-radius: 999px;
       background: var(--demo-chip);
       text-align: left;
-      appearance: auto;
+      -webkit-appearance: none;
+      appearance: none;
+      cursor: pointer;
+    }
+    .demo__step-input--select:hover { background: var(--demo-chip-hover); }
+    .demo__step-input--select:focus-visible { border-radius: 999px; }
+    .demo__step-chevron {
+      position: absolute;
+      top: 50%;
+      right: calc(0.5rem + 1px);
+      width: 1rem;
+      height: 1rem;
+      margin-top: -0.5rem;
+      color: var(--demo-fg);
+      pointer-events: none;
     }
     .demo__recipe-line {
       margin: 0;
@@ -604,8 +630,13 @@
       .demo__back { min-height: 2.75rem; }
       .demo__step-btn { width: 2.75rem; height: 2.75rem; }
       .demo__step-input,
-      .demo__step-input--select,
       .demo__recipe-btn { min-height: 2.75rem; }
+      .demo__step-input--select {
+        width: calc(8.5rem + 2px);
+        height: calc(2.75rem + 2px);
+        padding-right: calc(2.75rem + 1px);
+      }
+      .demo__step-chevron { right: calc(0.875rem + 1px); }
     }
 
     /* --- intro and decisions --------------------------------------------
@@ -1712,11 +1743,14 @@
               </div>
               <div class="demo__step">
                 <label class="demo__step-name" for="recipe-grain" data-i18n="recipe.grain">Grain</label>
-                <select class="demo__step-input demo__step-input--select" id="recipe-grain" data-token="--glass-grades-grain-step">
-                  <option value="0" data-i18n="recipe.grain0">Off</option>
-                  <option value="1" data-i18n="recipe.grain1" selected>Weak</option>
-                  <option value="2" data-i18n="recipe.grain2">Strong</option>
-                </select>
+                <span class="demo__step-select">
+                  <select class="demo__step-input demo__step-input--select" id="recipe-grain" data-token="--glass-grades-grain-step">
+                    <option value="0" data-i18n="recipe.grain0">Off</option>
+                    <option value="1" data-i18n="recipe.grain1" selected>Weak</option>
+                    <option value="2" data-i18n="recipe.grain2">Strong</option>
+                  </select>
+                  <svg class="demo__step-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true" focusable="false"><path d="M4 6l4 4 4-4" stroke-linecap="round" stroke-linejoin="round" /></svg>
+                </span>
               </div>
             </div>
             <p class="demo__recipe-line"></p>
