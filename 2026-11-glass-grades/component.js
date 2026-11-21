@@ -38,7 +38,7 @@
         volume above 0, never before. Every note is from one chord, C major,
         so the sounds agree with each other however they fall, and nothing
         is pitched in the top octaves, where a run of ticks tires the ear. ── */
-  var C6 = 1046.5, G6 = 1568, C7 = 2093, E4 = 329.6;
+  var C5 = 523.25, G5 = 784, C6 = 1046.5, G6 = 1568, C7 = 2093, E4 = 329.6;
   var audio = { ctx: null, out: null, room: null, noise: null };
   function ensureAudio() {
     if (!audio.ctx) {
@@ -52,12 +52,17 @@
       top.type = 'lowpass'; top.frequency.value = 6500; top.Q.value = 0.5;
       audio.out = c.createGain();
       audio.out.connect(top); top.connect(comp); comp.connect(c.destination);
-      // A small, dark room: under half a second of decaying, softened noise,
-      // a little of which follows the landings so they ring out rather than stop.
-      var len = Math.floor(sr * 0.45), ir = c.createBuffer(2, len, sr);
+      // A slight reverb: a dark tail of about a second, 14ms behind the sound
+      // so the tap stays clear of it, and darker as it fades, the way air
+      // takes the top off a real one.
+      var len = Math.floor(sr * 1.2), pre = Math.floor(sr * 0.014), ir = c.createBuffer(2, len, sr);
       for (var ch = 0; ch < 2; ch++) {
         var r = ir.getChannelData(ch), lp = 0;
-        for (var i = 0; i < len; i++) { lp += 0.3 * (Math.random() * 2 - 1 - lp); r[i] = lp * Math.exp(-i / (sr * 0.06)); }
+        for (var i = pre; i < len; i++) {
+          var at = (i - pre) / sr;
+          lp += (0.05 + 0.3 * Math.exp(-at / 0.2)) * (Math.random() * 2 - 1 - lp);
+          r[i] = lp * Math.exp(-at / 0.15) * Math.min(1, at / 0.02);
+        }
       }
       var conv = c.createConvolver();
       conv.buffer = ir;
@@ -70,7 +75,7 @@
     if (audio.ctx.state === 'suspended') audio.ctx.resume();
     return audio.ctx;
   }
-  // Where a sound goes: all of it to the output, and some to the room.
+  // Where a sound goes: all of it to the output, and some to the reverb.
   function voice(wet) {
     var c = audio.ctx, v = c.createGain();
     v.connect(audio.out);
@@ -80,13 +85,13 @@
   // A tap on thick glass: the note, a quiet octave, and a trace of a struck
   // plate's second mode, which is what makes it glass rather than a bell.
   // The upper two die first.
-  function tap(t, f0, level, decay, wet) {
+  function tap(t, f0, level, decay, wet, octave) {
     var c = audio.ctx, v = voice(wet);
-    [[1, 1], [2, 0.12], [2.756, 0.035]].forEach(function (m) {
+    [[1, 1], [2, octave || 0.12], [2.756, 0.035]].forEach(function (m) {
       var o = c.createOscillator(), g = c.createGain(), d = decay / Math.sqrt(m[0]);
       o.frequency.value = f0 * m[0];
       g.gain.setValueAtTime(0, t);
-      g.gain.linearRampToValueAtTime(m[1] * level, t + 0.003);
+      g.gain.linearRampToValueAtTime(m[1] * level, t + 0.005);
       g.gain.exponentialRampToValueAtTime(0.0001, t + d);
       o.connect(g); g.connect(v);
       o.start(t); o.stop(t + d + 0.02);
@@ -131,11 +136,15 @@
     audio.out.gain.value = 1.2 * volume;
     var t = c.currentTime + 0.004;
     var j = 1 + (Math.random() - 0.5) * 0.012;   // a little variation, so a sweep never sounds mechanical, and little enough to stay in tune
-    if (kind === 'pass') { touch(t, 0.07, 2000 * j, 0.005); tap(t, G6 * j, 0.17, 0.035, 0.05); }
-    else if (kind === 'land') { body(t, 0.18, E4 * 1.04, E4 * 0.92, 0.06, 0.1); tap(t, C6 * j, 0.32, 0.16, 0.2); touch(t, 0.04, 1800, 0.007); }
-    else if (kind === 'lift') { air(t, 0.032, 500, 1600, 0.2, 0.2); tap(t + 0.06, C7 * j, 0.06, 0.09, 0.25); }
-    else if (kind === 'set') { body(t, 0.16, E4, E4 * 0.88, 0.07, 0.1); tap(t, C6 * j, 0.21, 0.13, 0.2); tap(t + 0.026, G6 * j, 0.07, 0.08, 0.2); touch(t, 0.05, 1600, 0.008); }
-    else if (kind === 'swap') { air(t, 0.025, 1600, 600, 0.16, 0.2); tap(t + 0.1, C6 * j, 0.085, 0.12, 0.25); tap(t + 0.19, G6 * j, 0.07, 0.16, 0.25); }
+    // The landing, the sound of choosing a grade, is the lowest note, and has
+    // more of its octave than the others, because a phone's speaker plays
+    // little of a note that low. The ticks on the way are all but dry, so a
+    // run of them does not blur into the reverb.
+    if (kind === 'pass') { touch(t, 0.025, 1600 * j, 0.004); tap(t, G5 * j, 0.13, 0.045, 0.06); }
+    else if (kind === 'land') { body(t, 0.08, E4 * 1.04, E4 * 0.92, 0.07, 0.25); tap(t, C5 * j, 0.22, 0.24, 0.36, 0.35); touch(t, 0.015, 1500, 0.006); }
+    else if (kind === 'lift') { air(t, 0.024, 500, 1600, 0.2, 0.38); tap(t + 0.06, C7 * j, 0.04, 0.09, 0.42); }
+    else if (kind === 'set') { body(t, 0.085, E4, E4 * 0.88, 0.07, 0.25); tap(t, C6 * j, 0.13, 0.13, 0.36); tap(t + 0.026, G6 * j, 0.045, 0.08, 0.36); touch(t, 0.02, 1600, 0.008); }
+    else if (kind === 'swap') { air(t, 0.019, 1600, 600, 0.16, 0.38); tap(t + 0.1, C6 * j, 0.06, 0.12, 0.42); tap(t + 0.19, G6 * j, 0.05, 0.16, 0.42); }
   }
 
   /* ── touch: a finger or a pen feels what a pointer hears ── */

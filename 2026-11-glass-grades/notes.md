@@ -53,9 +53,11 @@ radio groups, and without script every pane still opens and slides.
   tap on the open pane, or Enter, lifts it until the next. Every stop passed
   ticks and a landing seats the glass, each a tap on thick glass: a note, a
   quiet octave and a trace of a struck plate's second mode. Every note is
-  from one chord, C major, so a run of them never clashes, and a little of a
-  small room follows the landings. It is silent while `--glass-grades-click`
-  is 0, and a finger or a pen gets the same moments as vibration.
+  from one chord, C major, so a run of them never clashes. The landing, the
+  sound of choosing a grade, is the lowest, and everything but the ticks
+  carries a slight reverb, a dark tail of about a second. It is silent while
+  `--glass-grades-click` is 0, and a finger or a pen gets the same moments as
+  vibration.
 - **The grades are kinds of light, in the order of a day.** Sea fog,
   Daylight, High sun, Midsummer, Blue hour, Night and Sodium, for a sodium
   street lamp; in Danish Havgus, Dagslys, Højsol, Sankthans, Blå time, Nat
@@ -128,14 +130,19 @@ radio groups, and without script every pane still opens and slides.
   102 to 132ms by hand.
 - The sound, rendered offline at the demo's volume of 0.5 after a second of
   silence: the output's compressor takes that long to settle, and figures
-  taken from its first frame, the peaks this line used to give among them,
-  read about 10dB low. Against the struck plate it replaced, the energy above
-  5kHz went from 7.6 to 14.2% of each sound to under 0.4%, and the spectral
-  centroid from 1.6–4.0kHz to 0.9–2.1kHz, at the same A-weighted level to
-  within 0.5dB; the pass, which comes in runs, is 1.4dB softer. Five passes
-  60ms apart and a landing: each pass peaks at −18.7 dBFS and the landing at
-  −10.5, −4.9 at full volume, so nothing clips, and between two passes the
-  sound falls by 44dB or more.
+  taken from its first frame read about 10dB low. Against the version before
+  it, every sound is 2.4 to 3.4dB softer A-weighted, the landing and the
+  set-down the most. The reverb, the sound less the same render with it
+  muted, is 13dB under the landing, the set-down and the swap and 15 under
+  the lift, where the small room it replaced was 26 to 30 under; the ticks
+  stay 31 under, all but dry. A landing is within 40dB of its peak for
+  382ms rather than 125. Through a 700Hz high-pass
+  standing in for a phone's speaker, the landing, an octave lower, comes out
+  7.2dB under the old one where a laptop's speaker has it 3.4 under; its
+  stronger octave wins back 1.5 of that. Five passes 60ms apart and a
+  landing: each pass peaks at −21.3 dBFS and the landing at −14.2, −8.4 at
+  full volume, so nothing clips, and between two passes the sound falls by
+  36dB or more.
 - The readout keeps every description beside its name from 27rem, and puts
   each under its name below that: the widest name and description on one line
   are Blue hour's, 418px in English, and Sankthans's, 380 in Danish. Measured
@@ -159,9 +166,10 @@ radio groups, and without script every pane still opens and slides.
   finger resting before a drag no longer lifts the glass and drops it again,
   well short of a system long press. A phone decides it, and the flick's
   reach and the glide's 560ms with it.
-- The sound was tuned by measurement against the one before it, not by ear,
-  and a phone's speaker is the test: the body under a landing, at 330Hz, is
-  the part it is most likely to lose.
+- The sound is tuned by measurement from the owner's ear on the version
+  before it, and has not been heard on a phone, whose speaker is the test:
+  the landing, an octave lower than it was, and the body under it at 330Hz
+  are what it is most likely to lose.
 - The recipe's steps are chosen by eye. In-camera conversions would
   calibrate them: one frame at the camera's standard settings, against the
   same frame with one setting moved.
