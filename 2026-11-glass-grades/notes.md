@@ -124,6 +124,12 @@ radio groups, and without script every pane still opens and slides.
   7.5px, the index sits at (p + ½)/7, over the open pane wherever it is, the
   bar is one row of tools under the readout, 94px and 111, and nothing scrolls
   sideways.
+- Targets: a selector is at least 88 by 97px; a sliver is 43px beside the
+  open pane where the demo is widest and 28 to 33px in its pair, and on a
+  phone 9.7 at 390 and 7.6 at 320. That is under the 24px WCAG 2.5.8 asks of
+  a target, which it allows where another control does the same: the rail's
+  selectors do. Photo, Save and the switch are 34px tall for a pointer and 46
+  for a finger.
 - Saving, against the screen at 1440 over http, CIEDE2000 over the open pane:
   through the canvas filter, mean 0.53 to 0.82 across the seven grades and the
   demo's recipe, 99th percentile 1.71 to 2.17, worst 4.6 to 9.3; by hand,

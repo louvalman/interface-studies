@@ -479,6 +479,63 @@
       color: var(--demo-soft);
       overflow-wrap: anywhere;
     }
+    /* --- interaction ------------------------------------------------------
+       Every way in and what it does, then how big each target is: a term and
+       a sentence, in four sets that pair up where there is room and stack on
+       a phone. Keys are drawn as keys, in the page's mono. */
+    .demo__ways {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr));
+      gap: clamp(2rem, 4vw, 2.75rem) clamp(2rem, 3vw, 2.5rem);
+      max-width: 72rem;
+    }
+    .demo__ways-set {
+      display: grid;
+      align-content: start;
+      gap: 0.75rem;
+      min-width: 0;
+    }
+    .demo__ways-head {
+      margin: 0;
+      font-family: "Fragment Mono", ui-monospace, monospace;
+      font-size: 0.6875rem;
+      font-weight: 400;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--demo-dim);
+    }
+    .demo__ways-list { display: grid; margin: 0; }
+    .demo__way {
+      display: grid;
+      gap: 0.25rem;
+      padding: 0.8rem 0;
+      border-top: 1px solid var(--demo-line);
+    }
+    .demo__way dt {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--demo-fg);
+    }
+    .demo__way dd {
+      margin: 0;
+      max-width: 52ch;
+      font-size: 0.875rem;
+      line-height: 1.55;
+      color: var(--demo-soft);
+    }
+    .demo__keys { white-space: nowrap; }
+    .demo__way kbd {
+      display: inline-block;
+      min-width: 1.7em;
+      padding: 0 0.35em;
+      border: 1px solid var(--demo-line);
+      border-bottom-width: 2px;
+      border-radius: 0.3rem;
+      background: var(--demo-chip-soft);
+      font: 0.75rem/1.45 "Fragment Mono", ui-monospace, monospace;
+      text-align: center;
+      color: var(--demo-fg);
+    }
     /* --- the recipe -------------------------------------------------------
        Steppers for the recipe's tokens, under the instance they write to.
        Each is a number input, which is what a keyboard and a screen reader
@@ -1246,7 +1303,7 @@
     <section class="demo__group">
       <div class="demo__group-head" data-reveal>
         <h2 class="demo__group-title" data-i18n="group.open">One pane open</h2>
-        <p class="demo__group-note" data-i18n="group.openNote">The open pane takes 62% of the window, and the others stay as slivers you can still see and still tap.</p>
+        <p class="demo__group-note" data-i18n="group.openNote">The open pane takes 62% of the window, and the others stay as slivers you can still see and tap; on a phone it takes 82%, and the rail is the way to the slivers.</p>
       </div>
       <div class="demo__grid demo__grid--pair">
         <section class="demo__state" data-reveal>
@@ -1768,6 +1825,87 @@
 
     <section class="demo__group">
       <div class="demo__group-head" data-reveal>
+        <h2 class="demo__group-title" data-i18n="group.ways">Interaction</h2>
+        <p class="demo__group-note" data-i18n="group.waysNote">What a pointer, a finger and a keyboard can do, and how big each target is. The keys work once the picture has focus.</p>
+      </div>
+      <div class="demo__ways">
+        <section class="demo__ways-set" data-reveal>
+          <h3 class="demo__ways-head" data-i18n="ways.choose">Choosing a light</h3>
+          <dl class="demo__ways-list">
+            <div class="demo__way">
+              <dt data-i18n="way.selector">Click or tap a selector</dt>
+              <dd data-i18n="way.selectorDo">The glass glides to its pane, ticking past every pane on the way. On the rail, <span class="demo__keys"><kbd>&larr;</kbd> <kbd>&rarr;</kbd></span> move the choice. Works without script.</dd>
+            </div>
+            <div class="demo__way">
+              <dt data-i18n="way.pane">Click or tap a pane</dt>
+              <dd data-i18n="way.paneDo">In the strip, the pane under the click opens; with one open, a click on a sliver opens that one instead. <span class="demo__keys"><kbd>&larr;</kbd> <kbd>&rarr;</kbd></span> step one pane, <kbd>Home</kbd> and <kbd>End</kbd> go to the first and the last.</dd>
+            </div>
+            <div class="demo__way">
+              <dt data-i18n="way.drag">Drag sideways</dt>
+              <dd data-i18n="way.dragDo">The glass follows the hand, its moving edge under the finger, and sticks a little at each pane. A drag on the strip opens it. On a phone, a swipe up or down still scrolls the page.</dd>
+            </div>
+            <div class="demo__way">
+              <dt data-i18n="way.release">Let go</dt>
+              <dd data-i18n="way.releaseDo">Slower than 400px a second, the glass lands on the nearest pane; faster, it coasts on, three panes at most. A press on moving glass catches it.</dd>
+            </div>
+          </dl>
+        </section>
+        <section class="demo__ways-set" data-reveal>
+          <h3 class="demo__ways-head" data-i18n="ways.compare">Comparing</h3>
+          <dl class="demo__ways-list">
+            <div class="demo__way">
+              <dt data-i18n="way.hold">Press and hold</dt>
+              <dd data-i18n="way.holdDo">A still press of 320ms lifts the glass off the picture for as long as it is held; a sideways move sets it down and drags. Holding <kbd>Space</kbd> does the same.</dd>
+            </div>
+            <div class="demo__way">
+              <dt data-i18n="way.open">Click or tap the open pane</dt>
+              <dd data-i18n="way.openDo">Lifts the glass until the next click anywhere on the picture. <kbd>Enter</kbd> lifts it, and <kbd>Enter</kbd> again puts it back.</dd>
+            </div>
+            <div class="demo__way">
+              <dt data-i18n="way.view">Strip | Pane</dt>
+              <dd data-i18n="way.viewDo">All seven side by side, or one pane open. <kbd>S</kbd> switches too. Works without script.</dd>
+            </div>
+          </dl>
+        </section>
+        <section class="demo__ways-set" data-reveal>
+          <h3 class="demo__ways-head" data-i18n="ways.own">Your own picture</h3>
+          <dl class="demo__ways-list">
+            <div class="demo__way">
+              <dt data-i18n="way.photo">Photo, drop or paste</dt>
+              <dd data-i18n="way.photoDo">Pick one with Photo, drop an image file anywhere on the component, or paste one, which goes to the component last touched. It slides in under the glass, and a tall one narrows the window.</dd>
+            </div>
+            <div class="demo__way">
+              <dt data-i18n="way.save">Save</dt>
+              <dd data-i18n="way.saveDo">Downloads the picture through the chosen light, at the picture&rsquo;s own size, with any recipe on it.</dd>
+            </div>
+          </dl>
+        </section>
+        <section class="demo__ways-set" data-reveal>
+          <h3 class="demo__ways-head" data-i18n="ways.targets">Targets</h3>
+          <dl class="demo__ways-list">
+            <div class="demo__way">
+              <dt data-i18n="way.tSelector">A selector</dt>
+              <dd data-i18n="way.tSelectorDo">At least 88px wide and 97px tall. Where seven do not fit, the rail scrolls rather than narrowing them.</dd>
+            </div>
+            <div class="demo__way">
+              <dt data-i18n="way.tSliver">A sliver</dt>
+              <dd data-i18n="way.tSliverDo">43px beside the open pane where this page is widest, and 28 to 33px in the pair above. On a phone, about 10px: there to show its light, with the rail the way to it.</dd>
+            </div>
+            <div class="demo__way">
+              <dt data-i18n="way.tButton">A button or the switch</dt>
+              <dd data-i18n="way.tButtonDo">34px tall for a pointer, 46px for a finger.</dd>
+            </div>
+            <div class="demo__way">
+              <dt data-i18n="way.tPicture">The picture</dt>
+              <dd data-i18n="way.tPictureDo">The whole window takes a click, a drag and a hold, and takes focus for the keys.</dd>
+            </div>
+          </dl>
+        </section>
+      </div>
+    </section>
+
+    <section class="demo__group">
+      <div class="demo__group-head" data-reveal>
         <h2 class="demo__group-title" data-i18n="group.heard">Heard</h2>
         <p class="demo__group-note" data-i18n="group.heardNote">Switch Sound on above. Every pane the glass passes ticks, a landing seats it, and lifting the glass and setting it down each have a sound of their own. On a phone the same moments are felt.</p>
       </div>
@@ -1911,8 +2049,8 @@
         'state.strip': '<strong>Strimlen</strong> &middot; alle syv side om side, i d\u00f8gnets r\u00e6kkef\u00f8lge. '
           + 'Tr\u00e6k i den, svirp den, hold den, eller slip dit eget billede p\u00e5 den.',
         'group.open': '\u00c9n rude \u00e5ben',
-        'group.openNote': 'Den \u00e5bne rude fylder 62% af vinduet, og de andre bliver smalle striber, '
-          + 'du stadig kan se og stadig trykke p\u00e5.',
+        'group.openNote': 'Den \u00e5bne rude fylder 62% af vinduet, og de andre bliver smalle striber, du stadig kan se og '
+          + 'trykke p\u00e5; p\u00e5 en telefon fylder den 82%, og v\u00e6lgerne er vejen til striberne.',
         'state.hojsol': '<strong>H\u00f8jsol</strong> &middot; d\u00e6mpede farver over h\u00e5rde skygger. '
           + 'Tryk p\u00e5 den \u00e5bne rude, eller p\u00e5 Enter, for at l\u00f8fte glasset af og sammenligne; '
           + 'piletasterne flytter det \u00e9n rude ad gangen.',
@@ -1935,6 +2073,51 @@
         'recipe.grain2': 'Kraftig',
         'recipe.copy': 'Kopi\u00e9r CSS',
         'recipe.reset': 'Nulstil',
+        'group.ways': 'Interaktion',
+        'group.waysNote': 'Hvad en mus, en finger og et tastatur kan g\u00f8re, og hvor stor hver trykflade er. Tasterne '
+          + 'virker, n\u00e5r billedet har fokus.',
+        'ways.choose': 'At v\u00e6lge et lys',
+        'way.selector': 'Klik eller tryk p\u00e5 en v\u00e6lger',
+        'way.selectorDo': 'Glasset glider hen til sin rude og tikker forbi hver rude p\u00e5 vejen. I r\u00e6kken af v\u00e6lgere '
+          + 'flytter <span class="demo__keys"><kbd>\u2190</kbd> <kbd>\u2192</kbd></span> valget. Virker ogs\u00e5 uden script.',
+        'way.pane': 'Klik eller tryk p\u00e5 en rude',
+        'way.paneDo': 'I strimlen \u00e5bner den rude, du klikker p\u00e5; med \u00e9n \u00e5ben \u00e5bner et klik p\u00e5 en stribe den i '
+          + 'stedet. <span class="demo__keys"><kbd>\u2190</kbd> <kbd>\u2192</kbd></span> flytter \u00e9n rude, <kbd>Home</kbd> og <kbd>End</kbd> g\u00e5r til '
+          + 'den f\u00f8rste og den sidste.',
+        'way.drag': 'Tr\u00e6k til siden',
+        'way.dragDo': 'Glasset f\u00f8lger h\u00e5nden med den bev\u00e6gelige kant under fingeren og h\u00e6nger lidt fast ved hver '
+          + 'rude. Et tr\u00e6k i strimlen \u00e5bner den. P\u00e5 en telefon ruller et stryg op eller ned stadig siden.',
+        'way.release': 'Slip',
+        'way.releaseDo': 'Langsommere end 400px i sekundet lander glasset p\u00e5 den n\u00e6rmeste rude; hurtigere glider det '
+          + 'videre, h\u00f8jst tre ruder. Et tryk p\u00e5 glas i bev\u00e6gelse fanger det.',
+        'ways.compare': 'At sammenligne',
+        'way.hold': 'Tryk og hold',
+        'way.holdDo': 'Et roligt tryk p\u00e5 320ms l\u00f8fter glasset af billedet, s\u00e5 l\u00e6nge du holder; flytter du til '
+          + 'siden, l\u00e6gges det ned og tr\u00e6kkes. At holde <kbd>Mellemrum</kbd> nede g\u00f8r det samme.',
+        'way.open': 'Klik eller tryk p\u00e5 den \u00e5bne rude',
+        'way.openDo': 'L\u00f8fter glasset indtil n\u00e6ste klik, hvor som helst p\u00e5 billedet. <kbd>Enter</kbd> l\u00f8fter det, '
+          + 'og <kbd>Enter</kbd> igen l\u00e6gger det tilbage.',
+        'way.view': 'Strimmel | Rude',
+        'way.viewDo': 'Alle syv side om side, eller \u00e9n rude \u00e5ben. <kbd>S</kbd> skifter ogs\u00e5. Virker ogs\u00e5 uden '
+          + 'script.',
+        'ways.own': 'Dit eget billede',
+        'way.photo': 'Foto, slip eller inds\u00e6t',
+        'way.photoDo': 'V\u00e6lg et med Foto, slip en billedfil hvor som helst p\u00e5 komponenten, eller inds\u00e6t et, som g\u00e5r '
+          + 'til den komponent, du sidst r\u00f8rte ved. Det glider ind under glasset, og et h\u00f8jt billede g\u00f8r '
+          + 'vinduet smallere.',
+        'way.save': 'Gem',
+        'way.saveDo': 'Henter billedet gennem det valgte lys i billedets egen st\u00f8rrelse, med en eventuel opskrift.',
+        'ways.targets': 'Trykflader',
+        'way.tSelector': 'En v\u00e6lger',
+        'way.tSelectorDo': 'Mindst 88px bred og 97px h\u00f8j. Hvor der ikke er plads til syv, ruller r\u00e6kken i stedet for at '
+          + 'g\u00f8re dem smallere.',
+        'way.tSliver': 'En stribe',
+        'way.tSliverDo': '43px ved siden af den \u00e5bne rude, hvor siden er bredest, og 28 til 33px i parret ovenfor. P\u00e5 '
+          + 'en telefon omkring 10px: den er der for at vise sit lys, og v\u00e6lgerne er vejen til den.',
+        'way.tButton': 'En knap eller skifteren',
+        'way.tButtonDo': '34px h\u00f8j til en mus, 46px til en finger.',
+        'way.tPicture': 'Billedet',
+        'way.tPictureDo': 'Hele vinduet tager imod klik, tr\u00e6k og hold og f\u00e5r fokus til tasterne.',
         'group.heard': 'H\u00f8rt',
         'group.heardNote': 'Sl\u00e5 Lyd til ovenfor. Hver rude glasset passerer, tikker, en landing s\u00e6tter det '
           + 'p\u00e5 plads, og at l\u00f8fte glasset og l\u00e6gge det har hver sin lyd. P\u00e5 en telefon m\u00e6rkes '
