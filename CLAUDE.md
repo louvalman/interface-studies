@@ -299,6 +299,9 @@ All page-level context lives here, and only here:
   between `demo-chrome:` markers, with the page's own Danish and hooks in a
   `<script data-demo-page>` beside it; see **The demo page's chrome is
   generated**
+- the back link to the index, the page's own and in its own palette, which
+  on a phone joins the switches' line — see **The back link is on the
+  switches' line on a phone**
 
 demo.html links `component.css`; it never redefines it. If the demo needs a
 style, that style belongs in a `<style>` block scoped to the demo page's own
@@ -975,8 +978,10 @@ inside it.
 `--demo-chip` and `--demo-line`. A page that wants its switches to look
 different moves its own tokens, not the chrome's rules. The one chrome
 selector a page may write is `.demo__controls`, for where the cluster sits
-on that page, after the chrome's region: the mode dial gives the cluster a
-line of its own below 30rem, measured against its own top padding.
+on that page, after the chrome's region. No page does at present: the mode
+dial gave the cluster a line of its own below 30rem while a labelled back
+link could not share one with three switches, and gave it back when the
+back link became a chevron there.
 
 **The address follows a choice, as the index's does.** Only en and da, and
 dark and light, are read from a query or from storage. A click rewrites
@@ -1026,21 +1031,61 @@ A page carries one only when its study makes a sound. It declares it as
   switch, and none sets a component's level. A rail of cards that makes a
   noise unasked is the index performing over the reader.
 
-With three switches in the cluster, struck tones keeps them clear of the
-back link with nothing but its 4rem of top padding: the back link starts
-14px under the cluster with a pointer, and 1.6px under it on a touch screen
-at 390 and 320, where the switches grow.
+### The back link is on the switches' line on a phone
 
-### Not yet fixed: the back link under the cluster at 320, in Danish
+Below 30rem every demo page has one line at its top: the back link at the
+gutter and the switches at the other end. The back link there is its chevron
+alone, in a circle the size of the theme switch, 1.85rem and 2.25rem where
+the switches have grown for a finger, placed from the same `top` and the
+same gutter the cluster is placed from. Its words stay in the link, clipped
+to a pixel, so it is still named "All studies" to a screen reader. On the
+index that corner holds the site mark, on the same line as the same cluster,
+so the trip between the two keeps its top line.
 
-Three pages put the back link on the cluster's line rather than under it,
-and on a touch screen at 320 in Danish, where the switches grow to 2.25rem,
-the two overlap: the liquid-glass toolbar and the drawn gradients by 1.8px,
-the detail reveal by 7.8px. With a pointer all three clear, the first two
-by 25px and the detail reveal by 19px. It predates the generated chrome and
-is identical with it. The mode
-dial's answer, a line of its own for the cluster below 30rem, is the one to
-reach for, measured against each page's own top padding.
+It was four arrangements across ten pages, and none of them was a decision
+about a phone. Six pages had the link 1.6px under the cluster on a touch
+screen. Three had it on the cluster's line, overlapping it at 320 in Danish
+by 1.8 to 7.8px. The mode dial moved the cluster to a line of its own to
+make room. And on all of them a finger got `min-height: 2.75rem`, meant as a
+44px target, on the content box: the padding and the border went on top of
+it, and the link drew 62px tall beside 36px switches.
+
+**The chevron on every page, not only where the words do not fit.** With
+its words the link clears a two-switch cluster down to about 21rem, and
+does not clear one with the Sound switch until about 26rem: on one line at
+390, glass grades' two are 3px into each other. So a breakpoint per page
+would have it a pill on the bento and a chevron on glass grades on the same
+phone, and a control that changes shape between two pages of one site reads
+as a fault. Width decides the arrangement and `(hover: none)` decides the
+size, as everywhere else here.
+
+**The target is still 44px**, through `::after` on the link, and on a touch
+screen at every width, where the labelled pill is 2.25rem on its border
+box. The inset is `calc(-0.25rem - 1px)`, not `-0.25rem`: an inset is
+measured from the padding box, so past a 1px border the plain figure is a
+42px target.
+
+**It is the page's rule, not the chrome's.** `.demo__back` is each page's
+own, in its own palette and its own letter-spacing, and the block is the
+same on every page by hand; `_template/` carries it. With the link out of
+the flow each page starts its content from `body`'s top padding instead:
+5.6rem, and 6.4rem on a touch screen, which is 2.5rem under the line either
+way. On a touch phone the kicker starts at 102.4px on every page, where it
+had been anywhere from 115 to 174.
+
+The inked plate takes Draw again along. Its `.demo__bar` is what is placed,
+and both controls in it are their glyphs: left behind, Draw again was a row
+of its own between the line and the heading, which is the arrangement this
+replaces.
+
+From 30rem up nothing moved. The link is the labelled pill where each page
+had it, with a pointer the size it was.
+
+Checked on the ten pages and the template at 320, 360, 375, 390, 430, 480,
+481, 768 and 1440, in both languages, with touch and with a pointer: 396
+combinations. Nothing scrolls sideways. Below 30rem the link is round, the
+theme switch's size, centred on it and on the content's left edge, never
+nearer the cluster than 19.7px, which is 320 with three switches in English.
 
 ## JavaScript
 
@@ -1203,8 +1248,9 @@ Two things legitimately sweep every folder, and both are the same shape. One is
 an identity change — the site was renamed, and each `demo.html` carries its own
 copy of the back link's strings. The other is a page contract every demo has to
 meet, which is how the language switch arrived, how the theme switch did, how
-the page arrival did, how the Figma link did and how the GitHub link did:
-each folder gets its own copy, written into its own file, in its own palette.
+the page arrival did, how the Figma link did, how the GitHub link did and how
+the back link came onto the switches' line on a phone: each folder gets its
+own copy, written into its own file, in its own palette.
 
 Neither is a refactor. The test is what the folder owns afterwards: a sweep
 that leaves every folder holding its own copy is a sweep; one that leaves them
