@@ -1,0 +1,1075 @@
+/*
+  Glass grades: seven grades as seven panes of glass laid over one picture,
+  and a radio group that picks one.
+
+  - Namespaced to .glass-grades, no global selectors, no font loading. The two
+    @property rules register this component's own, namespaced numbers; they
+    select nothing.
+  - Every tunable is in the block at the top of .glass-grades, the grades
+    included: re-theme or re-grade it by setting those from outside.
+  - No script needed for the layout. The checked light and the checked side
+    of the Strip | Pane switch set two numbers, and every edge, the index,
+    the scale and the readout are arithmetic on them. component.js only
+    drives the same numbers faster.
+*/
+
+/* Registered so they can be transitioned: the whole arrangement follows them.
+   p is which pane is open, fractional while the glass moves; a is how open the
+   view is, 0 for the strip and 1 for one pane open. */
+@property --glass-grades-p {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+@property --glass-grades-a {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+/* A pane's two edges, registered so each is worked out once, on the pane, and
+   handed down as a number. Left as plain custom properties they were token
+   streams, substituted and parsed again into every transform and width that
+   reads them, on every frame of a drag. */
+@property --glass-grades-l {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+@property --glass-grades-r {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+/* Written by component.js in the same call that moves the glass, and
+   registered so it inherits as a number. */
+@property --glass-grades-glint {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+/* The recipe's factors, worked out once on the root and handed down as
+   numbers. Unregistered, every pane re-parsed the whole chain of clamp(),
+   max() and calc() behind each one on every frame of a drag: measured, style
+   recalculation went from 0.24s to 0.32s over the same 120 steps. */
+@property --glass-grades-r-h { syntax: "<number>"; inherits: true; initial-value: 0; }
+@property --glass-grades-r-s { syntax: "<number>"; inherits: true; initial-value: 0; }
+@property --glass-grades-r-fr { syntax: "<number>"; inherits: true; initial-value: 1; }
+@property --glass-grades-r-fb { syntax: "<number>"; inherits: true; initial-value: 1; }
+@property --glass-grades-r-gain { syntax: "<number>"; inherits: true; initial-value: 1; }
+@property --glass-grades-r-con { syntax: "<number>"; inherits: true; initial-value: 1; }
+@property --glass-grades-r-exp { syntax: "<number>"; inherits: true; initial-value: 1; }
+@property --glass-grades-r-sat { syntax: "<number>"; inherits: true; initial-value: 1; }
+@property --glass-grades-r-soft { syntax: "<number>"; inherits: true; initial-value: 1; }
+@property --glass-grades-r-lift { syntax: "<number>"; inherits: true; initial-value: 0; }
+@property --glass-grades-r-grain { syntax: "<number>"; inherits: true; initial-value: 0; }
+@property --glass-grades-r-wr { syntax: "<number>"; inherits: true; initial-value: 1; }
+@property --glass-grades-r-wg { syntax: "<number>"; inherits: true; initial-value: 1; }
+@property --glass-grades-r-wb { syntax: "<number>"; inherits: true; initial-value: 1; }
+/* Each grade's two sheets with the recipe on them, worked out on the root,
+   which nothing moving restyles. Worked out on each sheet instead, the 14
+   relative colours under the glass were resolved again on every frame of a
+   drag: 0.27s of style recalculation over the 120 steps against 0.24s. */
+@property --glass-grades-havgus-toe-f { syntax: "<color>"; inherits: true; initial-value: #000; }
+@property --glass-grades-havgus-shoulder-f { syntax: "<color>"; inherits: true; initial-value: #fff; }
+@property --glass-grades-dagslys-toe-f { syntax: "<color>"; inherits: true; initial-value: #000; }
+@property --glass-grades-dagslys-shoulder-f { syntax: "<color>"; inherits: true; initial-value: #fff; }
+@property --glass-grades-hojsol-toe-f { syntax: "<color>"; inherits: true; initial-value: #000; }
+@property --glass-grades-hojsol-shoulder-f { syntax: "<color>"; inherits: true; initial-value: #fff; }
+@property --glass-grades-sankthans-toe-f { syntax: "<color>"; inherits: true; initial-value: #000; }
+@property --glass-grades-sankthans-shoulder-f { syntax: "<color>"; inherits: true; initial-value: #fff; }
+@property --glass-grades-blaatime-toe-f { syntax: "<color>"; inherits: true; initial-value: #000; }
+@property --glass-grades-blaatime-shoulder-f { syntax: "<color>"; inherits: true; initial-value: #fff; }
+@property --glass-grades-nat-toe-f { syntax: "<color>"; inherits: true; initial-value: #000; }
+@property --glass-grades-nat-shoulder-f { syntax: "<color>"; inherits: true; initial-value: #fff; }
+@property --glass-grades-natrium-toe-f { syntax: "<color>"; inherits: true; initial-value: #000; }
+@property --glass-grades-natrium-shoulder-f { syntax: "<color>"; inherits: true; initial-value: #fff; }
+
+.glass-grades {
+  /* --- size and shape ------------------------------------------------- */
+  --glass-grades-width: 44rem;        /* what it wants; max-width: 100% is what it accepts */
+  --glass-grades-max-h: 52vh;         /* a tall picture narrows the window instead of growing past this */
+  --glass-grades-min-w: 28rem;        /* ...and the window is never narrower than this, unless its column is */
+  --glass-grades-ratio: 1.5;          /* the picture's shape, 3:2 like the camera's; component.js writes a new picture's */
+  --glass-grades-open: .62;           /* the share of the window one open pane takes */
+  --glass-grades-open-narrow: .82;    /* ...below 26rem, where the others close to thin slivers, about 10px on a phone */
+  --glass-grades-pad: 14px;
+  --glass-grades-gap: 12px;
+  --glass-grades-radius: 18px;
+  --glass-grades-window-radius: 7px;
+  --glass-grades-chip-min: 88px;      /* a selector's narrowest; below seven of these the rail scrolls */
+  --glass-grades-readout-line: 27rem; /* the widest name and description on one line, Blue hour's 418px; a narrower readout puts every description under its name */
+  --glass-grades-btn-h: 32px;
+  --glass-grades-btn-h-touch: 44px;
+
+  /* --- material: the camera's matte charcoal, and glass ---------------- */
+  --glass-grades-body: #232427;
+  --glass-grades-body-lit: #2e2f33;   /* the corner the light falls on */
+  --glass-grades-recess: #141517;
+  --glass-grades-paint: #ece8df;      /* engraved fill: 12.7:1 on the body */
+  --glass-grades-paint-dim: #a8a49b;  /* 6.2:1 on the body, 5.1:1 on a chosen selector */
+  --glass-grades-signal: #f0965f;     /* the mode dial's orange: 6.8:1 on the body */
+  --glass-grades-rule: rgba(255, 255, 255, .14);
+  --glass-grades-chip-hover: rgba(255, 255, 255, .04);
+  --glass-grades-chip-on: rgba(255, 255, 255, .07);
+  --glass-grades-btn-fill: rgba(255, 255, 255, .05);
+  --glass-grades-btn-line: rgba(255, 255, 255, .13);
+  --glass-grades-btn-hover: rgba(255, 255, 255, .1);
+  --glass-grades-switch-on: rgba(255, 255, 255, .12);
+  --glass-grades-tag-fill: rgba(20, 21, 23, .88);
+  --glass-grades-paper: #fff;         /* under a picture with transparency */
+  --glass-grades-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, .08),
+    inset 0 -1px 0 rgba(0, 0, 0, .5),
+    0 1px 2px rgba(0, 0, 0, .22),
+    0 28px 50px -26px rgba(0, 0, 0, .6);
+  --glass-grades-window-shadow: inset 0 1px 3px rgba(0, 0, 0, .6), inset 0 0 0 1px rgba(0, 0, 0, .45);
+  --glass-grades-edge: .42;           /* the lit face of a pane's edge, at rest */
+  --glass-grades-shade: rgba(0, 0, 0, .32);   /* and its shaded face */
+  --glass-grades-sea: 178 226 214;    /* float glass is faintly green at its edge */
+  --glass-grades-bevel: 14px;         /* the strip at each edge that bends the picture */
+  --glass-grades-refract: 1.45;       /* how much it bends it */
+  --glass-grades-glint: 0;            /* written by component.js: the edges catch more light the faster they move */
+  --glass-grades-glint-fade: 220ms;   /* how long that light takes to leave once the glass slows */
+  --glass-grades-font: "Mona Sans", system-ui, sans-serif;
+  --glass-grades-mono: "Fragment Mono", ui-monospace, monospace;
+  --glass-grades-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 1'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  --glass-grades-grain-size: 180px;
+
+  /* --- motion ---------------------------------------------------------- */
+  --glass-grades-glide: cubic-bezier(.25, 1, .5, 1);   /* read by component.js too: how the glass gets to a pane, slowing from the first frame to a soft stop, never past it */
+  --glass-grades-glide-time: 560ms;   /* read by component.js too: one pane's glide; script takes a little longer over more panes and less over part of one */
+  --glass-grades-view-time: 300ms;    /* strip to pane and back */
+  --glass-grades-lift-time: 160ms;
+  --glass-grades-set-time: 300ms;
+  --glass-grades-swap-out: 110ms;
+  --glass-grades-swap-in: 160ms;
+  --glass-grades-drag: 1;             /* read by component.js: glass moved per distance dragged; at 1 the moving edge stays under the hand */
+  --glass-grades-flick: 400ms;        /* read by component.js: how far ahead a release is projected, so a flick coasts, three panes at most */
+  --glass-grades-flick-min: 400;      /* read by component.js: the slowest release that is a flick, in px a second; slower lands on the nearest pane */
+  --glass-grades-notch: .55;          /* read by component.js: how much the glass sticks near each stop as you drag */
+  --glass-grades-hold: 320ms;         /* read by component.js: a still press this long lifts the glass, for as long as it is held */
+  --glass-grades-click: 0;            /* read by component.js: sound volume, 0 to 1; at 0 no audio is ever started */
+
+  /* --- the reference row every selector shows: black to white, then skin,
+         sky, leaf and red ---------------------------------------------- */
+  --glass-grades-ref-1: #0d0d0d;
+  --glass-grades-ref-2: #3a3a3a;
+  --glass-grades-ref-3: #767676;
+  --glass-grades-ref-4: #b9b9b9;
+  --glass-grades-ref-5: #f2f2f2;
+  --glass-grades-ref-6: #c99478;
+  --glass-grades-ref-7: #5f86b8;
+  --glass-grades-ref-8: #5c7f45;
+  --glass-grades-ref-9: #c0392b;
+
+  /* --- the grades: seven kinds of light, in the order of a day.
+         toe: where black lands. shoulder: where white lands. sat, con and
+         exp: saturation, contrast and brightness. grain: its strength. ----- */
+  --glass-grades-havgus-toe: #43494f;     /* sea fog: droplets scatter light into every shadow */
+  --glass-grades-havgus-shoulder: #eef0ef;
+  --glass-grades-havgus-sat: .62;
+  --glass-grades-havgus-con: .84;
+  --glass-grades-havgus-exp: 1.04;
+  --glass-grades-havgus-grain: .06;
+
+  --glass-grades-dagslys-toe: #000;       /* daylight: the reference */
+  --glass-grades-dagslys-shoulder: #fff;
+  --glass-grades-dagslys-sat: 1.04;
+  --glass-grades-dagslys-con: 1.03;
+  --glass-grades-dagslys-exp: 1;
+  --glass-grades-dagslys-grain: 0;
+
+  --glass-grades-hojsol-toe: #000a0c;     /* high sun: hard shadows, colour bleached by strong light */
+  --glass-grades-hojsol-shoulder: #fbf7ef;
+  --glass-grades-hojsol-sat: .7;
+  --glass-grades-hojsol-con: 1.14;
+  --glass-grades-hojsol-exp: 1.01;
+  --glass-grades-hojsol-grain: .06;
+
+  --glass-grades-sankthans-toe: #140b04;  /* low sun: the blue scattered out on the long way through the air */
+  --glass-grades-sankthans-shoulder: #ffe1b8;
+  --glass-grades-sankthans-sat: 1.08;
+  --glass-grades-sankthans-con: .94;
+  --glass-grades-sankthans-exp: 1.07;
+  --glass-grades-sankthans-grain: .05;
+
+  --glass-grades-blaatime-toe: #1b3658;   /* blue hour: skylight in the shadows, lamps in the highlights */
+  --glass-grades-blaatime-shoulder: #f4ece2;
+  --glass-grades-blaatime-sat: .74;
+  --glass-grades-blaatime-con: 1;
+  --glass-grades-blaatime-exp: .93;
+  --glass-grades-blaatime-grain: .1;
+
+  --glass-grades-nat-toe: #0b1424;        /* night: the eye loses colour and leans blue */
+  --glass-grades-nat-shoulder: #cfdaea;
+  --glass-grades-nat-sat: 0;
+  --glass-grades-nat-con: .92;
+  --glass-grades-nat-exp: .98;
+  --glass-grades-nat-grain: .16;
+
+  --glass-grades-natrium-toe: #1f1206;    /* a sodium lamp: one wavelength, so one colour */
+  --glass-grades-natrium-shoulder: #f9bd73;
+  --glass-grades-natrium-sat: 0;
+  --glass-grades-natrium-con: 1.06;
+  --glass-grades-natrium-exp: 1.08;
+  --glass-grades-natrium-grain: .12;
+
+  /* --- the recipe: the camera's own units, laid over whichever grade is
+         open, and 0 leaves the grade as it is. The k- factors say what one
+         step does; they were chosen by eye, not measured against a camera,
+         so a step here is near a step there and no more. ---------------- */
+  --glass-grades-tone-h: 0;           /* highlight tone, -2 to +4 in halves: + harder whites, - softer */
+  --glass-grades-tone-s: 0;           /* shadow tone, -2 to +4 in halves: + deeper shadows, - lifted */
+  --glass-grades-color: 0;            /* -4 to +4: saturation */
+  --glass-grades-wb-r: 0;             /* white balance shift, -9 to +9: + red, - cyan */
+  --glass-grades-wb-b: 0;             /* -9 to +9: + blue, - yellow */
+  --glass-grades-grain-step: 0;       /* 0 the grade's own grain, 1 weak, 2 strong, added to it */
+  --glass-grades-k-tone: .05;         /* contrast per step of + tone, the pivot moved by half as much exposure */
+  --glass-grades-k-soft: .03;         /* how far white comes down per step of - highlight */
+  --glass-grades-k-lift: 10;          /* how far black comes up per step of - shadow, of 255 */
+  --glass-grades-k-color: .1;         /* saturation per step of colour */
+  --glass-grades-k-wb: .018;          /* gain per step of white balance, on its channel */
+  --glass-grades-k-grain: .06;        /* grain per step */
+  /* ---------------------------------------------------------------------- */
+
+  /* Written by the rules below from the markup, not tunables. */
+  --glass-grades-n: 7;                /* how many grades */
+  --glass-grades-sel: 0;              /* which radio is checked */
+  --glass-grades-p: 0;
+  --glass-grades-a: 1;
+  --glass-grades-s: calc((1 - var(--glass-grades-open)) / (var(--glass-grades-n) - 1));   /* one sliver */
+
+  /* The recipe as factors, worked out once here and read by every layer.
+     + tone hardens with contrast, H moving the pivot down and S up, so H
+     mostly brightens the whites and S mostly deepens the blacks. - tone
+     softens with the sheets: the shoulder comes down, the toe comes up.
+     White balance is a gain per channel on the shoulder, since multiplying
+     by a colour scales every tone; a gain above 1 is said by lowering the
+     other channels and raising exposure by the same factor. */
+  --glass-grades-r-h: clamp(-2, var(--glass-grades-tone-h), 4);
+  --glass-grades-r-s: clamp(-2, var(--glass-grades-tone-s), 4);
+  --glass-grades-r-fr: calc(1 + clamp(-9, var(--glass-grades-wb-r), 9) * var(--glass-grades-k-wb));
+  --glass-grades-r-fb: calc(1 + clamp(-9, var(--glass-grades-wb-b), 9) * var(--glass-grades-k-wb));
+  --glass-grades-r-gain: 1;           /* raised below where relative colour can lower the shoulder to match */
+  --glass-grades-r-con: calc(1 + (max(0, var(--glass-grades-r-h)) + max(0, var(--glass-grades-r-s))) * var(--glass-grades-k-tone));
+  --glass-grades-r-exp: calc((1 + (max(0, var(--glass-grades-r-h)) - max(0, var(--glass-grades-r-s))) * var(--glass-grades-k-tone) / 2) * var(--glass-grades-r-gain));
+  --glass-grades-r-sat: max(0, 1 + clamp(-4, var(--glass-grades-color), 4) * var(--glass-grades-k-color));
+  --glass-grades-r-soft: calc(1 - max(0, -1 * var(--glass-grades-r-h)) * var(--glass-grades-k-soft));
+  --glass-grades-r-lift: calc(max(0, -1 * var(--glass-grades-r-s)) * var(--glass-grades-k-lift));
+  --glass-grades-r-grain: calc(clamp(0, var(--glass-grades-grain-step), 2) * var(--glass-grades-k-grain));
+  --glass-grades-r-wr: calc(var(--glass-grades-r-fr) / var(--glass-grades-r-gain) * var(--glass-grades-r-soft));
+  --glass-grades-r-wg: calc(1 / var(--glass-grades-r-gain) * var(--glass-grades-r-soft));
+  --glass-grades-r-wb: calc(var(--glass-grades-r-fb) / var(--glass-grades-r-gain) * var(--glass-grades-r-soft));
+  /* Each grade's sheets as the grade gives them; where relative colour is
+     understood, the rule below puts the recipe's tone and white balance on
+     them. A grade of your own maps its own toe and shoulder and the recipe's
+     tone and white balance pass it by, unless it gets a pair here too. */
+  --glass-grades-havgus-toe-f: var(--glass-grades-havgus-toe);
+  --glass-grades-havgus-shoulder-f: var(--glass-grades-havgus-shoulder);
+  --glass-grades-dagslys-toe-f: var(--glass-grades-dagslys-toe);
+  --glass-grades-dagslys-shoulder-f: var(--glass-grades-dagslys-shoulder);
+  --glass-grades-hojsol-toe-f: var(--glass-grades-hojsol-toe);
+  --glass-grades-hojsol-shoulder-f: var(--glass-grades-hojsol-shoulder);
+  --glass-grades-sankthans-toe-f: var(--glass-grades-sankthans-toe);
+  --glass-grades-sankthans-shoulder-f: var(--glass-grades-sankthans-shoulder);
+  --glass-grades-blaatime-toe-f: var(--glass-grades-blaatime-toe);
+  --glass-grades-blaatime-shoulder-f: var(--glass-grades-blaatime-shoulder);
+  --glass-grades-nat-toe-f: var(--glass-grades-nat-toe);
+  --glass-grades-nat-shoulder-f: var(--glass-grades-nat-shoulder);
+  --glass-grades-natrium-toe-f: var(--glass-grades-natrium-toe);
+  --glass-grades-natrium-shoulder-f: var(--glass-grades-natrium-shoulder);
+
+  position: relative;
+  isolation: isolate;
+  box-sizing: border-box;
+  width: var(--glass-grades-width);
+  max-width: 100%;
+  container: glass-grades / inline-size;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--glass-grades-gap);
+  padding: var(--glass-grades-pad);
+  border-radius: var(--glass-grades-radius);
+  color: var(--glass-grades-paint);
+  font-family: var(--glass-grades-font);
+  background: linear-gradient(160deg, var(--glass-grades-body-lit), var(--glass-grades-body) 46%);
+  box-shadow: var(--glass-grades-shadow);
+  transition:
+    --glass-grades-p var(--glass-grades-glide-time) var(--glass-grades-glide),
+    --glass-grades-a var(--glass-grades-view-time) cubic-bezier(.2, .8, .2, 1);
+}
+
+/* Bead-blasted metal: a fine noise, barely there. */
+.glass-grades::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--glass-grades-noise) 0 0 / 140px 140px;
+  opacity: .07;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+/* While component.js holds the glass, p follows it directly. */
+.glass-grades--driven {
+  transition: --glass-grades-a var(--glass-grades-view-time) cubic-bezier(.2, .8, .2, 1);
+}
+
+/* --- the two numbers, from the markup ------------------------------------- */
+
+.glass-grades:has(.glass-grades__chip:nth-of-type(1) > :checked) { --glass-grades-p: 0; --glass-grades-sel: 0; }
+.glass-grades:has(.glass-grades__chip:nth-of-type(2) > :checked) { --glass-grades-p: 1; --glass-grades-sel: 1; }
+.glass-grades:has(.glass-grades__chip:nth-of-type(3) > :checked) { --glass-grades-p: 2; --glass-grades-sel: 2; }
+.glass-grades:has(.glass-grades__chip:nth-of-type(4) > :checked) { --glass-grades-p: 3; --glass-grades-sel: 3; }
+.glass-grades:has(.glass-grades__chip:nth-of-type(5) > :checked) { --glass-grades-p: 4; --glass-grades-sel: 4; }
+.glass-grades:has(.glass-grades__chip:nth-of-type(6) > :checked) { --glass-grades-p: 5; --glass-grades-sel: 5; }
+.glass-grades:has(.glass-grades__chip:nth-of-type(7) > :checked) { --glass-grades-p: 6; --glass-grades-sel: 6; }
+.glass-grades:has(.glass-grades__chip:nth-of-type(8) > :checked) { --glass-grades-p: 7; --glass-grades-sel: 7; }
+
+.glass-grades:has(.glass-grades__chip:nth-of-type(2):last-of-type) { --glass-grades-n: 2; }
+.glass-grades:has(.glass-grades__chip:nth-of-type(3):last-of-type) { --glass-grades-n: 3; }
+.glass-grades:has(.glass-grades__chip:nth-of-type(4):last-of-type) { --glass-grades-n: 4; }
+.glass-grades:has(.glass-grades__chip:nth-of-type(5):last-of-type) { --glass-grades-n: 5; }
+.glass-grades:has(.glass-grades__chip:nth-of-type(6):last-of-type) { --glass-grades-n: 6; }
+.glass-grades:has(.glass-grades__chip:nth-of-type(7):last-of-type) { --glass-grades-n: 7; }
+.glass-grades:has(.glass-grades__chip:nth-of-type(8):last-of-type) { --glass-grades-n: 8; }
+
+.glass-grades:has(.glass-grades__switch-radio[value="strip"]:checked) { --glass-grades-a: 0; }
+
+/* Each pane, segment and name knows its place. */
+.glass-grades__pane:nth-child(1), .glass-grades__seg:nth-child(1), .glass-grades__name:nth-child(1) { --glass-grades-i: 0; }
+.glass-grades__pane:nth-child(2), .glass-grades__seg:nth-child(2), .glass-grades__name:nth-child(2) { --glass-grades-i: 1; }
+.glass-grades__pane:nth-child(3), .glass-grades__seg:nth-child(3), .glass-grades__name:nth-child(3) { --glass-grades-i: 2; }
+.glass-grades__pane:nth-child(4), .glass-grades__seg:nth-child(4), .glass-grades__name:nth-child(4) { --glass-grades-i: 3; }
+.glass-grades__pane:nth-child(5), .glass-grades__seg:nth-child(5), .glass-grades__name:nth-child(5) { --glass-grades-i: 4; }
+.glass-grades__pane:nth-child(6), .glass-grades__seg:nth-child(6), .glass-grades__name:nth-child(6) { --glass-grades-i: 5; }
+.glass-grades__pane:nth-child(7), .glass-grades__seg:nth-child(7), .glass-grades__name:nth-child(7) { --glass-grades-i: 6; }
+.glass-grades__pane:nth-child(8), .glass-grades__seg:nth-child(8), .glass-grades__name:nth-child(8) { --glass-grades-i: 7; }
+
+/* A band's left edge, as a share of the window: in the strip j/n, and with a
+   pane open j slivers plus, past the open pane, the rest of its width. The
+   clamp is what slides that width from one pane to the next as p moves. */
+.glass-grades__pane,
+.glass-grades__seg {
+  --glass-grades-l: calc(
+    (1 - var(--glass-grades-a)) * var(--glass-grades-i) / var(--glass-grades-n)
+    + var(--glass-grades-a) * (var(--glass-grades-i) * var(--glass-grades-s)
+      + (var(--glass-grades-open) - var(--glass-grades-s)) * clamp(0, var(--glass-grades-i) - var(--glass-grades-p), 1)));
+  --glass-grades-r: calc(
+    (1 - var(--glass-grades-a)) * (var(--glass-grades-i) + 1) / var(--glass-grades-n)
+    + var(--glass-grades-a) * ((var(--glass-grades-i) + 1) * var(--glass-grades-s)
+      + (var(--glass-grades-open) - var(--glass-grades-s)) * clamp(0, var(--glass-grades-i) + 1 - var(--glass-grades-p), 1)));
+}
+
+/* --- the grade: one filter, two sheets of colour, grain --------------------- */
+
+.glass-grades__view--havgus    { --glass-grades-toe: var(--glass-grades-havgus-toe-f);    --glass-grades-shoulder: var(--glass-grades-havgus-shoulder-f);    --glass-grades-sat: var(--glass-grades-havgus-sat);    --glass-grades-con: var(--glass-grades-havgus-con);    --glass-grades-exp: var(--glass-grades-havgus-exp);    --glass-grades-grain: var(--glass-grades-havgus-grain); }
+.glass-grades__view--dagslys   { --glass-grades-toe: var(--glass-grades-dagslys-toe-f);   --glass-grades-shoulder: var(--glass-grades-dagslys-shoulder-f);   --glass-grades-sat: var(--glass-grades-dagslys-sat);   --glass-grades-con: var(--glass-grades-dagslys-con);   --glass-grades-exp: var(--glass-grades-dagslys-exp);   --glass-grades-grain: var(--glass-grades-dagslys-grain); }
+.glass-grades__view--hojsol    { --glass-grades-toe: var(--glass-grades-hojsol-toe-f);    --glass-grades-shoulder: var(--glass-grades-hojsol-shoulder-f);    --glass-grades-sat: var(--glass-grades-hojsol-sat);    --glass-grades-con: var(--glass-grades-hojsol-con);    --glass-grades-exp: var(--glass-grades-hojsol-exp);    --glass-grades-grain: var(--glass-grades-hojsol-grain); }
+.glass-grades__view--sankthans { --glass-grades-toe: var(--glass-grades-sankthans-toe-f); --glass-grades-shoulder: var(--glass-grades-sankthans-shoulder-f); --glass-grades-sat: var(--glass-grades-sankthans-sat); --glass-grades-con: var(--glass-grades-sankthans-con); --glass-grades-exp: var(--glass-grades-sankthans-exp); --glass-grades-grain: var(--glass-grades-sankthans-grain); }
+.glass-grades__view--blaatime  { --glass-grades-toe: var(--glass-grades-blaatime-toe-f);  --glass-grades-shoulder: var(--glass-grades-blaatime-shoulder-f);  --glass-grades-sat: var(--glass-grades-blaatime-sat);  --glass-grades-con: var(--glass-grades-blaatime-con);  --glass-grades-exp: var(--glass-grades-blaatime-exp);  --glass-grades-grain: var(--glass-grades-blaatime-grain); }
+.glass-grades__view--nat       { --glass-grades-toe: var(--glass-grades-nat-toe-f);       --glass-grades-shoulder: var(--glass-grades-nat-shoulder-f);       --glass-grades-sat: var(--glass-grades-nat-sat);       --glass-grades-con: var(--glass-grades-nat-con);       --glass-grades-exp: var(--glass-grades-nat-exp);       --glass-grades-grain: var(--glass-grades-nat-grain); }
+.glass-grades__view--natrium   { --glass-grades-toe: var(--glass-grades-natrium-toe-f);   --glass-grades-shoulder: var(--glass-grades-natrium-shoulder-f);   --glass-grades-sat: var(--glass-grades-natrium-sat);   --glass-grades-con: var(--glass-grades-natrium-con);   --glass-grades-exp: var(--glass-grades-natrium-exp);   --glass-grades-grain: var(--glass-grades-natrium-grain); }
+
+.glass-grades__view {
+  position: absolute;
+  inset: 0;
+  display: block;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.glass-grades__media {
+  position: absolute;
+  inset: 0;
+  display: block;
+  background: var(--glass-grades-paper);
+  filter:
+    brightness(calc(var(--glass-grades-exp, 1) * var(--glass-grades-r-exp, 1)))
+    contrast(calc(var(--glass-grades-con, 1) * var(--glass-grades-r-con, 1)))
+    saturate(calc(var(--glass-grades-sat, 1) * var(--glass-grades-r-sat, 1)));
+}
+
+.glass-grades__toe,
+.glass-grades__shoulder,
+.glass-grades__grain {
+  position: absolute;
+  inset: 0;
+  display: block;
+  pointer-events: none;
+}
+/* Screen with a colour moves black to that colour and leaves white alone. */
+.glass-grades__toe { background: var(--glass-grades-toe, #000); mix-blend-mode: screen; }
+/* Multiply moves white to that colour and leaves black alone. */
+.glass-grades__shoulder { background: var(--glass-grades-shoulder, #fff); mix-blend-mode: multiply; }
+.glass-grades__grain {
+  background: var(--glass-grades-noise) 0 0 / var(--glass-grades-grain-size) var(--glass-grades-grain-size);
+  mix-blend-mode: overlay;
+  opacity: calc(var(--glass-grades-grain, 0) + var(--glass-grades-r-grain, 0));
+}
+
+/* The recipe's tone and white balance move the sheets themselves, where
+   relative colour can say so: black comes up by the lift, and white takes the
+   three channel gains. Without it the sheets keep the grade's own colours,
+   exposure keeps no compensation to match, and the recipe is contrast,
+   saturation and grain. */
+@supports (color: rgb(from red r g b)) {
+  .glass-grades {
+    --glass-grades-r-gain: max(1, var(--glass-grades-r-fr), var(--glass-grades-r-fb));
+    --glass-grades-havgus-toe-f: rgb(from var(--glass-grades-havgus-toe) calc(r + var(--glass-grades-r-lift)) calc(g + var(--glass-grades-r-lift)) calc(b + var(--glass-grades-r-lift)));
+    --glass-grades-havgus-shoulder-f: rgb(from var(--glass-grades-havgus-shoulder) calc(r * var(--glass-grades-r-wr)) calc(g * var(--glass-grades-r-wg)) calc(b * var(--glass-grades-r-wb)));
+    --glass-grades-dagslys-toe-f: rgb(from var(--glass-grades-dagslys-toe) calc(r + var(--glass-grades-r-lift)) calc(g + var(--glass-grades-r-lift)) calc(b + var(--glass-grades-r-lift)));
+    --glass-grades-dagslys-shoulder-f: rgb(from var(--glass-grades-dagslys-shoulder) calc(r * var(--glass-grades-r-wr)) calc(g * var(--glass-grades-r-wg)) calc(b * var(--glass-grades-r-wb)));
+    --glass-grades-hojsol-toe-f: rgb(from var(--glass-grades-hojsol-toe) calc(r + var(--glass-grades-r-lift)) calc(g + var(--glass-grades-r-lift)) calc(b + var(--glass-grades-r-lift)));
+    --glass-grades-hojsol-shoulder-f: rgb(from var(--glass-grades-hojsol-shoulder) calc(r * var(--glass-grades-r-wr)) calc(g * var(--glass-grades-r-wg)) calc(b * var(--glass-grades-r-wb)));
+    --glass-grades-sankthans-toe-f: rgb(from var(--glass-grades-sankthans-toe) calc(r + var(--glass-grades-r-lift)) calc(g + var(--glass-grades-r-lift)) calc(b + var(--glass-grades-r-lift)));
+    --glass-grades-sankthans-shoulder-f: rgb(from var(--glass-grades-sankthans-shoulder) calc(r * var(--glass-grades-r-wr)) calc(g * var(--glass-grades-r-wg)) calc(b * var(--glass-grades-r-wb)));
+    --glass-grades-blaatime-toe-f: rgb(from var(--glass-grades-blaatime-toe) calc(r + var(--glass-grades-r-lift)) calc(g + var(--glass-grades-r-lift)) calc(b + var(--glass-grades-r-lift)));
+    --glass-grades-blaatime-shoulder-f: rgb(from var(--glass-grades-blaatime-shoulder) calc(r * var(--glass-grades-r-wr)) calc(g * var(--glass-grades-r-wg)) calc(b * var(--glass-grades-r-wb)));
+    --glass-grades-nat-toe-f: rgb(from var(--glass-grades-nat-toe) calc(r + var(--glass-grades-r-lift)) calc(g + var(--glass-grades-r-lift)) calc(b + var(--glass-grades-r-lift)));
+    --glass-grades-nat-shoulder-f: rgb(from var(--glass-grades-nat-shoulder) calc(r * var(--glass-grades-r-wr)) calc(g * var(--glass-grades-r-wg)) calc(b * var(--glass-grades-r-wb)));
+    --glass-grades-natrium-toe-f: rgb(from var(--glass-grades-natrium-toe) calc(r + var(--glass-grades-r-lift)) calc(g + var(--glass-grades-r-lift)) calc(b + var(--glass-grades-r-lift)));
+    --glass-grades-natrium-shoulder-f: rgb(from var(--glass-grades-natrium-shoulder) calc(r * var(--glass-grades-r-wr)) calc(g * var(--glass-grades-r-wg)) calc(b * var(--glass-grades-r-wb)));
+  }
+}
+
+/* --- the bar: what you are looking through, and two switches -------------- */
+
+.glass-grades__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  padding: 2px 2px 0;
+  min-width: 0;
+}
+
+/* Every name is in the markup; the chosen one is the only one you can see.
+   They share one cell, so the bar never jumps as the choice changes. */
+.glass-grades__readout {
+  margin: 0;
+  display: grid;
+  min-width: 0;
+  flex: 1 1 14rem;
+}
+/* A description sits beside its name where every grade's fits there, and
+   under it where one does not. Set after its name in the line, it started
+   there and ran on under the name wherever the bar ran out, a sentence broken
+   under a word it was not part of. The step is the clamp's 999, as on the
+   rail, so the seven take one layout between them, and each name keeps the
+   top line as the choice changes. */
+.glass-grades__name {
+  grid-area: 1 / 1;
+  align-self: start;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 1.3em;
+  font: 400 13px/1.3 var(--glass-grades-mono);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--glass-grades-paint);
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .65), 0 1px 0 rgba(255, 255, 255, .07);
+  pointer-events: none;
+  opacity: calc(1 - min(1, max(var(--glass-grades-i) - var(--glass-grades-sel), var(--glass-grades-sel) - var(--glass-grades-i))));
+  transition: opacity 120ms ease-out;
+}
+.glass-grades__desc {
+  flex: 1 1 calc((var(--glass-grades-readout-line) - 100%) * 999);
+  font: 400 13px/1.3 var(--glass-grades-font);
+  letter-spacing: 0;
+  text-transform: none;
+  text-shadow: none;
+  text-wrap: pretty;
+  color: var(--glass-grades-paint-dim);
+}
+
+.glass-grades__tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Photo is a label and Save a button, and a browser sizes a button's
+   border inside its height and a label's outside it, so Save stood 2px
+   shorter than Photo beside it: 32 against 34, 44 against 46 on a phone.
+   Both size their insides now, the way the switch's sides do. */
+.glass-grades__btn {
+  position: relative;
+  box-sizing: content-box;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: var(--glass-grades-btn-h);
+  padding: 0 12px 0 10px;
+  border: 1px solid var(--glass-grades-btn-line);
+  border-radius: 999px;
+  background: var(--glass-grades-btn-fill);
+  color: var(--glass-grades-paint);
+  font: 600 12.5px/1 var(--glass-grades-font);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06);
+  transition: background-color .15s, border-color .15s;
+}
+.glass-grades__btn:hover { background: var(--glass-grades-btn-hover); }
+.glass-grades__btn svg,
+.glass-grades__switch-opt svg { width: 15px; height: 15px; flex: none; }
+.glass-grades__btn:has(:focus-visible),
+.glass-grades__btn:focus-visible {
+  outline: 2px solid var(--glass-grades-signal);
+  outline-offset: 2px;
+}
+/* A picker that can show nothing without script is not offered without it,
+   and neither is Save, which script draws on a canvas. */
+.glass-grades__btn--photo,
+.glass-grades__btn--save { display: none; }
+.glass-grades--live .glass-grades__btn--photo,
+.glass-grades--saves .glass-grades__btn--save { display: inline-flex; }
+
+.glass-grades__file,
+.glass-grades__switch-radio {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Strip | Pane: a second radio group, so the view is said by the markup
+   the way the light is, and :has() reads it into a. The chosen side is a
+   raised fill with its icon in the index's orange. Each side is as tall as a
+   button's inside, so the switch is a button's height and the fill sits 3px
+   inside its edge all round, its ends concentric with the switch's. The
+   sides were 2px shorter once, and the row stretched the switch to the
+   buttons' height round them: the fill sat 3px under the top and 5px over
+   the bottom, and its ends met the switch's off true. */
+.glass-grades__switch {
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+  border: 1px solid var(--glass-grades-btn-line);
+  border-radius: 999px;
+  background: var(--glass-grades-btn-fill);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06);
+}
+.glass-grades__switch-opt {
+  position: relative;
+  z-index: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: var(--glass-grades-btn-h);
+  padding: 0 11px;
+  border-radius: 999px;
+  color: var(--glass-grades-paint-dim);
+  font: 600 12.5px/1 var(--glass-grades-font);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: color .15s;
+}
+.glass-grades__switch-opt::before {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  z-index: -1;
+  border-radius: inherit;
+  transition: background-color .15s, box-shadow .15s;
+}
+.glass-grades__switch-opt:hover,
+.glass-grades__switch-opt:has(> :checked) { color: var(--glass-grades-paint); }
+.glass-grades__switch-opt:has(> :checked)::before {
+  background: var(--glass-grades-switch-on);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08), 0 1px 2px rgba(0, 0, 0, .4);
+}
+.glass-grades__switch-opt:has(> :checked) svg { color: var(--glass-grades-signal); }
+.glass-grades__switch-opt:has(> :focus-visible) {
+  outline: 2px solid var(--glass-grades-signal);
+  outline-offset: 1px;
+}
+
+/* --- the window: an index above, the picture, a scale below --------------- */
+
+.glass-grades__window {
+  width: min(100%, max(var(--glass-grades-min-w), calc(var(--glass-grades-max-h) * var(--glass-grades-ratio))));
+  max-width: 100%;
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 5px;
+}
+
+.glass-grades__scale {
+  position: relative;
+  height: 9px;
+  container-type: inline-size;
+}
+/* The index sits over the open pane's middle: in the strip p/n plus half a
+   band, with a pane open p slivers plus half the open pane. */
+.glass-grades__index {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 2px;
+  height: 9px;
+  border-radius: 1px;
+  background: var(--glass-grades-signal);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, .3);
+  transform: translateX(calc(
+    (var(--glass-grades-p) * ((1 - var(--glass-grades-a)) / var(--glass-grades-n) + var(--glass-grades-a) * var(--glass-grades-s))
+      + ((1 - var(--glass-grades-a)) / var(--glass-grades-n) + var(--glass-grades-a) * var(--glass-grades-open)) / 2) * 100cqw - 1px));
+}
+
+.glass-grades__frame {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  aspect-ratio: var(--glass-grades-ratio);
+  container-type: size;
+  overflow: hidden;
+  border-radius: var(--glass-grades-window-radius);
+  background: var(--glass-grades-recess);
+  outline: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.glass-grades--live .glass-grades__frame { cursor: grab; touch-action: pan-y; }
+.glass-grades--live .glass-grades__frame.glass-grades__frame--dragging { cursor: grabbing; }
+.glass-grades__frame:focus-visible {
+  outline: 2px solid var(--glass-grades-signal);
+  outline-offset: 3px;
+}
+/* The window is let into the metal. */
+.glass-grades__frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  border-radius: inherit;
+  box-shadow: var(--glass-grades-window-shadow);
+  pointer-events: none;
+}
+
+.glass-grades__scene {
+  position: absolute;
+  inset: 0;
+  transition: opacity var(--glass-grades-swap-in) ease-out;
+}
+.glass-grades--swapping .glass-grades__scene {
+  opacity: 0;
+  transition-duration: var(--glass-grades-swap-out);
+}
+
+.glass-grades__base,
+.glass-grades__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+
+.glass-grades__panes {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transition:
+    opacity var(--glass-grades-set-time) ease-out,
+    transform var(--glass-grades-set-time) var(--glass-grades-glide);
+}
+.glass-grades--lifted .glass-grades__panes {
+  opacity: 0;
+  transform: translateY(-8px) scale(1.012);
+  transition:
+    opacity var(--glass-grades-lift-time) ease-out,
+    transform calc(var(--glass-grades-lift-time) + 40ms) cubic-bezier(.2, .8, .2, 1);
+}
+.glass-grades--dropping .glass-grades__panes { transform: translateY(-6px); }
+
+/* A pane clips itself to its band and moves its picture the other way, so the
+   picture holds still while the glass slides over it. Measured against
+   clipping a full-size copy with clip-path: about 40% less main-thread time
+   over the same drag. */
+.glass-grades__pane {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: calc((var(--glass-grades-r) - var(--glass-grades-l)) * 100cqw);
+  overflow: hidden;
+  transform: translateX(calc(var(--glass-grades-l) * 100cqw));
+}
+.glass-grades__pane > .glass-grades__view {
+  inset: 0 auto 0 0;
+  width: 100cqw;
+  transform: translateX(calc(var(--glass-grades-l) * -100cqw));
+  will-change: transform;
+}
+
+/* The edge of the glass bends what is behind it. */
+.glass-grades__bevel {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: var(--glass-grades-bevel);
+  overflow: hidden;
+  transform: translateX(calc(var(--glass-grades-l) * 100cqw));
+}
+.glass-grades__bevel .glass-grades__img {
+  inset: 0 auto 0 0;
+  width: 100cqw;
+  transform-origin: calc(var(--glass-grades-l) * 100cqw + var(--glass-grades-bevel) / 2) 50%;
+  transform: translateX(calc(var(--glass-grades-l) * -100cqw)) scaleX(var(--glass-grades-refract));
+}
+.glass-grades__pane:first-child .glass-grades__bevel { display: none; }
+
+/* One light, from the left: each pane's left face catches it and its right
+   face is in shade. Float glass is faintly green at the edge, for a few
+   pixels, and that is all the colour the glass adds. */
+.glass-grades__edge {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, 0) 18px),
+    linear-gradient(90deg, rgb(var(--glass-grades-sea) / 0) 0, rgb(var(--glass-grades-sea) / .2) 1px, rgb(var(--glass-grades-sea) / .07) 4px, rgb(var(--glass-grades-sea) / 0) 9px);
+}
+/* The light the edge catches while the glass moves, on a layer of its own
+   whose opacity is the only thing that changes, faded back by a transition
+   once the glass slows. */
+.glass-grades__pane::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: var(--glass-grades-glint);
+  background: linear-gradient(90deg, rgba(255, 255, 255, .5) 0, rgba(255, 255, 255, .5) 1px, rgba(255, 255, 255, .14) 1px, rgba(255, 255, 255, 0) 18px);
+  transition: opacity var(--glass-grades-glint-fade) ease-out;
+}
+.glass-grades__pane:first-child::after { display: none; }
+.glass-grades__edge::before,
+.glass-grades__edge::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+}
+.glass-grades__edge::before {
+  left: 0;
+  background: linear-gradient(180deg,
+    rgba(255, 255, 255, var(--glass-grades-edge)),
+    rgba(255, 255, 255, calc(var(--glass-grades-edge) * .45)));
+}
+.glass-grades__edge::after {
+  right: 0;
+  background: var(--glass-grades-shade);
+}
+.glass-grades__pane:first-child .glass-grades__edge { background: none; }
+.glass-grades__pane:first-child .glass-grades__edge::before,
+.glass-grades__pane:last-child .glass-grades__edge::after { display: none; }
+
+.glass-grades__tag {
+  position: absolute;
+  z-index: 6;
+  left: 10px;
+  top: 10px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: var(--glass-grades-tag-fill);
+  color: var(--glass-grades-paint);
+  font: 400 11px/1.2 var(--glass-grades-mono);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(-3px);
+  transition: opacity 140ms ease-out, transform 200ms ease-out;
+}
+.glass-grades__tag--drop { left: 50%; top: 50%; transform: translate(-50%, -40%); }
+.glass-grades--lifted .glass-grades__tag--original { opacity: 1; transform: none; }
+.glass-grades--dropping .glass-grades__tag--drop { opacity: 1; transform: translate(-50%, -50%); }
+.glass-grades__tag--note.glass-grades__tag--on { opacity: 1; transform: none; }
+
+/* The scale under the window: a segment per pane, the chosen one lit. */
+.glass-grades__track {
+  position: relative;
+  height: 3px;
+  container-type: inline-size;
+}
+.glass-grades__seg {
+  --glass-grades-on: calc(1 - min(1, max(var(--glass-grades-i) - var(--glass-grades-sel), var(--glass-grades-sel) - var(--glass-grades-i))));
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: calc((var(--glass-grades-r) - var(--glass-grades-l)) * 100cqw);
+  transform: translateX(calc(var(--glass-grades-l) * 100cqw));
+  background: color-mix(in srgb, var(--glass-grades-signal) calc(var(--glass-grades-on) * 100%), var(--glass-grades-rule));
+  box-shadow: inset 1px 0 0 var(--glass-grades-body);
+}
+.glass-grades__seg:first-child { box-shadow: none; }
+
+/* --- the rail: one selector per grade, a window onto a reference row ------- */
+
+/* As wide as the window, so in the strip each selector sits under its own
+   pane, wherever the window holds them all at chip-min. Where it does not, as
+   when a short screen narrows the window, the rail steps out to the
+   component's whole width, 100cqw, before it scrolls: held to the window, a
+   selector went down to 72px, and a nine-letter name, 73px of tracked
+   capitals, touched the next. A step rather than a stretch, by the clamp's
+   9999, so the rail lines up with something either way: the panes or the
+   bar above. */
+.glass-grades__rail {
+  justify-self: center;
+  width: clamp(100%, (var(--glass-grades-n) * var(--glass-grades-chip-min) - 100%) * 9999, 100cqw);
+  margin: 4px 0 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(var(--glass-grades-chip-min), 1fr);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+}
+.glass-grades__rail::-webkit-scrollbar { display: none; }
+
+.glass-grades__legend,
+.glass-grades__live {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Stacked from the top, so every name sits on one line across the rail
+   whether its hint takes one line or two: stretched to the rail's height, a
+   selector used to share the spare height out between its rows, and a name
+   over a one-line hint sat 5px below its neighbour's. */
+.glass-grades__chip {
+  position: relative;
+  min-width: 0;
+  display: grid;
+  align-content: start;
+  gap: 7px;
+  justify-items: center;
+  padding: 14px 7px 10px;
+  border-radius: 11px;
+  cursor: pointer;
+  scroll-snap-align: center;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color .15s;
+}
+.glass-grades__chip:hover { background: var(--glass-grades-chip-hover); }
+.glass-grades__chip:has(> .glass-grades__radio:checked) { background: var(--glass-grades-chip-on); }
+.glass-grades__chip:has(> .glass-grades__radio:focus-visible) {
+  outline: 2px solid var(--glass-grades-signal);
+  outline-offset: -2px;
+}
+/* The index, as on the dial. */
+.glass-grades__chip::before {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  width: 2px;
+  height: 7px;
+  margin-left: -1px;
+  border-radius: 1px;
+  background: var(--glass-grades-signal);
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity .15s, transform 320ms var(--glass-grades-glide);
+}
+.glass-grades__chip:has(> .glass-grades__radio:checked)::before { opacity: 1; transform: none; }
+
+.glass-grades__radio {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Before above, after below, and the edge of a little pane between them. */
+.glass-grades__win {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 32px;
+  overflow: hidden;
+  border-radius: 5px;
+  background: var(--glass-grades-recess);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, .65), 0 1px 0 rgba(255, 255, 255, .06);
+}
+.glass-grades__win > .glass-grades__ref { position: absolute; inset: 0 0 50% 0; }
+.glass-grades__win > .glass-grades__view { top: 50%; }
+.glass-grades__win::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: rgba(255, 255, 255, .6);
+}
+
+.glass-grades__ref {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  width: 100%;
+  height: 100%;
+}
+.glass-grades__ref i { display: block; }
+.glass-grades__ref i:nth-child(1) { background: var(--glass-grades-ref-1); }
+.glass-grades__ref i:nth-child(2) { background: var(--glass-grades-ref-2); }
+.glass-grades__ref i:nth-child(3) { background: var(--glass-grades-ref-3); }
+.glass-grades__ref i:nth-child(4) { background: var(--glass-grades-ref-4); }
+.glass-grades__ref i:nth-child(5) { background: var(--glass-grades-ref-5); }
+.glass-grades__ref i:nth-child(6) { background: var(--glass-grades-ref-6); }
+.glass-grades__ref i:nth-child(7) { background: var(--glass-grades-ref-7); }
+.glass-grades__ref i:nth-child(8) { background: var(--glass-grades-ref-8); }
+.glass-grades__ref i:nth-child(9) { background: var(--glass-grades-ref-9); }
+
+/* The label may use the selector's 7px sides, and gives back the spacing
+   its capitals carry after the last letter, so it is centred on its letters
+   across the whole selector. A nine-letter name, Midsummer or Sankthans, is
+   wider than the space between the sides of a 72px selector, and a grid item
+   wider than its cell is set at the cell's start: it ran 7px past the right
+   edge. */
+.glass-grades__label {
+  font: 400 11px/1.2 var(--glass-grades-mono);
+  letter-spacing: .12em;
+  margin: 0 calc(-7px - .12em) 0 -7px;
+  text-transform: uppercase;
+  color: var(--glass-grades-paint);
+  white-space: nowrap;
+}
+.glass-grades__hint {
+  font-size: 11px;
+  line-height: 1.25;
+  color: var(--glass-grades-paint-dim);
+  text-align: center;
+}
+
+/* --- smaller --------------------------------------------------------------- */
+
+/* For a thumbnail or a tight column: the selectors keep their windows and lose
+   their words, which the readout above still says. */
+.glass-grades--compact {
+  --glass-grades-pad: 10px;
+  --glass-grades-gap: 10px;
+  --glass-grades-radius: 15px;
+  --glass-grades-chip-min: 40px;
+}
+.glass-grades--compact .glass-grades__desc { display: none; }
+/* With no description the readout is one name, so it asks for room for one. */
+.glass-grades--compact .glass-grades__readout { flex-basis: 6rem; }
+.glass-grades--compact .glass-grades__chip { gap: 0; padding: 12px 3px 4px; }
+/* ...and the actions keep their icons, their names left for a screen reader. */
+.glass-grades--compact .glass-grades__btn {
+  justify-content: center;
+  width: var(--glass-grades-btn-h);
+  padding: 0;
+}
+.glass-grades--compact .glass-grades__btn span,
+.glass-grades--compact .glass-grades__label,
+.glass-grades--compact .glass-grades__hint {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (max-width: 30rem) {
+  .glass-grades { --glass-grades-pad: 10px; --glass-grades-radius: 15px; --glass-grades-max-h: 58vh; }
+}
+
+/* A finger needs a bigger target than a pointer. */
+@media (pointer: coarse) {
+  .glass-grades__btn { height: var(--glass-grades-btn-h-touch); padding: 0 16px 0 13px; }
+  .glass-grades--compact .glass-grades__btn { width: var(--glass-grades-btn-h-touch); }
+  .glass-grades__switch-opt { height: var(--glass-grades-btn-h-touch); padding: 0 13px; }
+}
+
+/* Narrow: below 26rem a sliver at .62 would be under 26px, too thin to tap,
+   so the open pane takes --glass-grades-open-narrow and the others close to
+   slivers of about 10px: enough to show every grade at the window's edges,
+   too thin to be the way to one, which is the rail's job. It took the whole
+   window for a while, and a phone lost the sense of seven panes of glass.
+   The strip stays. open and s are restated on the window, because s is
+   worked out where it is declared, and the root's still says .62. The index
+   and the scale keep the strip's arithmetic here: with slivers this thin the
+   index would hardly leave the middle and the scale would be one lit band,
+   so instead they say where in the seven the open pane is. */
+@container glass-grades (max-width: 26rem) {
+  .glass-grades__window {
+    --glass-grades-open: var(--glass-grades-open-narrow);
+    --glass-grades-s: calc((1 - var(--glass-grades-open)) / (var(--glass-grades-n) - 1));
+  }
+  .glass-grades__scale,
+  .glass-grades__track { --glass-grades-a: 0; }
+
+  /* The actions keep their names for a screen reader and show their icons,
+     so the bar holds one row of tools under the readout. */
+  .glass-grades__btn {
+    justify-content: center;
+    width: var(--glass-grades-btn-h);
+    padding: 0;
+  }
+  .glass-grades__btn span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  @media (pointer: coarse) {
+    .glass-grades__btn { width: var(--glass-grades-btn-h-touch); padding: 0; }
+  }
+}
+
+/* Narrower still, the switch keeps its words and gives up its icons: a word
+   says strip or pane more plainly than a drawing of one. */
+@container glass-grades (max-width: 18rem) {
+  .glass-grades__switch-opt svg { display: none; }
+  .glass-grades__switch-opt { padding: 0 12px; }
+  @media (pointer: coarse) {
+    .glass-grades__switch-opt { padding: 0 13px; }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glass-grades,
+  .glass-grades *,
+  .glass-grades *::before,
+  .glass-grades *::after {
+    transition-duration: 0s !important;
+  }
+  .glass-grades--lifted .glass-grades__panes,
+  .glass-grades--dropping .glass-grades__panes { transform: none; }
+}

@@ -859,7 +859,7 @@ dark theme and it declares `:root[data-theme="light"]` instead. The attribute
 selects either way.
 
 So is the ground itself, but there is a default and `_template/` carries it:
-`#f3f2ef` light, `#121316` dark, which is what seven of the nine studies use. A
+`#f3f2ef` light, `#121316` dark, which is what eight of the ten studies use. A
 study may depart from it — the inked plate's ink, the liquid-glass toolbar's
 warm stone for the cross-lit stage it needs — and a departure is a decision that
 says so in that folder's `notes.md`. What is not allowed is a third thing: the
@@ -1447,10 +1447,10 @@ set off, so "Start the carousel again" was wrong in exactly the state where the
 control matters most, and the word carried nothing a reader needed in the other.
 
 The rail loops, and so drifts, while the row can cover the viewport with a card
-to spare: `client <= (ring - 2) * step`, which with eleven in the ring — nine
-studies and two forthcoming slots — and a 336px card is 3276px, nine steps of
+to spare: `client <= (ring - 2) * step`, which with twelve in the ring — ten
+studies and two forthcoming slots — and a 336px card is 3640px, ten steps of
 336 and the 28px gap. The 288px card a short window gets lowers that ceiling,
-to 2844px, which is one reason it is keyed to height: the wide screens that
+to 3160px, which is one reason it is keyed to height: the wide screens that
 would reach it are tall ones, and keep the 336px card. Past that it is finite
 and the drift control hides itself — the one case documented under
 `loopable()`, and the ceiling rises by a card with every study added. A wider
@@ -1611,7 +1611,7 @@ off the read mark for a while, and nothing said which card that was, with the
 drift moving and the gutter fading, so the counted card's number chip was
 filled to tie the two together. That made two things changing by themselves
 on a rail that already drifts, to say what the progress rule under the cards
-and the cards' own numbers already said. Both went: the head says "9 studies",
+and the cards' own numbers already said. Both went: the head says "10 studies",
 unpadded, in both views and in the same place, "1 study" when the filter
 leaves one, and no card is painted for being at the mark. `.is-active` still
 marks it, for the preview that plays on touch. Lifting or outlining the card
@@ -2279,7 +2279,7 @@ its "tap quick look to run a card" had stopped matching what a card does.
 Measured at 390x844, the first card's title went from y=881, under the fold,
 to y=775, and to y=754 once the date moved under the title. Under 360px the
 one line does not fit with the count in it — 6px over at 320 in Danish — so on
-a touch screen the count steps aside there, the filter's "All · 9" stating
+a touch screen the count steps aside there, the filter's "All · 10" stating
 it, and the head stays one line rather than two rows with
 the pause alone on the first. With the mark back on the controls' line, the
 first card's thumbnail starts at y=461 at 320x700 rather than 579; its title
@@ -2299,8 +2299,9 @@ technique filters by what it is built with, and "CSS-only" could only be
 inferred from a missing JS mark. Each card carries `data-tech`, by hand like
 its type — `css-only`, `svg`, `webgl`, `web-audio`, `view-transitions`,
 `container-queries`, `backdrop-filter`, `tokens`, for a study whose custom
-properties set what it does rather than only how it looks, and `css-trig`, for
-one that places things with `sin()` and `cos()` in its stylesheet. index.js
+properties set what it does rather than only how it looks, `css-trig`, for
+one that places things with `sin()` and `cos()` in its stylesheet, and
+`blend-modes`, for one whose look is made by layers in `mix-blend-mode`. index.js
 writes them as a mono line under the card's note, each tag whole so a line
 breaks between tags and never inside one, and the filter offers them as a
 "Technique" group under the types, with counts, its values prefixed `tech:`.
@@ -2339,7 +2340,7 @@ Filtering hides cards with a class rather than the `hidden` attribute — `.piec
 sets its own `display`, and the warning about `[hidden]` in the preview contract
 applies here for the same reason. The rail counts what it is showing and the
 filter's "All" counts what exists — the masthead and the footer state neither,
-because the rail's own "9 studies" is where a reader takes the total from.
+because the rail's own "10 studies" is where a reader takes the total from.
 
 **A control that is only an icon has a tooltip**, `data-tip` on the button:
 the theme toggle, the rail's pause, previous and next, the rail/list switch,
@@ -2566,7 +2567,7 @@ rail is a rail, each at the one place it is asked:
   whole track and the sideways test would call all of them on screen. The
   page's own scroll runs `syncVisibility`, coalesced onto the frame.
 
-The count reads "9 studies" here as on the rail, now that neither reports a
+The count reads "10 studies" here as on the rail, now that neither reports a
 read position. The
 track loses its tab stop, since a list is read with the page's keys, and is
 labelled "Study list"; `renderNav` owns that label and runs after the language
@@ -2671,8 +2672,8 @@ bottom line into the paragraph, which was the part that had been working.
 So the split came back and the text came out. What decides whether a fact
 stays is whether anything else on the page already says it:
 
-- **The count and the types went.** The rail's head says "9 studies", the
-  filter says "All · 9" and lists every type with its count. The footer said
+- **The count and the types went.** The rail's head says "10 studies", the
+  filter says "All · 10" and lists every type with its count. The footer said
   it a third time, and for a while in words.
 - **Where a study started went.** Every demo page's Decisions block ends on
   that study's `Inspiration` row, which is the record; a sentence down here
