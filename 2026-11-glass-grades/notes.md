@@ -17,9 +17,11 @@ radio groups, and without script every pane still opens and slides.
   sliver and `open` .62. The index, the scale and the readout read the same
   numbers, so nothing on the component can disagree with the glass, and
   `component.js` only ever drives `p` faster than a transition can. Below
-  26rem the root, an inline-size container, restates `open` as 1: a pane
-  fills the window, the rail is the way to the others, and the index and the
-  scale keep the strip's arithmetic to say where in the seven it is.
+  26rem the root, an inline-size container, restates `open` as .82: the
+  other panes close to slivers of about 10px, there to show every grade at
+  the window's edges rather than to be aimed at, the rail is the way to them,
+  and the index and the scale keep the strip's arithmetic to say where in the
+  seven the open pane is.
 - **A grade is a filter and two sheets of colour, and a recipe moves all
   three.** Each pane is the picture through `brightness() contrast()
   saturate()`, then a toe sheet in `screen`, which moves black to the toe
@@ -118,8 +120,10 @@ radio groups, and without script every pane still opens and slides.
   two names are 23.5px apart in English and 27.6 in Danish; nowhere on the
   demo are they closer than 14.9.
 - Below 26rem, measured with touch at 390 and 320 in both languages: the open
-  pane is the window's 322 and 252px, the index sits at (p + ½)/7, the bar is
-  one row of tools at 94px, and nothing scrolls sideways.
+  pane is 264 and 207px of the window's 322 and 252, each sliver 9.7 and
+  7.5px, the index sits at (p + ½)/7, over the open pane wherever it is, the
+  bar is one row of tools under the readout, 94px and 111, and nothing scrolls
+  sideways.
 - Saving, against the screen at 1440 over http, CIEDE2000 over the open pane:
   through the canvas filter, mean 0.53 to 0.82 across the seven grades and the
   demo's recipe, 99th percentile 1.71 to 2.17, worst 4.6 to 9.3; by hand,

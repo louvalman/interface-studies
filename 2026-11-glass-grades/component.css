@@ -91,6 +91,7 @@
   --glass-grades-min-w: 28rem;        /* ...and the window is never narrower than this, unless its column is */
   --glass-grades-ratio: 1.5;          /* the picture's shape, 3:2 like the camera's; component.js writes a new picture's */
   --glass-grades-open: .62;           /* the share of the window one open pane takes */
+  --glass-grades-open-narrow: .82;    /* ...below 26rem, where the others close to thin slivers, about 10px on a phone */
   --glass-grades-pad: 14px;
   --glass-grades-gap: 12px;
   --glass-grades-radius: 18px;
@@ -1009,16 +1010,19 @@
   .glass-grades__switch-opt { height: var(--glass-grades-btn-h-touch); padding: 0 13px; }
 }
 
-/* Narrow: below 26rem a sliver would be under 26px, too thin to read or to
-   tap, so an open pane takes the whole window and the rail is the way to the
-   others. The strip stays. open and s are restated on the window, because s
-   is worked out where it is declared, and the root's still says .62. The
-   index and the scale keep the strip's arithmetic here: at s = 0 the index
-   would sit in the middle whatever was open and the scale would be one lit
-   band, so instead they say where in the seven the open pane is. */
+/* Narrow: below 26rem a sliver at .62 would be under 26px, too thin to tap,
+   so the open pane takes --glass-grades-open-narrow and the others close to
+   slivers of about 10px: enough to show every grade at the window's edges,
+   too thin to be the way to one, which is the rail's job. It took the whole
+   window for a while, and a phone lost the sense of seven panes of glass.
+   The strip stays. open and s are restated on the window, because s is
+   worked out where it is declared, and the root's still says .62. The index
+   and the scale keep the strip's arithmetic here: with slivers this thin the
+   index would hardly leave the middle and the scale would be one lit band,
+   so instead they say where in the seven the open pane is. */
 @container glass-grades (max-width: 26rem) {
   .glass-grades__window {
-    --glass-grades-open: 1;
+    --glass-grades-open: var(--glass-grades-open-narrow);
     --glass-grades-s: calc((1 - var(--glass-grades-open)) / (var(--glass-grades-n) - 1));
   }
   .glass-grades__scale,
