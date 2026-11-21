@@ -136,6 +136,16 @@ radio groups, and without script every pane still opens and slides.
   60ms apart and a landing: each pass peaks at −18.7 dBFS and the landing at
   −10.5, −4.9 at full volume, so nothing clips, and between two passes the
   sound falls by 44dB or more.
+- The readout keeps every description beside its name from 27rem, and puts
+  each under its name below that: the widest name and description on one line
+  are Blue hour's, 418px in English, and Sankthans's, 380 in Danish. Measured
+  at 1920 to 320 in both languages, the demo's full-width components and a
+  phone stack all seven, two lines at 35.8px, the height the readout already
+  had there, so nothing below it moves; the side-by-side pair, 468 to 576px
+  wide, keeps one line; at 320 four descriptions take two lines and the bar
+  grows 17px. A grade whose line fitted used to sit centred in a readout two
+  lines tall, so the name moved 9px as the choice went between it and one that
+  did not; every name is on the top line now.
 - Contrast on the charcoal: the names 12.7:1, the descriptions 6.2:1 and 5.1
   on a chosen selector, the orange marks 6.8:1, a tag over a white picture
   10.7:1. The scale's unlit segments are 1.6:1 and decoration; the lit one
