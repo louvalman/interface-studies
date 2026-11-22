@@ -384,6 +384,63 @@
 
     .demo__back svg { width: 0.85rem; height: 0.85rem; }
 
+    /* No hover means a finger, and the link takes the switches' height, on
+       its border box. As a min-height on the content box the padding and the
+       border went on top of it, and it drew 62px beside 36px switches. The
+       target is still 44px, through ::after. Duplicated in every demo page
+       on purpose: no shared stylesheet, so a folder copied out takes it. */
+    @media (hover: none) {
+      .demo__back {
+        position: relative;
+        box-sizing: border-box;
+        min-height: 2.25rem;
+      }
+      .demo__back::after {
+        content: "";
+        position: absolute;
+        inset: calc(-0.25rem - 1px);
+      }
+    }
+
+    /* On a phone the back link is on the switches' line rather than under
+       it: the chevron alone, the size of the theme switch, placed from the
+       top and the gutter the cluster is placed from. Its words stay in the
+       link for a screen reader. Beside a cluster with the Sound switch they
+       do not fit a phone, and a link that is a pill on one page and a
+       chevron on the next reads as a fault, so below 30rem it is the chevron
+       on every page. The content starts 2.5rem under the line: 1.25 + 1.85
+       + 2.5, and 1.25 + 2.65 + 2.5 where the switches have grown. */
+    @media (max-width: 30rem) {
+      body { padding-top: 5.6rem; }
+      .demo__back {
+        position: absolute;
+        top: clamp(1.25rem, 3vw, 2.25rem);
+        left: var(--demo-gutter);
+        box-sizing: border-box;
+        width: 1.85rem;
+        height: 1.85rem;
+        margin: 0;
+        padding: 0;
+        justify-content: center;
+      }
+      .demo__back span {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+      }
+    }
+    @media (hover: none) and (max-width: 30rem) {
+      body { padding-top: 6.4rem; }
+      .demo__back {
+        top: calc(clamp(1.25rem, 3vw, 2.25rem) + 0.2rem);
+        width: 2.25rem;
+        height: 2.25rem;
+      }
+    }
+
     /* Capped at whatever column it lands in, so a component sized in rem
        shrinks with the page instead of pushing a scrollbar across it. Worth
        keeping when you copy this: it is the one line that decides whether the
@@ -405,16 +462,6 @@
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--demo-dim);
-    }
-
-    /* --- touch targets --- */
-
-    /* No hover means a finger, and a finger cannot aim at a 10px label. The
-       page's own controls grow; the component is not touched. Duplicated in
-       every demo page on purpose — no shared stylesheet, so a folder copied
-       out on its own takes this with it. */
-    @media (hover: none) {
-      .demo__back { min-height: 2.75rem; }
     }
 
     /* --- intro and decisions --------------------------------------------
@@ -454,6 +501,28 @@
        narrow screen, the pair goes to the next line as one rather than leaving
        GitHub on a line of its own. */
     .demo__kicker-links { white-space: nowrap; }
+
+    /* On a phone the kicker is one line. At 0.18em the longest of them, a
+       Navigation study's, wants a 395px window, and wrapped it left a
+       separator hanging over the two links on a line of their own. Below
+       25rem the tracking is 0.08em, which holds all four items down to 355,
+       and below that the date steps aside: it is the folder's month, which
+       the address also says, and it stays in the line for a screen reader.
+       Sized for the longest type, not this page's own, so the kicker is set
+       the same on every page of the site. */
+    @media (max-width: 25rem) {
+      .demo__kicker { letter-spacing: 0.08em; }
+    }
+    @media (max-width: 22.25rem) {
+      .demo__kicker-date {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+      }
+    }
 
     .demo__kicker-link {
       position: relative;
@@ -1671,7 +1740,7 @@
 
     <header class="demo__intro">
       <p class="demo__kicker" data-reveal>
-        2026-09 &middot; <span data-i18n="type">Aesthetic</span> &middot;
+        <span class="demo__kicker-date">2026-09 &middot;</span> <span data-i18n="type">Aesthetic</span> &middot;
         <span class="demo__kicker-links">
           <a
             class="demo__kicker-link"
