@@ -1989,14 +1989,33 @@ moving the line — measured at 1440, 390 and 320 on every page.
 
 **And GitHub beside it**, `…/tree/main/<folder>`, the study's own folder: a
 study lives in three places, the page, the Figma file and the repository, and
-the page names the other two side by side, set alike, as quick look does. The
-two are one `.demo__kicker-links` span that does not wrap inside, so where the
-kicker wraps, the pair moves to the next line together rather than leaving
-GitHub on a line of its own. That is at 320 on every page and at 390 on the
-two whose type is `NAVIGATION`, the toolbar's and the mode dial's:
-"2026-09 · Card ·" and then "Figma ↗ · GitHub ↗". The kicker held one line at
-320 with the Figma link alone; it costs a line there now. A study not yet in
-the file carries GitHub alone, and the `·` between the two goes with Figma.
+the page names the other two side by side, set alike, as quick look does. A
+study not yet in the file carries GitHub alone, and the `·` between the two
+goes with Figma.
+
+**The kicker is one line on a phone.** With GitHub in it the line no longer
+fit: at 0.18em the longest of them, a `NAVIGATION` study's, wants a 395px
+window, so it wrapped at 390 on the toolbar and the mode dial, at 375 on
+every `AESTHETIC` study in English, and at 320 everywhere, as
+"2026-09 · Card ·" over "Figma ↗ · GitHub ↗": a separator left hanging and
+two links on a line of their own against the heading. Two rules hold it
+now, and both are sized
+for the longest type rather than each page's own, so the kicker is set the
+same on every page of the site. Below 25rem the tracking is 0.08em, which
+holds all four items down to 355px. Below 22.25rem the date steps aside,
+the one item the address also states; it is a `.demo__kicker-date` span
+clipped to a pixel, so a screen reader still reads it. At 320 without it
+the longest kicker has 42px to spare. One line at 11px with the date would
+have needed no tracking at all and still been 1.6px over.
+
+The two links are still one `.demo__kicker-links` span that does not wrap
+inside. That is what is left for a reader who has scaled their text: where
+the kicker does wrap, the pair moves to the next line together rather than
+leaving GitHub on a line of its own.
+
+Checked on the ten pages and the template at fifteen widths from 320 to
+1440 in both languages, 330 combinations: one line everywhere, 2.9px to
+spare at 357 and 5.9 at 360, which is where it is tightest.
 Like the canonical URL,
 the address is absolute and the folder's own, and `_template/` carries it as
 `YYYY-MM-slug` to be filled in with the folder's name.

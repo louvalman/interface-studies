@@ -630,6 +630,28 @@
        GitHub on a line of its own. */
     .demo__kicker-links { white-space: nowrap; }
 
+    /* On a phone the kicker is one line. At 0.18em the longest of them, a
+       Navigation study's, wants a 395px window, and wrapped it left a
+       separator hanging over the two links on a line of their own. Below
+       25rem the tracking is 0.08em, which holds all four items down to 355,
+       and below that the date steps aside: it is the folder's month, which
+       the address also says, and it stays in the line for a screen reader.
+       Sized for the longest type, not this page's own, so the kicker is set
+       the same on every page of the site. */
+    @media (max-width: 25rem) {
+      .demo__kicker { letter-spacing: 0.08em; }
+    }
+    @media (max-width: 22.25rem) {
+      .demo__kicker-date {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+      }
+    }
+
     .demo__kicker-link {
       position: relative;
       color: var(--demo-soft);
@@ -1024,7 +1046,7 @@
 
     <header class="demo__intro">
       <p class="demo__kicker" data-reveal>
-        2026-09 &middot; <span data-i18n="type">Aesthetic</span> &middot;
+        <span class="demo__kicker-date">2026-09 &middot;</span> <span data-i18n="type">Aesthetic</span> &middot;
         <span class="demo__kicker-links">
           <a
             class="demo__kicker-link"
