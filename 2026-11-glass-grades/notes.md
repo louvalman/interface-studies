@@ -38,9 +38,7 @@ radio groups, and without script every pane still opens and slides.
   pictures it is shown on are eight of my own from the same X-T50, and several
   had already been through one of its simulations, as most pictures dropped on
   it will have: a grade has to hold over another. They are © 2026 Louis
-  Dyrhauge, all rights reserved, and outside the code's MIT licence, which
-  `photos/README.md`, each file's own metadata and a line on the demo page all
-  say.
+  Dyrhauge, all rights reserved, outside the code's MIT licence.
 - **Glass only where it does a job.** The one material on the picture is the
   edge of each pane: a lit face and a shaded face from one light on the left,
   a few pixels of the green float glass has at its edge, and a 14px strip

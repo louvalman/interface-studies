@@ -129,9 +129,12 @@ otherwise, and a study that adds photographs adds all four:
   the file list, so a reader who browses to them meets the terms before a
   download.
 - **The repo.** The root README's licence section names the folder.
-- **The page.** One line, in both languages, under the state that offers
-  them and outside anything script reveals, since the photographs are on the
-  page without script, and `tdm-reservation` in its head.
+- **The page.** A credit under the pictures, the way one sits under a
+  photograph in print: "© 2026 Louis Dyrhauge. All rights reserved.", in
+  both languages, a size down from the picker's label. It replaced a
+  two-sentence line under the first state that restated the terms and read
+  as a stray paragraph. Without script the picker is not offered, and the
+  Decisions block says the same. `tdm-reservation` goes in the head.
 
 The Figma file has terms of its own. Free Community files are published
 under CC BY 4.0, which licenses everything in them to anyone who credits the

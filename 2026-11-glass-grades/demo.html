@@ -602,15 +602,13 @@
       clip-path: inset(50%);
       white-space: nowrap;
     }
-    /* Whose the photographs are, said once, under the state that offers
-       them and outside the picker, which script reveals: the photographs are
-       on the page without script, so the line is too. The caption's tone, a
-       size down. */
-    .demo__rights {
-      margin: clamp(1.5rem, 3vw, 2rem) 0 0;
-      max-width: 64ch;
+    /* Whose they are, under them, the way a credit sits under a picture: one
+       line a size down from the label above. The terms in full are in
+       photos/README.md and in each file. */
+    .demo__pics-credit {
+      margin: 0;
       font-size: 0.75rem;
-      line-height: 1.55;
+      line-height: 1.5;
       color: var(--demo-soft);
     }
     /* --- interaction ------------------------------------------------------
@@ -1330,6 +1328,7 @@
               <button class="demo__pic" type="button" data-pic="focaccia" aria-pressed="false" data-alt="Focaccia dough sprinkled with herbs in a baking tin, beside a bottle of olive oil, a bowl of salt and chopped shallots on a speckled board."><img src="photos/thumbs/focaccia.jpg" alt="" width="62" height="41" draggable="false"><span class="demo__pic-name" data-i18n="pic.focacciaName">Focaccia, before the oven</span></button>
               <button class="demo__pic" type="button" data-pic="kitchen" aria-pressed="false" data-alt="A portrait at a kitchen table at night: short hair, a short beard, a dark overshirt over a white T-shirt, knives on a magnetic strip behind."><img src="photos/thumbs/kitchen.jpg" alt="" width="62" height="41" draggable="false"><span class="demo__pic-name" data-i18n="pic.kitchenName">At the kitchen table</span></button>
             </div>
+            <p class="demo__pics-credit" data-i18n="pics.credit">&copy; 2026 Louis Dyrhauge. All rights reserved.</p>
           </div>
           <div class="glass-grades" style="--glass-grades-max-h: 42vh">
             <div class="glass-grades__bar">
@@ -1478,7 +1477,6 @@
           </div>
         </section>
       </div>
-      <p class="demo__rights" data-reveal data-i18n="rights">The photographs on this page are mine, taken with my X-T50. &copy; 2026 Louis Dyrhauge, all rights reserved: the code is MIT, the photographs are not, and they may not be copied, reused or used to train AI.</p>
     </section>
 
     <section class="demo__group">
@@ -2318,7 +2316,7 @@
               shoulder, and grain adds weak or strong to the grade&rsquo;s own. Save draws the same layers on a
               canvas, and does the filter by hand where a canvas takes none. The pictures it is shown on are
               eight of my own from the same X-T50, and several had already been through one of its
-              simulations, as most pictures dropped on it will have: a grade has to hold over another. They are &copy; 2026 Louis Dyrhauge, all rights reserved, and outside the code&rsquo;s MIT licence, which <code>photos/README.md</code>, each file&rsquo;s own metadata and a line on this page all say.</p>
+              simulations, as most pictures dropped on it will have: a grade has to hold over another. They are &copy; 2026 Louis Dyrhauge, all rights reserved, outside the code&rsquo;s MIT licence.</p>
           </li>
           <li>
             <h3 class="demo__notes-head">Glass only where it does a job.</h3>
@@ -2512,8 +2510,7 @@
         'sample.drop': 'Slip det under glasset',
         'sample.legend': 'Lys',
         'pics.label': 'Eller et af mine, taget med min X-T50',
-        'rights': 'Fotografierne p\u00e5 siden er mine, taget med min X-T50. &copy; 2026 Louis Dyrhauge, alle rettigheder '
-          + 'forbeholdes: koden er MIT, fotografierne er ikke, og de m\u00e5 ikke kopieres, genbruges eller bruges til at tr\u00e6ne AI.',
+        'pics.credit': '&copy; 2026 Louis Dyrhauge. Alle rettigheder forbeholdes.',
         'pic.stormName': 'Regn ved solnedgang',
         'pic.stormAlt': 'En regnbyge falder fra en m\u00f8rk sky ned i havet ved solnedgang: himlen lyser\u00f8d ved horisonten, b\u00f8lgerne brydes hvidt, og kysten er m\u00f8rk forrest.',
         'pic.seaName': 'Lyser\u00f8de skyer over havet',
