@@ -46,28 +46,35 @@ radio groups, and without script every pane still opens and slides.
   and the open pane carries the mode dial's orange index.
 - **The glass moves under the hand.** One pane of drag is the distance the
   moving edge travels, the open pane less a sliver, so at
-  `--glass-grades-drag: 1` the edge stays under the hand, and the mode
-  dial's detent curve, `x − k·sin(2πx)/2π` with `k` .55, makes it stick near
-  each pane. A release faster than 400px/s is projected 0.4s ahead, so a flick
+  `--glass-grades-drag: 1` the edge stays under the hand, and the mode dial's
+  detent curve, `x − k·sin(2πx)/2π` with `k` .55, makes it stick near each
+  pane. A release faster than 400px/s is projected 0.4s ahead, so a flick
   coasts up to three panes, and a slower one lands on the nearest pane. Either
   way it glides there on `cubic-bezier(.25, 1, .5, 1)`, 560ms a pane, the
   curve the stylesheet's own transition uses: it slows from its first frame,
-  never passes its pane, and leaves at the speed the hand let go at, its
-  first control point set to match. A still press of 320ms lifts the glass
-  for as long as it is held, and a sideways move sets it down and drags; a
-  tap on the open pane, or Enter, lifts it until the next. Every stop passed
-  ticks with a dry click, and a landing seats the glass with a soft drop: two
-  recordings from Kenney's Interface Sounds, which are CC0, chosen by ear from
-  81 after the synthesised taps on glass this used to make sounded cheap. The
-  drop is all but a pure F#5, so the other moments are made of the two in its
-  key: lifting the glass plays the drop a fifth up, setting it down brings it
-  back to the root with the click as the contact, and a picture sliding in
-  plays the root and then the fifth. They play dry, at the rate they were
-  chosen at but for a 1.5% variation in the click's, and each is as loud as
-  the sound it replaced. It is silent while `--glass-grades-click` is 0, and a
-  finger or a pen gets the same moments as vibration where the browser can
-  vibrate; an iPhone, which lets a page tick only inside a tap, ticks once as
-  the finger lets go and as a selector or the switch is tapped.
+  never passes its pane, and leaves at the speed the hand let go at, its first
+  control point set to match. A still press of 320ms lifts the glass for as
+  long as it is held, and a sideways move sets it down and drags; a tap on the
+  open pane, or Enter, lifts it until the next. A picture carried onto the
+  page lifts every window's glass 2px; over one, the glass lifts clear on a
+  shadow of its own, the panes the picture is not going into dim, photo
+  corners mark where it will lie, and the pane or selector under the pointer
+  names the light it will open in. Let go and that pane opens as the picture
+  slides in from the side it was dropped on, over the empty window rather than
+  white paper; a file that is not a picture is turned away before it lands,
+  since its type can be read during the drag. Every stop passed ticks with a
+  dry click, and a landing seats the glass with a soft drop: two recordings
+  from Kenney's Interface Sounds, which are CC0, chosen by ear from 81 after
+  the synthesised taps on glass this used to make sounded cheap. The drop is
+  all but a pure F#5, so the other moments are made of the two in its key:
+  lifting the glass plays the drop a fifth up, setting it down brings it back
+  to the root with the click as the contact, and a picture sliding in plays
+  the root and then the fifth. They play dry, at the rate they were chosen at
+  but for a 1.5% variation in the click's, and each is as loud as the sound it
+  replaced. It is silent while `--glass-grades-click` is 0, and a finger or a
+  pen gets the same moments as vibration where the browser can vibrate; an
+  iPhone, which lets a page tick only inside a tap, ticks once as the finger
+  lets go and as a selector or the switch is tapped.
 - **The grades are kinds of light, in the order of a day.** Sea fog,
   Daylight, High sun, Midsummer, Blue hour, Night and Sodium, for a sodium
   street lamp; in Danish Havgus, Dagslys, Højsol, Sankthans, Blå time, Nat
@@ -181,6 +188,12 @@ radio groups, and without script every pane still opens and slides.
   on a chosen selector, the orange marks 6.8:1, a tag over a white picture
   10.7:1. The scale's unlit segments are 1.6:1 and decoration; the lit one
   carries the choice.
+- The drop UI costs a drag nothing that can be told from the noise. Its veils,
+  one per pane, exist only while a picture is somewhere on the page: left in
+  at rest they were seven more boxes restyled on every frame, about a tenth of
+  the style work. Gated, the same 120-step drag measures a median 538ms of
+  style with the drop UI on the page and 521 without it, three runs a side
+  twice, inside the 503 to 680 the runs themselves spread over.
 
 ## Not yet
 
@@ -202,6 +215,8 @@ radio groups, and without script every pane still opens and slides.
 - The recipe's steps are chosen by eye. In-camera conversions would
   calibrate them: one frame at the camera's standard settings, against the
   same frame with one setting moved.
+- A picture dragged in from another app on a tablet, the one touch device a
+  drop reaches: untested on a device.
 
 Inspiration: https://www.fujifilm-x.com/global/products/cameras/x-t50/ — my
 own X-T50: turning its film simulation dial to see one scene in another

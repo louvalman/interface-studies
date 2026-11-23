@@ -23,13 +23,88 @@
   var lastActive = null;   // the instance a paste goes to
 
   var MSG = {
-    en: { notImage: 'That is not an image. Try a JPEG, PNG or HEIC.', cannot: 'This browser could not open that image.', alt: 'Your picture',
-          lifted: 'Glass lifted: the picture as it is.', down: 'Glass back down:',
-          ownOnly: 'Saving works on your own pictures.', unsaved: 'This browser could not save the picture.' },
-    da: { notImage: 'Det er ikke et billede. Prøv JPEG, PNG eller HEIC.', cannot: 'Browseren kunne ikke åbne billedet.', alt: 'Dit billede',
-          lifted: 'Glasset er løftet: billedet, som det er.', down: 'Glasset er lagt tilbage:',
-          ownOnly: 'Gemme virker med dine egne billeder.', unsaved: 'Browseren kunne ikke gemme billedet.' }
+    en: {
+      notImage: 'That is not an image. Try a JPEG, PNG or HEIC.', cannot: 'This browser could not open that image.', alt: 'Your picture',
+      lifted: 'Glass lifted: the picture as it is.', down: 'Glass back down:',
+      ownOnly: 'Saving works on your own pictures.', unsaved: 'This browser could not save the picture.',
+      refused: 'Only pictures fit under the glass.', several: '{n} pictures: the first one went under the glass.'
+    },
+    da: {
+      notImage: 'Det er ikke et billede. Prøv JPEG, PNG eller HEIC.', cannot: 'Browseren kunne ikke åbne billedet.', alt: 'Dit billede',
+      lifted: 'Glasset er løftet: billedet, som det er.', down: 'Glasset er lagt tilbage:',
+      ownOnly: 'Gemme virker med dine egne billeder.', unsaved: 'Browseren kunne ikke gemme billedet.',
+      refused: 'Kun billeder kan ligge under glasset.', several: '{n} billeder: det første kom under glasset.'
+    }
   };
+
+  /* ── what is being carried over the page ──
+     A file's name cannot be read before the drop, but its type can, so a drag
+     that is plainly not a picture is refused before it lands. Where a browser
+     says nothing about the types, the drag is let through and judged at the
+     drop. */
+  function classify(e) {
+    var dt = e.dataTransfer;
+    if (!dt || Array.prototype.indexOf.call(dt.types || [], 'Files') === -1) return null;
+    var images = 0, others = 0, unknown = 0;
+    var items = dt.items ? Array.prototype.slice.call(dt.items) : [];
+    items.forEach(function (it) {
+      if (it.kind !== 'file') return;
+      if (!it.type) unknown++;
+      else if (/^image\//.test(it.type)) images++;
+      else others++;
+    });
+    if (!items.length) unknown = 1;
+    return { refused: images === 0 && unknown === 0 && others > 0 };
+  }
+
+  /* ── a picture anywhere on the page readies every instance ──
+     Counted enters and leaves end it, and so does a second with no dragover,
+     because a drag cancelled with Escape or carried out of the window does
+     not always say so. A browser keeps sending dragover while a drag is held
+     still, at least every 550ms by the spec, so the second is never reached
+     during one, and a dragover that arrives after it picks the drag up again.
+     The quiet spell also ends each instance's own state, through `leavers`.
+     A held specimen keeps its state. */
+  var dragDepth = 0, dragWatch = 0, leavers = [];
+  function setReady(on) {
+    Array.prototype.forEach.call(document.querySelectorAll('.glass-grades--live:not(.glass-grades--held)'), function (r) {
+      r.classList.toggle('glass-grades--ready', on);
+    });
+  }
+  function endReady() {
+    dragDepth = 0;
+    clearTimeout(dragWatch);
+    setReady(false);
+    leavers.forEach(function (leave) { leave(); });
+  }
+  function watchDrag() {
+    clearTimeout(dragWatch);
+    dragWatch = setTimeout(endReady, 1000);
+  }
+  function beginDrag(e) {
+    var k = classify(e);
+    if (!k) return false;
+    if (!k.refused) setReady(true);
+    return true;
+  }
+  document.addEventListener('dragenter', function (e) {
+    if (!beginDrag(e)) return;
+    dragDepth++;
+    watchDrag();
+  });
+  document.addEventListener('dragover', function (e) {
+    if (!dragDepth) {
+      if (!beginDrag(e)) return;
+      dragDepth = 1;
+    }
+    watchDrag();
+  });
+  document.addEventListener('dragleave', function () {
+    if (!dragDepth) return;
+    dragDepth = Math.max(0, dragDepth - 1);
+    if (!dragDepth) endReady();
+  });
+  document.addEventListener('drop', function () { if (dragDepth) endReady(); });
   function msg(key) {
     var lang = (document.documentElement.getAttribute('lang') || 'en').slice(0, 2);
     return (MSG[lang] || MSG.en)[key];
@@ -607,7 +682,7 @@
       clearTimeout(noteTimer);
       noteTimer = setTimeout(function () { note.classList.remove('glass-grades__tag--on'); }, 2600);
     }
-    function load(f, type) {
+    function load(f, type, opts) {
       if (!f || !/^image\//.test(f.type)) { tell(msg('notImage')); return; }
       var shrink = window.createImageBitmap
         ? createImageBitmap(f, { imageOrientation: 'from-image' }).then(function (bmp) {
@@ -630,27 +705,46 @@
         var probe = new Image();
         probe.src = url;
         return (probe.decode ? probe.decode() : Promise.resolve()).then(function () {
-          swap(url, probe.naturalWidth / probe.naturalHeight || 1.5, type);
+          swap(url, probe.naturalWidth / probe.naturalHeight || 1.5, type, null, opts);
         }, function () {
           URL.revokeObjectURL(url);
           tell(msg('cannot'));
         });
       }).catch(function () { tell(msg('cannot')); });
     }
-    function swap(url, ratio, type, alt) {
-      feedback('swap', type);
-      root.classList.add('glass-grades--swapping');
+    // A picked, pasted or handed-in picture crossfades in. A dropped one slides
+    // in under the glass from the side it was dropped on, and the glass seats
+    // on it.
+    var landTimer = 0;
+    function swap(url, ratio, type, alt, opts) {
+      var landing = !!(opts && opts.land) && !reduce.matches;
+      if (!landing) {
+        feedback('swap', type);
+        root.classList.add('glass-grades--swapping');
+      }
       setTimeout(function () {
         Array.prototype.forEach.call(root.querySelectorAll('.glass-grades__base, .glass-grades__img'), function (im) { im.src = url; });
         var base = root.querySelector('.glass-grades__base');
         if (base) base.alt = alt != null ? alt : msg('alt');
         root.style.setProperty('--glass-grades-ratio', Math.max(0.66, Math.min(2.2, ratio)).toFixed(4));
-        requestAnimationFrame(function () {
-          requestAnimationFrame(function () { root.classList.remove('glass-grades--swapping'); });
-        });
+        if (landing) {
+          root.style.setProperty('--glass-grades-land-from', opts.land);
+          root.classList.remove('glass-grades--landing');
+          void root.offsetWidth;   // start the slide again if one is still running
+          root.classList.add('glass-grades--landing');
+          clearTimeout(landTimer);
+          landTimer = setTimeout(function () {
+            root.classList.remove('glass-grades--landing');
+            feedback('set', type);
+          }, ms('--glass-grades-land-time', 260));
+        } else {
+          requestAnimationFrame(function () {
+            requestAnimationFrame(function () { root.classList.remove('glass-grades--swapping'); });
+          });
+        }
         if (current) URL.revokeObjectURL(current);
         current = /^blob:/.test(url) ? url : null;
-      }, reduce.matches ? 0 : ms('--glass-grades-swap-out', 110));
+      }, landing || reduce.matches ? 0 : ms('--glass-grades-swap-out', 110));
     }
     root.__glassGradesLoad = load;
 
@@ -807,33 +901,100 @@
         file.value = '';
       });
     }
-    var depth = 0;
-    function carriesFiles(e) {
-      return !!e.dataTransfer && Array.prototype.indexOf.call(e.dataTransfer.types, 'Files') !== -1;
+    /* ── a picture carried over this instance ──
+       The glass lifts clear, the panes the picture is not going into dim, and
+       the pane under the pointer (or the selector under it) names the light
+       the picture will open in. Dropping there opens that grade with it. */
+    var targetTag = root.querySelector('.glass-grades__tag--target');
+    var held = root.classList.contains('glass-grades--held');   // a specimen of this state: it stays put
+    var over = 0, carried = null, aimed = -1;
+    function targetAt(e) {
+      var chip = e.target && e.target.closest ? e.target.closest('.glass-grades__chip') : null;
+      if (chip && root.contains(chip)) return radios.indexOf(chip.querySelector('.glass-grades__radio'));
+      var fr = frame.getBoundingClientRect();
+      if (e.clientX >= fr.left && e.clientX <= fr.right && e.clientY >= fr.top && e.clientY <= fr.bottom) return paneAt(e.clientX);
+      return checkedIndex();
     }
+    function aim(e) {
+      var t = targetAt(e);
+      if (t === aimed || t < 0) return;
+      aimed = t;
+      frame.style.setProperty('--glass-grades-t', String(t));
+      if (targetTag) targetTag.textContent = labelOf(t);
+    }
+    function leaveDrop() {
+      over = 0;
+      carried = null;
+      aimed = -1;
+      if (held) return;
+      root.classList.remove('glass-grades--dropping', 'glass-grades--refused');
+      frame.style.removeProperty('--glass-grades-t');
+    }
+    // As a tap opens a pane: a glass latched up comes down onto the picture.
+    function choose(i, type) {
+      if (latched) lift(false, type);
+      openView();
+      if (i === nearest(p) && !driven) return;
+      drive(p);
+      mark(i);
+      glideTo(i, null, type, false);
+    }
+    // The first enter, or a dragover after the page's quiet spell let go of
+    // a drag that was still there.
+    function arrive(k) {
+      carried = k;
+      if (held) return;
+      if (k.refused) {
+        root.classList.add('glass-grades--refused');
+        tell(msg('refused'));
+        if (live) live.textContent = msg('refused');
+      } else {
+        root.classList.add('glass-grades--dropping');
+        feedback('lift', 'mouse');
+        glintFlash();
+      }
+    }
+    leavers.push(leaveDrop);
     root.addEventListener('dragenter', function (e) {
-      if (!carriesFiles(e)) return;
+      var k = classify(e);
+      if (!k) return;
       e.preventDefault();
-      depth++;
-      root.classList.add('glass-grades--dropping');
+      over++;
+      if (over === 1) arrive(k);
+      if (!k.refused && !held) aim(e);
     });
     root.addEventListener('dragover', function (e) {
-      if (!carriesFiles(e)) return;
+      if (!carried) {
+        var k = classify(e);
+        if (!k) return;
+        over = 1;
+        arrive(k);
+      }
       e.preventDefault();
-      e.dataTransfer.dropEffect = 'copy';
+      e.dataTransfer.dropEffect = carried.refused ? 'none' : 'copy';
+      if (!carried.refused && !held) aim(e);
     });
-    root.addEventListener('dragleave', function (e) {
-      if (!carriesFiles(e)) return;
-      depth = Math.max(0, depth - 1);
-      if (!depth) root.classList.remove('glass-grades--dropping');
+    root.addEventListener('dragleave', function () {
+      if (!carried) return;
+      over = Math.max(0, over - 1);
+      if (!over) leaveDrop();
     });
     root.addEventListener('drop', function (e) {
-      if (!carriesFiles(e)) return;
+      var k = carried || classify(e);
+      if (!k) return;
       e.preventDefault();
-      depth = 0;
-      root.classList.remove('glass-grades--dropping');
+      var refused = k.refused, t = aimed >= 0 ? aimed : targetAt(e);
+      leaveDrop();
+      if (refused) return;
       lastActive = root;
-      load(Array.prototype.filter.call(e.dataTransfer.files, function (f) { return /^image\//.test(f.type); })[0], 'mouse');
+      var files = Array.prototype.filter.call((e.dataTransfer && e.dataTransfer.files) || [], function (f) {
+        return /^image\//.test(f.type);
+      });
+      if (!files.length) { tell(msg('notImage')); return; }
+      if (!held) choose(t, 'mouse');
+      var fr = frame.getBoundingClientRect();
+      load(files[0], 'mouse', { land: e.clientX < fr.left + fr.width / 2 ? '-100%' : '100%' });
+      if (files.length > 1) tell(msg('several').replace('{n}', files.length));
     });
 
     // The edges catch the light once, so the glass says what it is.

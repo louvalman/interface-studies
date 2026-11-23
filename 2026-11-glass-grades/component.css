@@ -130,6 +130,19 @@
   --glass-grades-refract: 1.45;       /* how much it bends it */
   --glass-grades-glint: 0;            /* written by component.js: the edges catch more light the faster they move */
   --glass-grades-glint-fade: 220ms;   /* how long that light takes to leave once the glass slows */
+
+  /* --- a picture carried over the page, and dropped ------------------- */
+  --glass-grades-ready-lift: -2px;    /* every instance, while a picture is anywhere on the page */
+  --glass-grades-ready-rim: rgba(255, 255, 255, .4);
+  --glass-grades-drop-lift: -6px;     /* over this window: the glass lifts clear */
+  --glass-grades-drop-shadow: 0 10px 14px -6px rgba(0, 0, 0, .55);   /* and its shadow falls on the picture */
+  --glass-grades-veil: rgba(20, 21, 23, .55);   /* over the panes the picture is not going into */
+  --glass-grades-corner: rgba(236, 232, 223, .92);   /* photo corners: where the picture will lie */
+  --glass-grades-corner-size: 18px;
+  --glass-grades-corner-inset: 12px;
+  --glass-grades-land-time: 260ms;    /* the picture sliding in under the glass */
+  --glass-grades-bed: var(--glass-grades-recess);   /* the empty window it slides in over */
+  --glass-grades-refuse-time: 260ms;
   --glass-grades-font: "Mona Sans", system-ui, sans-serif;
   --glass-grades-mono: "Fragment Mono", ui-monospace, monospace;
   --glass-grades-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 0 0 0 0 1'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
@@ -352,7 +365,8 @@
    pane open j slivers plus, past the open pane, the rest of its width. The
    clamp is what slides that width from one pane to the next as p moves. */
 .glass-grades__pane,
-.glass-grades__seg {
+.glass-grades__seg,
+.glass-grades__tag--target {
   --glass-grades-l: calc(
     (1 - var(--glass-grades-a)) * var(--glass-grades-i) / var(--glass-grades-n)
     + var(--glass-grades-a) * (var(--glass-grades-i) * var(--glass-grades-s)
@@ -687,7 +701,8 @@
   pointer-events: none;
   transition:
     opacity var(--glass-grades-set-time) ease-out,
-    transform var(--glass-grades-set-time) var(--glass-grades-glide);
+    transform var(--glass-grades-set-time) var(--glass-grades-glide),
+    box-shadow var(--glass-grades-set-time) ease-out;
 }
 .glass-grades--lifted .glass-grades__panes {
   opacity: 0;
@@ -696,7 +711,14 @@
     opacity var(--glass-grades-lift-time) ease-out,
     transform calc(var(--glass-grades-lift-time) + 40ms) cubic-bezier(.2, .8, .2, 1);
 }
-.glass-grades--dropping .glass-grades__panes { transform: translateY(-6px); }
+.glass-grades--ready .glass-grades__panes { transform: translateY(var(--glass-grades-ready-lift)); }
+.glass-grades--dropping .glass-grades__panes {
+  transform: translateY(var(--glass-grades-drop-lift)) scale(1.008);
+  box-shadow: var(--glass-grades-drop-shadow);
+}
+.glass-grades--ready .glass-grades__frame::after {
+  box-shadow: var(--glass-grades-window-shadow), inset 0 0 0 1px var(--glass-grades-ready-rim);
+}
 
 /* A pane clips itself to its band and moves its picture the other way, so the
    picture holds still while the glass slides over it. Measured against
@@ -742,6 +764,7 @@
 .glass-grades__edge {
   position: absolute;
   inset: 0;
+  z-index: 2;
   pointer-events: none;
   background:
     linear-gradient(90deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, 0) 18px),
@@ -754,6 +777,7 @@
   content: "";
   position: absolute;
   inset: 0;
+  z-index: 3;
   pointer-events: none;
   opacity: var(--glass-grades-glint);
   background: linear-gradient(90deg, rgba(255, 255, 255, .5) 0, rgba(255, 255, 255, .5) 1px, rgba(255, 255, 255, .14) 1px, rgba(255, 255, 255, 0) 18px);
@@ -799,10 +823,117 @@
   transform: translateY(-3px);
   transition: opacity 140ms ease-out, transform 200ms ease-out;
 }
-.glass-grades__tag--drop { left: 50%; top: 50%; transform: translate(-50%, -40%); }
 .glass-grades--lifted .glass-grades__tag--original { opacity: 1; transform: none; }
-.glass-grades--dropping .glass-grades__tag--drop { opacity: 1; transform: translate(-50%, -50%); }
 .glass-grades__tag--note.glass-grades__tag--on { opacity: 1; transform: none; }
+
+/* --- a picture carried over the page, and dropped ---------------------------
+   Anywhere on the page, every instance gets ready: the glass lifts a little and
+   the rim of the window catches the light. Over a window the glass lifts clear,
+   the panes the picture is not going into dim, photo corners mark where it will
+   lie, and the pane under the pointer stays lit and names itself. --t is that
+   pane, from component.js; the veil and the light are arithmetic on it, the way
+   the readout is on --sel. */
+
+/* The veil: on every pane but the one the picture is going into. It exists
+   only while a picture is somewhere on the page: at rest it was seven more
+   boxes restyled on every frame of a drag, about a tenth of the style work,
+   measured against the build without it. */
+.glass-grades--ready .glass-grades__pane::before,
+.glass-grades--dropping .glass-grades__pane::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: var(--glass-grades-veil);
+  opacity: 0;
+  transition: opacity 160ms ease-out;
+}
+.glass-grades--dropping .glass-grades__pane::before {
+  opacity: min(1, max(
+    calc(var(--glass-grades-i) - var(--glass-grades-t, var(--glass-grades-sel))),
+    calc(var(--glass-grades-t, var(--glass-grades-sel)) - var(--glass-grades-i))));
+}
+/* And the one it is going into catches the light. */
+.glass-grades--dropping .glass-grades__pane::after {
+  opacity: calc(1 - min(1, max(
+    calc(var(--glass-grades-i) - var(--glass-grades-t, var(--glass-grades-sel))),
+    calc(var(--glass-grades-t, var(--glass-grades-sel)) - var(--glass-grades-i)))));
+}
+
+/* Photo corners: where the picture will lie. */
+.glass-grades__corners {
+  position: absolute;
+  inset: var(--glass-grades-corner-inset);
+  z-index: 6;
+  pointer-events: none;
+  background:
+    linear-gradient(var(--glass-grades-corner), var(--glass-grades-corner)) left top / var(--glass-grades-corner-size) 2px no-repeat,
+    linear-gradient(var(--glass-grades-corner), var(--glass-grades-corner)) left top / 2px var(--glass-grades-corner-size) no-repeat,
+    linear-gradient(var(--glass-grades-corner), var(--glass-grades-corner)) right top / var(--glass-grades-corner-size) 2px no-repeat,
+    linear-gradient(var(--glass-grades-corner), var(--glass-grades-corner)) right top / 2px var(--glass-grades-corner-size) no-repeat,
+    linear-gradient(var(--glass-grades-corner), var(--glass-grades-corner)) left bottom / var(--glass-grades-corner-size) 2px no-repeat,
+    linear-gradient(var(--glass-grades-corner), var(--glass-grades-corner)) left bottom / 2px var(--glass-grades-corner-size) no-repeat,
+    linear-gradient(var(--glass-grades-corner), var(--glass-grades-corner)) right bottom / var(--glass-grades-corner-size) 2px no-repeat,
+    linear-gradient(var(--glass-grades-corner), var(--glass-grades-corner)) right bottom / 2px var(--glass-grades-corner-size) no-repeat;
+  filter: drop-shadow(0 0 1px rgba(0, 0, 0, .6));
+  opacity: 0;
+  transform: scale(1.03);
+  transition: opacity 180ms ease-out, transform 260ms var(--glass-grades-glide);
+}
+.glass-grades--ready .glass-grades__corners { opacity: .5; }
+.glass-grades--dropping .glass-grades__corners { opacity: 1; transform: none; }
+
+/* The light it will open in, named over its pane and kept inside the window. */
+.glass-grades__tag--target {
+  --glass-grades-i: var(--glass-grades-t, var(--glass-grades-sel));
+  left: 0;
+  top: calc(var(--glass-grades-corner-inset) + 8px);
+  transform: translateX(clamp(8px,
+    calc((var(--glass-grades-l) + var(--glass-grades-r)) / 2 * 100cqw - 50%),
+    calc(100cqw - 100% - 8px)));
+  transition: opacity 140ms ease-out, transform 200ms cubic-bezier(.2, .8, .2, 1);
+}
+.glass-grades--dropping .glass-grades__tag--target { opacity: 1; }
+
+.glass-grades__tag--drop {
+  left: 50%;
+  width: max-content;   /* at left: 50% it would otherwise lay out in half the window, and wrap */
+  max-width: calc(100% - 2 * var(--glass-grades-corner-inset) - 2 * var(--glass-grades-corner-size));
+  text-align: center;
+  top: auto;
+  bottom: calc(var(--glass-grades-corner-inset) + 8px);
+  transform: translate(-50%, 4px);
+}
+.glass-grades--dropping .glass-grades__tag--drop { opacity: 1; transform: translate(-50%, 0); }
+
+/* Not a picture: the window says no, and the glass stays down. */
+.glass-grades--refused .glass-grades__frame {
+  animation: glass-grades-refuse var(--glass-grades-refuse-time) ease-in-out;
+}
+@keyframes glass-grades-refuse {
+  25% { translate: -4px 0; }
+  75% { translate: 4px 0; }
+}
+
+/* A dropped picture slides in under the glass from the side it was dropped on.
+   The picture moves inside each pane's paper, never the paper itself, so the
+   colour sheets always have something under them. */
+.glass-grades--landing .glass-grades__img,
+.glass-grades--landing .glass-grades__base {
+  animation: glass-grades-land var(--glass-grades-land-time) cubic-bezier(.2, .8, .2, 1) both;
+}
+/* What it slides over is the empty window, seen through each grade, rather
+   than the white paper a transparent picture sits on: white flashed across
+   every pane for the first frames of the slide. */
+.glass-grades--landing .glass-grades__media { background: var(--glass-grades-bed); }
+@keyframes glass-grades-land {
+  from { translate: calc(var(--glass-grades-land-from, 100%) * var(--glass-grades-land-k, 1)) 0; }
+}
+/* The copy in each edge is magnified, so it travels that much further to keep
+   in step with the picture beside it. At the same distance it ran ahead, a
+   strip of picture in every edge over a window still empty. */
+.glass-grades__bevel .glass-grades__img { --glass-grades-land-k: var(--glass-grades-refract); }
 
 /* The scale under the window: a segment per pane, the chosen one lit. */
 .glass-grades__track {
@@ -1071,5 +1202,9 @@
     transition-duration: 0s !important;
   }
   .glass-grades--lifted .glass-grades__panes,
+  .glass-grades--ready .glass-grades__panes,
   .glass-grades--dropping .glass-grades__panes { transform: none; }
+  .glass-grades--refused .glass-grades__frame,
+  .glass-grades--landing .glass-grades__img,
+  .glass-grades--landing .glass-grades__base { animation: none; }
 }
