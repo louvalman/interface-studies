@@ -220,9 +220,6 @@ radio groups, and without script every pane still opens and slides.
   same frame with one setting moved.
 - A picture dragged in from another app on a tablet, the one touch device a
   drop reaches: untested on a device.
-- The Figma page still shows the photographs. Free Community files are
-  CC BY 4.0, so it should show a picture that is free to share before the
-  listing is next published.
 
 Inspiration: https://www.fujifilm-x.com/global/products/cameras/x-t50/ — my
 own X-T50: turning its film simulation dial to see one scene in another

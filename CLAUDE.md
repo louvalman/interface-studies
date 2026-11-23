@@ -133,11 +133,12 @@ otherwise, and a study that adds photographs adds all four:
   them and outside anything script reveals, since the photographs are on the
   page without script, and `tdm-reservation` in its head.
 
-They stay out of the Figma file. Free Community files are published under
-CC BY 4.0, which licenses everything in them to anyone who credits the
+The Figma file has terms of its own. Free Community files are published
+under CC BY 4.0, which licenses everything in them to anyone who credits the
 author, and a Creative Commons licence cannot be taken back from a copy that
-has already been made. A study's page in the file shows a picture that is
-free to share.
+has already been made. So a photograph goes into the file only when the
+author is content for it to be reused with credit: the storm is on the glass
+grades page by that choice, and the other seven are not in the file.
 
 None of this stops a copy: a page that shows a photograph has already sent
 it. What it does is make the terms plain wherever the file goes, and give a
