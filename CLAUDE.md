@@ -112,6 +112,37 @@ prevent. Take the construction and then have an opinion of your own with it:
 change what the component is *for*, what it is made of, or how it behaves, and
 let the borrowed part be the technique rather than the object.
 
+## The author's photographs are not the code's
+
+A study may show photographs of the author's own, as `2026-11-glass-grades`
+does from its `photos/` folder. The code is MIT, and a picture sitting in an
+MIT repo reads as MIT unless something says otherwise, so four things say
+otherwise, and a study that adds photographs adds all four:
+
+- **Each file.** Creator, copyright and usage terms in its own metadata, in
+  EXIF, IPTC and XMP, and `plus:DataMining` set to prohibited, which is the
+  machine-readable opt-out from text and data mining that EU copyright law
+  asks of a rights holder. exiftool writes them without touching the image
+  data: measured, the decoded pixels hash the same before and after.
+  Location, camera serials and the rest come off first.
+- **The folder.** A `README.md` beside the files, which GitHub renders under
+  the file list, so a reader who browses to them meets the terms before a
+  download.
+- **The repo.** The root README's licence section names the folder.
+- **The page.** One line, in both languages, under the state that offers
+  them and outside anything script reveals, since the photographs are on the
+  page without script, and `tdm-reservation` in its head.
+
+They stay out of the Figma file. Free Community files are published under
+CC BY 4.0, which licenses everything in them to anyone who credits the
+author, and a Creative Commons licence cannot be taken back from a copy that
+has already been made. A study's page in the file shows a picture that is
+free to share.
+
+None of this stops a copy: a page that shows a photograph has already sent
+it. What it does is make the terms plain wherever the file goes, and give a
+takedown something to stand on.
+
 ## `type:` scopes the output
 
 | type | what gets built |

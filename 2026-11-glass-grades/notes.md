@@ -32,12 +32,15 @@ radio groups, and without script every pane still opens and slides.
   layers over a reference row: black to white, then skin, sky, leaf and red.
   Over any grade lies a recipe in the camera's units. Highlight and shadow
   tone harden through contrast and soften through the sheets, colour scales
-  saturation, a white balance shift is a gain per channel on the shoulder,
-  and grain adds weak or strong to the grade's own. Save draws the same
-  layers on a canvas, and does the filter by hand where a canvas takes none.
-  The pictures it is shown on are eight of my own from the same X-T50, and
-  several had already been through one of its simulations, as most pictures
-  dropped on it will have: a grade has to hold over another.
+  saturation, a white balance shift is a gain per channel on the shoulder, and
+  grain adds weak or strong to the grade's own. Save draws the same layers on
+  a canvas, and does the filter by hand where a canvas takes none. The
+  pictures it is shown on are eight of my own from the same X-T50, and several
+  had already been through one of its simulations, as most pictures dropped on
+  it will have: a grade has to hold over another. They are © 2026 Louis
+  Dyrhauge, all rights reserved, and outside the code's MIT licence, which
+  `photos/README.md`, each file's own metadata and a line on the demo page all
+  say.
 - **Glass only where it does a job.** The one material on the picture is the
   edge of each pane: a lit face and a shaded face from one light on the left,
   a few pixels of the green float glass has at its edge, and a 14px strip
@@ -217,6 +220,9 @@ radio groups, and without script every pane still opens and slides.
   same frame with one setting moved.
 - A picture dragged in from another app on a tablet, the one touch device a
   drop reaches: untested on a device.
+- The Figma page still shows the photographs. Free Community files are
+  CC BY 4.0, so it should show a picture that is free to share before the
+  listing is next published.
 
 Inspiration: https://www.fujifilm-x.com/global/products/cameras/x-t50/ — my
 own X-T50: turning its film simulation dial to see one scene in another

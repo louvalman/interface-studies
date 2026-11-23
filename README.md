@@ -51,6 +51,13 @@ repo at all: the reference for `2026-09-raster-pulse` carried a whole brand —
 a logo, a wordmark and a tagline — and a public repo would have handed all of
 it on, so it is kept locally.
 
-The components themselves carry none of it — the copy, the branding and the
-photography are deliberately left behind, which is the rule the whole repo is
-built on.
+**Nor are the photographs in `2026-11-glass-grades/photos/`.** They are the
+author's own, © 2026 Louis Dyrhauge, all rights reserved, and are in the repo
+so that study has real pictures to grade: they may not be copied, edited,
+redistributed or used to train AI. Copy that folder out without them and give
+the component a picture of your own. The folder's own `README.md` and each
+file's metadata say the same.
+
+The components themselves carry none of a reference — its copy, its branding
+and its photography are deliberately left behind, which is the rule the whole
+repo is built on.
