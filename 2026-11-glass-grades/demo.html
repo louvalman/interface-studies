@@ -2067,7 +2067,7 @@
     <section class="demo__group">
       <div class="demo__group-head" data-reveal>
         <h2 class="demo__group-title" data-i18n="group.heard">Heard</h2>
-        <p class="demo__group-note" data-i18n="group.heardNote">Switch Sound on above. Every pane the glass passes ticks, a landing seats it, and lifting the glass and setting it down each have a sound of their own. On a phone the same moments are felt.</p>
+        <p class="demo__group-note" data-i18n="group.heardNote">Switch Sound on above. Every pane the glass passes ticks, a landing seats it, and lifting the glass and setting it down each have a sound of their own. On Android the same moments are felt; an iPhone ticks once as your finger lets go.</p>
       </div>
       <code class="demo__hint" data-reveal>--glass-grades-click: 0.5</code>
     </section>
@@ -2154,13 +2154,17 @@
               never passes its pane, and leaves at the speed the hand let go at, its first control point set to
               match. A still press of 320ms
               lifts the glass for as long as it is held, and a sideways move sets it down and drags; a tap on
-              the open pane, or Enter, lifts it until the next. Every stop passed ticks and a landing seats
-              the glass, each a tap on thick glass: a note, a quiet octave and a trace of a struck
-              plate&rsquo;s second mode. Every note is from one chord, C major, so a run of them never
-              clashes. The landing, the sound of choosing a grade, is the lowest, and everything but the
-              ticks carries a slight reverb, a dark tail of about a second. It is silent while
+              the open pane, or Enter, lifts it until the next. Every stop passed ticks with a dry click, and a landing seats
+              the glass with a soft drop: two recordings from Kenney&rsquo;s Interface Sounds, which are CC0,
+              chosen by ear from 81 after the synthesised taps on glass this used to make sounded cheap. The
+              drop is all but a pure F#5, so the other moments are made of the two in its key: lifting the
+              glass plays the drop a fifth up, setting it down brings it back to the root with the click as
+              the contact, and a picture sliding in plays the root and then the fifth. They play dry, at the
+              rate they were chosen at but for a 1.5% variation in the click&rsquo;s, and each is as loud as
+              the sound it replaced. It is silent while
               <code>--glass-grades-click</code> is 0, and a finger or a pen gets the same moments as
-              vibration.</p>
+              vibration where the browser can vibrate; an iPhone, which lets a page tick only inside a
+              tap, ticks once as the finger lets go and as a selector or the switch is tapped.</p>
           </li>
           <li>
             <h3 class="demo__notes-head">The grades are kinds of light, in the order of a day.</h3>
@@ -2283,8 +2287,8 @@
         'way.tPictureDo': 'Hele vinduet tager imod klik, tr\u00e6k og hold og f\u00e5r fokus til tasterne.',
         'group.heard': 'H\u00f8rt',
         'group.heardNote': 'Sl\u00e5 Lyd til ovenfor. Hver rude glasset passerer, tikker, en landing s\u00e6tter det '
-          + 'p\u00e5 plads, og at l\u00f8fte glasset og l\u00e6gge det har hver sin lyd. P\u00e5 en telefon m\u00e6rkes '
-          + 'de samme \u00f8jeblikke.',
+          + 'p\u00e5 plads, og at l\u00f8fte glasset og l\u00e6gge det har hver sin lyd. P\u00e5 Android m\u00e6rkes '
+          + 'de samme \u00f8jeblikke; en iPhone tikker \u00e9n gang, n\u00e5r fingeren slipper.',
         'sample.havgusName': 'Havgus',
         'sample.dagslysName': 'Dagslys',
         'sample.hojsolName': 'H\u00f8jsol',

@@ -56,13 +56,18 @@ radio groups, and without script every pane still opens and slides.
   first control point set to match. A still press of 320ms lifts the glass
   for as long as it is held, and a sideways move sets it down and drags; a
   tap on the open pane, or Enter, lifts it until the next. Every stop passed
-  ticks and a landing seats the glass, each a tap on thick glass: a note, a
-  quiet octave and a trace of a struck plate's second mode. Every note is
-  from one chord, C major, so a run of them never clashes. The landing, the
-  sound of choosing a grade, is the lowest, and everything but the ticks
-  carries a slight reverb, a dark tail of about a second. It is silent while
-  `--glass-grades-click` is 0, and a finger or a pen gets the same moments as
-  vibration.
+  ticks with a dry click, and a landing seats the glass with a soft drop: two
+  recordings from Kenney's Interface Sounds, which are CC0, chosen by ear from
+  81 after the synthesised taps on glass this used to make sounded cheap. The
+  drop is all but a pure F#5, so the other moments are made of the two in its
+  key: lifting the glass plays the drop a fifth up, setting it down brings it
+  back to the root with the click as the contact, and a picture sliding in
+  plays the root and then the fifth. They play dry, at the rate they were
+  chosen at but for a 1.5% variation in the click's, and each is as loud as
+  the sound it replaced. It is silent while `--glass-grades-click` is 0, and a
+  finger or a pen gets the same moments as vibration where the browser can
+  vibrate; an iPhone, which lets a page tick only inside a tap, ticks once as
+  the finger lets go and as a selector or the switch is tapped.
 - **The grades are kinds of light, in the order of a day.** Sea fog,
   Daylight, High sun, Midsummer, Blue hour, Night and Sodium, for a sodium
   street lamp; in Danish Havgus, Dagslys, Højsol, Sankthans, Blå time, Nat
@@ -146,21 +151,22 @@ radio groups, and without script every pane still opens and slides.
   the same way. 52 to 69ms from click to download at 1800×1200 with the
   filter, 102 to 132ms by hand, timed on the still life; saved side by side in
   one session, a photograph takes as long, within the spread between runs.
-- The sound, rendered offline at the demo's volume of 0.5 after a second of
-  silence: the output's compressor takes that long to settle, and figures
-  taken from its first frame read about 10dB low. Against the version before
-  it, every sound is 2.4 to 3.4dB softer A-weighted, the landing and the
-  set-down the most. The reverb, the sound less the same render with it
-  muted, is 13dB under the landing, the set-down and the swap and 15 under
-  the lift, where the small room it replaced was 26 to 30 under; the ticks
-  stay 31 under, all but dry. A landing is within 40dB of its peak for
-  382ms rather than 125. Through a 700Hz high-pass
-  standing in for a phone's speaker, the landing, an octave lower, comes out
-  7.2dB under the old one where a laptop's speaker has it 3.4 under; its
-  stronger octave wins back 1.5 of that. Five passes 60ms apart and a
-  landing: each pass peaks at −21.3 dBFS and the landing at −14.2, −8.4 at
-  full volume, so nothing clips, and between two passes the sound falls by
-  36dB or more.
+- The sound, rendered offline at the demo's volume of 0.5 a second after the
+  output is made, A-weighted over 120ms from the onset, against the synthesis
+  it replaced: the landing −30.0dB against −30.1, the set-down −33.8 against
+  −33.8, the swap −41.3 against −41.3 and the lift −43.9 against −44.0; the
+  tick keeps the level it was chosen at beside the drop, −40.2 against −39.3.
+  The old output's compressor cut a fresh render by about 10dB for its first
+  second, so the first sounds after switching on were quieter than the rest;
+  there is none now, because nothing needs one: at full volume a landing peaks
+  at −6.0 dBFS, and a landing, a tick and a set-down on the same instant at
+  −1.1. Through a 700Hz high-pass standing in for a phone's speaker, the
+  landing comes out 2.1dB above the old one and the tick 1.1 above, the
+  set-down 1.6 under. The two recordings are 9KB of the file, at 24kHz with
+  the drop cut at its noise floor, where whole at 48kHz they made 28. A
+  scripted 120-step drag spends a median 0.801s of main thread with the sound
+  on against 0.831 with the synthesis, and 0.678 against 0.679 with it off,
+  five interleaved runs each.
 - The readout keeps every description beside its name from 27rem, and puts
   each under its name below that: the widest name and description on one line
   are Blue hour's, 418px in English, and Sankthans's, 380 in Danish. Measured
@@ -178,16 +184,21 @@ radio groups, and without script every pane still opens and slides.
 
 ## Not yet
 
-- Haptics on an iPhone: the switch the script toggles is a Safari workaround,
-  untested on a device.
+- Haptics on an iPhone: on my iPhone, on 22 November 2026, the system switch
+  the script toggled for every moment never ticked, because iOS ticks a switch
+  only inside a tap and every moment came off the clock. It is toggled now
+  only in the handlers of a tap, as a finger lets go and as a selector or the
+  switch is tapped, which is untested.
 - The hold is 320ms, from 260, chosen without a phone: long enough that a
   finger resting before a drag no longer lifts the glass and drops it again,
   well short of a system long press. A phone decides it, and the flick's
   reach and the glide's 560ms with it.
-- The owner approved the sound by ear on 21 November 2026, as built, reverb
-  included. A phone's speaker is still the test: the landing, an octave lower
-  than it was, and the body under it at 330Hz are what it is most likely to
-  lose.
+- The sound was chosen by ear on 22 November 2026 from the two recordings
+  played on their own, and has not been heard in the component, or on a
+  phone's speaker, yet. The lift, the set-down and the swap are made of the
+  two and were never auditioned. Safari starts a page's audio only inside a
+  press or a key, so the sound is woken in the first one, which is untested on
+  an iPhone; an iPhone on silent plays no page's audio at all.
 - The recipe's steps are chosen by eye. In-camera conversions would
   calibrate them: one frame at the camera's standard settings, against the
   same frame with one setting moved.

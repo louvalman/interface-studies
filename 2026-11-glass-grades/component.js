@@ -35,131 +35,78 @@
     return (MSG[lang] || MSG.en)[key];
   }
 
-  /* ── sound: one context per document, made on the first sound that has a
-        volume above 0, never before. Every note is from one chord, C major,
-        so the sounds agree with each other however they fall, and nothing
-        is pitched in the top octaves, where a run of ticks tires the ear. ── */
-  var C5 = 523.25, G5 = 784, C6 = 1046.5, G6 = 1568, C7 = 2093, E4 = 329.6;
-  var audio = { ctx: null, out: null, room: null, noise: null };
+  /* ── sound: two recordings, a dry click as the glass passes a stop and a
+        soft drop as it lands, from Kenney's Interface Sounds (CC0). They are
+        carried at the end of this file as 16-bit samples, so a folder copied
+        out still sounds, and become buffers when the first sound with a
+        volume above 0 makes the context; no context is made before that.
+        The drop is close to a pure F#5, so lifting the glass plays it a
+        fifth up, setting it down brings it back with the click as the
+        contact, and a picture sliding in plays the two rising. They play
+        dry and at the rate they were chosen at, but for a little variation
+        in the click's, so a sweep never sounds mechanical. ── */
+  var audio = { ctx: null, out: null, buf: {} };
   function ensureAudio() {
     if (!audio.ctx) {
       var AC = window.AudioContext || window.webkitAudioContext;
       if (!AC) return null;
-      var c = audio.ctx = new AC(), sr = c.sampleRate;
-      var comp = c.createDynamicsCompressor();
-      comp.threshold.value = -18;
-      comp.ratio.value = 3;
-      var top = c.createBiquadFilter();
-      top.type = 'lowpass'; top.frequency.value = 6500; top.Q.value = 0.5;
+      var c = audio.ctx = new AC();
       audio.out = c.createGain();
-      audio.out.connect(top); top.connect(comp); comp.connect(c.destination);
-      // A slight reverb: a dark tail of about a second, 14ms behind the sound
-      // so the tap stays clear of it, and darker as it fades, the way air
-      // takes the top off a real one.
-      var len = Math.floor(sr * 1.2), pre = Math.floor(sr * 0.014), ir = c.createBuffer(2, len, sr);
-      for (var ch = 0; ch < 2; ch++) {
-        var r = ir.getChannelData(ch), lp = 0;
-        for (var i = pre; i < len; i++) {
-          var at = (i - pre) / sr;
-          lp += (0.05 + 0.3 * Math.exp(-at / 0.2)) * (Math.random() * 2 - 1 - lp);
-          r[i] = lp * Math.exp(-at / 0.15) * Math.min(1, at / 0.02);
+      audio.out.connect(c.destination);
+      Object.keys(SAMPLES).forEach(function (k) {
+        var bin = atob(SAMPLES[k]), n = bin.length >> 1, b = c.createBuffer(1, n, SAMPLE_RATE), d = b.getChannelData(0);
+        for (var i = 0; i < n; i++) {
+          var v = bin.charCodeAt(2 * i) | (bin.charCodeAt(2 * i + 1) << 8);
+          d[i] = (v > 32767 ? v - 65536 : v) / 32768;
         }
-      }
-      var conv = c.createConvolver();
-      conv.buffer = ir;
-      audio.room = c.createGain();
-      audio.room.connect(conv); conv.connect(audio.out);
-      var n = Math.floor(sr * 0.3), buf = c.createBuffer(1, n, sr), d = buf.getChannelData(0);
-      for (var k = 0; k < n; k++) d[k] = Math.random() * 2 - 1;
-      audio.noise = buf;
+        audio.buf[k] = b;
+      });
     }
     if (audio.ctx.state === 'suspended') audio.ctx.resume();
     return audio.ctx;
   }
-  // Where a sound goes: all of it to the output, and some to the reverb.
-  function voice(wet) {
-    var c = audio.ctx, v = c.createGain();
-    v.connect(audio.out);
-    if (wet > 0) { var s = c.createGain(); s.gain.value = wet; v.connect(s); s.connect(audio.room); }
-    return v;
-  }
-  // A tap on thick glass: the note, a quiet octave, and a trace of a struck
-  // plate's second mode, which is what makes it glass rather than a bell.
-  // The upper two die first.
-  function tap(t, f0, level, decay, wet, octave) {
-    var c = audio.ctx, v = voice(wet);
-    [[1, 1], [2, octave || 0.12], [2.756, 0.035]].forEach(function (m) {
-      var o = c.createOscillator(), g = c.createGain(), d = decay / Math.sqrt(m[0]);
-      o.frequency.value = f0 * m[0];
-      g.gain.setValueAtTime(0, t);
-      g.gain.linearRampToValueAtTime(m[1] * level, t + 0.005);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + d);
-      o.connect(g); g.connect(v);
-      o.start(t); o.stop(t + d + 0.02);
-    });
-  }
-  // Contact: a few milliseconds of noise, in the band a fingertip on glass makes.
-  function touch(t, level, freq, len) {
-    var c = audio.ctx, s = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain();
-    s.buffer = audio.noise; f.type = 'bandpass'; f.frequency.value = freq; f.Q.value = 1.4;
-    g.gain.setValueAtTime(0, t);
-    g.gain.linearRampToValueAtTime(level, t + 0.001);
-    g.gain.exponentialRampToValueAtTime(0.0001, t + len);
-    s.connect(f); f.connect(g); g.connect(audio.out);
-    s.start(t, Math.random() * 0.2); s.stop(t + len + 0.01);
-  }
-  // The glass seating: a short, low body, settling a little as it sounds.
-  function body(t, level, from, to, dur, wet) {
-    var c = audio.ctx, o = c.createOscillator(), g = c.createGain();
-    o.frequency.setValueAtTime(from, t);
-    o.frequency.exponentialRampToValueAtTime(to, t + dur);
-    g.gain.setValueAtTime(0, t);
-    g.gain.linearRampToValueAtTime(level, t + 0.004);
-    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-    o.connect(g); g.connect(voice(wet));
-    o.start(t); o.stop(t + dur + 0.02);
-  }
-  function air(t, level, from, to, dur, wet) {
-    var c = audio.ctx, s = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain();
-    s.buffer = audio.noise; f.type = 'bandpass'; f.Q.value = 0.9;
-    f.frequency.setValueAtTime(from, t);
-    f.frequency.exponentialRampToValueAtTime(to, t + dur);
-    g.gain.setValueAtTime(0.0001, t);
-    g.gain.exponentialRampToValueAtTime(level, t + dur * 0.4);
-    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-    s.connect(f); f.connect(g); g.connect(voice(wet));
-    s.start(t, Math.random() * 0.05); s.stop(t + dur + 0.02);
+  function hit(name, t, rate, level) {
+    var c = audio.ctx, s = c.createBufferSource(), g = c.createGain();
+    s.buffer = audio.buf[name]; s.playbackRate.value = rate; g.gain.value = level;
+    s.connect(g); g.connect(audio.out); s.start(t);
   }
   function play(kind, volume) {
     if (!(volume > 0)) return;
     var c = ensureAudio();
     if (!c) return;
-    audio.out.gain.value = 1.2 * volume;
-    var t = c.currentTime + 0.004;
-    var j = 1 + (Math.random() - 0.5) * 0.012;   // a little variation, so a sweep never sounds mechanical, and little enough to stay in tune
-    // The landing, the sound of choosing a grade, is the lowest note, and has
-    // more of its octave than the others, because a phone's speaker plays
-    // little of a note that low. The ticks on the way are all but dry, so a
-    // run of them does not blur into the reverb.
-    if (kind === 'pass') { touch(t, 0.025, 1600 * j, 0.004); tap(t, G5 * j, 0.13, 0.045, 0.06); }
-    else if (kind === 'land') { body(t, 0.08, E4 * 1.04, E4 * 0.92, 0.07, 0.25); tap(t, C5 * j, 0.22, 0.24, 0.36, 0.35); touch(t, 0.015, 1500, 0.006); }
-    else if (kind === 'lift') { air(t, 0.024, 500, 1600, 0.2, 0.38); tap(t + 0.06, C7 * j, 0.04, 0.09, 0.42); }
-    else if (kind === 'set') { body(t, 0.085, E4, E4 * 0.88, 0.07, 0.25); tap(t, C6 * j, 0.13, 0.13, 0.36); tap(t + 0.026, G6 * j, 0.045, 0.08, 0.36); touch(t, 0.02, 1600, 0.008); }
-    else if (kind === 'swap') { air(t, 0.019, 1600, 600, 0.16, 0.38); tap(t + 0.1, C6 * j, 0.06, 0.12, 0.42); tap(t + 0.19, G6 * j, 0.05, 0.16, 0.42); }
+    // Three quarters of the volume token: at the demo's 0.5 the landing is as
+    // loud as the synthesised one these replaced, and at full volume nothing
+    // clips, so the output needs no compressor. See notes.md.
+    audio.out.gain.value = 0.75 * volume;
+    var t = c.currentTime + 0.004, j = 1 + (Math.random() - 0.5) * 0.03;
+    if (kind === 'pass') hit('click', t, j, 1);
+    else if (kind === 'land') hit('drop', t, 1, 1);
+    else if (kind === 'lift') hit('drop', t, 1.5, 0.21);
+    else if (kind === 'set') { hit('click', t, j, 0.52); hit('drop', t + 0.006, 1, 0.63); }
+    else if (kind === 'swap') { hit('drop', t, 1, 0.22); hit('drop', t + 0.09, 1.5, 0.17); }
   }
+
+
 
   /* ── touch: a finger or a pen feels what a pointer hears ── */
   var VIB = { pass: 7, land: 16, lift: 12, set: [9, 34, 12], swap: 12 };
   var lastBuzz = 0;
   // Safari has no vibration API. Toggling a system switch makes iOS tick, and
-  // that is the only touch feedback a page can reach there.
+  // that is the only touch feedback a page can reach there, but only inside a
+  // tap: toggled off the clock, as the glass passed a pane or landed after a
+  // glide, it never ticked on an iPhone. So it is toggled in the handlers of a
+  // tap itself, once as a finger lets go of the picture and once as a
+  // selector or the switch is tapped, and never for the moments in between.
   function iosTick() {
     try {
       var l = document.createElement('label'), i = document.createElement('input');
       i.type = 'checkbox'; i.setAttribute('switch', '');
       l.setAttribute('aria-hidden', 'true'); l.style.display = 'none';
-      l.appendChild(i); document.body.appendChild(l); l.click(); l.remove();
+      l.appendChild(i); document.head.appendChild(l); l.click(); l.remove();
     } catch (err) { /* not available */ }
+  }
+  function tapTick(type) {
+    if (isIOS && (type === 'touch' || type === 'pen')) iosTick();
   }
   function buzz(kind, type) {
     if (type !== 'touch' && type !== 'pen') return;
@@ -168,9 +115,7 @@
     lastBuzz = now;
     if (typeof navigator.vibrate === 'function' && !isIOS) {
       try { navigator.vibrate(VIB[kind] || 8); } catch (err) { /* not allowed here */ }
-      return;
     }
-    if (isIOS) iosTick();
   }
 
   function setup(root) {
@@ -195,6 +140,16 @@
     root.addEventListener('pointerdown', function (e) { lastType = e.pointerType || 'mouse'; lastActive = root; }, true);
     root.addEventListener('keydown', function () { lastType = 'key'; }, true);
     root.addEventListener('focusin', function () { lastActive = root; });
+    // Safari starts audio only inside a press or a key, and the first sound
+    // here usually comes mid-drag or as a glide lands, outside both. So with
+    // the sound on, the context is made, or woken, in the gesture itself.
+    function wake() {
+      if (audio.ctx && audio.ctx.state === 'running') return;
+      if (num('--glass-grades-click', 0, 0, 1) > 0) ensureAudio();
+    }
+    root.addEventListener('pointerdown', wake, true);
+    root.addEventListener('pointerup', wake, true);
+    root.addEventListener('keydown', wake, true);
 
     function read(prop) { return getComputedStyle(root).getPropertyValue(prop).trim(); }
     function num(prop, fallback, lo, hi) {
@@ -563,7 +518,10 @@
       var target = flung ? Math.max(here - 3, Math.min(here + 3, Math.round(p + v * ahead))) : here;
       glideTo(target, vp, P.type, true);
     }
-    frame.addEventListener('pointerup', function (e) { endPointer(e, false); });
+    frame.addEventListener('pointerup', function (e) {
+      if (ptr && e.pointerId === ptr.id) tapTick(ptr.type);
+      endPointer(e, false);
+    });
     frame.addEventListener('pointercancel', function (e) { endPointer(e, true); });
     frame.addEventListener('contextmenu', function (e) { e.preventDefault(); });
 
@@ -628,12 +586,16 @@
     radios.forEach(function (r, i) {
       r.addEventListener('change', function () {
         if (!r.checked) return;
+        tapTick(lastType);
         if (latched) lift(false, lastType);
         // The stylesheet has already been told; hold p where the glass is
         // and glide from there, so the move ticks like any other.
         drive(p);
         glideTo(i, null, lastType, false);
       });
+    });
+    sides.forEach(function (side) {
+      side.addEventListener('change', function () { if (side.checked) tapTick(lastType); });
     });
 
     /* ── a picture of your own: picked, dropped or pasted ── */
@@ -888,6 +850,99 @@
     e.preventDefault();
     target.__glassGradesLoad(item.getAsFile(), 'key');
   });
+
+  /* ── the two recordings the sound plays: Kenney's click_003 and drop_003,
+        from Interface Sounds (CC0), mono 16-bit little-endian at 24kHz, which
+        keeps all either has: above 8kHz both are 80dB down. The drop is cut
+        at 118ms under a 30ms fade, where it reaches the recording's noise
+        floor. ── */
+  var SAMPLE_RATE = 24000;
+  var SAMPLES = {
+    click: 'nwGXIdA2lznTKVsOR/KX4Izfdu6kBise6CvsKiEcsgWX8MnkJ+ZR83QGyBe2IE4eGxJQAYPyC+sr7XD3cwW+EesXHRZxDXIB'
+      + 'mfau8HPxKfj4ATcLqhCfEGgLIQPF+in1CvR79wb+QwWxCpMMfQpVBfr+kfnS9nf3FftLAEsFeAjpCJ8GdQLP/Sb6kPhf+Sz8'
+      + '+v+KA8YFCAZsBJcBef4A/ND6HPum/OD+FAGlAjEDqwJVAaP/FP4T/dP8R/0u/jT/DgCVAMAAngBPAOn/ef8F/5X+Of4J/hr+'
+      + 'c/4G/67/PgCOAIkAMwCp/xL/lf5O/kj+fP7V/jz/mf/b//v/9v/X/6b/cf9C/x//DP8K/xb/Lv9O/2//j/+o/7n/wP+//7b/'
+      + 'qP+Z/4v/gf97/3z/gv+M/5r/qv+5/8X/z//W/9n/2v/a/9r/2//d/+D/5P/q/+//9f/7/w==',
+    drop: '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'
+      + '+//6//X/7P/j/9b/yP+5/6n/mf+K/3z/cP9m/17/Wv9Y/1r/Xv9m/3D/fP+J/5f/pv+2/8X/0//e/+j/8P/0//b/8//w/+j/'
+      + '3//U/8j/u/+t/53/j/+C/3b/bf9n/2L/Yf9h/2b/bP92/4H/jP+Z/6f/tP/C/8//2f/k/+n/7v/v/+//6//m/93/0v/I/7z/'
+      + 'r/+g/5X/iP9//3X/b/9s/2r/a/9u/3P/fP+F/4//nP+n/7T/wf/L/9b/3v/k/+n/6//q/+f/4v/a/9L/yP+9/7H/pv+a/4//'
+      + 'h/9//3n/df9z/3T/dv97/4L/i/+U/57/qf+1/8D/yv/T/9v/4f/l/+f/5v/j/9//2f/R/8r/wP+2/6v/oP+X/47/h/+C/37/'
+      + 'ff99/4D/hP+J/5L/mv+i/6z/t//A/8r/0v/Y/93/4f/k/+P/4v/e/9n/0v/L/8P/uv+w/6f/oP+X/5H/jP+I/4f/iP+J/43/'
+      + 'kv+Y/5//qP+w/7n/wv/J/9H/2P/d/+D/4v/i/+D/3v/Z/9P/zf/G/77/tv+v/6f/of+a/5b/lP+S/5L/k/+W/5v/of+n/63/'
+      + 'tf+9/8X/y//S/9f/3f/f/+H/4v/g/97/2v/V/9D/yv/D/7z/tf+w/6n/pf+g/57/nf+c/57/oP+k/6n/rv+z/7r/wf/H/87/'
+      + '1P/Z/93/3//h/+H/4f/e/9z/2P/T/8//yP/C/73/t/+y/67/q/+o/6j/p/+p/6v/rv+x/7b/u//A/8b/zP/R/9b/2v/e/+D/'
+      + '4f/i/+L/4P/d/9r/1//S/87/yf/E/8D/u/+4/7X/s/+y/7L/s/+1/7j/u/++/8P/x//M/9H/1v/Z/93/3//i/+P/4//j/+H/'
+      + '3//c/9r/1v/S/87/yv/H/8P/wP+//7z/vP+8/73/v//B/8T/xv/K/87/0v/W/9r/3f/g/+L/5P/l/+X/5f/j/+L/4P/d/9r/'
+      + '2P/U/9H/zv/L/8n/yP/G/8b/xv/H/8j/yv/N/8//0v/V/9j/2//f/+H/4//l/+f/5//n/+f/5v/l/+P/4f/f/93/2v/Y/9X/'
+      + '0//S/9H/z//P/8//0P/R/9P/1f/X/9n/2//e/+D/4//l/+f/6P/p/+r/6v/q/+n/6P/n/+b/5P/i/+D/3v/d/9v/2v/Z/9j/'
+      + '2P/Y/9j/2f/b/9z/3v/f/+H/4//l/+f/6f/q/+v/7P/t/+3/7f/s/+z/6//q/+n/5//m/+X/5P/i/+H/4P/g/+D/4P/g/+H/'
+      + '4v/k/+T/5v/n/+n/6v/r/+3/7v/v//D/8P/w//D/8P/w/+//7v/t/+z/6//q/+r/6f/o/+j/5//n/+f/6P/o/+n/6v/r/+z/'
+      + '7f/u/+//8P/x//L/8//z//T/9P/0//P/8//z//L/8v/x//D/8P/v/+//7v/u/+7/7v/u/+7/7//v//D/8f/x//L/8//0//T/'
+      + '9f/2//b/9v/3//f/9//3//f/9v/2//b/9f/1//T/9P/0//P/8//z//P/9P/0//T/9P/1//X/9v/2//f/9//4//j/+f/5//n/'
+      + '+v/6//r/+v/5//n/+f/5//n/+f/4//j/+P/4//j/+P/4//j/+P/4//n/+f/5//r/+v/6//v/+//7//v//P/8//z//P/8//z/'
+      + '/P/8//z//P/8//z//P/7//v/+//7//v/+//8//z//P/8//z//P/9//3//f/9//3//f/+//7//v/+//7//v/+//7//v/+//7/'
+      + '/v/+//7//v/+//7//v/+//7//v/+//7//v/+//7//////////////w=='
+  };
 
   function boot() { Array.prototype.forEach.call(document.querySelectorAll('.glass-grades'), setup); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
