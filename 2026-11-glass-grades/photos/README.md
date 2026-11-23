@@ -11,9 +11,11 @@ They are not covered by the repository's MIT licence, which is for the code.
 Without my written permission they may not be copied, edited, redistributed,
 published anywhere else, or used to train AI.
 
-One of them, the storm, is also on the study's page in the companion Figma
-file, and Figma Community publishes a free file under CC BY 4.0, so the copy
-there may be reused with credit. The other seven are not in the file.
+Four of them are also on the study's page in the companion Figma file: the
+storm, and the focaccia, the leaves and the harbour, which take turns in the
+riff the study's video is made from. Figma Community publishes a free file
+under CC BY 4.0, so the copies there may be reused with credit; the harbour's
+is only the band the riff shows. The other four are not in the file.
 
 Copying the study's folder out takes the code with it: leave this folder
 behind and give the component a picture of your own, picked, dropped or
