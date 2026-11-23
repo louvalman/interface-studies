@@ -3,7 +3,7 @@
 © 2026 Louis Dyrhauge. All rights reserved.
 
 The eight photographs in this folder, and their thumbnails in `thumbs/`, are
-mine, taken with my X-T50. They are here so the glass grades study has real
+mine, seven taken with my X-T50 and one with my phone. They are here so the glass grades study has real
 pictures to grade, and they are shown on its page, on its card on the index
 and in this repository for that alone.
 
