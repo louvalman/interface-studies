@@ -140,8 +140,26 @@ The Figma file has terms of its own. Free Community files are published
 under CC BY 4.0, which licenses everything in them to anyone who credits the
 author, and a Creative Commons licence cannot be taken back from a copy that
 has already been made. So a photograph goes into the file only when the
-author is content for it to be reused with credit: the storm is on the glass
-grades page by that choice, and the other seven are not in the file.
+author is content for it to be reused with credit. Four are, on the glass
+grades page: the storm across its boards, and the focaccia, the leaves and
+the harbour in its riff, a showcase board that fades from one picture to the
+next. The other four are not in the file. A copy goes in without metadata,
+because the repo's terms are the wrong ones for it, and only as much of it as
+is shown: the harbour is the 3:2 band the riff shows, not the whole frame.
+The riff carries a credit, "Photos © 2026 Louis Dyrhauge", without "All
+rights reserved", which the file's licence would contradict, so a video
+exported from it carries the credit too.
+
+The riff video on the Community listing is not that export. It came from a
+later layout that is not in the file, it predates the credit, and it still
+shows a photograph that has since left the repo and the file. The author is
+keeping it for now. Replacing it means rebuilding that layout in the file and
+exporting from there.
+
+Three of the file's photographs were missed once, because the riff fades
+them in on its timeline and the canvas at rest shows only the storm: the
+notes said the storm was the only one. Check a file for photographs by its
+image fills, not by looking at it.
 
 None of this stops a copy: a page that shows a photograph has already sent
 it. What it does is make the terms plain wherever the file goes, and give a
