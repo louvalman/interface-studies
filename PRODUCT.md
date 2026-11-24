@@ -25,7 +25,7 @@ one component per study, built in Figma and code, each folder standing on its
 own. The collection is never finished; a study is reworked when there is
 something better to do with it, and the set grows a study at a time.
 
-Success is two things, of roughly equal weight:
+Success is three things, of roughly equal weight:
 
 - **Studies get opened** — a reader goes past the thumbnail into a
   `demo.html`, to see the component and the study in full and take what they
@@ -33,6 +33,8 @@ Success is two things, of roughly equal weight:
 - **Figma file engagement** — duplicates and likes on the Community listing
   (https://www.figma.com/community/file/1683607518896928224/interface-studies),
   which are counted there and nowhere else.
+- **GitHub stars** — stars on the repository
+  (https://github.com/louvalman/interface-studies), counted there.
 
 ## Positioning
 

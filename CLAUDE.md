@@ -1845,12 +1845,12 @@ is where this set is also drawn; the other is that the person has an account,
 which is what the handles are for.
 
 **It is a button, and the masthead's only one.** It began as a value in a meta
-row of mono facts, set like a fact, and read as one: the file is half of what
-the site counts as success, and a mono 13px value under the lede was where the
-eye went last. So it is filled, in the accent, which on this page means "this
-leaves the site", 44px tall on every pointer, beside the lede where the band
-puts it above the fold at every width. `--on-accent` is its text, 5.00:1 on
-the light fill and 7.23 on the dark, and `--accent-hover` its hover.
+row of mono facts, set like a fact, and read as one: the file is one of the
+three things the site counts as success, and a mono 13px value under the lede
+was where the eye went last. So it is filled, in the accent, which on this page
+means "this leaves the site", 44px tall on every pointer, beside the lede where
+the band puts it above the fold at every width. `--on-accent` is its text,
+5.00:1 on the light fill and 7.23 on the dark, and `--accent-hover` its hover.
 
 **The Figma mark is beside it now.** It was kept out of the meta row because a
 brand glyph would have made one fact a different kind of object from the facts
@@ -2683,7 +2683,7 @@ is inside its JS. Figma is on it for every study in the file, after the code —
 code and Figma are the two halves PRODUCT.md names — and joins a new study's
 card when its page is published, with its `data-figma`. It used to be the
 list's alone and to leave Figma off, so a card on the rail said nothing
-about the half of success that is the file. The rail shows the marks too, on
+about the part of success that is the file. The rail shows the marks too, on
 the "Open study" line right after the link, past a short hairline that says
 they label the study rather than extend the link. They sat at the card's far
 edge first, and a reviewer measured them 32px from the next card's "Open
@@ -2794,9 +2794,8 @@ stays is whether anything else on the page already says it:
   from there to link each study's own folder, `…/tree/main/<folder>`. The ask
   for a star is a quiet line beside it rather than a modal in front of it: a
   reader who has clicked through has already decided to go, and the star
-  button is where the link lands. Stars are not one of the two things
-  PRODUCT.md counts as success; if they become one, that is where it is written
-  down.
+  button is where the link lands. Stars are one of the three things PRODUCT.md
+  counts as success, and the ask stays a quiet line for that same reason.
 - **What it is set in stays**, as one quiet line with each face set in itself:
   the one small thing a credit for type can show rather than say.
 
