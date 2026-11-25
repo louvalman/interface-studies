@@ -1924,7 +1924,8 @@ decisions; this only says which chapter a board goes in.
 
 A page opens on a `Start here` frame: the study's name, a kicker
 (`2026-09 · CARD · STUDY`), a summary taken from the opening of `notes.md`,
-links to the demo and the Community listing, a row showing the component itself,
+links to the demo, the Community listing and the page's `Play it` board, a row
+showing the component itself,
 and a contents list whose titles link to the chapters. The row holds instances
 where the study has a variant set, so it follows the component; where it clones
 a board instead — the colourways, the bento board — it is a copy, and is redone
@@ -1937,7 +1938,7 @@ left to right:
 |---|---|
 | `01 · The idea` | `Notes — notes.md` and `Component — component.html + .css`, side by side |
 | `02 · The design` | the boards that explain the study — its drawings, colourways, materials; the variant set, where the study has nothing else to show there |
-| `03 · In use` | the `Motion — …` board, `Preview — preview.html`, and a React or controls board where there is one |
+| `03 · In use` | a `Play it — …` board first, beside the riff where the study has one; then the `Motion — …` board, `Preview — preview.html`, and a React or controls board where there is one |
 | `04 · The build` | the variant set, the masters or parts, and `Tokens — component.css` last |
 
 The chapter names are the same on every page, and that is the point of them:
@@ -1988,6 +1989,49 @@ state and nothing else. The motion is checked by reading the tracks back with
 `get_motion_context`, which returns them as CSS to set beside the study's own.
 A video export also works, where the session's network allows `www.figma.com`,
 which is where the file is fetched from.
+
+### The file's components play, and each page says where
+
+Every variant set in the file is wired as an interactive component. The states
+a study has — a panel open, a card under a pointer, a grade chosen, a stop
+turned to — are variants, and a click, a hover or a press changes between them
+with Smart Animate, at the duration and curve the study's `component.css`
+declares. A component is mostly how it behaves when it is reached for, and a
+file whose components sat still in a prototype was carrying half of each
+study.
+
+Where a state was not yet a variant, it was added rather than faked. The mode
+dial carries `Stop`, ten versions at each of six stops, with the knurl and the
+options turned about their centres and the names turned back upright; the
+banded shaders and the inked plate carry `State`, rest and hover. Each build
+chapter's axes and lede count them.
+
+A variant change is a state, not an animation, and some of what a study does
+cannot be one: dragging the glass, the plate's line redrawing, a sound, and
+the mode dial's key committing, which would take a variant for every browsed
+and committed pair. Those stay on the demo page, and the board below says so
+rather than standing in for them.
+
+An instance's reactions are an override of its main component's, so a part
+that changes its parent and also has states of its own risks losing one to
+the other. The struck tones' keys strike the faceplate on a click, and their
+Rest, Hover and Struck variants were left unwired rather than risk the click.
+
+**Every copy is live in Present, which is why no copy said so.** So each
+page's `In use` chapter opens on a `Play it — …` board: live instances on the
+shared paper, a vermilion dot before `PLAY IT — SELECT THIS FRAME AND PRESENT`
+(the accent, which means the way on here as it does on the index), and a line
+saying what to hover or click and what works only on the demo page. Each board
+is a prototype flow named `Play it — <study>`, so Present lists it, and
+`Start here` links it as `Play it ↓` beside the demo and the listing. The
+struck tones' controls board was one already, and took the dot and the hint.
+
+The interactions are a copy kept in step by hand, like the motion boards: when
+a study's timings, states or markup change, its reactions and its added
+variants are redone. A component set laid out with auto layout places its
+variants by their order and ignores their positions, so a set like the banded
+shaders' is reordered rather than moved. And the canvas shows none of it:
+check by reading the reactions back, and by presenting the board.
 
 ### A card links the Figma file, and so does its demo page
 
